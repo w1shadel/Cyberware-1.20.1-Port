@@ -1,2 +1,6 @@
 # Cyberware-1.20.1-Port
-CyberWare Mod 1.20.1 Port
+Cyberware is a Minecraft mod for versions 1.9.4 through 1.10.2 that allows for augmentation of the human body.
+
+For a 1.12 Cyberware, see https://minecraft.curseforge.com/projects/roboticparts
+
+For more information and downloads, see the CurseForge page(Not produced yet).
