@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "cyber_ware_port:item/bone_upgrades_bonelacing_scavenged"
+  }
+}
