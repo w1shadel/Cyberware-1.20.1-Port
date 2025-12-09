@@ -1,4 +1,5 @@
-package com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon;public enum BodyRegionEnum {EYES,       
+package com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon;
+public enum BodyRegionEnum {EYES,       
     BRAIN,      
     HEART,      
     LUNGS,      
@@ -12,15 +13,19 @@ package com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon;public enum BodyReg
     HANDS,      
 
     LEGS,       
-    BOOTS;      
+    BOOTS;
+      
 
     public static final int SLOTS_PER_PART = 9;
 
+
     public int getStartSlot() {
         return this.ordinal() * SLOTS_PER_PART;
+
     }
 
     public static int getTotalSlots() {
-        return values().length * SLOTS_PER_PART; 
+        return values().length * SLOTS_PER_PART;
+ 
     }
 }

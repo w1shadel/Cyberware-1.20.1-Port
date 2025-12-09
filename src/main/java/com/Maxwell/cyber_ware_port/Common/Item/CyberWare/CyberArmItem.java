@@ -1,9 +1,14 @@
 package com.Maxwell.cyber_ware_port.Common.Item.CyberWare;
 
+
 import com.Maxwell.cyber_ware_port.Common.Item.Base.BodyPartType;
+
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
+
 import net.minecraft.world.item.Item;
+
 import net.minecraftforge.registries.RegistryObject;
+
 
 public class CyberArmItem extends CyberwareItem {
 
@@ -14,5 +19,6 @@ public class CyberArmItem extends CyberwareItem {
                 .incompatible(incompatibleHumanPart)
                 .bodyPart(BodyPartType.ARM)
                 .energy(5, 0, 0, StackingRule.STATIC));
+
     }
 }

@@ -1,11 +1,18 @@
 package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm;
 
+
 import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
+
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
+
 import com.Maxwell.cyber_ware_port.Init.ModItems;
+
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+
 import net.minecraft.world.entity.ai.attributes.Attributes;
+
 import net.minecraft.world.item.ItemStack;
+
 
 public class RetractableClawsItem extends CyberwareItem {
 
@@ -19,9 +26,11 @@ public class RetractableClawsItem extends CyberwareItem {
                         4.0,
                         AttributeModifier.Operation.ADDITION)
         );
+
     }
     @Override
     public boolean canToggle(ItemStack stack) {
         return true;
+
     }
 }

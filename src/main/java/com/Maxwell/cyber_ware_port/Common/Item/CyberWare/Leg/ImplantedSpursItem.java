@@ -1,9 +1,14 @@
 package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg;
 
+
 import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
+
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
+
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+
 import net.minecraft.world.entity.ai.attributes.Attributes;
+
 
 public class ImplantedSpursItem extends CyberwareItem {
     public ImplantedSpursItem() {
@@ -14,5 +19,6 @@ public class ImplantedSpursItem extends CyberwareItem {
                         0.1,
                         AttributeModifier.Operation.MULTIPLY_TOTAL)
         );
+
     }
 }
