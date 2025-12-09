@@ -1,10 +1,10 @@
 package com.Maxwell.cyber_ware_port.Common.Block.CWB;
 
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipie.AssemblyRecipe;
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipie.EngineeringRecipe;
+import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
+import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
 import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
-import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
+import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
 import com.Maxwell.cyber_ware_port.Init.ModRecipes;
 import net.minecraft.core.BlockPos;
@@ -45,10 +45,9 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public static final int PAPER_SLOT = 1;
     public static final int BLUEPRINT_SLOT = 2;
     public static final int OUTPUT_SLOT_START = 3;
+    public static final int OUTPUT_SLOT_END = 8;
     public static final int SPECIAL_OUTPUT_SLOT = 9;
-    private static final int INVENTORY_SIZE = 10;
-
-    private AssemblyRecipe cachedRecipe = null;
+    private static final int INVENTORY_SIZE = 10;private AssemblyRecipe cachedRecipe = null;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
@@ -331,11 +330,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                 }
             }
         }
-    }/**
-     * 現在スロットにあるブループリントに対応するレシピを取得する
-     * キャッシュがあればそれを返し、なければ検索してキャッシュする
-     */
-    @Nullable
+    }    @Nullable
     private AssemblyRecipe getActiveAssemblyRecipe() {
 
         if (this.cachedRecipe != null) {
@@ -363,10 +358,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         return null;
     }
 
-    /**
-     * そのアイテムが指定されたレシピの材料として必要か判定する
-     */
-    private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
+        private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
         if (stack.isEmpty()) return false;
 
         for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {

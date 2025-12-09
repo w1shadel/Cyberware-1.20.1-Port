@@ -3,30 +3,29 @@ package com.Maxwell.cyber_ware_port.Common.Capability;
 import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.BodyPartType;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-import com.Maxwell.cyber_ware_port.Common.Network.PacketHandler;
+import com.Maxwell.cyber_ware_port.Common.Network.A_PacketHandler;
 import com.Maxwell.cyber_ware_port.Common.Network.SyncCyberwareDataPacket;
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergyStorage {
     private boolean isInitialized = false;
@@ -43,17 +42,32 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         protected void onContentsChanged(int slot) {}
     };
 
-    /**
-     * エネルギー容量とプレイヤーの属性(Attributes)を再計算して適用する。
-     * 手術完了時、ログイン時、トグル切り替え時などに呼び出すこと。
-     * @param player 対象のプレイヤー
-     */
     public void recalculateCapacity(ServerPlayer player) {
         int totalCapacity = 0;
 
         AttributeMap attributeMap = player.getAttributes();
 
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
+
+            final int slotIndex = i;
+
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
+                cw.getAttributeModifiers(stack).forEach((attribute, modifier) -> {
+                    AttributeInstance instance = attributeMap.getInstance(attribute);
+                    if (instance != null) {
+
+                        UUID slotUUID = generateUUID(slotIndex, modifier.getId());
+                        instance.removeModifier(slotUUID);
+                    }
+                });
+            }
+        }
+
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+
+            final int slotIndex = i;
+
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
 
@@ -62,12 +76,27 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                     int singleStorage = cyberware.getEnergyStorage(stack);
                     totalCapacity += singleStorage * count;
                 }
+
                 if (cyberware.isActive(stack)) {
-                    cyberware.getAttributeModifiers(stack).forEach((attribute, modifier) -> {
+                    cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
                         if (attributeMap.hasAttribute(attribute)) {
                             AttributeInstance instance = attributeMap.getInstance(attribute);
-                            if (!instance.hasModifier(modifier)) {
-                                instance.addTransientModifier(modifier);
+                            if (instance != null) {
+
+                                UUID slotUUID = generateUUID(slotIndex, originalModifier.getId());
+
+                                double value = originalModifier.getAmount() * count;
+
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier newModifier = new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                        slotUUID,
+                                        "Cyberware Slot " + slotIndex, 
+                                        value,
+                                        originalModifier.getOperation()
+                                );
+
+                                if (!instance.hasModifier(newModifier)) {
+                                    instance.addTransientModifier(newModifier);
+                                }
                             }
                         }
                     });
@@ -84,11 +113,13 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             player.setHealth(player.getMaxHealth());
         }
     }
-
+    private UUID generateUUID(int slot, UUID originalId) {
+        return UUID.nameUUIDFromBytes((originalId.toString() + "_" + slot).getBytes());
+    }
     public void tick(ServerPlayer player) {if (this.maxEnergy == 0 && this.isInitialized) {
             recalculateCapacity(player);
         }
-
+        checkBodyCondition(player);
         if (maxEnergy <= 0) {
             this.lastProduction = 0;
             this.lastConsumption = 0;
@@ -128,11 +159,14 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         this.isInitialized = true;
     }
     private void checkBodyCondition(ServerPlayer player) {
-
         Set<BodyPartType> presentParts = EnumSet.noneOf(BodyPartType.class);
 
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
+        ItemStackHandler handler = this.installedCyberware;
+        boolean hasRightLeg = !handler.getStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS).isEmpty();
+        boolean hasLeftLeg = !handler.getStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS + 1).isEmpty();
+
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
                 BodyPartType type = cyberware.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
@@ -140,55 +174,67 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 }
             }
         }
-
-        Level level = player.level();DamageSource organFailure = player.damageSources().dragonBreath();
-        DamageSource lowTolerance = player.damageSources().starve();  
-
         if (!presentParts.contains(BodyPartType.BRAIN)) {
-            killPlayer(player, "cyberware_organ_failure");
+            killPlayer(player, "cyberware.brainless");
             return;
         }
+
         if (!presentParts.contains(BodyPartType.HEART)) {
-            killPlayer(player, "cyberware_organ_failure");
+            killPlayer(player, "cyberware.heartless");
             return;
-        }
-        if (getTolerance() <= 0) {
-            killPlayer(player, "cyberware_low_tolerance");
-            return;
-        }if (!presentParts.contains(BodyPartType.EYES)) {
-            player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false));
-        }
-
-        if (!presentParts.contains(BodyPartType.LUNGS)) {
-            player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1, false, false));
-        }
-
-        if (!presentParts.contains(BodyPartType.STOMACH)) {
-            player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 100, 1, false, false));
-        }
-
-        if (!presentParts.contains(BodyPartType.BONES)) {
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2, false, false));
         }
 
         if (!presentParts.contains(BodyPartType.MUSCLE)) {
-            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 2, false, false));
+            killPlayer(player, "cyberware.nomuscles");
+            return;
         }
 
-        if (!presentParts.contains(BodyPartType.SKIN)) {
+        if (!presentParts.contains(BodyPartType.BONES)) {
+            killPlayer(player, "cyberware.cyberware_missing_bone");
+            return;
+        }
 
-            player.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 0, false, false));
+        if (getTolerance() <= 0) {
+            killPlayer(player, "cyberware.noessence");
+            return;
+        }
+        int rejectionThreshold = (int) (this.maxTolerance * 0.25f);
+        int currentTolerance = getTolerance();
+
+        if (currentTolerance < rejectionThreshold) {
+
+        }
+        if (!presentParts.contains(BodyPartType.EYES)) {
+            player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
+        }
+        if (!presentParts.contains(BodyPartType.LUNGS)) {
+            int air = player.getAirSupply();
+            if (air > -20) {
+                player.setAirSupply(air - 1);
+                if (air <= 0 && player.tickCount % 20 == 0) {
+                    player.hurt(player.damageSources().drown(), 2.0F);
+                }
+            }
+        }
+        if (!presentParts.contains(BodyPartType.STOMACH)) {
+            player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, 1, false, false));
+        }
+        if (!hasRightLeg && !hasLeftLeg) {
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 6, false, false));
+        } else if (!hasRightLeg || !hasLeftLeg) {
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, false));
         }
     }
+    private void killPlayer(ServerPlayer player, String suffix) {
 
-    private void killPlayer(ServerPlayer player, String msgId) {DamageSource source = new DamageSource(
-                player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.OUTSIDE_BORDER)
+        DamageSource source = new DamageSource(
+                player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD)
         ) {
             @Override
-            public String getMsgId() {
-                return msgId;
+            public Component getLocalizedDeathMessage(LivingEntity entity) {return Component.translatable("death.attack." + suffix, entity.getDisplayName());
             }
         };
+
         player.hurt(source, Float.MAX_VALUE);
     }
     public void copyFrom(CyberwareUserData other) {
@@ -247,7 +293,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     public void syncToClient(ServerPlayer player) {
         if (player == null) return;
         CompoundTag tag = this.serializeNBT();
-        PacketHandler.INSTANCE.send(
+        A_PacketHandler.INSTANCE.send(
                 net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
                 new SyncCyberwareDataPacket(tag)
         );

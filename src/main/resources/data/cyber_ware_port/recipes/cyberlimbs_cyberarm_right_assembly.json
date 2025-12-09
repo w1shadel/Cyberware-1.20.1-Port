@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 3,
+      "ingredient": {
+        "item": "cyber_ware_port:component_titanium"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:cyberlimbs_cyberarm_right"
+}

@@ -42,11 +42,7 @@ public interface ICyberware {
         }
     }
 
-    /**
-     * 競合チェックロジック
-     * デフォルト実装では getIncompatibleItems のリストに含まれているかを確認します。
-     */
-    default boolean isIncompatible(ItemStack self, ItemStack other) {
+        default boolean isIncompatible(ItemStack self, ItemStack other) {
         if (self.getItem() == other.getItem()) {
             return this.getMaxInstallAmount(self) <= 1; 
         }

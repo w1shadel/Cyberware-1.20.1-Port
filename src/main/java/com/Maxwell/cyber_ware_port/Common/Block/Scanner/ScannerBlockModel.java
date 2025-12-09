@@ -51,38 +51,22 @@ public class ScannerBlockModel extends Model {
 		root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
 		scanner.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
 	}
-    public void setupMovingParts(boolean isWorking, float time) {float scannerAmp = 5.5F;
+    public void setupMovingParts(boolean isWorking, float time) {
+        float scannerAmp = 5.5F;
         float scannerOff = 0.0F;
 
         float partAmp = 3.0F;
-        float partOff = 0.0F;float homeScannerX = 5.5F;
-        float homePartZ = -5.0F;
+        float partOff = 0.0F;
+
+        float homeScannerX = 5.5F; 
+        float homePartZ = -5.0F;   
 
         if (isWorking) {
 
             this.scanner.x = scannerOff + (float)Math.sin(time * 0.15F) * scannerAmp;
             this.scanner_part.z = partOff + (float)Math.cos(time * 0.3F) * partAmp;
-        } else {this.scanner.x = moveTo(this.scanner.x, homeScannerX, 0.1F);
-            this.scanner_part.z = moveTo(this.scanner_part.z, homePartZ, 0.1F);
-        }
-    }
-
-    /**
-     * 現在の値(current)を目標(target)に近づけるヘルパーメソッド
-     * @param current 現在の位置
-     * @param target 目標の位置
-     * @param speed 1フレームあたりの移動速度
-     */
-    private float moveTo(float current, float target, float speed) {
-
-        if (Math.abs(target - current) < speed) {
-            return target;
-        }
-
-        if (current < target) {
-            return current + speed;
-        } else {
-            return current - speed;
+        } else {this.scanner.x = homeScannerX;
+            this.scanner_part.z = homePartZ;
         }
     }
 }

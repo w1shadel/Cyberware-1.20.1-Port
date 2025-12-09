@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/fence_side",
+  "textures": {
+    "texture": "cyber_ware_port:block/radio_tower_texture"
+  }
+}

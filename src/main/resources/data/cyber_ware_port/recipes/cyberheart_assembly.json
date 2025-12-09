@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_microelectric"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:cyberheart"
+}

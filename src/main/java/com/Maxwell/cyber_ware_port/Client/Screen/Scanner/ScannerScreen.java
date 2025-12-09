@@ -13,16 +13,17 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @SuppressWarnings("removal")
 public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/gui/scanner_gui.png");
 
     private final List<Component> logLines = new ArrayList<>();
-
     private int tickCounter = 0;
-
     private final RandomSource random = RandomSource.create();
+
+    private static final int SAYING_COUNT = 74;
 
     public ScannerScreen(ScannerMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -30,10 +31,6 @@ public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
         this.imageHeight = 166;
     }
 
-    /**
-     * 画面が開いている間、毎tick呼ばれるメソッド
-     * ここでログの更新処理を行います
-     */
     @Override
     protected void containerTick() {
         super.containerTick();
@@ -41,32 +38,23 @@ public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
         if (this.menu.isCrafting()) {
             tickCounter++;
 
-            if (tickCounter % 2 == 0) {
+            if (tickCounter % 5 == 0) { 
                 addRandomLog();
             }
         } else {
-
             if (!logLines.isEmpty()) {
                 logLines.clear();
             }
         }
     }
 
-    /**
-     * ランダムな文字列を生成してリストに追加する
-     */
     private void addRandomLog() {
 
-        String[] prefixes = {"0x", "MEM:", "DAT:", "SEG:", "RW:"};
-        String prefix = prefixes[random.nextInt(prefixes.length)];
+        int index = random.nextInt(SAYING_COUNT);
 
-        String hex = Integer.toHexString(random.nextInt());
+        String key = "cyberware.gui.scanner_saying." + index;
 
-        String val = String.valueOf(random.nextInt(99));
-
-        String logText = prefix + hex.toUpperCase() + " [" + val + "]";
-
-        logLines.add(Component.literal(logText));
+        logLines.add(Component.translatable(key));
 
         if (logLines.size() > 1) {
             logLines.remove(0);
@@ -81,6 +69,7 @@ public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
 
         boolean hasPaper = this.menu.getSlot(0).hasItem();
         boolean hasInput = this.menu.getSlot(1).hasItem();
+
         String percentageObj = (hasPaper && hasInput) ? "50.0" : "0.0";
         Component chanceText = Component.translatable("gui.cyber_ware_port.scanner.chance", percentageObj);
         int textWidth = this.font.width(chanceText);
@@ -94,31 +83,30 @@ public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
     protected void renderBg(GuiGraphics guiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
         RenderSystem.setShaderTexture(0, TEXTURE);
-
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-
         guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
 
         if (!logLines.isEmpty()) {
-
             Component line = logLines.get(logLines.size() - 1);
             int logStartX = x + 8;
-            int logStartY = y + 20; 
+            int logStartY = y + 20;
             int logColor = 0x55FFFF;
 
             guiGraphics.drawString(this.font, line, logStartX, logStartY, logColor, false);
-        }guiGraphics.blit(TEXTURE, x + 4, y + 30, 0, 166, 161, 8);
+        }
+
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, TEXTURE);
+
+        guiGraphics.blit(TEXTURE, x + 4, y + 30, 0, 166, 161, 8);
 
         int maxBarWidth = 161;
         int progressWidth = menu.getScaledProgress(maxBarWidth);
 
         if (progressWidth > 0) {
-
             guiGraphics.blit(TEXTURE, x + 4, y + 30, 0, 175, progressWidth, 8);
         }
 

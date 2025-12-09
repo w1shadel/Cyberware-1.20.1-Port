@@ -5,26 +5,35 @@ import com.Maxwell.cyber_ware_port.Init.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
-
+@SuppressWarnings("removal")
 public class ModItemModelProvider extends ItemModelProvider {
     public ModItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
         super(output, CyberWare.MODID, existingFileHelper);
     }
 
     @Override
-    protected void registerModels() {
-        // ==========================================
-        // 1. 通常のアイテム (中古版が存在しないもの)
-        // ==========================================
-        simpleItem(ModItems.BLUEPRINT);
+    protected void registerModels() {simpleItem(ModItems.BLUEPRINT);
         simpleItem(ModItems.EXP_CAPSULE);
         simpleItem(ModItems.CREATIVE_BATTERY);
+        simpleItem(ModItems.COMPONENT_ACTUATOR);
+        simpleItem(ModItems.COMPONENT_REACTOR);
+        simpleItem(ModItems.COMPONENT_TITANIUM);
+        simpleItem(ModItems.COMPONENT_SSC);
+        simpleItem(ModItems.COMPONENT_PLATING);
+        simpleItem(ModItems.COMPONENT_FIBEROPTICS);
+        simpleItem(ModItems.COMPONENT_FULLERENE);
+        simpleItem(ModItems.COMPONENT_SYNTHNERVES);
+        simpleItem(ModItems.COMPONENT_STORAGE);
+        simpleItem(ModItems.COMPONENT_MICROELECTRIC);
 
-        // 人間のパーツ
+        withExistingParent("component_box",
+                new ResourceLocation(CyberWare.MODID, "block/component_box"));
+        katanaItem(ModItems.KATANA);
         simpleItem(ModItems.HUMAN_BRAIN);
         simpleItem(ModItems.HUMAN_HEART);
         simpleItem(ModItems.HUMAN_STOMACH);
@@ -40,13 +49,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.HUMAN_LEFT_LEG);
         simpleItem(ModItems.HUMAN_RIGHT_LEG);
         simpleItem(ModItems.HUMAN_LEFT_FOOT);
-        simpleItem(ModItems.HUMAN_RIGHT_FOOT);
-
-        // ==========================================
-        // 2. サイバーウェア (中古版画像があるもの)
-        //    これらは自動で2つのJSONが生成されます
-        // ==========================================
-        cyberwareItem(ModItems.CYBER_EYE);
+        simpleItem(ModItems.HUMAN_RIGHT_FOOT);cyberwareItem(ModItems.CYBER_EYE);
         cyberwareItem(ModItems.LOW_LIGHT_VISION);
         cyberwareItem(ModItems.LIQUID_REFRACTION);
         cyberwareItem(ModItems.HUDJACK);
@@ -55,11 +58,14 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         cyberwareItem(ModItems.COMPRESSED_OXYGEN);
         cyberwareItem(ModItems.HYPER_OXYGENATION);
-
+        cyberwareItem(ModItems.RAPID_FIRE_FLYWHEEL);
+        cyberwareItem(ModItems.IMPLANTED_SPURS);
+        cyberwareItem(ModItems.FINE_MANIPULATORS);
         cyberwareItem(ModItems.LIVER_FILTER);
         cyberwareItem(ModItems.METABOLIC_GENERATOR);
         cyberwareItem(ModItems.INTERNAL_BATTERY);
         cyberwareItem(ModItems.ADRENALINE_PUMP);
+        cyberwareItem(ModItems.DENSE_BATTERY);
 
         cyberwareItem(ModItems.CORTICAL_STACK);
         cyberwareItem(ModItems.ENDER_JAMMER);
@@ -99,37 +105,57 @@ public class ModItemModelProvider extends ItemModelProvider {
         cyberwareItem(ModItems.DEPLOYABLE_WHEELS);
     }
 
-    /**
-     * 通常のアイテムモデルを生成します
-     */
-    private void simpleItem(RegistryObject<Item> item) {
+        private void simpleItem(RegistryObject<Item> item) {
         withExistingParent(item.getId().getPath(),
                 new ResourceLocation("item/generated"))
                 .texture("layer0", new ResourceLocation(CyberWare.MODID, "item/" + item.getId().getPath()));
     }
 
-    /**
-     * サイバーウェア用のモデルを生成します。
-     * 1. 中古版のモデル (_scavenged) を生成
-     * 2. 通常版のモデルを生成し、is_scavenged=1 の時に中古版へ切り替えるロジックを埋め込む
-     */
-    private void cyberwareItem(RegistryObject<Item> item) {
+        private void cyberwareItem(RegistryObject<Item> item) {
         String path = item.getId().getPath();
         ResourceLocation standardTexture = new ResourceLocation(CyberWare.MODID, "item/" + path);
         ResourceLocation scavengedTexture = new ResourceLocation(CyberWare.MODID, "item/" + path + "_scavenged");
 
-        // 1. 中古版モデルの生成 (生成されたビルダーを変数に保持)
         ItemModelBuilder scavengedModel = withExistingParent(path + "_scavenged", new ResourceLocation("item/generated"))
                 .texture("layer0", scavengedTexture);
 
-        // 2. 通常版モデルの生成 (Overrideロジック付き)
         withExistingParent(path, new ResourceLocation("item/generated"))
                 .texture("layer0", standardTexture)
                 .override()
-                // プロパティ "is_scavenged" が 1.0 の場合
+
                 .predicate(new ResourceLocation(CyberWare.MODID, "is_scavenged"), 1.0f)
-                // 上で作った scavengedModel を使用する
+
                 .model(scavengedModel)
                 .end();
+    }
+    private void katanaItem(RegistryObject<Item> item) {
+
+        withExistingParent(item.getId().getPath(),
+                new ResourceLocation("item/handheld"))
+                .texture("layer0", new ResourceLocation(CyberWare.MODID, "item/" + item.getId().getPath())).transforms()
+
+                .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
+                .rotation(0, 90, 55)      
+                .translation(0, 4.0f, 0.5f) 
+                .scale(0.85f)             
+                .end()
+
+                .transform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND)
+                .rotation(0, -90, 55)
+                .translation(0, 4.0f, 0.5f)
+                .scale(0.85f)
+                .end()
+
+                .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+                .rotation(0, -90, 25)
+                .translation(1.13f, 3.2f, 1.13f)
+                .scale(0.68f)
+                .end()
+
+                .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
+                .rotation(0, 90, 25)
+                .translation(1.13f, 3.2f, 1.13f)
+                .scale(0.68f)
+                .end().end();
     }
 }

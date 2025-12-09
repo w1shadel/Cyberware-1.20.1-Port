@@ -1,0 +1,18 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "count": 4,
+      "ingredient": {
+        "item": "minecraft:iron_nugget"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:foot_upgrades_spurs"
+}

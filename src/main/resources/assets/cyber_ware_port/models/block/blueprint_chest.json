@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "cyber_ware_port:block/blueprint_chest_front",
+    "down": "cyber_ware_port:block/blank_machine",
+    "up": "cyber_ware_port:block/blank_machine",
+    "north": "cyber_ware_port:block/blueprint_chest_front",
+    "east": "cyber_ware_port:block/blank_machine",
+    "south": "cyber_ware_port:block/blank_machine",
+    "west": "cyber_ware_port:block/blank_machine"
+  }
+}

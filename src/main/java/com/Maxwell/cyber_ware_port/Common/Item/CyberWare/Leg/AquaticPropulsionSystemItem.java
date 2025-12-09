@@ -11,16 +11,23 @@ public class AquaticPropulsionSystemItem extends CyberwareItem {
     public AquaticPropulsionSystemItem() {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_BOOTS)
                 .maxInstall(1)
-                .requires(ModItems.CYBER_LEG_RIGHT,ModItems.CYBER_LEG_LEFT)
+                .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT)
                 .energy(1, 0, 0, StackingRule.LINEAR));
+    }
+
+    @Override
+    public int getEnergyConsumption(ItemStack stack) {
+        return 0; 
     }
 
     @Override
     public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
         if (entity.isInWater()) {
-            int cost = 1;
+            int cost = super.getEnergyConsumption(stack);
+
             if (energyStorage.extractEnergy(cost, true) == cost) {
-                energyStorage.extractEnergy(cost, false);entity.setDeltaMovement(entity.getDeltaMovement().add(entity.getLookAngle().scale(0.05)));
+                energyStorage.extractEnergy(cost, false);
+                entity.setDeltaMovement(entity.getDeltaMovement().add(entity.getLookAngle().scale(0.05)));
             }
         }
     }

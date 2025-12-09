@@ -1,8 +1,6 @@
 package com.Maxwell.cyber_ware_port.Init;
 
-import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
-import com.Maxwell.cyber_ware_port.Common.Container.RobosurgeonMenu;
-import com.Maxwell.cyber_ware_port.Common.Container.ScannerMenu;
+import com.Maxwell.cyber_ware_port.Common.Container.*;
 import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -23,7 +21,11 @@ public class ModMenuTypes {
             registerMenuType(CyberwareWorkbenchMenu::new, "cyberware_workbench_menu");
     public static final RegistryObject<MenuType<ScannerMenu>> SCANNER_MENU =
             registerMenuType(ScannerMenu::new, "scanner_menu");
+    public static final RegistryObject<MenuType<ComponentBoxMenu>> COMPONENT_BOX_MENU =
+            registerMenuType(ComponentBoxMenu::new,"component_menu");
 
+    public static final RegistryObject<MenuType<BlueprintChestMenu>> BLUEPRINT_CHEST_MENU =
+            registerMenuType(BlueprintChestMenu::new,"blueprint_chest_menu");
     private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(IContainerFactory<T> factory, String name) {
         return MENUS.register(name, () -> IForgeMenuType.create(factory));
     }

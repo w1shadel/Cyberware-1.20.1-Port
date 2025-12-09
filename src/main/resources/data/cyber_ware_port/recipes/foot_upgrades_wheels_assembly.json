@@ -1,0 +1,18 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:foot_upgrades_wheels"
+}

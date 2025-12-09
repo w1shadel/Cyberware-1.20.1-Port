@@ -1,0 +1,18 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_titanium"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:skin_upgrades_subdermal_spikes"
+}

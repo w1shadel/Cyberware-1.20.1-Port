@@ -1,7 +1,7 @@
 package com.Maxwell.cyber_ware_port.Init;
 
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipie.AssemblyRecipe;
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipie.EngineeringRecipe;
+import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
+import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
 import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;

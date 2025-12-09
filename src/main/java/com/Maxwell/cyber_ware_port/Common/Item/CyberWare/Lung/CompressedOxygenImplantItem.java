@@ -11,25 +11,27 @@ public class CompressedOxygenImplantItem extends CyberwareItem {
     public CompressedOxygenImplantItem() {
         super(new Builder(3, RobosurgeonBlockEntity.SLOT_LUNGS)
                 .maxInstall(3)
-                .requires(ModItems.HUMAN_LUNGS) 
-        );
+                .requires(ModItems.HUMAN_LUNGS)
+                .energy(50, 0, 0, StackingRule.LINEAR));
+    }
+
+    @Override
+    public int getEnergyConsumption(ItemStack stack) {
+        return 0; 
     }
 
     @Override
     public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
+        if (entity.getAirSupply() < entity.getMaxAirSupply()) {
+            if (entity.tickCount % 20 == 0) {
+                int cost = super.getEnergyConsumption(stack); 
 
-        if (entity.getAirSupply() < entity.getMaxAirSupply()) {if (entity.tickCount % 20 == 0) {
-                int cost = 50; 
                 if (energyStorage.extractEnergy(cost, true) == cost) {
                     energyStorage.extractEnergy(cost, false);
-
                     int newAir = Math.min(entity.getAirSupply() + 100, entity.getMaxAirSupply());
                     entity.setAirSupply(newAir);
                 }
             }
         }
     }
-
-    @Override
-    public boolean hasEnergyProperties(ItemStack stack) { return true; }
 }

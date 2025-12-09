@@ -1,6 +1,5 @@
 package com.Maxwell.cyber_ware_port.Common.Block.Scanner;
 
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlockEntity;
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

@@ -14,7 +14,7 @@ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
+@SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
 

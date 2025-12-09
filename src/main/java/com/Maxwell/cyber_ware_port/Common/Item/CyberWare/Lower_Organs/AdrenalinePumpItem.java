@@ -10,14 +10,21 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 public class AdrenalinePumpItem extends CyberwareItem {
     public AdrenalinePumpItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH).maxInstall(1));
+        super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH)
+                .maxInstall(1)
+                .energy(150, 0, 0, StackingRule.STATIC));
+    }
+
+    @Override
+    public int getEnergyConsumption(ItemStack stack) {
+        return 0; 
     }
 
     @Override
     public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
         if (entity.getHealth() < entity.getMaxHealth() * 0.3) {
+            int cost = super.getEnergyConsumption(stack);
 
-            int cost = 150;
             if (energyStorage.extractEnergy(cost, true) == cost) {
                 energyStorage.extractEnergy(cost, false);
                 entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false));
@@ -25,6 +32,4 @@ public class AdrenalinePumpItem extends CyberwareItem {
             }
         }
     }
-
-    @Override public boolean hasEnergyProperties(ItemStack stack) { return true; }
 }

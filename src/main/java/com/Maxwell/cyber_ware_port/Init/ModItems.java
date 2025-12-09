@@ -1,9 +1,14 @@
 package com.Maxwell.cyber_ware_port.Init;
 
+import com.Maxwell.cyber_ware_port.Common.Block.CyberSkull.CyberSkullItemRenderer;
 import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
+import com.Maxwell.cyber_ware_port.Common.CyberwareTabState;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.BodyPartType;
-import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
+import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
+import com.Maxwell.cyber_ware_port.Common.Item.ComponentBox.ComponentBoxItem;
+import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm.FineManipulatorsItem;
+import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm.RapidFireFlywheelItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm.ReinforcedFistItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm.RetractableClawsItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Bone.BonelacingItem;
@@ -14,12 +19,10 @@ import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.CyberArmItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.CyberLegItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Eye.*;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Heart.*;
-import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg.AquaticPropulsionSystemItem;
-import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg.DeployableWheelsItem;
-import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg.FallBracersItem;
-import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg.LinearActuatorsItem;
+import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg.*;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lower_Organs.*;
-import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lung.*;
+import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lung.CompressedOxygenImplantItem;
+import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lung.HyperoxygenationBoostItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Muscle.MyomerMuscleReplacementItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Muscle.WiredReflexesItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Skin.SolarskinItem;
@@ -27,20 +30,73 @@ import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Skin.SubdermalSpikesIte
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Skin.SyntheticSkinItem;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Skin.TargetedImmunosuppressantItem;
 import com.Maxwell.cyber_ware_port.Common.Item.ExpCapsuleItem;
+import com.Maxwell.cyber_ware_port.Common.Item.KatanaItem;
 import com.Maxwell.cyber_ware_port.CyberWare;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.function.Consumer;
+
 public class ModItems {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CyberWare.MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, CyberWare.MODID);
+    public static final RegistryObject<Item> CYBER_WITHER_SKELETON_SKULL_ITEM = ITEMS.register("cyber_wither_skeleton_skull",
+            () -> new StandingAndWallBlockItem(
+                    ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),      
+                    ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get(), 
+                    new Item.Properties().rarity(Rarity.RARE),        
+                    Direction.DOWN                                    
+            ) {
 
+                @Override
+                public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+                    consumer.accept(new IClientItemExtensions() {
+                        private CyberSkullItemRenderer renderer;
+
+                        @Override
+                        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                            if (this.renderer == null) {
+
+                                this.renderer = new CyberSkullItemRenderer(
+                                        Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+                                        Minecraft.getInstance().getEntityModels()
+                                );
+                            }
+                            return this.renderer;
+                        }
+                    });
+                }
+            });
+    public static final RegistryObject<Item> COMPONENT_BOX = ITEMS.register("component_box", ComponentBoxItem::new);
+    public static final RegistryObject<Item> KATANA = ITEMS.register("katana", KatanaItem::new);
+    public static final RegistryObject<Item> COMPONENT_ACTUATOR = ITEMS.register("component_actuator",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_REACTOR = ITEMS.register("component_reactor",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_TITANIUM = ITEMS.register("component_titanium",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_SSC = ITEMS.register("component_ssc",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_PLATING = ITEMS.register("component_plating",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_FIBEROPTICS = ITEMS.register("component_fiberoptics",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_FULLERENE = ITEMS.register("component_fullerene",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_SYNTHNERVES = ITEMS.register("component_synthnerves",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_STORAGE = ITEMS.register("component_storage",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPONENT_MICROELECTRIC = ITEMS.register("component_microelectric",
+            () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> BLUEPRINT = ITEMS.register("blueprint",
             () -> new BlueprintItem(new Item.Properties().stacksTo(1)));public static final RegistryObject<Item> CYBER_EYE = ITEMS.register("cybereyes", CybereyesItem::new);
 
@@ -91,12 +147,13 @@ public class ModItems {
     public static final RegistryObject<Item> MYOMER_MUSCLE = ITEMS.register("muscle_upgrades_muscle_replacements", MyomerMuscleReplacementItem::new);public static final RegistryObject<Item> BONELACING = ITEMS.register("bone_upgrades_bonelacing", BonelacingItem::new);
 
     public static final RegistryObject<Item> CITRATE_ENHANCEMENT = ITEMS.register("bone_upgrades_boneflex", CitrateEnhancementItem::new);
+    public static final RegistryObject<Item> DENSE_BATTERY = ITEMS.register("dense_battery", DenseBatteryItem::new);
 
-    public static final RegistryObject<Item> MARROW_BATTERY = ITEMS.register("bone_upgrades_bonebattery", MarrowBatteryItem::new);public static final RegistryObject<Item> CYBER_ARM_LEFT = ITEMS.register("cyberlimbs_cyberarm_left", () -> new CyberArmItem(RobosurgeonBlockEntity.SLOT_ARMS));
-    public static final RegistryObject<Item> CYBER_ARM_RIGHT = ITEMS.register("cyberlimbs_cyberarm_right", () -> new CyberArmItem(RobosurgeonBlockEntity.SLOT_ARMS));
+    public static final RegistryObject<Item> MARROW_BATTERY = ITEMS.register("bone_upgrades_bonebattery", MarrowBatteryItem::new);public static final RegistryObject<Item> CYBER_ARM_LEFT = ITEMS.register("cyberlimbs_cyberarm_left", () -> new CyberArmItem(RobosurgeonBlockEntity.SLOT_ARMS,ModItems.HUMAN_LEFT_ARM));
+    public static final RegistryObject<Item> CYBER_ARM_RIGHT = ITEMS.register("cyberlimbs_cyberarm_right", () -> new CyberArmItem(RobosurgeonBlockEntity.SLOT_ARMS, ModItems.HUMAN_RIGHT_ARM));
 
-    public static final RegistryObject<Item> CYBER_LEG_LEFT = ITEMS.register("cyberlimbs_cyberleg_left", () -> new CyberLegItem(RobosurgeonBlockEntity.SLOT_LEGS));
-    public static final RegistryObject<Item> CYBER_LEG_RIGHT = ITEMS.register("cyberlimbs_cyberleg_right", () -> new CyberLegItem(RobosurgeonBlockEntity.SLOT_LEGS));
+    public static final RegistryObject<Item> CYBER_LEG_LEFT = ITEMS.register("cyberlimbs_cyberleg_left", () -> new CyberLegItem(RobosurgeonBlockEntity.SLOT_LEGS,ModItems.HUMAN_LEFT_LEG));
+    public static final RegistryObject<Item> CYBER_LEG_RIGHT = ITEMS.register("cyberlimbs_cyberleg_right", () -> new CyberLegItem(RobosurgeonBlockEntity.SLOT_LEGS,ModItems.HUMAN_RIGHT_LEG));
 
     public static final RegistryObject<Item> RETRACTABLE_CLAWS = ITEMS.register("hand_upgrades_claws", RetractableClawsItem::new);
     public static final RegistryObject<Item> REINFORCED_FIST = ITEMS.register("hand_upgrades_mining", ReinforcedFistItem::new);public static final RegistryObject<Item> LINEAR_ACTUATORS = ITEMS.register("leg_upgrades_jump_boost", LinearActuatorsItem::new);
@@ -104,7 +161,14 @@ public class ModItems {
 
     public static final RegistryObject<Item> AQUATIC_PROPULSION = ITEMS.register("foot_upgrades_aqua", AquaticPropulsionSystemItem::new);
     public static final RegistryObject<Item> DEPLOYABLE_WHEELS = ITEMS.register("foot_upgrades_wheels", DeployableWheelsItem::new);public static final RegistryObject<Item> HUMAN_BRAIN   = registerHumanPart("body_part_brain", RobosurgeonBlockEntity.SLOT_BRAIN, 1, BodyPartType.BRAIN);
+    public static final RegistryObject<Item> RAPID_FIRE_FLYWHEEL = ITEMS.register("arm_upgrades_bow",
+            RapidFireFlywheelItem::new);
 
+    public static final RegistryObject<Item> IMPLANTED_SPURS = ITEMS.register("foot_upgrades_spurs",
+            ImplantedSpursItem::new);
+
+    public static final RegistryObject<Item> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands",
+            FineManipulatorsItem::new);
     public static final RegistryObject<Item> HUMAN_HEART   = registerHumanPart("body_part_heart", RobosurgeonBlockEntity.SLOT_HEART, 1, BodyPartType.HEART);
 
     public static final RegistryObject<Item> HUMAN_STOMACH = registerHumanPart("body_part_stomach", RobosurgeonBlockEntity.SLOT_STOMACH, 1, BodyPartType.STOMACH);
@@ -139,93 +203,33 @@ public class ModItems {
             .icon(() -> new ItemStack(ModBlocks.SURGERY_CHAMBER.get()))
             .displayItems((enabledFeatures, entries) -> {
 
-                entries.accept(ModBlocks.ROBO_SURGEON.get());
-                entries.accept(ModBlocks.SURGERY_CHAMBER.get());
-                entries.accept(ModBlocks.CYBERWARE_WORKBENCH.get());
-                entries.accept(ModBlocks.SCANNER.get());
-                entries.accept(BLUEPRINT.get()); entries.accept(CYBER_EYE.get());
-                entries.accept(LOW_LIGHT_VISION.get());
-                entries.accept(LIQUID_REFRACTION.get());
-                entries.accept(HUDJACK.get());
-                entries.accept(TARGETING_OVERLAY.get());
-                entries.accept(DISTANCE_ENHANCER.get());
+                int page = CyberwareTabState.currentPage;
 
-                entries.accept(CORTICAL_STACK.get());
-                entries.accept(ENDER_JAMMER.get());
-                entries.accept(CONSCIOUSNESS_TRANSMITTER.get());
-                entries.accept(NEURAL_CONTEXTUALIZER.get());
-                entries.accept(THREAT_MATRIX.get());
-                entries.accept(CRANIAL_BROADCASTER.get());
+                for (RegistryObject<Item> entry : ITEMS.getEntries()) {
+                    Item item = entry.get();
 
-                entries.accept(CARDIOMECHANIC_PUMP.get());
-                entries.accept(INTERNAL_DEFIBRILLATOR.get());
-                entries.accept(PLATELET_DISPATCHER.get());
-                entries.accept(STEM_CELL_SYNTHESIZER.get());
-                entries.accept(CARDIOVASCULAR_COUPLER.get());
+                    if (item instanceof CyberwareItem cw) {
+                        if (page == 0) {
+                            entries.accept(new ItemStack(item));
+                        }
+                        else if (page == 1) {
+                            ItemStack scavenged = new ItemStack(item);
+                            cw.setPristine(scavenged, false);
+                            entries.accept(scavenged);
+                        }
+                    }
+                    else {
 
-                entries.accept(COMPRESSED_OXYGEN.get());
-                entries.accept(HYPER_OXYGENATION.get());
-
-                entries.accept(LIVER_FILTER.get());
-                entries.accept(METABOLIC_GENERATOR.get());
-                entries.accept(INTERNAL_BATTERY.get());
-                entries.accept(ADRENALINE_PUMP.get());
-                entries.accept(CREATIVE_BATTERY.get());
-
-                entries.accept(SOLARSKIN.get());
-                entries.accept(SUBDERMAL_SPIKES.get());
-                entries.accept(SYNTHETIC_SKIN.get());
-                entries.accept(TARGETED_IMMUNOSUPPRESSANT.get());
-
-                entries.accept(WIRED_REFLEXES.get());
-                entries.accept(MYOMER_MUSCLE.get());
-
-                entries.accept(BONELACING.get());
-                entries.accept(CITRATE_ENHANCEMENT.get());
-                entries.accept(MARROW_BATTERY.get());
-
-                entries.accept(CYBER_ARM_LEFT.get());
-                entries.accept(CYBER_ARM_RIGHT.get());
-                entries.accept(CYBER_LEG_LEFT.get());
-                entries.accept(CYBER_LEG_RIGHT.get());
-
-                entries.accept(RETRACTABLE_CLAWS.get());
-                entries.accept(REINFORCED_FIST.get());
-                entries.accept(LINEAR_ACTUATORS.get());
-                entries.accept(FALL_BRACERS.get());
-                entries.accept(AQUATIC_PROPULSION.get());
-                entries.accept(DEPLOYABLE_WHEELS.get());
-
-                entries.accept(EXP_CAPSULE.get());
-
-                entries.accept(HUMAN_BRAIN.get());
-                entries.accept(HUMAN_EYES.get());
-                entries.accept(HUMAN_HEART.get());
-                entries.accept(HUMAN_LUNGS.get());
-                entries.accept(HUMAN_STOMACH.get());
-                entries.accept(HUMAN_SKIN.get());
-                entries.accept(HUMAN_MUSCLE.get());
-                entries.accept(HUMAN_BONE.get());
-                entries.accept(HUMAN_LEFT_ARM.get());
-                entries.accept(HUMAN_RIGHT_ARM.get());
-                entries.accept(HUMAN_LEFT_HAND.get());
-                entries.accept(HUMAN_RIGHT_HAND.get());
-                entries.accept(HUMAN_LEFT_LEG.get());
-                entries.accept(HUMAN_RIGHT_LEG.get());
-                entries.accept(HUMAN_LEFT_FOOT.get());
-                entries.accept(HUMAN_RIGHT_FOOT.get());
+                        if (page == 0) {
+                            entries.accept(new ItemStack(item));
+                        }
+                    }
+                }
             }).build());
-
-    private static RegistryObject<Item> registerPart(String name, int slotId, int essenceCost, int maxInstall) {
-        return ITEMS.register(name, () -> new CyberwareItem.Builder(essenceCost, slotId)
-                .maxInstall(maxInstall)
-                .build());
-    }
-
     private static RegistryObject<Item> registerHumanPart(String name, int slotId, int maxInstall, BodyPartType bodyPartType) {
         return ITEMS.register(name, () -> new CyberwareItem.Builder(0, slotId)
                 .maxInstall(maxInstall)
-                .bodyPart(bodyPartType) 
+                .bodyPart(bodyPartType)
                 .build());
     }
 

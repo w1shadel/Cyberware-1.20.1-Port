@@ -1,6 +1,5 @@
 package com.Maxwell.cyber_ware_port.Common.Container;
 
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.Scanner.ScannerBlockEntity;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;

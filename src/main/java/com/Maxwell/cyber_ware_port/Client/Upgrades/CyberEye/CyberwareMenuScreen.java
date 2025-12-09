@@ -2,8 +2,8 @@ package com.Maxwell.cyber_ware_port.Client.Upgrades.CyberEye;
 
 import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-import com.Maxwell.cyber_ware_port.Common.Network.PacketHandler;
-import com.Maxwell.cyber_ware_port.Common.Network.PacketToggleCyberware;
+import com.Maxwell.cyber_ware_port.Common.Network.A_PacketHandler;
+import com.Maxwell.cyber_ware_port.Common.Network.ToggleCyberwarePacket;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -145,7 +145,8 @@ public class CyberwareMenuScreen extends Screen {
                 int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
                 int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
 
-                if (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12) {PacketHandler.INSTANCE.sendToServer(new PacketToggleCyberware(part.slotId));
+                if (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12) {
+                    A_PacketHandler.INSTANCE.sendToServer(new ToggleCyberwarePacket(part.slotId));
 
                     Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));part.item.toggle(part.stack);return true;
                 }

@@ -1,8 +1,8 @@
 package com.Maxwell.cyber_ware_port.Common.Block.Scanner;
 
 import com.Maxwell.cyber_ware_port.Common.Container.ScannerMenu;
-import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
+import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -160,10 +160,23 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static void tick(Level pLevel, BlockPos pPos, BlockState pState, ScannerBlockEntity pEntity) {
-        if (pLevel.isClientSide()) return;
+
+        if (pLevel.isClientSide()) {
+            if (pEntity.isWorking) {
+
+                pEntity.progress++;
+                if (pEntity.progress >= MAX_PROGRESS) {
+                    pEntity.progress = 0; 
+                }
+            } else {
+                pEntity.progress = 0;
+            }
+            return;
+        }
 
         if (pEntity.hasRecipe()) {
             pEntity.progress++;
+
             if (!pEntity.isWorking) {
                 pEntity.isWorking = true;
                 pEntity.syncToClient();
@@ -173,9 +186,15 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             if (pEntity.progress >= MAX_PROGRESS) {
                 pEntity.craftItem();
                 pEntity.progress = 0;
+
+                if (!pEntity.hasRecipe()) {
+                    pEntity.isWorking = false;
+                    pEntity.syncToClient();
+                }
             }
         } else {
             pEntity.resetProgress();
+
             if (pEntity.isWorking) {
                 pEntity.isWorking = false;
                 pEntity.syncToClient();
@@ -185,12 +204,16 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
     private void syncToClient() {
         if (this.level != null) {
+
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
     }
 
     public boolean isWorking() { return this.isWorking; }
 
+    public float getProgress() {
+        return (float) this.progress;
+    }
     private boolean hasRecipe() {
         ItemStack paperStack = itemHandler.getStackInSlot(SLOT_PAPER);
         ItemStack inputStack = itemHandler.getStackInSlot(SLOT_INPUT);
@@ -260,6 +283,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt) {
         if (pkt.getTag() != null) {
+
             this.load(pkt.getTag());
         }
     }

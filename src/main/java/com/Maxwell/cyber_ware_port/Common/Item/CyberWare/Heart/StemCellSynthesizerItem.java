@@ -10,16 +10,22 @@ public class StemCellSynthesizerItem extends CyberwareItem {
     public StemCellSynthesizerItem() {
         super(new Builder(10, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
+                .energy(50, 0, 0, StackingRule.STATIC)); 
+    }
 
-                .energy(7, 0, 0, StackingRule.STATIC));
+    @Override
+    public int getEnergyConsumption(ItemStack stack) {
+
+        return 0;
     }
 
     @Override
     public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
-
         if (entity.getHealth() < entity.getMaxHealth()) {
-            if (entity.tickCount % 100 == 0) { 
-                int cost = 50;
+            if (entity.tickCount % 100 == 0) {
+
+                int cost = super.getEnergyConsumption(stack);
+
                 if (energyStorage.extractEnergy(cost, true) == cost) {
                     energyStorage.extractEnergy(cost, false);
                     entity.heal(1.0f);
@@ -27,5 +33,4 @@ public class StemCellSynthesizerItem extends CyberwareItem {
             }
         }
     }
-    @Override public boolean hasEnergyProperties(ItemStack stack) { return true; }
 }

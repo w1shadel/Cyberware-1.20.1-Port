@@ -5,8 +5,8 @@ import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider
 import com.Maxwell.cyber_ware_port.Common.Container.RobosurgeonMenu;
 import com.Maxwell.cyber_ware_port.Common.Entity.PlayerPartsModel.PlayerInternalPartsModel;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-import com.Maxwell.cyber_ware_port.Common.Network.PacketHandler;
-import com.Maxwell.cyber_ware_port.Common.Network.PacketSurgeryGhostToggle;
+import com.Maxwell.cyber_ware_port.Common.Network.A_PacketHandler;
+import com.Maxwell.cyber_ware_port.Common.Network.SurgeryGhostTogglePacket;
 import com.Maxwell.cyber_ware_port.Common.Risk.SurgeryAlert;
 import com.Maxwell.cyber_ware_port.Common.Risk.SurgeryAnalyzer;
 import com.Maxwell.cyber_ware_port.CyberWare;
@@ -14,7 +14,6 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -37,15 +36,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import org.lwjgl.glfw.GLFW;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("removal")
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
-    private boolean isDebugging = false;
     private PlayerInternalPartsModel internalPartsModel;
     private static final ResourceLocation INTERNAL_PARTS_TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/gui/player_internal_part.png");private BodyPart selectedPart = BodyPart.NONE;
@@ -67,7 +62,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private boolean potentialDrag = false;
     private long startTime;
     private static final float ANIMATION_DURATION = 2000f;
-    private static final int SURGERY_SLOT_COUNT = 9;
     private static final int SLOT_SIZE = 18;
     private static final int SLOT_SPACING = 2;
     private static final int GUI_WIDTH = 175;
@@ -164,7 +158,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
                         if (stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
 
-                            PacketHandler.INSTANCE.sendToServer(new PacketSurgeryGhostToggle(
+                            A_PacketHandler.INSTANCE.sendToServer(new SurgeryGhostTogglePacket(
                                     this.menu.blockEntity.getBlockPos(), hoveredSlot.index));
 
                             hoveredSlot.set(ItemStack.EMPTY);
@@ -176,7 +170,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
                     else {
 
-                        PacketHandler.INSTANCE.sendToServer(new PacketSurgeryGhostToggle(
+                        A_PacketHandler.INSTANCE.sendToServer(new SurgeryGhostTogglePacket(
                                 this.menu.blockEntity.getBlockPos(), hoveredSlot.index));
 
                         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -327,8 +321,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
         if (alert != null) {
 
-            int iconX = this.leftPos + 155; // ボタンと揃えるなら 155 付近
-            int iconY = this.topPos + 20;   // ボタン(高さ10)の下にスペースを空けて配置
+            int iconX = this.leftPos + 155; 
+            int iconY = this.topPos + 20;   
 
             RenderSystem.setShaderTexture(0, ALERT_ICON);
             RenderSystem.enableBlend();
@@ -495,7 +489,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
     @Override
     protected void renderBg(GuiGraphics g, float partial, int mouseX, int mouseY) {
-
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -510,40 +503,44 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         g.blit(TEXTURE, x, y + TOP_HEIGHT, 0, TEXTURE_INVENTORY_START_Y, GUI_WIDTH, BOTTOM_HEIGHT);
 
         int maxEssence = 100;
-        int currentEssence = 100;
+        int currentEssence = 0;
         if (this.minecraft.player != null) {
             var cap = this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
             if (cap.isPresent()) currentEssence = cap.resolve().get().getTolerance();
         }
+
+        int projectedCost = 0;
+        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
+            if (i >= this.menu.slots.size()) break;
+            ItemStack stack = this.menu.getSlot(i).getItem();
+            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
+                projectedCost += cw.getEssenceCost(stack) * stack.getCount();
+            }
+        }
+        int projectedEssence = maxEssence - projectedCost;
 
         int barX = x + 5;
         int barY = y + 4;
         int barW = 8;
         int barH = 48;
 
-        float pct = (float) Math.max(0, currentEssence) / maxEssence;
-        int filled = (int) (barH * pct);
-        int fillY = barY + (barH - filled);
+        g.blit(TEXTURE, barX, barY, barW, barH, 211, 61, barW, barH, 256, 256);drawEssenceBar(g, projectedEssence, maxEssence, barX, barY, barW, barH);
 
-        if (filled > 0) {
-            g.blit(TEXTURE, barX, fillY, barW, filled,
-                    176, 61 + (48 - filled),
-                    barW, filled, 256, 256);
-        }
+        if (currentEssence > projectedEssence) {
 
-        int danger = Math.min(filled, 11);
-        if (danger > 0) {
-            int redY = barY + (barH - danger);
-            g.blit(TEXTURE, barX, redY, barW, danger,
-                    220, 61 + (48 - danger),
-                    barW, danger, 256, 256);
+            float time = (System.currentTimeMillis() % 1000) / 1000f; 
+            float alpha = 0.45f + 0.25f * (float) Math.sin(time * 2 * Math.PI); 
+
+            RenderSystem.setShaderColor(1f, 1f, 1f, alpha);drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
+
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         }
 
         float tScale = (selectedPart == BodyPart.NONE) ? BASE_SCALE : selectedPart.zoomScale;
         float tOffX = (selectedPart == BodyPart.NONE) ? 0 : selectedPart.zoomOffsetX;
         float tOffY = (selectedPart == BodyPart.NONE) ? 0 : selectedPart.zoomOffsetY;
 
-        float spd = 0.15f;
+        float spd = 0.05f;
         currentScale += (tScale - currentScale) * spd;
         currentOffsetX += (tOffX - currentOffsetX) * spd;
         currentOffsetY += (tOffY - currentOffsetY) * spd;
@@ -583,17 +580,14 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         if (this.internalPartsModel != null && !isMainZoomed) {
 
             int subX, subY, subScale;
-            int gap = 35;
             if (isInternalZoomed) {
                 subX = drawX - 48;
                 subY = drawY;
                 subScale = drawScale;
-                gap = 0;
             } else {
                 subX = x + 40;
                 subY = y + TOP_HEIGHT + 11;
                 subScale = 40;
-                gap = 0;
             }
 
             if (isOverview) {
@@ -625,11 +619,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             }
 
             this.internalPartsModel.setVisibleLayer(0);
-            renderCustomModel(g, subX, subY - gap, subScale, currentRotation, this.internalPartsModel);
+            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
             this.internalPartsModel.setVisibleLayer(1);
             renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
             this.internalPartsModel.setVisibleLayer(2);
-            renderCustomModel(g, subX, subY + gap, subScale, currentRotation, this.internalPartsModel);
+            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
         }
 
         int Pscale = 45 + scaleBoost;
@@ -957,6 +951,30 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     g.pose().popPose();
                 }
             }
+        }
+    }
+    private void drawEssenceBar(GuiGraphics g, int essence, int maxEssence, int x, int y, int w, int h) {
+        int dangerThreshold = (int) (maxEssence * 0.25f);
+
+        if (essence < 0) essence = 0;
+
+        int redEssence = Math.min(essence, dangerThreshold);
+        int blueEssence = Math.max(0, essence - dangerThreshold);
+
+        int redHeight = (int) (h * ((float) redEssence / maxEssence));
+        int blueHeight = (int) (h * ((float) blueEssence / maxEssence));
+
+        if (redHeight > 0) {
+            int redDrawY = y + (h - redHeight);
+            int redTextureV = 61 + (48 - redHeight);
+            g.blit(TEXTURE, x, redDrawY, w, redHeight, 220, redTextureV, w, redHeight, 256, 256);
+        }
+
+        if (blueHeight > 0) {
+            int blueDrawY = y + (h - redHeight - blueHeight);
+            int totalFilledHeight = redHeight + blueHeight;
+            int blueTextureV = 61 + (48 - totalFilledHeight);
+            g.blit(TEXTURE, x, blueDrawY, w, blueHeight, 176, blueTextureV, w, blueHeight, 256, 256);
         }
     }
 }

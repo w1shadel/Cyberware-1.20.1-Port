@@ -90,6 +90,7 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
         }
         return null;
     }
+
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (pLevel.isClientSide) {

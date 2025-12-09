@@ -6,13 +6,11 @@ import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareSlotType;
 import com.Maxwell.cyber_ware_port.CyberWare;
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen; 
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation; 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,8 +18,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries; 
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Set;
 
@@ -46,7 +43,10 @@ public class ForgeClientEvents {
         }
 
         if (stack.getItem() instanceof CyberwareItem cyberware) {
-
+            ResourceLocation regName = ForgeRegistries.ITEMS.getKey(cyberware);
+            if (regName != null && regName.getPath().contains("body_part")) {
+                return;
+            }
             boolean isSneakDown = Screen.hasShiftDown();
             var tooltip = event.getToolTip();
 
@@ -162,4 +162,5 @@ public class ForgeClientEvents {
             });
         }
     }
+
 }
