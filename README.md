@@ -4,4 +4,6 @@ And this is the 1.20.1Port for that mod.
 
 For a 1.12 Cyberware, see https://minecraft.curseforge.com/projects/roboticparts
 
-For more information and downloads, see the CurseForge page(Not produced yet).
+For a Original Cyberware, see https://www.curseforge.com/minecraft/mc-mods/cyberware
+
+For more information and downloads, see the CurseForge page
