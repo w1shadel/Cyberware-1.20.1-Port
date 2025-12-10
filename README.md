@@ -6,4 +6,4 @@ For a 1.12 Cyberware, see https://minecraft.curseforge.com/projects/roboticparts
 
 For a Original Cyberware, see https://www.curseforge.com/minecraft/mc-mods/cyberware
 
-For more information and downloads, see the CurseForge page
+For more information and downloads, see the [CurseForge](https://www.curseforge.com/minecraft/mc-mods/cyberware-reforged) page
