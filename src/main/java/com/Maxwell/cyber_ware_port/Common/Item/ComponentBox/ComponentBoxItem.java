@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Item.ComponentBox;import com.Maxwell.cyber_ware_port.Common.Container.ComponentBoxMenu;
+package com.Maxwell.cyber_ware_port.Common.Item.ComponentBox;
+
+import com.Maxwell.cyber_ware_port.Common.Container.ComponentBoxMenu;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,7 +17,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.network.NetworkHooks;
 
-import javax.annotation.Nullable;public class ComponentBoxItem extends BlockItem {
+import javax.annotation.Nullable;
+
+public class ComponentBoxItem extends BlockItem {
 
     public ComponentBoxItem() {
         super(ModBlocks.COMPONENT_BOX.get(), new Properties().stacksTo(1));
@@ -24,17 +28,18 @@ import javax.annotation.Nullable;public class ComponentBoxItem extends BlockItem
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        Player player = context.getPlayer();if (player != null && player.isShiftKeyDown()) {
+        Player player = context.getPlayer();
+        if (player != null && player.isShiftKeyDown()) {
             return super.useOn(context);
 
-        }return this.use(context.getLevel(), player, context.getHand()).getResult();
+        }
+        return this.use(context.getLevel(), player, context.getHand()).getResult();
 
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         if (!pLevel.isClientSide && pPlayer instanceof ServerPlayer serverPlayer) {
-
             if (!pPlayer.isShiftKeyDown()) {
                 NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
                         (id, inv, player) -> new ComponentBoxMenu(id, inv, player.getItemInHand(pHand)),
@@ -43,11 +48,11 @@ import javax.annotation.Nullable;public class ComponentBoxItem extends BlockItem
                     buf.writeBoolean(pHand == InteractionHand.MAIN_HAND);
 
                 });
-
                 return InteractionResultHolder.success(pPlayer.getItemInHand(pHand));
 
             }
-        }return InteractionResultHolder.pass(pPlayer.getItemInHand(pHand));
+        }
+        return InteractionResultHolder.pass(pPlayer.getItemInHand(pHand));
 
     }
 

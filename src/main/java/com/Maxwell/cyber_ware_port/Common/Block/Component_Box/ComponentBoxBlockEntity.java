@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Block.Component_Box;import com.Maxwell.cyber_ware_port.Common.Container.ComponentBoxMenu;
+package com.Maxwell.cyber_ware_port.Common.Block.Component_Box;
+
+import com.Maxwell.cyber_ware_port.Common.Container.ComponentBoxMenu;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
 import com.Maxwell.cyber_ware_port.Common.Item.ComponentBox.ComponentBoxItem;
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
@@ -22,33 +24,36 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;public class ComponentBoxBlockEntity extends BlockEntity implements MenuProvider {
+import org.jetbrains.annotations.Nullable;
 
-    private Component customName;public final ItemStackHandler itemHandler = new ItemStackHandler(18) {
+public class ComponentBoxBlockEntity extends BlockEntity implements MenuProvider {
+
+    public final ItemStackHandler itemHandler = new ItemStackHandler(18) {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return isComponent(stack);
 
         }
+
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
 
         }
-    };private final LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);public ComponentBoxBlockEntity(BlockPos pPos, BlockState pBlockState) {
+    };
+    private final LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    private Component customName;
+
+    public ComponentBoxBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.COMPONENT_BOX.get(), pPos, pBlockState);
 
     }
 
     private boolean isComponent(ItemStack stack) {
         Item item = stack.getItem();
-
         if (item instanceof CyberwareItem) return false;
-
         if (item instanceof ComponentBoxItem) return false;
-
         ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
-
         return id != null && id.getPath().contains("component_");
 
     }
@@ -72,7 +77,6 @@ import org.jetbrains.annotations.Nullable;public class ComponentBoxBlockEntity e
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-
         return new ComponentBoxMenu(pContainerId, pPlayerInventory, this);
 
     }
@@ -90,9 +94,7 @@ import org.jetbrains.annotations.Nullable;public class ComponentBoxBlockEntity e
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
-
         itemHandler.deserializeNBT(pTag.getCompound("Inventory"));
-
         if (pTag.contains("CustomName")) {
             this.customName = Component.Serializer.fromJson(pTag.getString("CustomName"));
 
@@ -102,9 +104,7 @@ import org.jetbrains.annotations.Nullable;public class ComponentBoxBlockEntity e
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         super.saveAdditional(pTag);
-
         pTag.put("Inventory", itemHandler.serializeNBT());
-
         if (this.customName != null) {
             pTag.putString("CustomName", Component.Serializer.toJson(this.customName));
 

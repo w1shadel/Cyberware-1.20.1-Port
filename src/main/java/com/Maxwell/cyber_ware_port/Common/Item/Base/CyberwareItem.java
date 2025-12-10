@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Item.Base;import com.google.common.collect.ArrayListMultimap;
+package com.Maxwell.cyber_ware_port.Common.Item.Base;
+
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -13,9 +15,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;public class CyberwareItem extends Item implements ICyberware {
+import java.util.stream.Collectors;
 
-    private static final String NBT_KEY_PRISTINE = "IsPristine";private final int essenceCost;
+public class CyberwareItem extends Item implements ICyberware {
+
+    private static final String NBT_KEY_PRISTINE = "IsPristine";
+    private final int essenceCost;
 
     private final int slotId;
 
@@ -29,30 +34,27 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
 
     private final int energyStorage;
 
-    private final StackingRule stackingRule;private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
+    private final StackingRule stackingRule;
+    private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
 
-    private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;private final BodyPartType bodyPartType;private final Multimap<Attribute, AttributeModifier> attributeModifiers;public CyberwareItem(Builder builder) {
+    private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;
+    private final BodyPartType bodyPartType;
+    private final Multimap<Attribute, AttributeModifier> attributeModifiers;
+
+    public CyberwareItem(Builder builder) {
         super(builder.properties);
-
         this.essenceCost = builder.essenceCost;
-
         this.slotId = builder.slotId;
-
         this.maxInstallAmount = builder.maxInstallAmount;
-
         this.hasEnergyProperties = builder.hasEnergyProperties;
-
         this.energyConsumption = builder.energyConsumption;
-
         this.energyGeneration = builder.energyGeneration;
-
         this.energyStorage = builder.energyStorage;
-
         this.stackingRule = builder.stackingRule;
-
         this.prerequisiteRegistryObjects = Set.copyOf(builder.prerequisites);
-
-        this.incompatibleRegistryObjects = Set.copyOf(builder.incompatibleItems);this.bodyPartType = builder.bodyPartType;this.attributeModifiers = builder.attributeModifiers;
+        this.incompatibleRegistryObjects = Set.copyOf(builder.incompatibleItems);
+        this.bodyPartType = builder.bodyPartType;
+        this.attributeModifiers = builder.attributeModifiers;
 
     }
 
@@ -77,7 +79,6 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
     @Override
     public boolean isPristine(ItemStack stack) {
         CompoundTag nbt = stack.getTag();
-
         return nbt == null || !nbt.contains(NBT_KEY_PRISTINE) || nbt.getBoolean(NBT_KEY_PRISTINE);
 
     }
@@ -87,9 +88,7 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
         if (isPristine) {
             if (stack.hasTag()) {
                 CompoundTag tag = stack.getTag();
-
                 tag.remove(NBT_KEY_PRISTINE);
-
                 if (tag.isEmpty()) stack.setTag(null);
 
             }
@@ -139,40 +138,32 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
 
     @Override
     public int getEnergyConsumption(ItemStack stack) {
-
         int base = this.energyConsumption;
-
         return isPristine(stack) ? base : base * 2;
 
     }
 
     @Override
     public int getEnergyGeneration(ItemStack stack) {
-
         int base = this.energyGeneration;
-
         return isPristine(stack) ? base : base / 2;
 
     }
 
     @Override
     public int getEnergyStorage(ItemStack stack) {
-
         int base = this.energyStorage;
-
         return isPristine(stack) ? base : base / 2;
 
     }
 
     @Override
     public Component getName(ItemStack stack) {
-
         if (!isPristine(stack)) {
             return Component.translatable(this.getDescriptionId(stack))
                     .withStyle(ChatFormatting.DARK_GRAY);
 
         }
-
         return Component.translatable(this.getDescriptionId(stack))
                 .withStyle(ChatFormatting.AQUA);
 
@@ -188,60 +179,51 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
         return this.attributeModifiers;
 
-    }public static class Builder {
+    }
+
+    public static class Builder {
 
         private final Properties properties;
 
         private final int essenceCost;
 
-        private final int slotId;private int maxInstallAmount = 1;
-
-        private boolean hasEnergyProperties = false;
-
-        private int energyConsumption = 0;
-
-        private int energyGeneration = 0;
-
-        private int energyStorage = 0;
-
-        private StackingRule stackingRule = StackingRule.LINEAR;
-
+        private final int slotId;
         private final Set<RegistryObject<Item>> prerequisites = new HashSet<>();
+        private final Set<RegistryObject<Item>> incompatibleItems = new HashSet<>();
+        private final Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        private int maxInstallAmount = 1;
+        private boolean hasEnergyProperties = false;
+        private int energyConsumption = 0;
+        private int energyGeneration = 0;
+        private int energyStorage = 0;
+        private StackingRule stackingRule = StackingRule.LINEAR;
+        private BodyPartType bodyPartType = BodyPartType.NONE;
 
-        private final Set<RegistryObject<Item>> incompatibleItems = new HashSet<>();private BodyPartType bodyPartType = BodyPartType.NONE;private final Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();public Builder(int essenceCost, int slotId) {
+        public Builder(int essenceCost, int slotId) {
             this.properties = new Properties();
-
             this.essenceCost = essenceCost;
-
             this.slotId = slotId;
 
         }
 
         public Builder bodyPart(BodyPartType type) {
             this.bodyPartType = type;
-
             return this;
 
         }
 
         public Builder maxInstall(int amount) {
             this.maxInstallAmount = amount;
-
             return this;
 
         }
 
         public Builder energy(int consumption, int generation, int storage, StackingRule rule) {
             this.hasEnergyProperties = true;
-
             this.energyConsumption = consumption;
-
             this.energyGeneration = generation;
-
             this.energyStorage = storage;
-
             this.stackingRule = rule;
-
             return this;
 
         }
@@ -249,14 +231,12 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
         @SafeVarargs
         public final Builder requires(RegistryObject<Item>... items) {
             Collections.addAll(this.prerequisites, items);
-
             return this;
 
         }
 
         public Builder properties(java.util.function.Consumer<Properties> consumer) {
             consumer.accept(this.properties);
-
             return this;
 
         }
@@ -264,21 +244,18 @@ import java.util.stream.Collectors;public class CyberwareItem extends Item imple
         @SafeVarargs
         public final Builder incompatible(RegistryObject<Item>... items) {
             Collections.addAll(this.incompatibleItems, items);
-
             return this;
 
         }
 
         public Builder addAttribute(Attribute attribute, String uuidStr, double amount, AttributeModifier.Operation operation) {
             this.attributeModifiers.put(attribute, new AttributeModifier(UUID.fromString(uuidStr), "Cyberware modifier", amount, operation));
-
             return this;
 
         }
 
         public CyberwareItem build() {
             this.properties.stacksTo(Math.max(this.maxInstallAmount, 1));
-
             return new CyberwareItem(this);
 
         }

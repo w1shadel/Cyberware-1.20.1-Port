@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Client;import com.Maxwell.cyber_ware_port.Client.Screen.BlueprintChestScreen;
+package com.Maxwell.cyber_ware_port.Client;
+
+import com.Maxwell.cyber_ware_port.Client.Screen.BlueprintChestScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.CWB.CyberwareWorkbenchScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.ComponentBoxScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.RoboSurgeon.RobosurgeonScreen;
@@ -41,7 +43,9 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.RegistryObject;@SuppressWarnings("removal")
+import net.minecraftforge.registries.RegistryObject;
+
+@SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
     public static final ModelLayerLocation CYBER_SKULL_LAYER =
@@ -50,23 +54,14 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.SURGERY_CHAMBER.get(), SurgeryChamberRenderer::new);
-
         event.registerBlockEntityRenderer(ModBlockEntities.CYBERWARE_WORKBENCH.get(), CyberwareWorkbenchRenderer::new);
-
         event.registerBlockEntityRenderer(ModBlockEntities.SCANNER.get(), ScannerBlockRenderer::new);
-
         event.registerBlockEntityRenderer(ModBlockEntities.RADIO_TOWER_CORE.get(), RadioTowerRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CYBER_ZOMBIE.get(), CyberZombieRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CYBER_SKELETON.get(), CyberSkeletonRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CYBER_WITHER_SKELETON.get(), CyberWitherSkeletonRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CYBER_CREEPER.get(), CyberCreeperRenderer::new);
-
         event.registerEntityRenderer(ModEntities.CYBER_WITHER.get(), CyberWitherBossRenderer::new);
-
         event.registerBlockEntityRenderer(ModBlockEntities.CYBER_SKULL.get(), CyberSkullRenderer::new);
 
     }
@@ -74,25 +69,15 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SurgeryChamberModel.LAYER_LOCATION, SurgeryChamberModel::createBodyLayer);
-
         event.registerLayerDefinition(PlayerInternalPartsModel.LAYER_LOCATION, PlayerInternalPartsModel::createBodyLayer);
-
         event.registerLayerDefinition(CyberWareWorkBenchModel.LAYER_LOCATION, CyberWareWorkBenchModel::createBodyLayer);
-
         event.registerLayerDefinition(ScannerBlockModel.LAYER_LOCATION, ScannerBlockModel::createBodyLayer);
-
         event.registerLayerDefinition(RadioTowerModel.LAYER_LOCATION, RadioTowerModel::createBodyLayer);
-
         event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION, CyberWitherSkeletonModel::createBodyLayer);
-
         event.registerLayerDefinition(CyberSkeletonModel.LAYER_LOCATION, CyberSkeletonModel::createBodyLayer);
-
         event.registerLayerDefinition(CyberZombieModel.LAYER_LOCATION, CyberZombieModel::createBodyLayer);
-
         event.registerLayerDefinition(CyberCreeperModel.LAYER_LOCATION, CyberCreeperModel::createBodyLayer);
-
         event.registerLayerDefinition(CyberWitherModel.LAYER_LOCATION, CyberWitherModel::createBodyLayer);
-
         event.registerLayerDefinition(CYBER_SKULL_LAYER, SkullModel::createMobHeadLayer);
 
     }
@@ -101,25 +86,21 @@ public class ModClientEvents {
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             MenuScreens.register(ModMenuTypes.ROBO_SURGEON_MENU.get(), RobosurgeonScreen::new);
-
             MenuScreens.register(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), CyberwareWorkbenchScreen::new);
-
             MenuScreens.register(ModMenuTypes.SCANNER_MENU.get(), ScannerScreen::new);
-
             MenuScreens.register(ModMenuTypes.COMPONENT_BOX_MENU.get(), ComponentBoxScreen::new);
-
             MenuScreens.register(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), BlueprintChestScreen::new);
-
             ItemProperties.register(ModItems.BLUEPRINT.get(),
                     new ResourceLocation(CyberWare.MODID, "written"),
                     (stack, level, entity, seed) -> {
                         return BlueprintItem.getTargetItem(stack) != null ? 1.0F : 0.0F;
 
                     });
-
-            ResourceLocation scavengedProperty = new ResourceLocation(CyberWare.MODID, "is_scavenged");for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
+            ResourceLocation scavengedProperty = new ResourceLocation(CyberWare.MODID, "is_scavenged");
+            for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
                 if (entry.get() instanceof CyberwareItem) {
-                    Item item = entry.get();ItemProperties.register(item, scavengedProperty, (stack, level, entity, seed) -> {
+                    Item item = entry.get();
+                    ItemProperties.register(item, scavengedProperty, (stack, level, entity, seed) -> {
                         if (stack.getItem() instanceof CyberwareItem cw) {
                             return cw.isPristine(stack) ? 0.0F : 1.0F;
 

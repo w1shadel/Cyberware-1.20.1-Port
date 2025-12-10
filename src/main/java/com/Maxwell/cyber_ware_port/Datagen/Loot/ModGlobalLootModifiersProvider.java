@@ -9,7 +9,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.LootTableIdCondition;
 
-@SuppressWarnings("remeoval")
+
 public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
     public ModGlobalLootModifiersProvider(PackOutput output) {
         super(output, CyberWare.MODID);
@@ -19,7 +19,7 @@ public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
     @Override
     protected void start() {
         add("robosurgeon_in_nether_bridge", new AddItemModifier(
-                new LootItemCondition[] {
+                new LootItemCondition[]{
                         LootTableIdCondition.builder(new ResourceLocation("minecraft:chests/nether_bridge")).build(),
                         LootItemRandomChanceCondition.randomChance(0.3f).build()
                 },

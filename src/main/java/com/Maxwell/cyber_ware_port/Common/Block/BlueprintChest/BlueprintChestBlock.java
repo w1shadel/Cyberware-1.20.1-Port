@@ -20,8 +20,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlueprintChestBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;public BlueprintChestBlock(Properties pProperties) {
-        super(pProperties);this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+    public BlueprintChestBlock(Properties pProperties) {
+        super(pProperties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
 
     }
 
@@ -54,7 +57,6 @@ public class BlueprintChestBlock extends HorizontalDirectionalBlock implements E
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-
             if (entity instanceof BlueprintChestBlockEntity) {
                 NetworkHooks.openScreen((ServerPlayer) pPlayer, (BlueprintChestBlockEntity) entity, pPos);
 
@@ -78,7 +80,6 @@ public class BlueprintChestBlock extends HorizontalDirectionalBlock implements E
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-
             if (blockEntity instanceof BlueprintChestBlockEntity) {
                 ((BlueprintChestBlockEntity) blockEntity).drops();
 

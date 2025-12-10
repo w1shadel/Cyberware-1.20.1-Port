@@ -1,11 +1,15 @@
-package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Eye;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
+package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Eye;
+
+import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-import net.minecraft.world.item.ItemStack;public class LiquidRefractionCalibratorItem extends CyberwareItem {
+import net.minecraft.world.item.ItemStack;
+
+public class LiquidRefractionCalibratorItem extends CyberwareItem {
     public LiquidRefractionCalibratorItem() {
-        super(new Builder(2, RobosurgeonBlockEntity.SLOT_EYES) 
+        super(new Builder(2, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
-                .requires(ModItems.CYBER_EYE) 
+                .requires(ModItems.CYBER_EYE)
         );
 
     }
@@ -13,5 +17,6 @@ import net.minecraft.world.item.ItemStack;public class LiquidRefractionCalibrato
     @Override
     public boolean canToggle(ItemStack stack) {
         return true;
- 
-    }}
+
+    }
+}

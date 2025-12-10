@@ -31,27 +31,26 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> pWriter) {ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.SURGERY_CHAMBER.get())
+    protected void buildRecipes(Consumer<FinishedRecipe> pWriter) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.SURGERY_CHAMBER.get())
                 .pattern("IDI")
                 .pattern("IBI")
                 .pattern("IRI")
                 .define('I', Items.IRON_INGOT)
-                .define('D', Items.IRON_TRAPDOOR) 
-                .define('B', ItemTags.BEDS)       
+                .define('D', Items.IRON_TRAPDOOR)
+                .define('B', ItemTags.BEDS)
                 .define('R', Items.REDSTONE)
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(pWriter);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.CYBERWARE_WORKBENCH.get())
                 .pattern("III")
                 .pattern("ICI")
                 .pattern("IPI")
                 .define('I', Items.IRON_INGOT)
                 .define('C', Items.CRAFTING_TABLE)
-                .define('P', Items.PAPER) 
+                .define('P', Items.PAPER)
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(pWriter);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.SCANNER.get())
                 .pattern("I I")
                 .pattern("IGR")
@@ -61,17 +60,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('R', Items.REDSTONE)
                 .unlockedBy("has_redstone", has(Items.REDSTONE))
                 .save(pWriter);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.BLUEPRINT_CHEST.get())
                 .pattern("III")
                 .pattern("ICI")
                 .pattern("ILI")
                 .define('I', Items.IRON_INGOT)
                 .define('C', Tags.Items.CHESTS)
-                .define('L', Items.LAPIS_LAZULI) 
+                .define('L', Items.LAPIS_LAZULI)
                 .unlockedBy("has_lapis", has(Items.LAPIS_LAZULI))
                 .save(pWriter);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.COMPONENT_BOX.get())
                 .pattern(" I ")
                 .pattern("ICI")
@@ -80,8 +77,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('C', Tags.Items.CHESTS)
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(pWriter);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.RADIO_TOWER_COMPONENT.get(), 4) 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.RADIO_TOWER_COMPONENT.get(), 4)
                 .pattern("I I")
                 .pattern("XBX")
                 .pattern("I I")
@@ -90,22 +86,20 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('X', Items.REDSTONE)
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(pWriter);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RADIO_KIT_BLOCK.get())
                 .pattern(" A ")
                 .pattern("IRI")
                 .pattern("III")
                 .define('I', Items.IRON_INGOT)
                 .define('R', Items.REDSTONE)
-                .define('A', Items.IRON_BARS) 
+                .define('A', Items.IRON_BARS)
                 .unlockedBy("has_redstone", has(Items.REDSTONE))
                 .save(pWriter);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.KATANA.get())
                 .pattern(" I ")
                 .pattern(" I ")
                 .pattern(" S ")
-                .define('I', Items.IRON_INGOT) 
+                .define('I', Items.IRON_INGOT)
                 .define('S', Items.STICK)
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
                 .save(pWriter);
@@ -114,7 +108,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .requires(Items.SUGAR)
                 .requires(Items.IRON_NUGGET)
                 .unlockedBy("has_spider_eye", has(Items.SPIDER_EYE))
-                .save(pWriter);ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.RADIO_TOWER_CORE.get())
+                .save(pWriter);
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.RADIO_TOWER_CORE.get())
                 .pattern("ICI")
                 .pattern("CDC")
                 .pattern("ICI")
@@ -128,405 +123,474 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 2)
                 .requires(ModItems.COMPONENT_SSC.get(), 1)
                 .requires(Items.GLASS_PANE, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.LOW_LIGHT_VISION.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.LOW_LIGHT_VISION.get())
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 2)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
                 .requires(Items.GLOWSTONE_DUST, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.LIQUID_REFRACTION.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.LIQUID_REFRACTION.get())
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 1)
                 .requires(Items.PRISMARINE_SHARD, 1)
                 .requires(Items.GLASS_PANE, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.HUDJACK.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.HUDJACK.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 2)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.TARGETING_OVERLAY.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.TARGETING_OVERLAY.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 1)
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 1)
                 .requires(Items.REDSTONE, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.DISTANCE_ENHANCER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.DISTANCE_ENHANCER.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 1)
                 .requires(Items.GLASS_PANE, 2)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.CORTICAL_STACK.get())
                 .requires(ModItems.COMPONENT_STORAGE.get(), 2)
                 .requires(ModItems.COMPONENT_SSC.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.ENDER_JAMMER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.ENDER_JAMMER.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 1)
                 .requires(Items.ENDER_PEARL, 1)
                 .requires(Items.OBSIDIAN, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CONSCIOUSNESS_TRANSMITTER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CONSCIOUSNESS_TRANSMITTER.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 2)
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 1)
                 .requires(Items.ENDER_EYE, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.NEURAL_CONTEXTUALIZER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.NEURAL_CONTEXTUALIZER.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 2)
                 .requires(ModItems.COMPONENT_SYNTHNERVES.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.THREAT_MATRIX.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.THREAT_MATRIX.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 2)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
                 .requires(Items.SPIDER_EYE, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CRANIAL_BROADCASTER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CRANIAL_BROADCASTER.get())
                 .requires(ModItems.COMPONENT_SSC.get(), 1)
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 1)
                 .requires(Items.NOTE_BLOCK, 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.CARDIOMECHANIC_PUMP.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.INTERNAL_DEFIBRILLATOR.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.INTERNAL_DEFIBRILLATOR.get())
                 .requires(ModItems.COMPONENT_STORAGE.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 2)
                 .requires(Items.REDSTONE_BLOCK, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.PLATELET_DISPATCHER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.PLATELET_DISPATCHER.get())
                 .requires(ModItems.COMPONENT_REACTOR.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
                 .requires(Items.SLIME_BALL, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.STEM_CELL_SYNTHESIZER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.STEM_CELL_SYNTHESIZER.get())
                 .requires(ModItems.COMPONENT_REACTOR.get(), 2)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
                 .requires(Items.GHAST_TEAR, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CARDIOVASCULAR_COUPLER.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CARDIOVASCULAR_COUPLER.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 1)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(ModItems.COMPONENT_SYNTHNERVES.get(), 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.COMPRESSED_OXYGEN.get())
                 .requires(ModItems.COMPONENT_PLATING.get(), 2)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.HYPER_OXYGENATION.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.HYPER_OXYGENATION.get())
                 .requires(ModItems.COMPONENT_REACTOR.get(), 1)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
                 .requires(ModItems.COMPONENT_FULLERENE.get(), 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.LIVER_FILTER.get())
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(ModItems.COMPONENT_FULLERENE.get(), 1)
                 .requires(Items.CHARCOAL, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.METABOLIC_GENERATOR.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.METABOLIC_GENERATOR.get())
                 .requires(ModItems.COMPONENT_REACTOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(Items.PISTON, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.INTERNAL_BATTERY.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.INTERNAL_BATTERY.get())
                 .requires(ModItems.COMPONENT_STORAGE.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.ADRENALINE_PUMP.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.ADRENALINE_PUMP.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
                 .requires(Items.SUGAR, 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.SOLARSKIN.get())
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 2)
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 1)
                 .requires(Items.QUARTZ, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.SUBDERMAL_SPIKES.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.SUBDERMAL_SPIKES.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 2)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.SYNTHETIC_SKIN.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.SYNTHETIC_SKIN.get())
                 .requires(ModItems.COMPONENT_FULLERENE.get(), 2)
                 .requires(ModItems.COMPONENT_SYNTHNERVES.get(), 1)
                 .requires(Items.LEATHER, 2)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.TARGETED_IMMUNOSUPPRESSANT.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.TARGETED_IMMUNOSUPPRESSANT.get())
                 .requires(ModItems.COMPONENT_REACTOR.get(), 1)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.WIRED_REFLEXES.get())
                 .requires(ModItems.COMPONENT_SYNTHNERVES.get(), 2)
                 .requires(ModItems.COMPONENT_MICROELECTRIC.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.MYOMER_MUSCLE.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.MYOMER_MUSCLE.get())
                 .requires(ModItems.COMPONENT_FULLERENE.get(), 2)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.BONELACING.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 2)
                 .requires(ModItems.COMPONENT_FULLERENE.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CITRATE_ENHANCEMENT.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CITRATE_ENHANCEMENT.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 1)
                 .requires(ModItems.COMPONENT_REACTOR.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.MARROW_BATTERY.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.MARROW_BATTERY.get())
                 .requires(ModItems.COMPONENT_STORAGE.get(), 2)
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.CYBER_ARM_LEFT.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 3)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CYBER_ARM_RIGHT.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CYBER_ARM_RIGHT.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 3)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CYBER_LEG_LEFT.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CYBER_LEG_LEFT.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 3)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.CYBER_LEG_RIGHT.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.CYBER_LEG_RIGHT.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 3)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.RAPID_FIRE_FLYWHEEL.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.RAPID_FIRE_FLYWHEEL.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(Items.BOW, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.IMPLANTED_SPURS.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.IMPLANTED_SPURS.get())
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(Items.IRON_NUGGET, 4)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.FINE_MANIPULATORS.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.FINE_MANIPULATORS.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 4)
                 .requires(ModItems.COMPONENT_FIBEROPTICS.get(), 2)
                 .requires(Items.CRAFTING_TABLE, 1)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.RAPID_FIRE_FLYWHEEL.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.RAPID_FIRE_FLYWHEEL.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(Items.BOW, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.IMPLANTED_SPURS.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.IMPLANTED_SPURS.get())
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(Items.IRON_NUGGET, 4, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.FINE_MANIPULATORS.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.FINE_MANIPULATORS.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 4, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 2, 1.0f)
                 .addOutput(Items.CRAFTING_TABLE, 1, 0.8f)
                 .setBlueprintChance(0.15f)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.RETRACTABLE_CLAWS.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 2)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.REINFORCED_FIST.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.REINFORCED_FIST.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 1)
                 .requires(ModItems.COMPONENT_PLATING.get(), 2)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
                 .save(pWriter);
-
         new AssemblyRecipeBuilder(ModItems.LINEAR_ACTUATORS.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(Items.PISTON, 1)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.FALL_BRACERS.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.FALL_BRACERS.get())
                 .requires(ModItems.COMPONENT_TITANIUM.get(), 2)
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 1)
                 .requires(Items.WHITE_WOOL, 2)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.AQUATIC_PROPULSION.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.AQUATIC_PROPULSION.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .requires(Items.IRON_INGOT, 2)
-                .save(pWriter);new AssemblyRecipeBuilder(ModItems.DEPLOYABLE_WHEELS.get())
+                .save(pWriter);
+        new AssemblyRecipeBuilder(ModItems.DEPLOYABLE_WHEELS.get())
                 .requires(ModItems.COMPONENT_ACTUATOR.get(), 2)
                 .requires(ModItems.COMPONENT_PLATING.get(), 1)
                 .save(pWriter);
-
         new EngineeringRecipeBuilder(ModItems.CYBER_EYE.get())
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_SSC.get(), 1, 1.0f)
                 .addOutput(Items.GLASS_PANE, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.LOW_LIGHT_VISION.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.LOW_LIGHT_VISION.get())
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .addOutput(Items.GLOWSTONE_DUST, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.LIQUID_REFRACTION.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.LIQUID_REFRACTION.get())
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 1, 1.0f)
                 .addOutput(Items.PRISMARINE_SHARD, 1, 1.0f)
                 .addOutput(Items.GLASS_PANE, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.HUDJACK.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.HUDJACK.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.TARGETING_OVERLAY.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.TARGETING_OVERLAY.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 1, 1.0f)
                 .addOutput(Items.REDSTONE, 1, 0.8f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.DISTANCE_ENHANCER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.DISTANCE_ENHANCER.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 1, 1.0f)
                 .addOutput(Items.GLASS_PANE, 2, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CORTICAL_STACK.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CORTICAL_STACK.get())
                 .addOutput(ModItems.COMPONENT_STORAGE.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_SSC.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .setBlueprintChance(0.10f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.ENDER_JAMMER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.ENDER_JAMMER.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 1, 1.0f)
                 .addOutput(Items.ENDER_PEARL, 1, 0.0f)
                 .addOutput(Items.OBSIDIAN, 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CONSCIOUSNESS_TRANSMITTER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CONSCIOUSNESS_TRANSMITTER.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 1, 1.0f)
                 .addOutput(Items.ENDER_EYE, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.NEURAL_CONTEXTUALIZER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.NEURAL_CONTEXTUALIZER.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_SYNTHNERVES.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.THREAT_MATRIX.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.THREAT_MATRIX.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .addOutput(Items.SPIDER_EYE, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CRANIAL_BROADCASTER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CRANIAL_BROADCASTER.get())
                 .addOutput(ModItems.COMPONENT_SSC.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 1, 1.0f)
                 .addOutput(Items.NOTE_BLOCK, 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CARDIOMECHANIC_PUMP.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CARDIOMECHANIC_PUMP.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.INTERNAL_DEFIBRILLATOR.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.INTERNAL_DEFIBRILLATOR.get())
                 .addOutput(ModItems.COMPONENT_STORAGE.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 2, 1.0f)
                 .addOutput(Items.REDSTONE_BLOCK, 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.PLATELET_DISPATCHER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.PLATELET_DISPATCHER.get())
                 .addOutput(ModItems.COMPONENT_REACTOR.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .addOutput(Items.SLIME_BALL, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.STEM_CELL_SYNTHESIZER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.STEM_CELL_SYNTHESIZER.get())
                 .addOutput(ModItems.COMPONENT_REACTOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .addOutput(Items.GHAST_TEAR, 1, 0.2f)
                 .setBlueprintChance(0.10f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CARDIOVASCULAR_COUPLER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CARDIOVASCULAR_COUPLER.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_SYNTHNERVES.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.COMPRESSED_OXYGEN.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.COMPRESSED_OXYGEN.get())
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.HYPER_OXYGENATION.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.HYPER_OXYGENATION.get())
                 .addOutput(ModItems.COMPONENT_REACTOR.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_FULLERENE.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.LIVER_FILTER.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.LIVER_FILTER.get())
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_FULLERENE.get(), 1, 1.0f)
                 .addOutput(Items.CHARCOAL, 1, 0.5f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.METABOLIC_GENERATOR.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.METABOLIC_GENERATOR.get())
                 .addOutput(ModItems.COMPONENT_REACTOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(Items.PISTON, 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.INTERNAL_BATTERY.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.INTERNAL_BATTERY.get())
                 .addOutput(ModItems.COMPONENT_STORAGE.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.ADRENALINE_PUMP.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.ADRENALINE_PUMP.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .addOutput(Items.SUGAR, 1, 0.8f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.SOLARSKIN.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.SOLARSKIN.get())
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_FIBEROPTICS.get(), 1, 1.0f)
                 .addOutput(Items.QUARTZ, 1, 0.8f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.SUBDERMAL_SPIKES.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.SUBDERMAL_SPIKES.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.SYNTHETIC_SKIN.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.SYNTHETIC_SKIN.get())
                 .addOutput(ModItems.COMPONENT_FULLERENE.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_SYNTHNERVES.get(), 1, 1.0f)
                 .addOutput(Items.LEATHER, 2, 0.8f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.TARGETED_IMMUNOSUPPRESSANT.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.TARGETED_IMMUNOSUPPRESSANT.get())
                 .addOutput(ModItems.COMPONENT_REACTOR.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.WIRED_REFLEXES.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.WIRED_REFLEXES.get())
                 .addOutput(ModItems.COMPONENT_SYNTHNERVES.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_MICROELECTRIC.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.MYOMER_MUSCLE.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.MYOMER_MUSCLE.get())
                 .addOutput(ModItems.COMPONENT_FULLERENE.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.BONELACING.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.BONELACING.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_FULLERENE.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CITRATE_ENHANCEMENT.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CITRATE_ENHANCEMENT.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_REACTOR.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.MARROW_BATTERY.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.MARROW_BATTERY.get())
                 .addOutput(ModItems.COMPONENT_STORAGE.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CYBER_ARM_LEFT.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CYBER_ARM_LEFT.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 3, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .setBlueprintChance(0.20f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CYBER_ARM_RIGHT.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CYBER_ARM_RIGHT.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 3, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .setBlueprintChance(0.20f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CYBER_LEG_LEFT.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CYBER_LEG_LEFT.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 3, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .setBlueprintChance(0.20f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.CYBER_LEG_RIGHT.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.CYBER_LEG_RIGHT.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 3, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .setBlueprintChance(0.20f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.RETRACTABLE_CLAWS.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.RETRACTABLE_CLAWS.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.REINFORCED_FIST.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.REINFORCED_FIST.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 1, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.LINEAR_ACTUATORS.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.LINEAR_ACTUATORS.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(Items.PISTON, 1, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.FALL_BRACERS.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.FALL_BRACERS.get())
                 .addOutput(ModItems.COMPONENT_TITANIUM.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 1, 1.0f)
                 .addOutput(Items.WHITE_WOOL, 2, 0.8f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.AQUATIC_PROPULSION.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.AQUATIC_PROPULSION.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .addOutput(Items.IRON_INGOT, 2, 1.0f)
                 .setBlueprintChance(0.15f)
-                .save(pWriter);new EngineeringRecipeBuilder(ModItems.DEPLOYABLE_WHEELS.get())
+                .save(pWriter);
+        new EngineeringRecipeBuilder(ModItems.DEPLOYABLE_WHEELS.get())
                 .addOutput(ModItems.COMPONENT_ACTUATOR.get(), 2, 1.0f)
                 .addOutput(ModItems.COMPONENT_PLATING.get(), 1, 1.0f)
                 .setBlueprintChance(0.15f)
                 .save(pWriter);
 
-    }public static class AssemblyRecipeBuilder {
+    }
+
+    public static class AssemblyRecipeBuilder {
         private final Item result;
         private final List<AssemblyRecipe.SizedIngredient> ingredients = new ArrayList<>();
 
@@ -567,8 +631,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 JsonArray inputs = new JsonArray();
                 for (AssemblyRecipe.SizedIngredient ing : ingredients) {
                     JsonObject entry = new JsonObject();
-                    entry.add("ingredient", ing.ingredient.toJson());
-                    entry.addProperty("count", ing.count);
+                    entry.add("ingredient", ing.ingredient().toJson());
+                    entry.addProperty("count", ing.count());
                     inputs.add(entry);
                 }
                 json.add("inputs", inputs);
@@ -652,7 +716,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 JsonObject inputObj = new JsonObject();
                 inputObj.addProperty("item", ForgeRegistries.ITEMS.getKey(input).toString());
                 json.add("input", inputObj);
-
                 JsonArray outputArr = new JsonArray();
                 for (OutputEntry entry : outputs) {
                     JsonObject outObj = new JsonObject();

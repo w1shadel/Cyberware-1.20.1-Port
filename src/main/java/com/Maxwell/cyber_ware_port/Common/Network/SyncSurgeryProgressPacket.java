@@ -1,14 +1,19 @@
-package com.Maxwell.cyber_ware_port.Common.Network;import net.minecraft.network.FriendlyByteBuf;
+package com.Maxwell.cyber_ware_port.Common.Network;
+
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;public class SyncSurgeryProgressPacket {
+import java.util.function.Supplier;
+
+public class SyncSurgeryProgressPacket {
     private final int progress;
 
-    private final int maxProgress;public SyncSurgeryProgressPacket(int progress, int maxProgress) {
-        this.progress = progress;
+    private final int maxProgress;
 
+    public SyncSurgeryProgressPacket(int progress, int maxProgress) {
+        this.progress = progress;
         this.maxProgress = maxProgress;
 
     }
@@ -18,20 +23,18 @@ import java.util.function.Supplier;public class SyncSurgeryProgressPacket {
 
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(this.progress);
+    public static void handle(SyncSurgeryProgressPacket msg, Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.update(msg.progress, msg.maxProgress));
 
-        buf.writeInt(this.maxProgress);
+        });
+        ctx.get().setPacketHandled(true);
 
     }
 
-    public static void handle(SyncSurgeryProgressPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.update(msg.progress,msg.maxProgress));
-
-        });
-
-        ctx.get().setPacketHandled(true);
+    public void toBytes(FriendlyByteBuf buf) {
+        buf.writeInt(this.progress);
+        buf.writeInt(this.maxProgress);
 
     }
 }

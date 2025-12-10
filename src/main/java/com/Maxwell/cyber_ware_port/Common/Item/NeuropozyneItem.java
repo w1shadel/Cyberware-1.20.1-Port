@@ -22,24 +22,20 @@ public class NeuropozyneItem extends Item {
     private static final int DURATION = 24000;
 
     public NeuropozyneItem() {
-        super(new Item.Properties().stacksTo(16)); 
+        super(new Item.Properties().stacksTo(16));
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entityLiving) {
         if (!level.isClientSide && entityLiving instanceof Player player) {
-
             player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                 data.applyImmunity(DURATION);
-
                 player.sendSystemMessage(Component.translatable("cyberware.message.suppressant_applied").withStyle(net.minecraft.ChatFormatting.GREEN));
             });
-
             player.removeEffect(MobEffects.CONFUSION);
             player.removeEffect(MobEffects.DIG_SLOWDOWN);
             player.removeEffect(MobEffects.WEAKNESS);
         }
-
         return super.finishUsingItem(stack, level, entityLiving);
     }
 
@@ -50,13 +46,14 @@ public class NeuropozyneItem extends Item {
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.DRINK; 
+        return UseAnim.DRINK;
     }
 
     @Override
     public int getUseDuration(ItemStack stack) {
         return 32;
     }
+
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);

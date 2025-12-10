@@ -1,5 +1,6 @@
-package com.Maxwell.cyber_ware_port.Datagen;import com.Maxwell.cyber_ware_port.CyberWare;
-import com.Maxwell.cyber_ware_port.Datagen.Loot.Block.ModLootTableProvider;
+package com.Maxwell.cyber_ware_port.Datagen;
+
+import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -8,7 +9,9 @@ import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.concurrent.CompletableFuture;@Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+import java.util.concurrent.CompletableFuture;
+
+@Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
 
     @SubscribeEvent
@@ -17,6 +20,7 @@ public class DataGenerators {
         PackOutput packOutput = generator.getPackOutput();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-        boolean includeServer = event.includeServer();generator.addProvider(includeServer, new ModRecipeProvider(packOutput));
+        boolean includeServer = event.includeServer();
+        generator.addProvider(includeServer, new ModRecipeProvider(packOutput));
     }
 }

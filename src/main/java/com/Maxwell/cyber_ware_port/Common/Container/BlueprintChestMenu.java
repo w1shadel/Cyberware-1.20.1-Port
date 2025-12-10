@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Container;import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
+package com.Maxwell.cyber_ware_port.Common.Container;
+
+import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
@@ -12,22 +14,23 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
-import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends AbstractContainerMenu {
+import org.jetbrains.annotations.NotNull;
 
+public class BlueprintChestMenu extends AbstractContainerMenu {
+
+    private static final int CONTAINER_SLOTS = 18;
     public final BlueprintChestBlockEntity blockEntity;
 
-    private static final int CONTAINER_SLOTS = 18;public BlueprintChestMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+    public BlueprintChestMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
 
     }
 
     public BlueprintChestMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), pContainerId);
-
-        this.blockEntity = (BlueprintChestBlockEntity) entity;addEntitySlots();
-
+        this.blockEntity = (BlueprintChestBlockEntity) entity;
+        addEntitySlots();
         addPlayerInventory(inv);
-
         addPlayerHotbar(inv);
 
     }
@@ -35,15 +38,14 @@ import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends
     private void addEntitySlots() {
         this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
             for (int row = 0;
- row < 2;
- row++) {     
+                 row < 2;
+                 row++) {
                 for (int col = 0;
- col < 9;
- col++) { 
+                     col < 9;
+                     col++) {
                     this.addSlot(new SlotItemHandler(handler, col + row * 9, 8 + col * 18, 18 + row * 18) {
                         @Override
                         public boolean mayPlace(@NotNull ItemStack stack) {
-
                             return stack.getItem() instanceof BlueprintItem;
 
                         }
@@ -58,22 +60,18 @@ import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
-
-        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;ItemStack sourceStack = sourceSlot.getItem();
-
-        ItemStack copyOfSourceStack = sourceStack.copy();int PLAYER_INVENTORY_START = CONTAINER_SLOTS;
- 
+        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
+        ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack copyOfSourceStack = sourceStack.copy();
+        int PLAYER_INVENTORY_START = CONTAINER_SLOTS;
         int PLAYER_HOTBAR_START = PLAYER_INVENTORY_START + 27;
- 
-        int END_OF_SLOTS = PLAYER_HOTBAR_START + 9;if (pIndex < CONTAINER_SLOTS) {
+        int END_OF_SLOTS = PLAYER_HOTBAR_START + 9;
+        if (pIndex < CONTAINER_SLOTS) {
             if (!moveItemStackTo(sourceStack, PLAYER_INVENTORY_START, END_OF_SLOTS, true)) {
                 return ItemStack.EMPTY;
 
             }
-        }
-
-        else {
-
+        } else {
             if (sourceStack.getItem() instanceof BlueprintItem) {
                 if (!moveItemStackTo(sourceStack, 0, CONTAINER_SLOTS, false)) {
                     return ItemStack.EMPTY;
@@ -81,10 +79,9 @@ import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends
                 }
             } else {
                 return ItemStack.EMPTY;
- 
+
             }
         }
-
         if (sourceStack.getCount() == 0) {
             sourceSlot.set(ItemStack.EMPTY);
 
@@ -93,7 +90,6 @@ import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends
 
         }
         sourceSlot.onTake(playerIn, sourceStack);
-
         return copyOfSourceStack;
 
     }
@@ -107,22 +103,23 @@ import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends
 
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0;
- i < 3;
- ++i) {
+             i < 3;
+             ++i) {
             for (int l = 0;
- l < 9;
- ++l) {this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 68 + i * 18));
- 
+                 l < 9;
+                 ++l) {
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 68 + i * 18));
+
             }
         }
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {
         for (int i = 0;
- i < 9;
- ++i) {
+             i < 9;
+             ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 126));
- 
+
         }
     }
 }

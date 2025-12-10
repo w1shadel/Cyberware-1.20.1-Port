@@ -27,9 +27,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.SCANNER.get());
         this.dropSelf(ModBlocks.BLUEPRINT_CHEST.get());
         this.dropSelf(ModBlocks.RADIO_KIT_BLOCK.get());
-
         this.dropSelf(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get());
-
         this.add(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get(),
                 block -> createSingleItemTable(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get()));
     }

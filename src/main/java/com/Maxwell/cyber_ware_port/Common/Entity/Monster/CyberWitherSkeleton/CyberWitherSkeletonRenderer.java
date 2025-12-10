@@ -1,10 +1,12 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;import com.Maxwell.cyber_ware_port.CyberWare;
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;
+
+import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
-public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity,CyberWitherSkeletonModel> {
+public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity, CyberWitherSkeletonModel> {
     private static final ResourceLocation NORMAL_TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
 

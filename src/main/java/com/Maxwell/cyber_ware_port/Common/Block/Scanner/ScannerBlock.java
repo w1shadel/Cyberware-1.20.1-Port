@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Block.Scanner;import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
+package com.Maxwell.cyber_ware_port.Common.Block.Scanner;
+
+import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,19 +21,22 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 
-import javax.annotation.Nullable;public class ScannerBlock extends HorizontalDirectionalBlock implements EntityBlock {
+import javax.annotation.Nullable;
+
+public class ScannerBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     public ScannerBlock(Properties properties) {
         super(properties);
-
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
 
     }
+
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
 
     }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING);
@@ -56,7 +61,6 @@ import javax.annotation.Nullable;public class ScannerBlock extends HorizontalDir
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-
             if (entity instanceof ScannerBlockEntity) {
                 NetworkHooks.openScreen((ServerPlayer) pPlayer, (ScannerBlockEntity) entity, pPos);
 
@@ -68,6 +72,7 @@ import javax.annotation.Nullable;public class ScannerBlock extends HorizontalDir
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
 
     }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
@@ -78,11 +83,11 @@ import javax.annotation.Nullable;public class ScannerBlock extends HorizontalDir
         return null;
 
     }
+
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-
             if (blockEntity instanceof ScannerBlockEntity) {
                 ((ScannerBlockEntity) blockEntity).drops();
 

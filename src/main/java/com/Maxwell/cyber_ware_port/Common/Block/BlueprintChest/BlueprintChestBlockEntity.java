@@ -37,7 +37,10 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
             return stack.getItem() instanceof BlueprintItem;
 
         }
-    };private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();public BlueprintChestBlockEntity(BlockPos pPos, BlockState pBlockState) {
+    };
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+
+    public BlueprintChestBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.BLUEPRINT_CHEST.get(), pPos, pBlockState);
 
     }
@@ -68,7 +71,6 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
     @Override
     public void onLoad() {
         super.onLoad();
-
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
 
     }
@@ -76,7 +78,6 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-
         lazyItemHandler.invalidate();
 
     }
@@ -84,7 +85,6 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         pTag.put("inventory", itemHandler.serializeNBT());
-
         super.saveAdditional(pTag);
 
     }
@@ -92,17 +92,15 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
-
         itemHandler.deserializeNBT(pTag.getCompound("inventory"));
 
     }
 
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-
         for (int i = 0;
- i < itemHandler.getSlots();
- i++) {
+             i < itemHandler.getSlots();
+             i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
 
         }

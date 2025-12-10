@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Block.CWB;import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
+package com.Maxwell.cyber_ware_port.Common.Block.CWB;
+
+import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
 import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
@@ -35,7 +37,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
+import java.util.Objects;
+
+public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int INPUT_SLOT = 0;
 
@@ -50,10 +54,14 @@ import java.util.Objects;public class CyberwareWorkbenchBlockEntity extends Bloc
     public static final int SPECIAL_OUTPUT_SLOT = 9;
 
     private static final int INVENTORY_SIZE = 10;
-private AssemblyRecipe cachedRecipe = null;private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
+    public float animationProgress = 0.0f;
+    public float prevAnimationProgress = 0.0f;
+    private AssemblyRecipe cachedRecipe = null;
+    private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int slot) {
-            setChanged();if (slot == BLUEPRINT_SLOT) {
+            setChanged();
+            if (slot == BLUEPRINT_SLOT) {
                 cachedRecipe = null;
 
             }
@@ -67,34 +75,19 @@ private AssemblyRecipe cachedRecipe = null;private final ItemStackHandler itemHa
             }
             return switch (slot) {
                 case INPUT_SLOT -> stack.getItem() instanceof ICyberware;
-
                 case PAPER_SLOT -> stack.is(Items.PAPER);
-
                 case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
-
                 default -> false;
 
             };
 
         }
     };
-public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-
-        for (int i = 0;
- i < itemHandler.getSlots();
- i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-
-        }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
-
-    }
-
     private final IItemHandler automationInputHandler = new IItemHandler() {
         @Override
-        public int getSlots() { return INVENTORY_SIZE;
- }
+        public int getSlots() {
+            return INVENTORY_SIZE;
+        }
 
         @Override
         public @NotNull ItemStack getStackInSlot(int slot) {
@@ -104,7 +97,8 @@ public void drops() {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty()) return stack;if (stack.is(Items.PAPER)) {
+            if (stack.isEmpty()) return stack;
+            if (stack.is(Items.PAPER)) {
                 return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
 
             }
@@ -116,22 +110,18 @@ public void drops() {
                 return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
 
             }
-
-            AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();if (activeRecipe != null) {
-
+            AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
+            if (activeRecipe != null) {
                 if (!isItemNeededForRecipe(activeRecipe, stack)) {
                     return stack;
 
                 }
             }
-
             ItemStack remaining = stack.copy();
-
             for (int i = OUTPUT_SLOT_START;
- i < SPECIAL_OUTPUT_SLOT;
- i++) {
+                 i < SPECIAL_OUTPUT_SLOT;
+                 i++) {
                 remaining = itemHandler.insertItem(i, remaining, simulate);
-
                 if (remaining.isEmpty()) {
                     return ItemStack.EMPTY;
 
@@ -148,13 +138,16 @@ public void drops() {
         }
 
         @Override
-        public int getSlotLimit(int slot) { return itemHandler.getSlotLimit(slot);
- }
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
 
         @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true;
- }
-    };private final IItemHandler automationOutputHandler = new RangedWrapper(itemHandler, OUTPUT_SLOT_START, INVENTORY_SIZE) {
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return true;
+        }
+    };
+    private final IItemHandler automationOutputHandler = new RangedWrapper(itemHandler, OUTPUT_SLOT_START, INVENTORY_SIZE) {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
@@ -164,49 +157,40 @@ public void drops() {
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            int absoluteSlot = slot + OUTPUT_SLOT_START;if (absoluteSlot == SPECIAL_OUTPUT_SLOT) {
+            int absoluteSlot = slot + OUTPUT_SLOT_START;
+            if (absoluteSlot == SPECIAL_OUTPUT_SLOT) {
                 return super.extractItem(slot, amount, simulate);
 
             }
-
             AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-
             if (activeRecipe != null) {
-                ItemStack stackInSlot = itemHandler.getStackInSlot(absoluteSlot);if (!stackInSlot.isEmpty() && isItemNeededForRecipe(activeRecipe, stackInSlot)) {
+                ItemStack stackInSlot = itemHandler.getStackInSlot(absoluteSlot);
+                if (!stackInSlot.isEmpty() && isItemNeededForRecipe(activeRecipe, stackInSlot)) {
                     return ItemStack.EMPTY;
 
                 }
             }
-
             return super.extractItem(slot, amount, simulate);
 
         }
-    };private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-
+    };
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IItemHandler> lazyInputHandler = LazyOptional.empty();
-
-    private LazyOptional<IItemHandler> lazyOutputHandler = LazyOptional.empty();private int progress = 0;
-
+    private LazyOptional<IItemHandler> lazyOutputHandler = LazyOptional.empty();
+    private int progress = 0;
     private boolean isCrafting = false;
+    private int cooldown = 0;
 
-    public float animationProgress = 0.0f;
-
-    public float prevAnimationProgress = 0.0f;
-
-    private int cooldown = 0;public CyberwareWorkbenchBlockEntity(BlockPos pPos, BlockState pBlockState) {
+    public CyberwareWorkbenchBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CYBERWARE_WORKBENCH.get(), pPos, pBlockState);
 
     }
 
     public static void tick(Level pLevel, BlockPos pPos, BlockState pState, CyberwareWorkbenchBlockEntity pBlockEntity) {
         pBlockEntity.prevAnimationProgress = pBlockEntity.animationProgress;
-
         if (pBlockEntity.cooldown > 0) pBlockEntity.cooldown--;
-
         float target = pBlockEntity.isCrafting ? 1.0F : 0.0F;
-
         float speed = 0.5F;
-
         if (pBlockEntity.animationProgress < target) {
             pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + speed, target);
 
@@ -218,32 +202,37 @@ public void drops() {
             if (pBlockEntity.cooldown == 0) {
                 if (pBlockEntity.isCrafting) {
                     pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
-
                     pBlockEntity.cooldown = 3;
-
                     pBlockEntity.craftItem();
 
                 }
             }
         }
         if (pLevel.isClientSide()) return;
-
         if (pBlockEntity.isCrafting && pBlockEntity.animationProgress >= 1.0F) {
             pBlockEntity.resetCrafting();
 
         }
     }
 
+    public void drops() {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        for (int i = 0;
+             i < itemHandler.getSlots();
+             i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
+
+        }
+        Containers.dropContents(this.level, this.worldPosition, inventory);
+
+    }
+
     public void startCrafting() {
         if (!this.isCrafting && this.canCraft()) {
             this.isCrafting = true;
-
             this.animationProgress = 0.0f;
-
             this.progress = 0;
-
             setChanged();
-
             notifyClient();
 
         }
@@ -251,13 +240,9 @@ public void drops() {
 
     private void resetCrafting() {
         this.isCrafting = false;
-
         this.progress = 0;
-
         this.cooldown = 1;
-
         setChanged();
-
         notifyClient();
 
     }
@@ -271,24 +256,19 @@ public void drops() {
 
     private boolean checkOrConsumeIngredients(AssemblyRecipe recipe, boolean consume) {
         for (AssemblyRecipe.SizedIngredient req : recipe.getInputs()) {
-            int needed = req.count;
-
+            int needed = req.count();
             int found = 0;
-
             for (int i = OUTPUT_SLOT_START;
- i < SPECIAL_OUTPUT_SLOT;
- i++) {
+                 i < SPECIAL_OUTPUT_SLOT;
+                 i++) {
                 ItemStack stack = this.itemHandler.getStackInSlot(i);
-
-                if (req.ingredient.test(stack)) {
+                if (req.ingredient().test(stack)) {
                     int take = Math.min(stack.getCount(), needed - found);
-
                     if (consume) {
                         this.itemHandler.extractItem(i, take, false);
 
                     }
                     found += take;
-
                     if (found >= needed) break;
 
                 }
@@ -301,17 +281,12 @@ public void drops() {
     }
 
     private boolean canCraft() {
-
         AssemblyRecipe recipe = getActiveAssemblyRecipe();
-
         if (recipe != null) {
             if (checkOrConsumeIngredients(recipe, false)) {
                 ItemStack result = recipe.getResultItem(Objects.requireNonNull(this.level).registryAccess());
-
                 ItemStack currentOutput = this.itemHandler.getStackInSlot(SPECIAL_OUTPUT_SLOT);
-
                 if (currentOutput.isEmpty()) return true;
-
                 return ItemStack.isSameItemSameTags(currentOutput, result) &&
                         currentOutput.getCount() + result.getCount() <= currentOutput.getMaxStackSize();
 
@@ -319,28 +294,21 @@ public void drops() {
             return false;
 
         }
-
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
-
         if (inputStack.isEmpty()) return false;
-
         ItemStack paperStack = this.itemHandler.getStackInSlot(PAPER_SLOT);
-
         if (paperStack.isEmpty() || !paperStack.is(Items.PAPER)) {
             return false;
 
         }
         SimpleContainer tempContainer = new SimpleContainer(1);
-
         tempContainer.setItem(0, inputStack);
-
         var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
                 .getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempContainer, this.level);
-
         if (recipeOpt.isPresent()) {
             for (int i = OUTPUT_SLOT_START;
- i < SPECIAL_OUTPUT_SLOT;
- i++) {
+                 i < SPECIAL_OUTPUT_SLOT;
+                 i++) {
                 if (this.itemHandler.getStackInSlot(i).isEmpty()) return true;
 
             }
@@ -351,12 +319,10 @@ public void drops() {
 
     private ItemStack mergeIntoOutput(ItemStack stack) {
         ItemStack remainder = stack.copy();
-
         for (int i = OUTPUT_SLOT_START;
- i < SPECIAL_OUTPUT_SLOT;
- i++) {
+             i < SPECIAL_OUTPUT_SLOT;
+             i++) {
             remainder = this.itemHandler.insertItem(i, remainder, false);
-
             if (remainder.isEmpty()) {
                 return ItemStack.EMPTY;
 
@@ -367,62 +333,44 @@ public void drops() {
     }
 
     private void craftItem() {
-
         AssemblyRecipe recipe = getActiveAssemblyRecipe();
-
         if (recipe != null) {
             if (checkOrConsumeIngredients(recipe, true)) {
                 ItemStack result = recipe.getResultItem(Objects.requireNonNull(this.level).registryAccess()).copy();
-
                 if (result.getItem() instanceof ICyberware cyberware) {
                     cyberware.setPristine(result, true);
 
                 }
                 this.itemHandler.insertItem(SPECIAL_OUTPUT_SLOT, result, false);
-
                 this.itemHandler.extractItem(BLUEPRINT_SLOT, 1, false);
 
             }
             return;
 
         }
-
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
-
         if (inputStack.isEmpty()) return;
-
         SimpleContainer tempContainer = new SimpleContainer(1);
-
         tempContainer.setItem(0, inputStack);
-
         var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
                 .getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempContainer, this.level);
-
         if (recipeOpt.isPresent()) {
             EngineeringRecipe engRecipe = recipeOpt.get();
-
             List<ItemStack> results = engRecipe.rollOutputs(this.level.random);
-
             this.itemHandler.extractItem(INPUT_SLOT, 1, false);
-
             for (ItemStack result : results) {
                 ItemStack remainder = mergeIntoOutput(result);
-
                 if (!remainder.isEmpty()) {
                     net.minecraft.world.level.block.Block.popResource(this.level, this.worldPosition.above(), remainder);
 
                 }
             }
             ItemStack paperStack = this.itemHandler.getStackInSlot(PAPER_SLOT);
-
             if (!paperStack.isEmpty() && paperStack.is(Items.PAPER)) {
                 float chance = engRecipe.getBlueprintChance();
-
                 if (this.level.random.nextFloat() < chance) {
                     ItemStack blueprint = BlueprintItem.createBlueprintFor(inputStack.getItem());
-
                     ItemStack remainder = mergeIntoOutput(blueprint);
-
                     if (remainder.isEmpty()) {
                         this.itemHandler.extractItem(PAPER_SLOT, 1, false);
 
@@ -430,30 +378,26 @@ public void drops() {
                 }
             }
         }
-    }    @Nullable
-    private AssemblyRecipe getActiveAssemblyRecipe() {
+    }
 
+    @Nullable
+    private AssemblyRecipe getActiveAssemblyRecipe() {
         if (this.cachedRecipe != null) {
             return this.cachedRecipe;
 
         }
-
-        if (this.level == null) return null;ItemStack blueprintStack = this.itemHandler.getStackInSlot(BLUEPRINT_SLOT);
-
+        if (this.level == null) return null;
+        ItemStack blueprintStack = this.itemHandler.getStackInSlot(BLUEPRINT_SLOT);
         if (blueprintStack.isEmpty() || !(blueprintStack.getItem() instanceof BlueprintItem)) {
             return null;
 
         }
-
         Item targetItem = BlueprintItem.getTargetItem(blueprintStack);
-
-        if (targetItem == null) return null;var recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
-
+        if (targetItem == null) return null;
+        var recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
         for (AssemblyRecipe recipe : recipes) {
             if (recipe.getResultItem(this.level.registryAccess()).getItem() == targetItem) {
-
                 this.cachedRecipe = recipe;
-
                 return recipe;
 
             }
@@ -462,9 +406,10 @@ public void drops() {
 
     }
 
-        private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
-        if (stack.isEmpty()) return false;for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
-            if (input.ingredient.test(stack)) {
+    private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
+            if (input.ingredient().test(stack)) {
                 return true;
 
             }
@@ -505,18 +450,15 @@ public void drops() {
             return lazyInputHandler.cast();
 
         }
-
         return super.getCapability(cap, side);
 
     }
+
     @Override
     public void onLoad() {
         super.onLoad();
-
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-
         lazyInputHandler = LazyOptional.of(() -> automationInputHandler);
-
         lazyOutputHandler = LazyOptional.of(() -> automationOutputHandler);
 
     }
@@ -524,11 +466,8 @@ public void drops() {
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-
         lazyItemHandler.invalidate();
-
         lazyInputHandler.invalidate();
-
         lazyOutputHandler.invalidate();
 
     }
@@ -536,13 +475,9 @@ public void drops() {
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         pTag.put("inventory", itemHandler.serializeNBT());
-
         pTag.putInt("workbench.progress", this.progress);
-
         pTag.putBoolean("workbench.isCrafting", this.isCrafting);
-
         pTag.putInt("workbench.cooldown", this.cooldown);
-
         super.saveAdditional(pTag);
 
     }
@@ -550,14 +485,11 @@ public void drops() {
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
-
         itemHandler.deserializeNBT(pTag.getCompound("inventory"));
-
         this.progress = pTag.getInt("workbench.progress");
-
         this.isCrafting = pTag.getBoolean("workbench.isCrafting");
-
-        this.cooldown = pTag.getInt("workbench.cooldown");this.cachedRecipe = null;
+        this.cooldown = pTag.getInt("workbench.cooldown");
+        this.cachedRecipe = null;
 
     }
 

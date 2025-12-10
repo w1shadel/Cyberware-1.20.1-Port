@@ -1,4 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Block.CWB;import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
+package com.Maxwell.cyber_ware_port.Common.Block.CWB;
+
+import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,53 +25,75 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 
-import javax.annotation.Nullable;public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implements EntityBlock {
-    private static final VoxelShape BASE = Block.box(0, 0, 0, 16, 16, 16);private static final VoxelShape SHAPE_NORTH = Shapes.or(
-            BASE,
-            Block.box(4, 16, 12, 12, 32, 16), 
-            Block.box(4, 24, 3, 12, 32, 12)   
-    );private static final VoxelShape SHAPE_SOUTH = Shapes.or(
-            BASE,
-            Block.box(4, 16, 0, 12, 32, 4),   
-            Block.box(4, 24, 4, 12, 32, 13)   
-    );private static final VoxelShape SHAPE_WEST = Shapes.or(
-            BASE,
-            Block.box(12, 16, 4, 16, 32, 12), 
-            Block.box(3, 24, 4, 12, 32, 12)   
-    );private static final VoxelShape SHAPE_EAST = Shapes.or(
-            BASE,
-            Block.box(0, 16, 4, 4, 32, 12),   
-            Block.box(4, 24, 4, 13, 32, 12)   
-    );public CyberwareWorkbenchBlock(Properties properties) {
-        super(properties);
+import javax.annotation.Nullable;
 
+public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implements EntityBlock {
+    private static final VoxelShape BASE = Block.box(0, 0, 0, 16, 16, 16);
+    private static final VoxelShape SHAPE_NORTH = Shapes.or(
+            BASE,
+            Block.box(4, 16, 12, 12, 32, 16),
+            Block.box(4, 24, 3, 12, 32, 12)
+    );
+    private static final VoxelShape SHAPE_SOUTH = Shapes.or(
+            BASE,
+            Block.box(4, 16, 0, 12, 32, 4),
+            Block.box(4, 24, 4, 12, 32, 13)
+    );
+    private static final VoxelShape SHAPE_WEST = Shapes.or(
+            BASE,
+            Block.box(12, 16, 4, 16, 32, 12),
+            Block.box(3, 24, 4, 12, 32, 12)
+    );
+    private static final VoxelShape SHAPE_EAST = Shapes.or(
+            BASE,
+            Block.box(0, 16, 4, 4, 32, 12),
+            Block.box(4, 24, 4, 13, 32, 12)
+    );
+
+    public CyberwareWorkbenchBlock(Properties properties) {
+        super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.SOUTH));
 
     }
+
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
 
     }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING);
 
     }
+
+    @Override
+    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
+        if (!pLevel.isClientSide) {
+            if (pLevel.hasNeighborSignal(pPos)) {
+                BlockEntity entity = pLevel.getBlockEntity(pPos);
+                if (entity instanceof CyberwareWorkbenchBlockEntity workbench) {
+                    workbench.startCrafting();
+                }
+            }
+        }
+        super.neighborChanged(pState, pLevel, pPos, pBlock, pFromPos, pIsMoving);
+    }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        Direction direction = state.getValue(FACING);return switch (direction) {
+        Direction direction = state.getValue(FACING);
+        return switch (direction) {
             case SOUTH -> SHAPE_SOUTH;
-
             case WEST -> SHAPE_WEST;
-
             case EAST -> SHAPE_EAST;
-
             default -> SHAPE_NORTH;
 
         };
 
     }
+
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
@@ -88,7 +112,6 @@ import javax.annotation.Nullable;public class CyberwareWorkbenchBlock extends Ho
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-
             if (entity instanceof CyberwareWorkbenchBlockEntity) {
                 NetworkHooks.openScreen((ServerPlayer) pPlayer, (CyberwareWorkbenchBlockEntity) entity, pPos);
 
@@ -100,6 +123,7 @@ import javax.annotation.Nullable;public class CyberwareWorkbenchBlock extends Ho
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
 
     }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
@@ -110,11 +134,11 @@ import javax.annotation.Nullable;public class CyberwareWorkbenchBlock extends Ho
         return null;
 
     }
+
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-
             if (blockEntity instanceof CyberwareWorkbenchBlockEntity) {
                 ((CyberwareWorkbenchBlockEntity) blockEntity).drops();
 
