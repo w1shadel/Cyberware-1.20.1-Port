@@ -1,8 +1,4 @@
-package com.Maxwell.cyber_ware_port.Common.Item.Base;
-
-
-
-public enum BodyPartType {
+package com.Maxwell.cyber_ware_port.Common.Item.Base;public enum BodyPartType {
     NONE,       
     EYES,       
     BRAIN,      
@@ -15,7 +11,4 @@ public enum BodyPartType {
     ARM,        
     HAND,       
     LEG,        
-    FOOT;
-
-       
-}
+    FOOT;}

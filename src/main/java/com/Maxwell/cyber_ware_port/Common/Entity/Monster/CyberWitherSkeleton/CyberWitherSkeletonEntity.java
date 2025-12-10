@@ -1,20 +1,9 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Radio.TemptToBlockGoal;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;import com.Maxwell.cyber_ware_port.Common.Block.Radio.TemptToBlockGoal;
 import com.Maxwell.cyber_ware_port.Common.Entity.ICyberwareMob;
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberSkeleton.CyberSkeletonEntity;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import net.minecraft.world.entity.EntityType;
-
-import net.minecraft.world.level.Level;
-
-
-public class CyberWitherSkeletonEntity extends CyberSkeletonEntity implements ICyberwareMob {
+import net.minecraft.world.level.Level;public class CyberWitherSkeletonEntity extends CyberSkeletonEntity implements ICyberwareMob {
 
     public CyberWitherSkeletonEntity(EntityType<? extends net.minecraft.world.entity.monster.Skeleton> type, Level level) {
         super(type, level);

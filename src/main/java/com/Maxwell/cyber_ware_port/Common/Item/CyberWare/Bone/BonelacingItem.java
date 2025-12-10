@@ -1,16 +1,7 @@
-package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Bone;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Bone;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
-
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-
-import net.minecraft.world.entity.ai.attributes.Attributes;
-
-
-public class BonelacingItem extends CyberwareItem {
+import net.minecraft.world.entity.ai.attributes.Attributes;public class BonelacingItem extends CyberwareItem {
 
     public BonelacingItem() {
         super(new Builder(10, RobosurgeonBlockEntity.SLOT_BONES)

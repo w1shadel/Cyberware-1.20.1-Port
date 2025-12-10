@@ -1,28 +1,13 @@
-package com.Maxwell.cyber_ware_port.Common.Entity;
-
-
-import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither.CyberWitherBoss;
-
+package com.Maxwell.cyber_ware_port.Common.Entity;import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither.CyberWitherBoss;
 import com.Maxwell.cyber_ware_port.CyberWare;
-
 import com.Maxwell.cyber_ware_port.Init.ModEntities;
-
 import net.minecraft.world.entity.ai.attributes.Attributes;
-
 import net.minecraft.world.entity.monster.AbstractSkeleton;
-
 import net.minecraft.world.entity.monster.Creeper;
-
 import net.minecraft.world.entity.monster.Monster;
-
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import net.minecraftforge.fml.common.Mod;
-
-
-@Mod.EventBusSubscriber(modid = CyberWare.MODID,bus = Mod.EventBusSubscriber.Bus.MOD)
+import net.minecraftforge.fml.common.Mod;@Mod.EventBusSubscriber(modid = CyberWare.MODID,bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EntitiesAttributeEvents {
     @SubscribeEvent
     public static void entityAttributeEvent(EntityAttributeCreationEvent event) {
@@ -33,10 +18,7 @@ public class EntitiesAttributeEvents {
                 .add(Attributes.ATTACK_DAMAGE, 6.0D) 
                 .add(Attributes.ARMOR, 2.0D)
                 .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE)
-                .build());
-
-
-        event.put(ModEntities.CYBER_SKELETON.get(), AbstractSkeleton.createAttributes()
+                .build());event.put(ModEntities.CYBER_SKELETON.get(), AbstractSkeleton.createAttributes()
                 .add(Attributes.MAX_HEALTH, 25.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.30D)
                 .build());

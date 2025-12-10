@@ -1,24 +1,12 @@
-package com.Maxwell.cyber_ware_port.Datagen;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Datagen;import com.Maxwell.cyber_ware_port.CyberWare;
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.data.PackOutput;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.world.item.Item;
-
 import net.minecraft.world.item.ItemDisplayContext;
-
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
-
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-
 import net.minecraftforge.common.data.ExistingFileHelper;
-
 import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("removal")
@@ -54,7 +42,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.COMPONENT_STORAGE);
 
         simpleItem(ModItems.COMPONENT_MICROELECTRIC);
-
+        simpleItem(ModItems.NEUROPOZYNE);
 
         withExistingParent("component_box",
                 new ResourceLocation(CyberWare.MODID, "block/component_box"));
@@ -102,10 +90,7 @@ cyberwareItem(ModItems.CYBER_EYE);
 
         cyberwareItem(ModItems.TARGETING_OVERLAY);
 
-        cyberwareItem(ModItems.DISTANCE_ENHANCER);
-
-
-        cyberwareItem(ModItems.COMPRESSED_OXYGEN);
+        cyberwareItem(ModItems.DISTANCE_ENHANCER);cyberwareItem(ModItems.COMPRESSED_OXYGEN);
 
         cyberwareItem(ModItems.HYPER_OXYGENATION);
 
@@ -123,10 +108,7 @@ cyberwareItem(ModItems.CYBER_EYE);
 
         cyberwareItem(ModItems.ADRENALINE_PUMP);
 
-        cyberwareItem(ModItems.DENSE_BATTERY);
-
-
-        cyberwareItem(ModItems.CORTICAL_STACK);
+        cyberwareItem(ModItems.DENSE_BATTERY);cyberwareItem(ModItems.CORTICAL_STACK);
 
         cyberwareItem(ModItems.ENDER_JAMMER);
 
@@ -136,10 +118,7 @@ cyberwareItem(ModItems.CYBER_EYE);
 
         cyberwareItem(ModItems.THREAT_MATRIX);
 
-        cyberwareItem(ModItems.CRANIAL_BROADCASTER);
-
-
-        cyberwareItem(ModItems.CARDIOMECHANIC_PUMP);
+        cyberwareItem(ModItems.CRANIAL_BROADCASTER);cyberwareItem(ModItems.CARDIOMECHANIC_PUMP);
 
         cyberwareItem(ModItems.INTERNAL_DEFIBRILLATOR);
 
@@ -147,40 +126,25 @@ cyberwareItem(ModItems.CYBER_EYE);
 
         cyberwareItem(ModItems.STEM_CELL_SYNTHESIZER);
 
-        cyberwareItem(ModItems.CARDIOVASCULAR_COUPLER);
-
-
-        cyberwareItem(ModItems.SOLARSKIN);
+        cyberwareItem(ModItems.CARDIOVASCULAR_COUPLER);cyberwareItem(ModItems.SOLARSKIN);
 
         cyberwareItem(ModItems.SUBDERMAL_SPIKES);
 
         cyberwareItem(ModItems.SYNTHETIC_SKIN);
 
-        cyberwareItem(ModItems.TARGETED_IMMUNOSUPPRESSANT);
+        cyberwareItem(ModItems.TARGETED_IMMUNOSUPPRESSANT);cyberwareItem(ModItems.WIRED_REFLEXES);
 
-
-        cyberwareItem(ModItems.WIRED_REFLEXES);
-
-        cyberwareItem(ModItems.MYOMER_MUSCLE);
-
-
-        cyberwareItem(ModItems.BONELACING);
+        cyberwareItem(ModItems.MYOMER_MUSCLE);cyberwareItem(ModItems.BONELACING);
 
         cyberwareItem(ModItems.CITRATE_ENHANCEMENT);
 
-        cyberwareItem(ModItems.MARROW_BATTERY);
-
-
-        cyberwareItem(ModItems.CYBER_ARM_LEFT);
+        cyberwareItem(ModItems.MARROW_BATTERY);cyberwareItem(ModItems.CYBER_ARM_LEFT);
 
         cyberwareItem(ModItems.CYBER_ARM_RIGHT);
 
         cyberwareItem(ModItems.RETRACTABLE_CLAWS);
 
-        cyberwareItem(ModItems.REINFORCED_FIST);
-
-
-        cyberwareItem(ModItems.CYBER_LEG_LEFT);
+        cyberwareItem(ModItems.REINFORCED_FIST);cyberwareItem(ModItems.CYBER_LEG_LEFT);
 
         cyberwareItem(ModItems.CYBER_LEG_RIGHT);
 
@@ -206,14 +170,8 @@ cyberwareItem(ModItems.CYBER_EYE);
 
         ResourceLocation standardTexture = new ResourceLocation(CyberWare.MODID, "item/" + path);
 
-        ResourceLocation scavengedTexture = new ResourceLocation(CyberWare.MODID, "item/" + path + "_scavenged");
-
-
-        ItemModelBuilder scavengedModel = withExistingParent(path + "_scavenged", new ResourceLocation("item/generated"))
-                .texture("layer0", scavengedTexture);
-
-
-        withExistingParent(path, new ResourceLocation("item/generated"))
+        ResourceLocation scavengedTexture = new ResourceLocation(CyberWare.MODID, "item/" + path + "_scavenged");ItemModelBuilder scavengedModel = withExistingParent(path + "_scavenged", new ResourceLocation("item/generated"))
+                .texture("layer0", scavengedTexture);withExistingParent(path, new ResourceLocation("item/generated"))
                 .texture("layer0", standardTexture)
                 .override()
 

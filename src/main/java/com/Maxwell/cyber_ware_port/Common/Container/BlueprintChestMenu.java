@@ -1,45 +1,22 @@
-package com.Maxwell.cyber_ware_port.Common.Container;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Container;import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import net.minecraft.world.inventory.ContainerLevelAccess;
-
 import net.minecraft.world.inventory.Slot;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import net.minecraftforge.items.SlotItemHandler;
-
-import org.jetbrains.annotations.NotNull;
-
-
-public class BlueprintChestMenu extends AbstractContainerMenu {
+import org.jetbrains.annotations.NotNull;public class BlueprintChestMenu extends AbstractContainerMenu {
 
     public final BlueprintChestBlockEntity blockEntity;
 
-    private static final int CONTAINER_SLOTS = 18;
- 
-
-    public BlueprintChestMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+    private static final int CONTAINER_SLOTS = 18;public BlueprintChestMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
 
     }
@@ -47,10 +24,7 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
     public BlueprintChestMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), pContainerId);
 
-        this.blockEntity = (BlueprintChestBlockEntity) entity;
-
-
-        addEntitySlots();
+        this.blockEntity = (BlueprintChestBlockEntity) entity;addEntitySlots();
 
         addPlayerInventory(inv);
 
@@ -85,22 +59,13 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
 
-        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
+        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;ItemStack sourceStack = sourceSlot.getItem();
 
-
-        ItemStack sourceStack = sourceSlot.getItem();
-
-        ItemStack copyOfSourceStack = sourceStack.copy();
-
-
-        int PLAYER_INVENTORY_START = CONTAINER_SLOTS;
+        ItemStack copyOfSourceStack = sourceStack.copy();int PLAYER_INVENTORY_START = CONTAINER_SLOTS;
  
         int PLAYER_HOTBAR_START = PLAYER_INVENTORY_START + 27;
  
-        int END_OF_SLOTS = PLAYER_HOTBAR_START + 9;
- 
-
-        if (pIndex < CONTAINER_SLOTS) {
+        int END_OF_SLOTS = PLAYER_HOTBAR_START + 9;if (pIndex < CONTAINER_SLOTS) {
             if (!moveItemStackTo(sourceStack, PLAYER_INVENTORY_START, END_OF_SLOTS, true)) {
                 return ItemStack.EMPTY;
 

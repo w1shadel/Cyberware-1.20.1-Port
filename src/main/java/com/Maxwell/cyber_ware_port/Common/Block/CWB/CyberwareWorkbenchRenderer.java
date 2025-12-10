@@ -1,28 +1,14 @@
-package com.Maxwell.cyber_ware_port.Common.Block.CWB;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Block.CWB;import com.Maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import com.mojang.math.Axis;
-
 import net.minecraft.client.renderer.MultiBufferSource;
-
 import net.minecraft.client.renderer.RenderType;
-
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-
 import net.minecraft.core.Direction;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-
 import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
@@ -30,10 +16,7 @@ public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<Cyberware
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/cyberware_workbench_model.png");
 
-    private final CyberWareWorkBenchModel model;
-
-
-    public CyberwareWorkbenchRenderer(BlockEntityRendererProvider.Context context) {
+    private final CyberWareWorkBenchModel model;public CyberwareWorkbenchRenderer(BlockEntityRendererProvider.Context context) {
         this.model = new CyberWareWorkBenchModel(context.bakeLayer(CyberWareWorkBenchModel.LAYER_LOCATION));
 
     }

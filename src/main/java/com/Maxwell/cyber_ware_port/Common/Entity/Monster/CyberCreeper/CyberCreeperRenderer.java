@@ -1,26 +1,12 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberCreeper;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberCreeper;import com.Maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-
 import net.minecraft.client.renderer.entity.MobRenderer;
-
 import net.minecraft.resources.ResourceLocation;
-
-import net.minecraft.util.Mth;
-
-
-@SuppressWarnings("removal")
+import net.minecraft.util.Mth;@SuppressWarnings("removal")
 public class CyberCreeperRenderer extends MobRenderer<CyberCreeperEntity, CyberCreeperModel> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_creeper.png");
-
-
-    public CyberCreeperRenderer(EntityRendererProvider.Context context) {
+    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_creeper.png");public CyberCreeperRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberCreeperModel(context.bakeLayer(CyberCreeperModel.LAYER_LOCATION)), 0.5F);
 }
 

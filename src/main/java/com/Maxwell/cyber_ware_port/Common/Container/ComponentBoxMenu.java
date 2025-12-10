@@ -1,55 +1,30 @@
 package com.Maxwell.cyber_ware_port.Common.Container;
 
 import com.Maxwell.cyber_ware_port.Common.Block.Component_Box.ComponentBoxBlockEntity;
-
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.world.InteractionHand;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import net.minecraft.world.inventory.ClickType;
-
 import net.minecraft.world.inventory.Slot;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import net.minecraftforge.items.IItemHandler;
-
 import net.minecraftforge.items.ItemStackHandler;
-
-import net.minecraftforge.items.SlotItemHandler;
-
-
-public class ComponentBoxMenu extends AbstractContainerMenu {
+import net.minecraftforge.items.SlotItemHandler;public class ComponentBoxMenu extends AbstractContainerMenu {
 
     private final ItemStack lockedStack;
 
-    private final int lockedSlotIndex;
+    private final int lockedSlotIndex;public ComponentBoxMenu(int id, Inventory playerInv, FriendlyByteBuf extraData) {
 
-
-    public ComponentBoxMenu(int id, Inventory playerInv, FriendlyByteBuf extraData) {
-
-        super(ModMenuTypes.COMPONENT_BOX_MENU.get(), id);
-
-
-        boolean mainHand = extraData.readBoolean();
+        super(ModMenuTypes.COMPONENT_BOX_MENU.get(), id);boolean mainHand = extraData.readBoolean();
 
         this.lockedStack = playerInv.player.getItemInHand(mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 
         this.lockedSlotIndex = mainHand ? playerInv.selected : 40;
-IItemHandler handler = new ItemStackHandler(18);
-
-
-        if (!lockedStack.isEmpty()) {
+IItemHandler handler = new ItemStackHandler(18);if (!lockedStack.isEmpty()) {
             var cap = lockedStack.getCapability(ForgeCapabilities.ITEM_HANDLER);
 
             if (cap.isPresent()) {
@@ -71,10 +46,7 @@ IItemHandler handler = new ItemStackHandler(18);
 
         if (playerInv.player.getMainHandItem() == boxStack) this.lockedSlotIndex = playerInv.selected;
 
-        else this.lockedSlotIndex = 40;
-
-
-        boxStack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(this::addBoxSlots);
+        else this.lockedSlotIndex = 40;boxStack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(this::addBoxSlots);
 
         addPlayerInventory(playerInv);
 
@@ -85,10 +57,7 @@ IItemHandler handler = new ItemStackHandler(18);
 
         this.lockedStack = ItemStack.EMPTY;
 
-        this.lockedSlotIndex = -1;
-
-
-        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(this::addBoxSlots);
+        this.lockedSlotIndex = -1;blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(this::addBoxSlots);
 
         addPlayerInventory(playerInv);
 

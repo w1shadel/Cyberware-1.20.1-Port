@@ -1,52 +1,25 @@
-package com.Maxwell.cyber_ware_port.Common.Block.Component_Box;
-
-
-import net.minecraft.core.BlockPos;
-
+package com.Maxwell.cyber_ware_port.Common.Block.Component_Box;import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-
 import net.minecraft.nbt.CompoundTag;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.world.InteractionHand;
-
 import net.minecraft.world.InteractionResult;
-
 import net.minecraft.world.entity.LivingEntity;
-
 import net.minecraft.world.entity.item.ItemEntity;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.item.context.BlockPlaceContext;
-
 import net.minecraft.world.level.BlockGetter;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.*;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraft.world.level.block.state.StateDefinition;
-
 import net.minecraft.world.phys.BlockHitResult;
-
 import net.minecraft.world.phys.shapes.CollisionContext;
-
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 import net.minecraftforge.network.NetworkHooks;
-
-import org.jetbrains.annotations.Nullable;
-
-
-public class ComponentBoxBlock extends HorizontalDirectionalBlock implements EntityBlock {
+import org.jetbrains.annotations.Nullable;public class ComponentBoxBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public ComponentBoxBlock(Properties properties) {
         super(properties);
 
@@ -55,16 +28,10 @@ public class ComponentBoxBlock extends HorizontalDirectionalBlock implements Ent
     }private static final VoxelShape SHAPE_NORTH = Block.box(1, 0, 4, 15, 11, 12);
 private static final VoxelShape SHAPE_EAST = Block.box(4, 0, 1, 12, 11, 15);
 private static final VoxelShape SHAPE_SOUTH = Block.box(1, 0, 4, 15, 11, 12);
-private static final VoxelShape SHAPE_WEST = Block.box(4, 0, 1, 12, 11, 15);
-
-
-    @Override
+private static final VoxelShape SHAPE_WEST = Block.box(4, 0, 1, 12, 11, 15);@Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 
-        Direction facing = state.getValue(FACING);
-
-
-        switch (facing) {
+        Direction facing = state.getValue(FACING);switch (facing) {
             case EAST:
                 return SHAPE_EAST;
 
@@ -131,10 +98,7 @@ private static final VoxelShape SHAPE_WEST = Block.box(4, 0, 1, 12, 11, 15);
     }
     @Override
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
-
-
-        BlockEntity be = pLevel.getBlockEntity(pPos);
+        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);BlockEntity be = pLevel.getBlockEntity(pPos);
 
         if (be instanceof ComponentBoxBlockEntity box) {
 
@@ -161,17 +125,11 @@ private static final VoxelShape SHAPE_WEST = Block.box(4, 0, 1, 12, 11, 15);
 
             if (be instanceof ComponentBoxBlockEntity box) {
 
-                ItemStack itemStack = new ItemStack(this.asItem());
-
-
-                CompoundTag tag = new CompoundTag();
+                ItemStack itemStack = new ItemStack(this.asItem());CompoundTag tag = new CompoundTag();
 
                 tag.put("Inventory", box.itemHandler.serializeNBT());
 
-                itemStack.setTag(tag);
-
-
-                if (box.hasCustomName()) {
+                itemStack.setTag(tag);if (box.hasCustomName()) {
                     itemStack.setHoverName(box.getDisplayName());
 
                 }

@@ -1,22 +1,8 @@
-package com.Maxwell.cyber_ware_port.Common.Item.Base;
-
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
-
+package com.Maxwell.cyber_ware_port.Common.Item.Base;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import net.minecraft.network.chat.Component;
-
-
 import net.minecraft.network.chat.MutableComponent;
 
-
-
-import static com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity.*;
-
-
-
-public enum CyberwareSlotType {
+import static com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity.*;public enum CyberwareSlotType {
 
     EYES("cyberware_slot.cyber_ware_port.eyes"),
     BRAIN("cyberware_slot.cyber_ware_port.brain"),
@@ -33,61 +19,25 @@ public enum CyberwareSlotType {
     LEGS("cyberware_slot.cyber_ware_port.legs"),
     BOOTS("cyberware_slot.cyber_ware_port.boots"),
 
-    UNKNOWN("cyberware_slot.cyber_ware_port.unknown");
-
-
-
-    private final String translationKey;
-
-
-
-    CyberwareSlotType(String translationKey) {
-        this.translationKey = translationKey;
-
-
-    }
+    UNKNOWN("cyberware_slot.cyber_ware_port.unknown");private final String translationKey;CyberwareSlotType(String translationKey) {
+        this.translationKey = translationKey;}
 
     public MutableComponent getDisplayName() {
-        return Component.translatable(this.translationKey);
-
-
-    }
+        return Component.translatable(this.translationKey);}
     public static CyberwareSlotType fromId(int id) {
-        if (id < 0) return UNKNOWN;
-
-
-
-        if (isInRange(id, SLOT_EYES)) return EYES;
-
-
-        if (isInRange(id, SLOT_BRAIN)) return BRAIN;
-
-
-        if (isInRange(id, SLOT_HEART)) return HEART;
+        if (id < 0) return UNKNOWN;if (isInRange(id, SLOT_EYES)) return EYES;if (isInRange(id, SLOT_BRAIN)) return BRAIN;if (isInRange(id, SLOT_HEART)) return HEART;
 
         if (isInRange(id, SLOT_LUNGS)) return LUNGS;
 
-        if (isInRange(id, SLOT_STOMACH)) return STOMACH;
-
-
-        if (isInRange(id, SLOT_SKIN)) return SKIN;
+        if (isInRange(id, SLOT_STOMACH)) return STOMACH;if (isInRange(id, SLOT_SKIN)) return SKIN;
 
         if (isInRange(id, SLOT_MUSCLE)) return MUSCLE;
 
-        if (isInRange(id, SLOT_BONES)) return BONES;
+        if (isInRange(id, SLOT_BONES)) return BONES;if (isInRange(id, SLOT_ARMS)) return ARMS;
 
+        if (isInRange(id, SLOT_HANDS)) return HANDS;if (isInRange(id, SLOT_LEGS)) return LEGS;
 
-        if (isInRange(id, SLOT_ARMS)) return ARMS;
-
-        if (isInRange(id, SLOT_HANDS)) return HANDS;
-
-
-        if (isInRange(id, SLOT_LEGS)) return LEGS;
-
-        if (isInRange(id, SLOT_BOOTS)) return BOOTS;
-
-
-        return UNKNOWN;
+        if (isInRange(id, SLOT_BOOTS)) return BOOTS;return UNKNOWN;
 
     }
 

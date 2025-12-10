@@ -1,43 +1,22 @@
-package com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe;
-
-
-import com.Maxwell.cyber_ware_port.Init.ModRecipes;
-
+package com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe;import com.Maxwell.cyber_ware_port.Init.ModRecipes;
 import com.google.gson.JsonArray;
-
 import com.google.gson.JsonObject;
-
 import net.minecraft.core.RegistryAccess;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.util.GsonHelper;
-
 import net.minecraft.util.RandomSource;
-
 import net.minecraft.world.SimpleContainer;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.item.crafting.Ingredient;
-
 import net.minecraft.world.item.crafting.Recipe;
-
 import net.minecraft.world.item.crafting.RecipeSerializer;
-
 import net.minecraft.world.item.crafting.RecipeType;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraftforge.registries.ForgeRegistries;
 
-
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
-
 import java.util.List;
 
 @SuppressWarnings("remeoval")
@@ -46,13 +25,7 @@ public class EngineeringRecipe implements Recipe<SimpleContainer> {
 
     private final Ingredient input;
 
-    private final List<OutputEntry> outputs;
-
-
-    private final float blueprintChance;
-
-
-    public EngineeringRecipe(ResourceLocation id, Ingredient input, List<OutputEntry> outputs, float blueprintChance) {
+    private final List<OutputEntry> outputs;private final float blueprintChance;public EngineeringRecipe(ResourceLocation id, Ingredient input, List<OutputEntry> outputs, float blueprintChance) {
         this.id = id;
 
         this.input = input;
@@ -131,10 +104,7 @@ public class EngineeringRecipe implements Recipe<SimpleContainer> {
     public static class OutputEntry {
         public final ItemStack stack;
 
-        public final float chance;
-
-
-        public OutputEntry(ItemStack stack, float chance) {
+        public final float chance;public OutputEntry(ItemStack stack, float chance) {
             this.stack = stack;
 
             this.chance = chance;
@@ -143,20 +113,11 @@ public class EngineeringRecipe implements Recipe<SimpleContainer> {
     }
 
     public static class Serializer implements RecipeSerializer<EngineeringRecipe> {
-        public static final Serializer INSTANCE = new Serializer();
-
-
-        @Override
+        public static final Serializer INSTANCE = new Serializer();@Override
         public EngineeringRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
-            Ingredient input = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "input"));
+            Ingredient input = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "input"));JsonArray outputArray = GsonHelper.getAsJsonArray(pSerializedRecipe, "outputs");
 
-
-            JsonArray outputArray = GsonHelper.getAsJsonArray(pSerializedRecipe, "outputs");
-
-            List<OutputEntry> outputList = new ArrayList<>();
-
-
-            for (int i = 0;
+            List<OutputEntry> outputList = new ArrayList<>();for (int i = 0;
  i < outputArray.size();
  i++) {
                 JsonObject entry = outputArray.get(i).getAsJsonObject();
@@ -173,22 +134,13 @@ public class EngineeringRecipe implements Recipe<SimpleContainer> {
 
             }
 
-            float blueprintChance = GsonHelper.getAsFloat(pSerializedRecipe, "blueprint_chance", 0.5f);
-
-
-            return new EngineeringRecipe(pRecipeId, input, outputList, blueprintChance);
+            float blueprintChance = GsonHelper.getAsFloat(pSerializedRecipe, "blueprint_chance", 0.5f);return new EngineeringRecipe(pRecipeId, input, outputList, blueprintChance);
 
         }
 
         @Override
         public @Nullable EngineeringRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            Ingredient input = Ingredient.fromNetwork(pBuffer);
-
-
-            float blueprintChance = pBuffer.readFloat();
-
-
-            int size = pBuffer.readInt();
+            Ingredient input = Ingredient.fromNetwork(pBuffer);float blueprintChance = pBuffer.readFloat();int size = pBuffer.readInt();
 
             List<OutputEntry> outputs = new ArrayList<>();
 
@@ -208,13 +160,7 @@ public class EngineeringRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, EngineeringRecipe pRecipe) {
-            pRecipe.input.toNetwork(pBuffer);
-
-
-            pBuffer.writeFloat(pRecipe.blueprintChance);
-
-
-            pBuffer.writeInt(pRecipe.outputs.size());
+            pRecipe.input.toNetwork(pBuffer);pBuffer.writeFloat(pRecipe.blueprintChance);pBuffer.writeInt(pRecipe.outputs.size());
 
             for (OutputEntry entry : pRecipe.outputs) {
                 pBuffer.writeItem(entry.stack);

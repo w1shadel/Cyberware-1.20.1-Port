@@ -1,87 +1,44 @@
-package com.Maxwell.cyber_ware_port.Common.Block.Radio;
-
-
-import net.minecraft.core.BlockPos;
-
+package com.Maxwell.cyber_ware_port.Common.Block.Radio;import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-
 import net.minecraft.core.particles.ParticleTypes;
-
 import net.minecraft.sounds.SoundEvents;
-
 import net.minecraft.sounds.SoundSource;
-
 import net.minecraft.util.RandomSource;
-
 import net.minecraft.world.item.context.BlockPlaceContext;
-
 import net.minecraft.world.level.BlockGetter;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.Block;
-
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-
 import net.minecraft.world.level.block.Mirror;
-
 import net.minecraft.world.level.block.Rotation;
-
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraft.world.level.block.state.StateDefinition;
-
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-
 import net.minecraft.world.phys.shapes.CollisionContext;
-
 import net.minecraft.world.phys.shapes.Shapes;
- // ★追加
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;public class RadioKitBlock extends HorizontalDirectionalBlock {
 
-import org.jetbrains.annotations.Nullable;
-
-
-public class RadioKitBlock extends HorizontalDirectionalBlock {
-
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-
-
-    // --- VoxelShape の定義 ---
-    // モデルの座標: 本体の箱 [3, 0, 6]~[15, 4, 14] + アンテナ [2, 0, 1]~[4, 15, 3]
-    // これらを結合(Shapes.or)し、各方角用に座標計算したものです。
-
-    // 北向き (Blockbenchのデフォルト)
-    private static final VoxelShape SHAPE_NORTH = Shapes.or(
-            Block.box(3, 0, 6, 15, 4, 14), // 本体
-            Block.box(2, 0, 1, 4, 15, 3)   // アンテナ
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;private static final VoxelShape SHAPE_NORTH = Shapes.or(
+            Block.box(3, 0, 6, 15, 4, 14), 
+            Block.box(2, 0, 1, 4, 15, 3)   
     );
 
-
-    // 南向き (180度回転)
     private static final VoxelShape SHAPE_SOUTH = Shapes.or(
             Block.box(1, 0, 2, 13, 4, 10),
             Block.box(12, 0, 13, 14, 15, 15)
     );
 
-
-    // 西向き (90度回転)
     private static final VoxelShape SHAPE_WEST = Shapes.or(
             Block.box(6, 0, 1, 14, 4, 13),
             Block.box(1, 0, 12, 3, 15, 14)
     );
 
-
-    // 東向き (270度回転)
     private static final VoxelShape SHAPE_EAST = Shapes.or(
             Block.box(2, 0, 3, 10, 4, 15),
             Block.box(13, 0, 2, 15, 15, 4)
-    );
-
-
-    public RadioKitBlock(Properties pProperties) {
+    );public RadioKitBlock(Properties pProperties) {
         super(pProperties);
 
         this.registerDefaultState(this.stateDefinition.any().
@@ -90,7 +47,6 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
 
     }
 
-    // ... (getStateForPlacement, rotate, mirror はそのまま) ...
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
@@ -110,7 +66,6 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
 
     }
 
-    // ★ここを書き換え
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         Direction direction = pState.getValue(FACING);
@@ -132,7 +87,6 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
         }
     }
 
-    // ... (createBlockStateDefinition 以降はそのまま) ...
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(POWERED);

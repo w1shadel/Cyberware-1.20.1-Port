@@ -1,20 +1,10 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither;import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.client.model.HierarchicalModel;
-
 import net.minecraft.client.model.geom.ModelLayerLocation;
-
 import net.minecraft.client.model.geom.ModelPart;
-
 import net.minecraft.client.model.geom.PartPose;
-
 import net.minecraft.client.model.geom.builders.*;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
@@ -44,10 +34,7 @@ public class CyberWitherModel  extends HierarchicalModel<CyberWitherBoss> {
 
     private final ModelPart ribcage;
 
-    private final ModelPart tail;
-
-
-    public CyberWitherModel(ModelPart pRoot) {
+    private final ModelPart tail;public CyberWitherModel(ModelPart pRoot) {
         this.root = pRoot;
 
         this.ribcage = pRoot.getChild("ribcage");

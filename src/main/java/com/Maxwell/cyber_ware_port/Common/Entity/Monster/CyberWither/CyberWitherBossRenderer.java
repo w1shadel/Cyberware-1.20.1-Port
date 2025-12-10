@@ -1,50 +1,27 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither;import com.Maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import com.mojang.math.Axis;
-
 import net.minecraft.client.renderer.MultiBufferSource;
-
 import net.minecraft.client.renderer.RenderType;
-
 import net.minecraft.client.renderer.culling.Frustum;
-
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-
 import net.minecraft.client.renderer.entity.MobRenderer;
-
 import net.minecraft.client.renderer.texture.OverlayTexture;
-
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.util.Mth;
-
 import net.minecraft.world.entity.Entity;
-
 import net.minecraft.world.phys.AABB;
-
 import net.minecraft.world.phys.Vec3;
-
 import org.joml.Matrix3f;
-
 import org.joml.Matrix4f;
 
 @SuppressWarnings("removal")
 public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberWitherModel> {
 
     private static final ResourceLocation WITHER_LOCATION =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
-
-
-    private static final ResourceLocation WITHER_INVULNERABLE_LOCATION =
+            new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");private static final ResourceLocation WITHER_INVULNERABLE_LOCATION =
             new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
 
     private static final ResourceLocation BEAM_LOCATION =
@@ -88,59 +65,29 @@ renderChains(pEntity, pPartialTicks, pPoseStack, pBuffer);
 
         double witherY = Mth.lerp(partialTick, wither.yo, wither.getY());
 
-        double witherZ = Mth.lerp(partialTick, wither.zo, wither.getZ());
-
-
-        double minionX = Mth.lerp(partialTick, minion.xo, minion.getX());
+        double witherZ = Mth.lerp(partialTick, wither.zo, wither.getZ());double minionX = Mth.lerp(partialTick, minion.xo, minion.getX());
 
         double minionY = Mth.lerp(partialTick, minion.yo, minion.getY());
 
-        double minionZ = Mth.lerp(partialTick, minion.zo, minion.getZ());
-
-
-        float dx = (float) (minionX - witherX);
+        double minionZ = Mth.lerp(partialTick, minion.zo, minion.getZ());float dx = (float) (minionX - witherX);
 
         float dy = (float) ((minionY + minion.getEyeHeight() * 0.5) - (witherY + wither.getEyeHeight() * 0.5));
 
-        float dz = (float) (minionZ - witherZ);
+        float dz = (float) (minionZ - witherZ);float distH = Mth.sqrt(dx * dx + dz * dz);
 
-
-        float distH = Mth.sqrt(dx * dx + dz * dz);
-
-        float distTotal = Mth.sqrt(dx * dx + dy * dy + dz * dz);
-
-
-        poseStack.pushPose();
+        float distTotal = Mth.sqrt(dx * dx + dy * dy + dz * dz);poseStack.pushPose();
 poseStack.translate(0.0D, wither.getEyeHeight() * 0.5D, 0.0D);
 poseStack.mulPose(Axis.YP.rotation((float) (Math.PI / 2.0D - Math.atan2(dz, dx))));
 
-        poseStack.mulPose(Axis.XP.rotation((float) -Math.atan2(dy, distH)));
+        poseStack.mulPose(Axis.XP.rotation((float) -Math.atan2(dy, distH)));VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(BEAM_LOCATION));float beamWidth = 0.15F;
 
+        float vScale = distTotal * 0.5F;float age = wither.tickCount + partialTick;
 
-        VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(BEAM_LOCATION));
-
-
-        float beamWidth = 0.15F;
-
-        float vScale = distTotal * 0.5F;
-
-
-        float age = wither.tickCount + partialTick;
-
-        float vOffset = age * 0.05F * -1.0F;
-
-
-        PoseStack.Pose pose = poseStack.last();
+        float vOffset = age * 0.05F * -1.0F;PoseStack.Pose pose = poseStack.last();
 
         Matrix4f matrix4f = pose.pose();
 
-        Matrix3f matrix3f = pose.normal();
-
-
-        drawVertex(vertexconsumer, matrix4f, matrix3f, distTotal, beamWidth, 0.0F, 1.0F, 0.5F, 1.0F, vOffset, vScale);
-
-
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
+        Matrix3f matrix3f = pose.normal();drawVertex(vertexconsumer, matrix4f, matrix3f, distTotal, beamWidth, 0.0F, 1.0F, 0.5F, 1.0F, vOffset, vScale);poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
 
         pose = poseStack.last();
 
@@ -148,10 +95,7 @@ poseStack.mulPose(Axis.YP.rotation((float) (Math.PI / 2.0D - Math.atan2(dz, dx))
 
         matrix3f = pose.normal();
 
-        drawVertex(vertexconsumer, matrix4f, matrix3f, distTotal, beamWidth, 0.0F, 1.0F, 0.5F, 1.0F, vOffset, vScale);
-
-
-        poseStack.popPose();
+        drawVertex(vertexconsumer, matrix4f, matrix3f, distTotal, beamWidth, 0.0F, 1.0F, 0.5F, 1.0F, vOffset, vScale);poseStack.popPose();
 
     }
 
@@ -213,15 +157,9 @@ if (invulTicks > 0) {
 
     @Override
     protected float getWhiteOverlayProgress(CyberWitherBoss pEntity, float pPartialTicks) {
-        int invulTicks = pEntity.getInvulnerableTicks();
+        int invulTicks = pEntity.getInvulnerableTicks();if (invulTicks > 0) {
 
-
-        if (invulTicks > 0) {
-
-            float progress = 1.0F - ((float)invulTicks - pPartialTicks) / 220.0F;
-
-
-            if (invulTicks < 10) {
+            float progress = 1.0F - ((float)invulTicks - pPartialTicks) / 220.0F;if (invulTicks < 10) {
                 return 1.0F;
 
             }float flash = Mth.sin(progress * progress * 20.0F * (float)Math.PI);
@@ -235,10 +173,7 @@ return Mth.clamp(flash, 0.0F, 0.6F);
 
     @Override
     protected void scale(CyberWitherBoss pLivingEntity, PoseStack pPoseStack, float pPartialTickTime) {
-        float f = 2.0F;
-
-
-        int i = pLivingEntity.getInvulnerableTicks();
+        float f = 2.0F;int i = pLivingEntity.getInvulnerableTicks();
 
         if (i > 0) {
             f -= ((float)i - pPartialTickTime) / 220.0F * 0.5F;

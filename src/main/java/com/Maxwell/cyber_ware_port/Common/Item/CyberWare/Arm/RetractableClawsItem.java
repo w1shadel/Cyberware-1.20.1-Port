@@ -1,20 +1,9 @@
-package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Arm;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-
 import net.minecraft.world.entity.ai.attributes.Attributes;
-
-import net.minecraft.world.item.ItemStack;
-
-
-public class RetractableClawsItem extends CyberwareItem {
+import net.minecraft.world.item.ItemStack;public class RetractableClawsItem extends CyberwareItem {
 
     public RetractableClawsItem() {
         super(new Builder(10, RobosurgeonBlockEntity.SLOT_HANDS)

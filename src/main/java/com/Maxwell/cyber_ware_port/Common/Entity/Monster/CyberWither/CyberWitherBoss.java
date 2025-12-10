@@ -1,95 +1,47 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither;
-
-
-import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither;import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
 import com.Maxwell.cyber_ware_port.Common.Entity.ICyberwareMob;
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton.CyberWitherSkeletonEntity;
-
 import com.Maxwell.cyber_ware_port.Init.ModEntities;
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.core.particles.ParticleTypes;
-
 import net.minecraft.nbt.CompoundTag;
-
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.network.syncher.EntityDataAccessor;
-
 import net.minecraft.network.syncher.EntityDataSerializers;
-
 import net.minecraft.network.syncher.SynchedEntityData;
-
 import net.minecraft.server.level.ServerBossEvent;
-
 import net.minecraft.server.level.ServerLevel;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.sounds.SoundEvent;
-
 import net.minecraft.sounds.SoundEvents;
-
 import net.minecraft.tags.DamageTypeTags;
-
 import net.minecraft.util.Mth;
-
 import net.minecraft.world.BossEvent;
-
 import net.minecraft.world.Difficulty;
-
 import net.minecraft.world.damagesource.DamageSource;
-
 import net.minecraft.world.effect.MobEffectInstance;
-
 import net.minecraft.world.effect.MobEffects;
-
 import net.minecraft.world.entity.*;
-
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-
 import net.minecraft.world.entity.ai.attributes.Attributes;
-
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-
 import net.minecraft.world.entity.ai.goal.*;
-
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-
 import net.minecraft.world.entity.monster.Monster;
-
 import net.minecraft.world.entity.monster.RangedAttackMob;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.entity.projectile.WitherSkull;
-
 import net.minecraft.world.item.Item;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.phys.Vec3;
-
 import org.jetbrains.annotations.Nullable;
 
-
 import java.util.EnumSet;
-
 import java.util.List;
-
-import java.util.function.Predicate;
-
-
-public class CyberWitherBoss extends Monster implements PowerableMob, RangedAttackMob, ICyberwareMob {
+import java.util.function.Predicate;public class CyberWitherBoss extends Monster implements PowerableMob, RangedAttackMob, ICyberwareMob {
     @Override
     public List<Item> getForbiddenDrops() {
         return java.util.Arrays.asList(
@@ -144,24 +96,12 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
 
     private final float[] xRotOHeads = new float[2];
 
-    private final float[] yRotOHeads = new float[2];
+    private final float[] yRotOHeads = new float[2];private final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);private int empCooldown = 200;
 
-
-    private final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
-
-
-    private int empCooldown = 200;
-
-    private boolean hasExplodedAtHalfHealth = false;
-
-
-    private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (entity) -> {
+    private boolean hasExplodedAtHalfHealth = false;private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (entity) -> {
         return entity.getMobType() != MobType.UNDEAD && entity.attackable();
 
-    };
-
-
-    public CyberWitherBoss(EntityType<? extends Monster> pEntityType, Level pLevel) {
+    };public CyberWitherBoss(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
 
         this.moveControl = new FlyingMoveControl(this, 10, false);
@@ -270,10 +210,7 @@ if (this.getY() < entity.getY() || !this.isPowered() && this.getY() < entity.get
             this.setYRot((float)Mth.atan2(vec3.z, vec3.x) * (180F / (float)Math.PI) - 90.0F);
 
         }
-        super.aiStep();
-
-
-        for(int i = 0;
+        super.aiStep();for(int i = 0;
  i < 2;
  ++i) {
             this.yRotOHeads[i] = this.yRotHeads[i];
@@ -356,17 +293,8 @@ if (this.getY() < entity.getY() || !this.isPowered() && this.getY() < entity.get
     }
     @Override
     protected void customServerAiStep() {
-        super.customServerAiStep();
-
-
-        if (this.getInvulnerableTicks() > 0) {
-            int k1 = this.getInvulnerableTicks() - 1;
-
-
-            this.bossEvent.setProgress(1.0F - (float)k1 / 220.0F);
-
-
-            if (k1 <= 0) {
+        super.customServerAiStep();if (this.getInvulnerableTicks() > 0) {
+            int k1 = this.getInvulnerableTicks() - 1;this.bossEvent.setProgress(1.0F - (float)k1 / 220.0F);if (k1 <= 0) {
                 this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, Level.ExplosionInteraction.MOB);
 
                 if (!this.isSilent()) {
@@ -375,10 +303,7 @@ if (this.getY() < entity.getY() || !this.isPowered() && this.getY() < entity.get
                 }
             }
 
-            this.setInvulnerableTicks(k1);
-
-
-            if (this.tickCount % 10 == 0 && !this.hasExplodedAtHalfHealth) {
+            this.setInvulnerableTicks(k1);if (this.tickCount % 10 == 0 && !this.hasExplodedAtHalfHealth) {
                 this.heal(10.0F);
 
             }
@@ -387,10 +312,7 @@ if (this.getY() < entity.getY() || !this.isPowered() && this.getY() < entity.get
 
             float currentHealth = this.getHealth();
 
-            float halfHealth = maxHealth / 2.0F;
-
-
-            if (!this.hasExplodedAtHalfHealth) {float phase1Progress = (currentHealth - halfHealth) / halfHealth;
+            float halfHealth = maxHealth / 2.0F;if (!this.hasExplodedAtHalfHealth) {float phase1Progress = (currentHealth - halfHealth) / halfHealth;
 
                 this.bossEvent.setProgress(Mth.clamp(phase1Progress, 0.0F, 1.0F));
 
@@ -407,10 +329,7 @@ if (this.getY() < entity.getY() || !this.isPowered() && this.getY() < entity.get
                 this.setAlternativeTarget(0, 0);
 
             }if (!this.hasExplodedAtHalfHealth && currentHealth <= halfHealth) {
-                this.hasExplodedAtHalfHealth = true;
-
-
-                this.setInvulnerableTicks(220);
+                this.hasExplodedAtHalfHealth = true;this.setInvulnerableTicks(220);
 return;
  
             }
@@ -458,17 +377,11 @@ return;
     private void startPhaseTwo() {
         this.hasSummonedMinions = true;
 
-        this.shieldTimer = 1200;
- 
-
-        spawnMinion(DATA_MINION_1, 3.0, 0.0);
+        this.shieldTimer = 1200;spawnMinion(DATA_MINION_1, 3.0, 0.0);
 
         spawnMinion(DATA_MINION_2, -1.5, 2.6);
 
-        spawnMinion(DATA_MINION_3, -1.5, -2.6);
-
-
-        this.level().globalLevelEvent(1023, this.blockPosition(), 0);
+        spawnMinion(DATA_MINION_3, -1.5, -2.6);this.level().globalLevelEvent(1023, this.blockPosition(), 0);
 
     }
 
@@ -516,15 +429,9 @@ return;
     }
 
     private void performEmpBlast() {
-        if (!this.isAlive()) return;
+        if (!this.isAlive()) return;List<Player> nearbyPlayers = this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(20.0D));
 
-
-        List<Player> nearbyPlayers = this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(20.0D));
-
-        boolean hitAny = false;
-
-
-        for (Player player : nearbyPlayers) {
+        boolean hitAny = false;for (Player player : nearbyPlayers) {
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                     int currentEnergy = data.getEnergyStored();
@@ -643,10 +550,7 @@ return;
 
         this.shieldTimer = pCompound.getInt("ShieldTimer");
 
-        this.hasExplodedAtHalfHealth = pCompound.getBoolean("HalfHealthExploded");
-
-
-        if (this.hasCustomName()) {
+        this.hasExplodedAtHalfHealth = pCompound.getBoolean("HalfHealthExploded");if (this.hasCustomName()) {
             this.bossEvent.setName(this.getDisplayName());
 
         }
@@ -707,10 +611,7 @@ return;
 
         double headY = this.getHeadY(pHead);
 
-        double headZ = this.getHeadZ(pHead);
-
-
-        double vecX = pX - headX;
+        double headZ = this.getHeadZ(pHead);double vecX = pX - headX;
 
         double vecY = pY - headY;
 
@@ -718,17 +619,11 @@ return;
 double distance = Math.sqrt(vecX * vecX + vecY * vecY + vecZ * vecZ);
 
         if (distance == 0) distance = 1.0;
- double offset = 1.5D;
-
-
-        double spawnX = headX + (vecX / distance) * offset;
+ double offset = 1.5D;double spawnX = headX + (vecX / distance) * offset;
 
         double spawnY = headY + (vecY / distance) * offset;
 
-        double spawnZ = headZ + (vecZ / distance) * offset;
-
-
-        WitherSkull witherskull = new WitherSkull(this.level(), this, vecX, vecY, vecZ);
+        double spawnZ = headZ + (vecZ / distance) * offset;WitherSkull witherskull = new WitherSkull(this.level(), this, vecX, vecY, vecZ);
 
         witherskull.setOwner(this);
 
@@ -737,10 +632,7 @@ double distance = Math.sqrt(vecX * vecX + vecY * vecY + vecZ * vecZ);
 
         }
 
-        witherskull.setPosRaw(spawnX, spawnY, spawnZ);
-
-
-        this.level().addFreshEntity(witherskull);
+        witherskull.setPosRaw(spawnX, spawnY, spawnZ);this.level().addFreshEntity(witherskull);
 
     }
 

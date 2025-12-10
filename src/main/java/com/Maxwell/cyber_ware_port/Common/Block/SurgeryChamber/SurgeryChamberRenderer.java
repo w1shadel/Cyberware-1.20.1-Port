@@ -1,38 +1,19 @@
-package com.Maxwell.cyber_ware_port.Common.Block.SurgeryChamber;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Block.SurgeryChamber;import com.Maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import com.mojang.math.Axis;
-
 import net.minecraft.client.renderer.MultiBufferSource;
-
 import net.minecraft.client.renderer.RenderType;
-
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-
 import net.minecraft.core.Direction;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 @SuppressWarnings("removal")
 public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChamberBlockEntity> {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/surgery_chamber.png");
-
-
-    private final SurgeryChamberModel model;
-
-
-    public SurgeryChamberRenderer(BlockEntityRendererProvider.Context context) {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/surgery_chamber.png");private final SurgeryChamberModel model;public SurgeryChamberRenderer(BlockEntityRendererProvider.Context context) {
 
         this.model = new SurgeryChamberModel(context.bakeLayer(SurgeryChamberModel.LAYER_LOCATION));
 

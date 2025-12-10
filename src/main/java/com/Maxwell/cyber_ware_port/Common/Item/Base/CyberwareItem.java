@@ -1,52 +1,21 @@
-package com.Maxwell.cyber_ware_port.Common.Item.Base;
-
-
-
-import com.google.common.collect.ArrayListMultimap;
-
-
+package com.Maxwell.cyber_ware_port.Common.Item.Base;import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
-
 import net.minecraft.ChatFormatting;
-
-
 import net.minecraft.nbt.CompoundTag;
-
-
 import net.minecraft.network.chat.Component;
-
-
 import net.minecraft.world.entity.ai.attributes.Attribute;
-
-
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-
-
 import net.minecraft.world.item.Item;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraftforge.registries.RegistryObject;
 
-
 import java.util.Collections;
-
 import java.util.HashSet;
-
 import java.util.Set;
-
 import java.util.UUID;
+import java.util.stream.Collectors;public class CyberwareItem extends Item implements ICyberware {
 
-import java.util.stream.Collectors;
-
-
-public class CyberwareItem extends Item implements ICyberware {
-
-    private static final String NBT_KEY_PRISTINE = "IsPristine";
-
-
-    private final int essenceCost;
+    private static final String NBT_KEY_PRISTINE = "IsPristine";private final int essenceCost;
 
     private final int slotId;
 
@@ -60,21 +29,9 @@ public class CyberwareItem extends Item implements ICyberware {
 
     private final int energyStorage;
 
-    private final StackingRule stackingRule;
+    private final StackingRule stackingRule;private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
 
-
-    private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
-
-    private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;
-
-
-    private final BodyPartType bodyPartType;
-
-
-    private final Multimap<Attribute, AttributeModifier> attributeModifiers;
-
-
-    public CyberwareItem(Builder builder) {
+    private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;private final BodyPartType bodyPartType;private final Multimap<Attribute, AttributeModifier> attributeModifiers;public CyberwareItem(Builder builder) {
         super(builder.properties);
 
         this.essenceCost = builder.essenceCost;
@@ -95,13 +52,7 @@ public class CyberwareItem extends Item implements ICyberware {
 
         this.prerequisiteRegistryObjects = Set.copyOf(builder.prerequisites);
 
-        this.incompatibleRegistryObjects = Set.copyOf(builder.incompatibleItems);
-
-
-        this.bodyPartType = builder.bodyPartType;
-
-
-        this.attributeModifiers = builder.attributeModifiers;
+        this.incompatibleRegistryObjects = Set.copyOf(builder.incompatibleItems);this.bodyPartType = builder.bodyPartType;this.attributeModifiers = builder.attributeModifiers;
 
     }
 
@@ -243,10 +194,7 @@ public class CyberwareItem extends Item implements ICyberware {
 
         private final int essenceCost;
 
-        private final int slotId;
-
-
-        private int maxInstallAmount = 1;
+        private final int slotId;private int maxInstallAmount = 1;
 
         private boolean hasEnergyProperties = false;
 
@@ -260,16 +208,7 @@ public class CyberwareItem extends Item implements ICyberware {
 
         private final Set<RegistryObject<Item>> prerequisites = new HashSet<>();
 
-        private final Set<RegistryObject<Item>> incompatibleItems = new HashSet<>();
-
-
-        private BodyPartType bodyPartType = BodyPartType.NONE;
-
-
-        private final Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
-
-
-        public Builder(int essenceCost, int slotId) {
+        private final Set<RegistryObject<Item>> incompatibleItems = new HashSet<>();private BodyPartType bodyPartType = BodyPartType.NONE;private final Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();public Builder(int essenceCost, int slotId) {
             this.properties = new Properties();
 
             this.essenceCost = essenceCost;

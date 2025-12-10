@@ -1,46 +1,24 @@
-package com.Maxwell.cyber_ware_port.Common.Container;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Scanner.ScannerBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Container;import com.Maxwell.cyber_ware_port.Common.Block.Scanner.ScannerBlockEntity;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.*;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
-import net.minecraftforge.items.SlotItemHandler;
-
-
-public class ScannerMenu extends AbstractContainerMenu {
+import net.minecraftforge.items.SlotItemHandler;public class ScannerMenu extends AbstractContainerMenu {
     public final ScannerBlockEntity blockEntity;
 
-    private final ContainerData data;
-
-
-    public ScannerMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+    private final ContainerData data;public ScannerMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
 
     }
     public int getScaledProgress(int scale) {
         int progress = this.data.get(0);
 
-        int maxProgress = this.data.get(1);
-
-
-        if (maxProgress == 0 || progress == 0) {
+        int maxProgress = this.data.get(1);if (maxProgress == 0 || progress == 0) {
             return 0;
 
         }
@@ -83,10 +61,7 @@ public class ScannerMenu extends AbstractContainerMenu {
 
         int maxProgress = this.data.get(1);
   
-        int progressArrowSize = 24;
- 
-
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+        int progressArrowSize = 24;return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
 
     }private static final int HOTBAR_SLOT_COUNT = 9;
 
@@ -102,10 +77,7 @@ public class ScannerMenu extends AbstractContainerMenu {
 
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
-    private static final int TE_INVENTORY_SLOT_COUNT = 3;
- 
-
-    @Override
+    private static final int TE_INVENTORY_SLOT_COUNT = 3;@Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
 
         return ItemStack.EMPTY;

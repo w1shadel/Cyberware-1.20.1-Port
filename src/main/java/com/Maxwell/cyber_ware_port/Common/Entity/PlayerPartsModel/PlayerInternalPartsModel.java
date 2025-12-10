@@ -1,20 +1,13 @@
 package com.Maxwell.cyber_ware_port.Common.Entity.PlayerPartsModel;
+
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import net.minecraft.client.model.Model;
-
 import net.minecraft.client.model.geom.ModelLayerLocation;
-
 import net.minecraft.client.model.geom.ModelPart;
-
 import net.minecraft.client.model.geom.PartPose;
-
 import net.minecraft.client.model.geom.builders.*;
-
 import net.minecraft.client.renderer.RenderType;
-
 import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
@@ -28,10 +21,7 @@ public class PlayerInternalPartsModel extends Model {
 
 	private final ModelPart muscal;
 
-	private final ModelPart skin;
-
-
-	public PlayerInternalPartsModel(ModelPart root) {
+	private final ModelPart skin;public PlayerInternalPartsModel(ModelPart root) {
         super(RenderType::entityCutoutNoCull);
 
 		this.root = root.getChild("root");
@@ -47,22 +37,7 @@ public class PlayerInternalPartsModel extends Model {
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 
-		PartDefinition partdefinition = meshdefinition.getRoot();
-
-
-		PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
-
-
-		PartDefinition bone = root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -4.0F, 0.0F));
-
-
-		PartDefinition muscal = root.addOrReplaceChild("muscal", CubeListBuilder.create().texOffs(0, 12).addBox(-5.0F, -4.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
-
-
-		PartDefinition skin = root.addOrReplaceChild("skin", CubeListBuilder.create().texOffs(0, 24).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
-
-
-		return LayerDefinition.create(meshdefinition, 64, 64);
+		PartDefinition partdefinition = meshdefinition.getRoot();PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));PartDefinition bone = root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -4.0F, 0.0F));PartDefinition muscal = root.addOrReplaceChild("muscal", CubeListBuilder.create().texOffs(0, 12).addBox(-5.0F, -4.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));PartDefinition skin = root.addOrReplaceChild("skin", CubeListBuilder.create().texOffs(0, 24).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));return LayerDefinition.create(meshdefinition, 64, 64);
 
 	}
 	@Override
@@ -75,10 +50,7 @@ public class PlayerInternalPartsModel extends Model {
 
         this.muscal.visible = false;
 
-        this.bone.visible = false;
-
-
-        switch (type) {
+        this.bone.visible = false;switch (type) {
             case 0 -> this.skin.visible = true;
 
             case 1 -> this.muscal.visible = true;

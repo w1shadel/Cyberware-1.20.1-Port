@@ -1,23 +1,10 @@
-package com.Maxwell.cyber_ware_port.Common.Network;
-
-
-import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
-
+package com.Maxwell.cyber_ware_port.Common.Network;import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraftforge.network.NetworkEvent;
 
-
-import java.util.function.Supplier;
-
-
-public class ComponentToggleExtendTabPacket {
-    private final boolean open;
-
-
-    public ComponentToggleExtendTabPacket(boolean open) {
+import java.util.function.Supplier;public class ComponentToggleExtendTabPacket {
+    private final boolean open;public ComponentToggleExtendTabPacket(boolean open) {
         this.open = open;
 
     }

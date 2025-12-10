@@ -1,32 +1,15 @@
-package com.Maxwell.cyber_ware_port.Common.Container;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Container;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.*;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
-import net.minecraftforge.items.SlotItemHandler;
-
-
-public class RobosurgeonMenu extends AbstractContainerMenu {
+import net.minecraftforge.items.SlotItemHandler;public class RobosurgeonMenu extends AbstractContainerMenu {
 
     public final RobosurgeonBlockEntity blockEntity;
 
@@ -34,10 +17,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
 
     private int invheight = 140;
 
-    private final ContainerData data;
-
-
-    public RobosurgeonMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+    private final ContainerData data;public RobosurgeonMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
 
     }
@@ -74,15 +54,9 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
     @Override
     public void clicked(int slotId, int button, ClickType clickType, Player player) {
         if (slotId >= 0 && slotId < this.slots.size()) {
-            Slot slot = this.getSlot(slotId);
-
-
-            if (slot.container == blockEntity.getItemHandler() || slot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) { 
+            Slot slot = this.getSlot(slotId);if (slot.container == blockEntity.getItemHandler() || slot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) { 
                 if (slot.hasItem()) {
-                    ItemStack stack = slot.getItem();
-
-
-                    if (stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
+                    ItemStack stack = slot.getItem();if (stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
                         slot.set(ItemStack.EMPTY);
 
                         return;
@@ -96,10 +70,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
     }
     private void addPlayerInventory(Inventory playerInventory) {
 
-        int startY = invheight;
-
-
-        for (int i = 0;
+        int startY = invheight;for (int i = 0;
  i < 3;
  ++i) {
             for (int l = 0;
@@ -112,10 +83,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
     }
     private void addPlayerHotbar(Inventory playerInventory) {
 
-        int startY = invheight + 58;
-
-
-        for (int i = 0;
+        int startY = invheight + 58;for (int i = 0;
  i < 9;
  ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, startY));

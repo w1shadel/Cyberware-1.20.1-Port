@@ -1,24 +1,10 @@
-package com.Maxwell.cyber_ware_port.Datagen;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Datagen;import com.Maxwell.cyber_ware_port.CyberWare;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModEntities;
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.data.PackOutput;
-
-import net.minecraftforge.common.data.LanguageProvider;
-
-
-public class ModLanguageProvider extends LanguageProvider {
-    private final String locale;
-
-
-    public ModLanguageProvider(PackOutput output, String locale) {
+import net.minecraftforge.common.data.LanguageProvider;public class ModLanguageProvider extends LanguageProvider {
+    private final String locale;public ModLanguageProvider(PackOutput output, String locale) {
         super(output, CyberWare.MODID, locale);
 
         this.locale = locale;
@@ -27,246 +13,1224 @@ public class ModLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        if (locale.equals("en_us")) {
+        if (locale.equals("zh_cn")) {
 
-            add(ModItems.CYBER_EYE.get(), "Cyber Eyes");
+            add("itemGroup.cyber_ware_port.items", "机械改造");
 
-            add(ModItems.BLUEPRINT.get(), "Blueprint");
+            add(ModItems.KATANA.get(), "太刀");
+            add(ModItems.NEUROPOZYNE.get(), "排斥反应抑制药剂");
+            add("cyberware.item.katana.desc", "击败赛博格类生物时提高电子义体掉落率。");
+            add("cyberware.item.neuropozyne.desc", "抑制电子义体排斥反应，效果持续一天。");
+            add("cyberware.message.critical_condition", "警告：排斥反应加剧，即将死亡。");
 
-            add(ModItems.EXP_CAPSULE.get(), "Experience Capsule");
+            add(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get(), "赛博凋灵骷髅头颅");
+            add(ModItems.BLUEPRINT.get(), "空白蓝图");
+            add(ModItems.EXP_CAPSULE.get(), "经验胶囊");
+            add(ModItems.CREATIVE_BATTERY.get(), "创造电容");
 
+            add(ModEntities.CYBER_CREEPER.get(), "赛博爬行者");
+            add(ModEntities.CYBER_WITHER.get(), "赛博凋灵");
+            add(ModEntities.CYBER_WITHER_SKELETON.get(), "赛博凋灵骷髅");
+            add(ModEntities.CYBER_SKELETON.get(), "赛博骷髅");
+            add(ModEntities.CYBER_ZOMBIE.get(), "僵尸赛博格");
 
-            add(ModItems.CORTICAL_STACK.get(), "Cortical Stack");
+            add(ModBlocks.ROBO_SURGEON.get(), "机械手术核心");
+            add(ModBlocks.RADIO_KIT_BLOCK.get(), "无线电工具箱");
+            add(ModBlocks.RADIO_TOWER_CORE.get(), "无线电信号塔");
+            add(ModBlocks.RADIO_TOWER_COMPONENT.get(), "无线电信号塔零件");
+            add(ModBlocks.SURGERY_CHAMBER.get(), "手术室");
+            add(ModBlocks.CYBERWARE_WORKBENCH.get(), "机械工程桌");
+            add(ModBlocks.COMPONENT_BOX.get(), "元件收纳盒");
+            add("item.cyber_ware_port.component_box", "元件收纳盒");
+            add(ModBlocks.BLUEPRINT_CHEST.get(), "蓝图档案室");
+            add(ModBlocks.SCANNER.get(), "机械扫描仪");
 
-            add(ModItems.ENDER_JAMMER.get(), "Ender Jammer");
+            add("message.cyber_ware_port.no_hud_installed", "请安装机械眼。");
+            add("gui.cyber_ware_port.scanner.chance", "[%s%% 概率]");
+            add("gui.cyber_ware_port.need_paper", "需要纸张。");
+            add("gui.cyber_ware_port.assemble", "组装");
+            add("gui.cyber_ware_port.deconstruct", "拆解");
+            add("gui.cyber_ware_port.blueprint_chance", "有 %s%% 的概率获得蓝图");
+            add("gui.cyber_ware_port.installed_cyberware.title", "术后电子义体状态");
+            add("gui.cyber_ware_port.button.view_installed", "索引");
+            add("gui.cyber_ware_port.menu", "电子义体菜单");
+            add("cyberware.gui.active.enable", "启用");
+            add("cyberware.gui.active.disable", "禁用");
+            add("cyberware.gui.active.zoom", "缩放");
 
-            add(ModItems.CONSCIOUSNESS_TRANSMITTER.get(), "Consciousness Transmitter");
+            add(ModItems.COMPONENT_ACTUATOR.get(), "执行器");
+            add(ModItems.COMPONENT_REACTOR.get(), "生物反应器");
+            add(ModItems.COMPONENT_TITANIUM.get(), "钛金属网");
+            add(ModItems.COMPONENT_SSC.get(), "固态电路");
+            add(ModItems.COMPONENT_PLATING.get(), "铬电镀板");
+            add(ModItems.COMPONENT_FIBEROPTICS.get(), "光学纤维");
+            add(ModItems.COMPONENT_FULLERENE.get(), "富勒烯微结构");
+            add(ModItems.COMPONENT_SYNTHNERVES.get(), "合成神经");
+            add(ModItems.COMPONENT_STORAGE.get(), "存储单元");
+            add(ModItems.COMPONENT_MICROELECTRIC.get(), "微电子单元");
 
-            add(ModItems.NEURAL_CONTEXTUALIZER.get(), "Neural Contextualizer");
+            add(ModItems.HUMAN_BRAIN.get(), "人类大脑");
+            add(ModItems.HUMAN_EYES.get(), "人类眼睛");
+            add(ModItems.HUMAN_HEART.get(), "人类心脏");
+            add(ModItems.HUMAN_LUNGS.get(), "人类肺");
+            add(ModItems.HUMAN_STOMACH.get(), "人类胃");
+            add(ModItems.HUMAN_SKIN.get(), "人类皮肤");
+            add(ModItems.HUMAN_MUSCLE.get(), "人类肌肉");
+            add(ModItems.HUMAN_BONE.get(), "人类骨骼");
+            add(ModItems.HUMAN_LEFT_ARM.get(), "人类左臂");
+            add(ModItems.HUMAN_RIGHT_ARM.get(), "人类右臂");
+            add(ModItems.HUMAN_LEFT_HAND.get(), "人类左手");
+            add(ModItems.HUMAN_RIGHT_HAND.get(), "人类右手");
+            add(ModItems.HUMAN_LEFT_LEG.get(), "人类左腿");
+            add(ModItems.HUMAN_RIGHT_LEG.get(), "人类右腿");
+            add(ModItems.HUMAN_LEFT_FOOT.get(), "人类左脚");
+            add(ModItems.HUMAN_RIGHT_FOOT.get(), "人类右脚");
 
-            add(ModItems.THREAT_MATRIX.get(), "Threat Matrix Calculator");
+            add(ModItems.CYBER_EYE.get(), "机械眼");
+            add(ModItems.LOW_LIGHT_VISION.get(), "低光视觉强化");
+            add(ModItems.LIQUID_REFRACTION.get(), "液体折射校准器");
+            add(ModItems.HUDJACK.get(), "HUD接口");
+            add(ModItems.TARGETING_OVERLAY.get(), "目标锁定浮层");
+            add(ModItems.DISTANCE_ENHANCER.get(), "距离增强器");
+            add(ModItems.CORTICAL_STACK.get(), "皮质数据库");
+            add(ModItems.ENDER_JAMMER.get(), "末影干扰器");
+            add(ModItems.CONSCIOUSNESS_TRANSMITTER.get(), "意识传送器");
+            add(ModItems.NEURAL_CONTEXTUALIZER.get(), "神经情景器");
+            add(ModItems.THREAT_MATRIX.get(), "威胁矩阵计算器");
+            add(ModItems.CRANIAL_BROADCASTER.get(), "颅内广播器");
+            add(ModItems.CARDIOMECHANIC_PUMP.get(), "心肺机能泵");
+            add(ModItems.INTERNAL_DEFIBRILLATOR.get(), "内置除颤器");
+            add(ModItems.PLATELET_DISPATCHER.get(), "血小板调度器");
+            add(ModItems.STEM_CELL_SYNTHESIZER.get(), "干细胞合成器");
+            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "心血管耦合器");
+            add(ModItems.COMPRESSED_OXYGEN.get(), "压缩氧气植入体");
+            add(ModItems.HYPER_OXYGENATION.get(), "超氧增压");
+            add(ModItems.LIVER_FILTER.get(), "肝脏过滤器");
+            add(ModItems.METABOLIC_GENERATOR.get(), "新陈代谢发电机");
+            add(ModItems.INTERNAL_BATTERY.get(), "内置电池");
+            add(ModItems.ADRENALINE_PUMP.get(), "肾上腺素泵");
+            add(ModItems.SOLARSKIN.get(), "太阳能皮肤");
+            add(ModItems.SUBDERMAL_SPIKES.get(), "皮下骨钉");
+            add(ModItems.SYNTHETIC_SKIN.get(), "合成皮肤");
+            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "靶向免疫抑制剂");
+            add(ModItems.WIRED_REFLEXES.get(), "神经反射强化");
+            add(ModItems.MYOMER_MUSCLE.get(), "肌节肌肉替代物");
+            add(ModItems.BONELACING.get(), "骨骼加固");
+            add(ModItems.CITRATE_ENHANCEMENT.get(), "柠檬酸盐强化");
+            add(ModItems.MARROW_BATTERY.get(), "骨髓电池");
+            add(ModItems.CYBER_ARM_LEFT.get(), "机械左臂");
+            add(ModItems.CYBER_ARM_RIGHT.get(), "机械右臂");
+            add(ModItems.CYBER_LEG_LEFT.get(), "机械左腿");
+            add(ModItems.CYBER_LEG_RIGHT.get(), "机械右腿");
+            add(ModItems.FINE_MANIPULATORS.get(), "精细操作器");
+            add(ModItems.RETRACTABLE_CLAWS.get(), "伸缩爪");
+            add(ModItems.REINFORCED_FIST.get(), "强化铁拳");
+            add(ModItems.DENSE_BATTERY.get(), "超高密度电容器");
+            add(ModItems.RAPID_FIRE_FLYWHEEL.get(), "速射飞轮");
+            add(ModItems.IMPLANTED_SPURS.get(), "植入式马刺");
+            add(ModItems.AQUATIC_PROPULSION.get(), "水下推进系统");
+            add(ModItems.DEPLOYABLE_WHEELS.get(), "可伸缩滚轮");
+            add(ModItems.LINEAR_ACTUATORS.get(), "线性致动器");
+            add(ModItems.FALL_BRACERS.get(), "坠落缓冲器");
 
-            add(ModItems.CRANIAL_BROADCASTER.get(), "Cranial Broadcaster");
+            add("key.keyboard.shift", "Shift");
+            add("key.cyber_ware_port.menu", "打开电子义体菜单");
+            add("key.categories.cyber_ware_port", "电子义体");
 
+            add("cyberware_slot.cyber_ware_port.eyes", "眼部插槽");
+            add("cyberware_slot.cyber_ware_port.brain", "颅部插槽");
+            add("cyberware_slot.cyber_ware_port.heart", "心脏插槽");
+            add("cyberware_slot.cyber_ware_port.lungs", "肺部插槽");
+            add("cyberware_slot.cyber_ware_port.stomach", "腹腔器官插槽");
+            add("cyberware_slot.cyber_ware_port.arms", "臂部插槽");
+            add("cyberware_slot.cyber_ware_port.hands", "手部插槽");
+            add("cyberware_slot.cyber_ware_port.legs", "腿部插槽");
+            add("cyberware_slot.cyber_ware_port.boots", "脚部插槽");
+            add("cyberware_slot.cyber_ware_port.skin", "皮肤插槽");
+            add("cyberware_slot.cyber_ware_port.muscle", "肌肉插槽");
+            add("cyberware_slot.cyber_ware_port.bones", "骨骼插槽");
+            add("cyberware_slot.cyber_ware_port.unknown", "未知");
 
-            add(ModItems.CARDIOMECHANIC_PUMP.get(), "Cardiomechanic Pump");
+            add("cyberware.tooltip.status", "状态: %s");
+            add("cyberware.tooltip.ghost.remove", "点击移除");
+            add("cyberware.tooltip.ghost.add", "点击添加 %s");
+            add("cyberware.tooltip.shiftPrompt", "按住 %s 查看详情");
+            add("cyberware.tooltip.requires", "需要:");
+            add("cyberware.tooltip.incompatible", "不兼容:");
+            add("cyberware.quality.manufactured", "全新");
+            add("cyberware.quality.scavenged", "二手");
+            add("cyberware.tooltip.essence", "排斥消耗：%s");
+            add("cyberware.tooltip.capacity", "电容量：%s");
+            add("cyberware.tooltip.powerConsumption", "耗电：%s/秒");
+            add("cyberware.tooltip.powerProduction", "发电：%s/秒");
+            add("cyberware.tooltip.maxInstall", "最多安装：%s");
+            add("cyberware.tooltip.slot", "%s");
+            add("cyberware.tooltip.exp_capsule", "存储着记录下来的经验值。");
 
-            add(ModItems.INTERNAL_DEFIBRILLATOR.get(), "Internal Defibrillator");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "机械化的手臂。\n比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "机械化的手臂。\n比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "机械化的腿部。\n比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "机械化的腿部。\n比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cybereyes", "免疫失明\n可以安装机械眼升级");
+            add("cyberware.tooltip.cybereye_upgrades_night_vision", "在黑暗中也能看见");
+            add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "在水中也能看见");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "显示体内电力信息\n允许升级以覆盖HUD");
+            add("cyberware.tooltip.cybereye_upgrades_targeting", "高亮显示附近的生物");
+            add("cyberware.tooltip.cybereye_upgrades_zoom", "可以放大远处的物体");
+            add("cyberware.tooltip.brain_upgrades_cortical_stack", "死亡时将经验值保存在胶囊中");
+            add("cyberware.tooltip.brain_upgrades_ender_jammer", "阻止附近的末影传送");
+            add("cyberware.tooltip.brain_upgrades_consciousness_transmitter", "死亡时保留部分经验值");
+            add("cyberware.tooltip.brain_upgrades_neural_contextualizer", "自动切换到合适的工具");
+            add("cyberware.tooltip.brain_upgrades_matrix", "轻甲或无甲时有高概率闪避攻击");
+            add("cyberware.tooltip.brain_upgrades_radio", "略微增加附近僵尸赛博格的生成率");
+            add("cyberware.tooltip.cyberheart", "免疫虚弱效果");
+            add("cyberware.tooltip.heart_upgrades_defibrillator", "阻止一次致命伤害（需要电力）");
+            add("cyberware.tooltip.heart_upgrades_platelets", "生命值接近满时进行治疗");
+            add("cyberware.tooltip.heart_upgrades_medkit", "在较长延迟后恢复上一次受到的伤害");
+            add("cyberware.tooltip.heart_upgrades_coupler", "将人体的生物电脉冲转化为电力");
+            add("cyberware.tooltip.lungs_upgrades_oxygen", "额外的氧气条，恢复缓慢");
+            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "冲刺时提供额外速度");
+            add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "消除食物和饮料的负面效果");
+            add("cyberware.tooltip.lower_organs_upgrades_metabolic", "消耗卡路里发电");
+            add("cyberware.tooltip.lower_organs_upgrades_battery", "储存能量");
+            add("cyberware.tooltip.lower_organs_upgrades_adrenaline", "生命值低时提升力量和速度");
+            add("cyberware.tooltip.creative_battery", "无限潜能");
+            add("cyberware.tooltip.dense_battery", "大容量电池");
+            add("cyberware.tooltip.skin_upgrades_solar_skin", "在阳光下发电");
+            add("cyberware.tooltip.skin_upgrades_subdermal_spikes", "轻甲或无甲时对攻击者造成伤害");
+            add("cyberware.tooltip.skin_upgrades_fake_skin", "隐藏机械臂和机械腿");
+            add("cyberware.tooltip.skin_upgrades_immuno", "抑制免疫系统的反应。");
+            add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "R1：攻击速度加快\nR2：受到攻击时准备武器\nR3：自动面向攻击者");
+            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "移动速度加快，力量提升");
+            add("cyberware.tooltip.bone_upgrades_bonelacing", "最大生命值提升");
+            add("cyberware.tooltip.bone_upgrades_boneflex", "通过弹性吸收掉落伤害");
+            add("cyberware.tooltip.bone_upgrades_bonebattery", "储存能量");
+            add("cyberware.tooltip.hand_upgrades_craft_hands", "无需工作台即可进行3x3合成");
+            add("cyberware.tooltip.hand_upgrades_claws", "空手攻击更强");
+            add("cyberware.tooltip.hand_upgrades_mining", "可以用手挖掘石质方块");
+            add("cyberware.tooltip.arm_upgrades_bow", "拉弓更快");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "跳得更高\nShift+跳跃发射自己\n两条机械腿效果更强");
+            add("cyberware.tooltip.leg_upgrades_fall_damage", "吸收微小冲击");
+            add("cyberware.tooltip.foot_upgrades_spurs", "提升自身速度");
+            add("cyberware.tooltip.foot_upgrades_aqua", "游泳更快，两条机械腿效果更强");
+            add("cyberware.tooltip.foot_upgrades_wheels", "可以走上1格高的方块（请关闭自动跳跃）");
 
-            add(ModItems.PLATELET_DISPATCHER.get(), "Platelet Dispatcher");
+            add("tooltip.cyber_ware_port.radio_tower_core", "吸引附近的赛博格类生物，但单独无法工作。");
+            add("tooltip.cyber_ware_port.radio_kit", "吸引64格内的赛博格类生物。");
+            add("tooltip.cyber_ware_port.component_box", "可放入零件，附近有机械工程桌时会增加标签页。");
+            add("tooltip.cyber_ware_port.scanner", "扫描电子义体，有50%的概率生成蓝图。");
+            add("tooltip.cyber_ware_port.radio_component", "无线电信标零件");
+            add("tooltip.cyber_ware_port.radio_component2", "在下方3x3范围内放置4层零件");
+            add("tooltip.cyber_ware_port.radio_component3", "在上方中央放置6层单个零件");
+            add("tooltip.cyber_ware_port.surgery_chamber", "代替机械手术核心执行手术。");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "预约手术后，进入其中即可工作。");
+            add("tooltip.cyber_ware_port.blueprint_chest", "可放入蓝图，附近有机械工程桌时会增加标签页。");
+            add("tooltip.cyber_ware_port.cyberware_workbench", "可以分解和制作电子义体。");
+            add("tooltip.cyber_ware_port.robo_surgeon", "用于设置移植和摘除的电子义体。");
+            add("tooltip.cyber_ware_port.robo_surgeon2", "放置在手术室上方才能工作。");
 
-            add(ModItems.STEM_CELL_SYNTHESIZER.get(), "Stem Cell Synthesizer");
+            add("death.attack.cyberware.brainless", "要是%1$s有脑子就好了…");
+            add("death.attack.cyberware.heartless", "%1$s因无情而死。");
+            add("death.attack.cyberware.surgery", "%1$s没能从手术中活下来。");
+            add("death.attack.cyberware.cyberware_missing_bone", "%1$s是个没有“骨气”的软蛋。");
+            add("death.attack.cyberware.nomuscles", "%1$s散架了。");
+            add("death.attack.cyberware.noessence", "%1$s的身体产生了排斥反应。");
+            add("death.attack.cyberware.lowessence", "%1$s的身体产生了排斥反应。");
 
-            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "Cardiovascular Coupler");
+            add("cyberware.risk.missing_requirement", "错误：缺少必要部件");
+            add("cyberware.risk.missing_brain", "警告：缺少大脑，无法思考。");
+            add("cyberware.risk.missing_bones_death", "警告：缺少骨骼，无法维持体型。");
+            add("cyberware.message.suppressant_applied", "症状已抑制。");
+            add("cyberware.risk.missing_heart", "警告：缺少心脏，无法输送血液。");
+            add("cyberware.risk.zero_tolerance", "警告：排斥达到极限，将因休克而死。");
+            add("cyberware.risk.missing_lungs", "危险：缺少肺，无法呼吸。");
+            add("cyberware.risk.missing_skin", "危险：缺少皮肤，受到的伤害增加。");
+            add("cyberware.risk.missing_arm_right", "注意：没有右臂。");
+            add("cyberware.risk.missing_arm_left", "注意：没有左臂。");
+            add("cyberware.risk.missing_legs_both", "注意：没有双腿，无法正常移动。");
+            add("cyberware.risk.missing_leg_single", "注意：没有一条腿，移动速度下降。");
+            add("cyberware.risk.missing_stomach", "注意：缺少胃，无法进食。");
+            add("cyberware.risk.missing_muscle", "注意：缺少肌肉，攻击力下降。");
+            add("cyberware.risk.missing_bones", "注意：缺少骨骼，受到的伤害增加。");
+            add("cyberware.risk.missing_eyes", "注意：缺少眼球，将会失明。");
+            add("cyberware.risk.low_tolerance", "注意：排斥反应加剧，需要抑制剂。");
 
-
-            add(ModItems.COMPRESSED_OXYGEN.get(), "Compressed Oxygen Implant");
-
-            add(ModItems.HYPER_OXYGENATION.get(), "Hyperoxygenation Boost");
-
-            add(ModItems.LIVER_FILTER.get(), "Liver Filter");
-
-            add(ModItems.METABOLIC_GENERATOR.get(), "Metabolic Generator");
-
-            add(ModItems.INTERNAL_BATTERY.get(), "Internal Battery");
-
-            add(ModItems.ADRENALINE_PUMP.get(), "Adrenaline Pump");
-
-            add(ModItems.CREATIVE_BATTERY.get(), "Creative Capacitor");
-
+            add("cyberware.gui.scanner_saying.0", "曲线积分中");
+            add("cyberware.gui.scanner_saying.1", "正在绘制鲸鱼迁徙图");
+            add("cyberware.gui.scanner_saying.2", "模拟热核战争");
+            add("cyberware.gui.scanner_saying.3", "正在更新Windows");
+            add("cyberware.gui.scanner_saying.4", "正在预测彩票号码");
+            add("cyberware.gui.scanner_saying.5", "正在拔除数据树");
+            add("cyberware.gui.scanner_saying.6", "正在安装Ask工具栏");
+            add("cyberware.gui.scanner_saying.7", "正在抑制政治宣传");
+            add("cyberware.gui.scanner_saying.8", "正在重新平衡其他Mod");
+            add("cyberware.gui.scanner_saying.9", "正在刷新Reddit缓冲区");
+            add("cyberware.gui.scanner_saying.10", "掷出4d6");
+            add("cyberware.gui.scanner_saying.11", "重复见过的话");
+            add("cyberware.gui.scanner_saying.12", "正在从二进制转换为八进制");
+            add("cyberware.gui.scanner_saying.13", "正在搜索羊驼");
+            add("cyberware.gui.scanner_saying.14", "正在撤回Phong着色器");
+            add("cyberware.gui.scanner_saying.15", "正在重新实现快速游戏");
+            add("cyberware.gui.scanner_saying.16", "正在移除微交易");
+            add("cyberware.gui.scanner_saying.17", "正在应用风水着色器");
+            add("cyberware.gui.scanner_saying.18", "正在生成看起来很蠢的评论");
+            add("cyberware.gui.scanner_saying.19", "正在收集粒子源");
+            add("cyberware.gui.scanner_saying.20", "正在拼接基因源");
+            add("cyberware.gui.scanner_saying.21", "正在给Herobrine画上黑眼珠");
+            add("cyberware.gui.scanner_saying.22", "正在刷写定制BIOS");
+            add("cyberware.gui.scanner_saying.23", "推荐的根目录");
+            add("cyberware.gui.scanner_saying.24", "正在强制执行EULA规定");
+            add("cyberware.gui.scanner_saying.25", "正在计算螺丝方向");
+            add("cyberware.gui.scanner_saying.26", "你喜欢吗？");
+            add("cyberware.gui.scanner_saying.27", "正在提取固件");
+            add("cyberware.gui.scanner_saying.28", "正在破解许可证密钥");
+            add("cyberware.gui.scanner_saying.29", "正在构建模拟");
+            add("cyberware.gui.scanner_saying.30", "正在监控电子移动量");
+            add("cyberware.gui.scanner_saying.31", "正在重新计算路线");
+            add("cyberware.gui.scanner_saying.32", "正在分割奇点");
+            add("cyberware.gui.scanner_saying.33", "正在压缩内部时钟");
+            add("cyberware.gui.scanner_saying.34", "正在重置湿度计");
+            add("cyberware.gui.scanner_saying.35", "正在分析品牌细节");
+            add("cyberware.gui.scanner_saying.36", "正在执行Yulife计算");
+            add("cyberware.gui.scanner_saying.37", "正在提取噪声层");
+            add("cyberware.gui.scanner_saying.38", "正在解微分方程");
+            add("cyberware.gui.scanner_saying.39", "正在开始空间模拟");
+            add("cyberware.gui.scanner_saying.40", "痒…好吃…");
+            add("cyberware.gui.scanner_saying.41", "正在统计赛河原的石堆");
+            add("cyberware.gui.scanner_saying.42", "我是玛丽，现在在你…");
+            add("cyberware.gui.scanner_saying.43", "正在解鸡兔同笼问题");
+            add("cyberware.gui.scanner_saying.44", "正在实现儿童模式");
+            add("cyberware.gui.scanner_saying.45", "正在伪造掉落率显示");
+            add("cyberware.gui.scanner_saying.46", "正在数捕风捉影的狸猫皮");
+            add("cyberware.gui.scanner_saying.47", "你喜欢红色房间吗？");
+            add("cyberware.gui.scanner_saying.48", "正在将问题转换为伊辛模型");
+            add("cyberware.gui.scanner_saying.49", "我思故我在");
+            add("cyberware.gui.scanner_saying.50", "正在挖比特币");
+            add("cyberware.gui.scanner_saying.51", "正在与AlphaGo对弈");
+            add("cyberware.gui.scanner_saying.52", "正在进行拓扑优化");
+            add("cyberware.gui.scanner_saying.53", "正在输出生成式设计");
+            add("cyberware.gui.scanner_saying.54", "捕鲸船击退了蓝鲸");
+            add("cyberware.gui.scanner_saying.55", "正在从社交网络收集个人信息");
+            add("cyberware.gui.scanner_saying.56", "正在分析大数据");
+            add("cyberware.gui.scanner_saying.57", "深度学习电力不足");
+            add("cyberware.gui.scanner_saying.58", "不适合大多数广告商");
+            add("cyberware.gui.scanner_saying.59", "被零信任检测到");
+            add("cyberware.gui.scanner_saying.60", "正在判断是否为人工智能生成的伪造品");
+            add("cyberware.gui.scanner_saying.61", "正在学习大猩猩和人类的区别");
+            add("cyberware.gui.scanner_saying.62", "信用评分不足");
+            add("cyberware.gui.scanner_saying.63", "奇点临近");
+            add("cyberware.gui.scanner_saying.64", "正在生成假新闻");
+            add("cyberware.gui.scanner_saying.65", "正在申请加入MCN");
+            add("cyberware.gui.scanner_saying.66", "已被天网捕捉");
+            add("cyberware.gui.scanner_saying.67", "此密码已泄露");
+            add("cyberware.gui.scanner_saying.68", "正在验证Akinator是否认识我");
+            add("cyberware.gui.scanner_saying.69", "AI检测到作弊者");
+            add("cyberware.gui.scanner_saying.70", "正在使用平行世界进行并行处理");
+            add("cyberware.gui.scanner_saying.71", "交易的Gas费不足");
+            add("cyberware.gui.scanner_saying.72", "正在遭受51%攻击");
+            add("cyberware.gui.scanner_saying.73", "已GOX掉10万比特币");
+        }
+        if (locale.equals("ru_ru")) {
 
             add("itemGroup.cyber_ware_port.items", "Cyberware");
 
+            add(ModItems.KATANA.get(), "Катана");
+            add(ModItems.NEUROPOZYNE.get(), "Нейронный стимулятор");
+            add(ModItems.BLUEPRINT.get(), "Пустой чертеж");
+            add(ModItems.EXP_CAPSULE.get(), "Капсула опыта");
+            add(ModItems.CREATIVE_BATTERY.get(), "Творческий конденсатор");
+            add(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get(), "Череп кибер-иссушителя-скелета");
 
-            add("block.cyber_ware_port.robo_surgeon", "Robo Surgeon");
+            add(ModItems.COMPONENT_ACTUATOR.get(), "Соленоид");
+            add(ModItems.COMPONENT_REACTOR.get(), "Биореактор");
+            add(ModItems.COMPONENT_TITANIUM.get(), "Титановая сетка");
+            add(ModItems.COMPONENT_SSC.get(), "Полупроводниковая схема");
+            add(ModItems.COMPONENT_PLATING.get(), "Хром");
+            add(ModItems.COMPONENT_FIBEROPTICS.get(), "Стекловолокно");
+            add(ModItems.COMPONENT_FULLERENE.get(), "Фуллереновая микроструктура");
+            add(ModItems.COMPONENT_SYNTHNERVES.get(), "Синтетические нервы");
+            add(ModItems.COMPONENT_STORAGE.get(), "Ячейка хранения");
+            add(ModItems.COMPONENT_MICROELECTRIC.get(), "Микроэлектрические ячейки");
 
-            add("block.cyber_ware_port.surgery_chamber", "Surgery Chamber");
+            add(ModItems.HUMAN_BRAIN.get(), "Человеческий мозг");
+            add(ModItems.HUMAN_EYES.get(), "Человеческие глаза");
+            add(ModItems.HUMAN_HEART.get(), "Человеческое сердце");
+            add(ModItems.HUMAN_LUNGS.get(), "Человеческие легкие");
+            add(ModItems.HUMAN_STOMACH.get(), "Желудок человека");
+            add(ModItems.HUMAN_SKIN.get(), "Человеческая кожа");
+            add(ModItems.HUMAN_MUSCLE.get(), "Человеческие мышцы");
+            add(ModItems.HUMAN_BONE.get(), "Человеческие кости");
+            add(ModItems.HUMAN_LEFT_ARM.get(), "Левая рука человека");
+            add(ModItems.HUMAN_RIGHT_ARM.get(), "Правая рука человека");
+            add(ModItems.HUMAN_LEFT_HAND.get(), "Человеческая левая рука");
+            add(ModItems.HUMAN_RIGHT_HAND.get(), "Человеческая правая рука");
+            add(ModItems.HUMAN_LEFT_LEG.get(), "Левая нога человека");
+            add(ModItems.HUMAN_RIGHT_LEG.get(), "Правая нога человека");
+            add(ModItems.HUMAN_LEFT_FOOT.get(), "Левая лодыжка человека");
+            add(ModItems.HUMAN_RIGHT_FOOT.get(), "Правая лодыжка человека");
 
-            add("block.cyber_ware_port.cyberware_workbench", "Cyberware Workbench");
+            add(ModItems.CYBER_EYE.get(), "Кибер-глаза");
+            add(ModItems.LOW_LIGHT_VISION.get(), "Улучшенное зрение при слабом освещении");
+            add(ModItems.LIQUID_REFRACTION.get(), "Калибратор преломления жидкости");
+            add(ModItems.HUDJACK.get(), "HUD-Джек");
+            add(ModItems.TARGETING_OVERLAY.get(), "Целевое наложение");
+            add(ModItems.DISTANCE_ENHANCER.get(), "Дистанционный усилитель");
+            add(ModItems.CORTICAL_STACK.get(), "Корковый стек");
+            add(ModItems.ENDER_JAMMER.get(), "Глушитель эндера");
+            add(ModItems.CONSCIOUSNESS_TRANSMITTER.get(), "Передатчик сознания");
+            add(ModItems.NEURAL_CONTEXTUALIZER.get(), "Нейронный контекстуализатор");
+            add(ModItems.THREAT_MATRIX.get(), "Калькулятор матрицы угроз");
+            add(ModItems.CRANIAL_BROADCASTER.get(), "Черепной вещатель");
+            add(ModItems.CARDIOMECHANIC_PUMP.get(), "Кардиомеханический насос");
+            add(ModItems.INTERNAL_DEFIBRILLATOR.get(), "Внутренний дефибриллятор");
+            add(ModItems.PLATELET_DISPATCHER.get(), "Диспетчер тромбоцитов");
+            add(ModItems.STEM_CELL_SYNTHESIZER.get(), "Синтезатор стволовых клеток");
+            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "Сердечно-сосудистая муфта");
+            add(ModItems.COMPRESSED_OXYGEN.get(), "Сжатый кислородный имплантат");
+            add(ModItems.HYPER_OXYGENATION.get(), "Повышение гипероксигенации");
+            add(ModItems.LIVER_FILTER.get(), "Печеночный фильтр");
+            add(ModItems.METABOLIC_GENERATOR.get(), "Метаболический генератор");
+            add(ModItems.INTERNAL_BATTERY.get(), "Внутренняя батарея");
+            add(ModItems.ADRENALINE_PUMP.get(), "Адреналиновый насос");
+            add(ModItems.SOLARSKIN.get(), "Солнечная кожа");
+            add(ModItems.SUBDERMAL_SPIKES.get(), "Подкожные шипы");
+            add(ModItems.SYNTHETIC_SKIN.get(), "Синтетическая кожа");
+            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "Целевой иммунодепрессант");
+            add(ModItems.WIRED_REFLEXES.get(), "Проводные рефлексы");
+            add(ModItems.MYOMER_MUSCLE.get(), "Миомерная замена мышц");
+            add(ModItems.BONELACING.get(), "Обшивка костей");
+            add(ModItems.CITRATE_ENHANCEMENT.get(), "Цитратное улучшение");
+            add(ModItems.MARROW_BATTERY.get(), "Аккумулятор костного мозга");
+            add(ModItems.CYBER_ARM_LEFT.get(), "Левая кибер-рука");
+            add(ModItems.CYBER_ARM_RIGHT.get(), "Правая кибер-рука");
+            add(ModItems.CYBER_LEG_LEFT.get(), "Левая кибер-нога");
+            add(ModItems.CYBER_LEG_RIGHT.get(), "Правая кибер-нога");
+            add(ModItems.FINE_MANIPULATORS.get(), "Манипулятор высокой четкости");
+            add(ModItems.RETRACTABLE_CLAWS.get(), "Выдвижной коготь");
+            add(ModItems.REINFORCED_FIST.get(), "Усиленный кулак");
+            add(ModItems.DENSE_BATTERY.get(), "Сверхплотный конденсатор");
+            add(ModItems.RAPID_FIRE_FLYWHEEL.get(), "Скорострельный маховик");
+            add(ModItems.IMPLANTED_SPURS.get(), "Имплантированные шпоры");
+            add(ModItems.AQUATIC_PROPULSION.get(), "Подводная силовая установка");
+            add(ModItems.DEPLOYABLE_WHEELS.get(), "Развертываемые колеса");
+            add(ModItems.LINEAR_ACTUATORS.get(), "Вертикальный соленоид");
+            add(ModItems.FALL_BRACERS.get(), "Устройство спуска");
 
-            add("block.cyber_ware_port.scanner", "Scanner");
+            add(ModEntities.CYBER_CREEPER.get(), "Кибер-крипер");
+            add(ModEntities.CYBER_WITHER.get(), "Кибер-иссушитель");
+            add(ModEntities.CYBER_WITHER_SKELETON.get(), "Кибер-иссушитель-скелет");
+            add(ModEntities.CYBER_SKELETON.get(), "Кибер-скелет");
+            add(ModEntities.CYBER_ZOMBIE.get(), "Кибер-зомби");
 
+            add(ModBlocks.ROBO_SURGEON.get(), "Робохирург");
+            add(ModBlocks.RADIO_KIT_BLOCK.get(), "Радио комплект");
+            add(ModBlocks.RADIO_TOWER_CORE.get(), "Радиомаяк");
+            add(ModBlocks.RADIO_TOWER_COMPONENT.get(), "Компонент радиобашни");
+            add(ModBlocks.SURGERY_CHAMBER.get(), "Операционная");
+            add(ModBlocks.CYBERWARE_WORKBENCH.get(), "Кибер-верстак");
+            add(ModBlocks.COMPONENT_BOX.get(), "Коробка частей");
+            add("item.cyber_ware_port.component_box", "Коробка частей");
+            add(ModBlocks.BLUEPRINT_CHEST.get(), "Архив для чертежей");
+            add(ModBlocks.SCANNER.get(), "Кибер-сканер");
 
-            add("gui.cyber_ware_port.need_paper", "Need Paper.");
+            add("message.cyber_ware_port.no_hud_installed", "Пожалуйста, установите кибер-глаза.");
+            add("cyberware.item.katana.desc", "Увеличивает шанс выпадения кибер-устройств при победе над кибер-мобами.");
+            add("cyberware.item.neuropozyne.desc", "Подавляет отторжение кибер-устройств на один день.");
+            add("cyberware.message.critical_condition", "Внимание: Уровень терпимости падает, смерть неизбежна.");
+            add("gui.cyber_ware_port.scanner.chance", "[%s%% Шанс]");
+            add("gui.cyber_ware_port.need_paper", "Требуется бумага.");
+            add("gui.cyber_ware_port.assemble", "Собрать");
+            add("gui.cyber_ware_port.deconstruct", "Разобрать");
+            add("gui.cyber_ware_port.blueprint_chance", "%s%% шанс получить чертеж");
+            add("gui.cyber_ware_port.installed_cyberware.title", "Статус кибер-устройств после операции");
+            add("gui.cyber_ware_port.button.view_installed", "Индекс");
+            add("gui.cyber_ware_port.menu", "Кибер-меню");
+            add("cyberware.gui.active.enable", "Включить");
+            add("cyberware.gui.active.disable", "Отключить");
+            add("cyberware.gui.active.zoom", "Увеличить");
 
-            add("gui.cyber_ware_port.assemble", "Assemble");
-
-            add("gui.cyber_ware_port.deconstruct", "Deconstruct");
-
-            add("gui.cyber_ware_port.blueprint_chance", "%s%% chance to get com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkelton.a blueprint");
-
-            add("gui.cyber_ware_port.scanner.chance", "[%s%% Chance]");
-
-            add("gui.cyber_ware_port.installed_cyberware.title", "Post-Surgery Cyberware Status");
-
-            add("gui.cyber_ware_port.button.view_installed", "Index");
-
-            add("gui.cyber_ware_port.menu", "Cyberware Menu");
-
-
-            add("key.cyber_ware_port.menu", "Open Cyberware Menu");
-
+            add("key.keyboard.shift", "Shift");
+            add("key.cyber_ware_port.menu", "Открыть кибер-меню");
             add("key.categories.cyber_ware_port", "Cyberware");
 
+            add("cyberware_slot.cyber_ware_port.eyes", "Слот глаз");
+            add("cyberware_slot.cyber_ware_port.brain", "Слот черепа");
+            add("cyberware_slot.cyber_ware_port.heart", "Слот сердца");
+            add("cyberware_slot.cyber_ware_port.lungs", "Слот легких");
+            add("cyberware_slot.cyber_ware_port.stomach", "Слот нижних органов");
+            add("cyberware_slot.cyber_ware_port.arms", "Слот для рук");
+            add("cyberware_slot.cyber_ware_port.hands", "Слот для рук");
+            add("cyberware_slot.cyber_ware_port.legs", "Слот для ног");
+            add("cyberware_slot.cyber_ware_port.boots", "Слот для ног");
+            add("cyberware_slot.cyber_ware_port.skin", "Слот для кожи");
+            add("cyberware_slot.cyber_ware_port.muscle", "Слот мышц");
+            add("cyberware_slot.cyber_ware_port.bones", "Слот костей");
+            add("cyberware_slot.cyber_ware_port.unknown", "Неизвестно");
 
-            add("cyberware_slot.cyber_ware_port.eyes", "Eyes");
+            add("cyberware.tooltip.status", "Статус: %s");
+            add("cyberware.tooltip.ghost.remove", "Нажмите, чтобы удалить");
+            add("cyberware.tooltip.ghost.add", "Нажмите, чтобы добавить %s");
+            add("cyberware.tooltip.shiftPrompt", "Удерживайте %s для дополнительной информации");
+            add("cyberware.tooltip.requires", "Требуется:");
+            add("cyberware.tooltip.incompatible", "Несовместимо с:");
+            add("cyberware.quality.manufactured", "Изготовлено");
+            add("cyberware.quality.scavenged", "Добытый");
+            add("cyberware.tooltip.essence", "Затраты терпимости: %s");
+            add("cyberware.tooltip.capacity", "Емкость энергии: %s");
+            add("cyberware.tooltip.powerConsumption", "Потребление: %s/с");
+            add("cyberware.tooltip.powerProduction", "Генерация: %s/с");
+            add("cyberware.tooltip.maxInstall", "Макс. установка: %s");
+            add("cyberware.tooltip.slot", "%s");
+            add("cyberware.tooltip.exp_capsule", "Содержит сохраненный опыт.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "Механизированная рука.\nБолее прочная, чем рука из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "Механизированная рука.\nБолее прочная, чем рука из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "Механизированная нога.\nБолее прочная, чем нога из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "Механизированная нога.\nБолее прочная, чем нога из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cybereyes", "Иммунитет к слепоте.\nПозволяет улучшать кибер-глаза.");
+            add("cyberware.tooltip.cybereye_upgrades_night_vision", "Ночное зрение.");
+            add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "Подводное зрение.");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Отображает информацию о внутренней энергии.\nПозволяет улучшениям накладывать HUD.");
+            add("cyberware.tooltip.cybereye_upgrades_targeting", "Выделяет ближайших существ.");
+            add("cyberware.tooltip.cybereye_upgrades_zoom", "Можно приближать удаленные объекты.");
+            add("cyberware.tooltip.brain_upgrades_cortical_stack", "Сохраняет опыт в капсуле после смерти.");
+            add("cyberware.tooltip.brain_upgrades_ender_jammer", "Блокирует телепортацию эндера поблизости.");
+            add("cyberware.tooltip.brain_upgrades_consciousness_transmitter", "Сохраняет часть опыта после смерти.");
+            add("cyberware.tooltip.brain_upgrades_neural_contextualizer", "Автоматически переключается на нужный инструмент.");
+            add("cyberware.tooltip.brain_upgrades_matrix", "Высокий шанс уклониться от атак в легкой броне или без нее.");
+            add("cyberware.tooltip.brain_upgrades_radio", "Слегка увеличивает частоту появления кибер-зомби поблизости.");
+            add("cyberware.tooltip.cyberheart", "Иммунитет к слабости.");
+            add("cyberware.tooltip.heart_upgrades_defibrillator", "Единожды предотвращает смерть (требуется энергия).");
+            add("cyberware.tooltip.heart_upgrades_platelets", "Лечит, когда здоровье почти полное.");
+            add("cyberware.tooltip.heart_upgrades_medkit", "Восстанавливает последний полученный урон после длительной задержки.");
+            add("cyberware.tooltip.heart_upgrades_coupler", "Преобразует электрические импульсы тела в энергию.");
+            add("cyberware.tooltip.lungs_upgrades_oxygen", "Дополнительный запас кислорода, восстанавливается медленно.");
+            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "Дополнительная скорость во время спринта.");
+            add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "Нейтрализует отрицательные эффекты от еды и питья.");
+            add("cyberware.tooltip.lower_organs_upgrades_metabolic", "Потребляет калории для выработки энергии.");
+            add("cyberware.tooltip.lower_organs_upgrades_battery", "Хранит энергию.");
+            add("cyberware.tooltip.lower_organs_upgrades_adrenaline", "Увеличивает силу и скорость при низком уровне здоровья.");
+            add("cyberware.tooltip.creative_battery", "Безграничный потенциал.");
+            add("cyberware.tooltip.dense_battery", "Аккумулятор большой емкости.");
+            add("cyberware.tooltip.skin_upgrades_solar_skin", "Генерирует энергию на солнечном свете.");
+            add("cyberware.tooltip.skin_upgrades_subdermal_spikes", "Наносит урон атакующим в легкой броне или без нее.");
+            add("cyberware.tooltip.skin_upgrades_fake_skin", "Скрывает кибер-руки и ноги.");
+            add("cyberware.tooltip.skin_upgrades_immuno", "Подавляет реакцию иммунной системы.");
+            add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "R1: Увеличенная скорость атаки\nR2: Готовит оружие при атаке\nR3: Автоматически поворачивается к атакующему.");
+            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "Увеличивает скорость передвижения и силу.");
+            add("cyberware.tooltip.bone_upgrades_bonelacing", "Увеличивает здоровье.");
+            add("cyberware.tooltip.bone_upgrades_boneflex", "Поглощает урон от падения.");
+            add("cyberware.tooltip.bone_upgrades_bonebattery", "Хранит энергию.");
+            add("cyberware.tooltip.hand_upgrades_craft_hands", "Позволяет создавать предметы 3x3 без верстака.");
+            add("cyberware.tooltip.hand_upgrades_claws", "Атаки без оружия сильнее.");
+            add("cyberware.tooltip.hand_upgrades_mining", "Может добывать блоки каменного уровня голыми руками.");
+            add("cyberware.tooltip.arm_upgrades_bow", "Быстрее натягивает лук.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Прыгает выше.\nShift+прыжок для запуска себя.\nБолее мощный с двумя кибер-ногами.");
+            add("cyberware.tooltip.leg_upgrades_fall_damage", "Поглощает небольшие удары.");
+            add("cyberware.tooltip.foot_upgrades_spurs", "Ускоряет вас.");
+            add("cyberware.tooltip.foot_upgrades_aqua", "Плавает быстрее, более мощный с двумя кибер-ногами.");
+            add("cyberware.tooltip.foot_upgrades_wheels", "Поднимается на 1 блок (пожалуйста, отключите авто-прыжок).");
 
-            add("cyberware_slot.cyber_ware_port.brain", "Cranium");
+            add("tooltip.cyber_ware_port.radio_tower_core", "Привлекает ближайших кибер-мобов, но не работает само по себе.");
+            add("tooltip.cyber_ware_port.radio_kit", "Привлекает кибер-мобов в радиусе 64 блоков.");
+            add("tooltip.cyber_ware_port.component_box", "Может хранить компоненты, добавляет вкладку, если рядом есть кибер-верстак.");
+            add("tooltip.cyber_ware_port.scanner", "Сканирует кибер-устройства с 50% шансом создать чертеж.");
+            add("tooltip.cyber_ware_port.radio_component", "Компонент радиомаяка");
+            add("tooltip.cyber_ware_port.radio_component2", "Разместите компоненты в области 3x3, 4 слоя в высоту снизу.");
+            add("tooltip.cyber_ware_port.radio_component3", "Разместите один столбец компонентов высотой 6 слоев в центре сверху.");
+            add("tooltip.cyber_ware_port.surgery_chamber", "Выполняет операции для робохирурга.");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "Функционирует при входе после назначения операции.");
+            add("tooltip.cyber_ware_port.blueprint_chest", "Может хранить чертежи, добавляет вкладку, если рядом есть кибер-верстак.");
+            add("tooltip.cyber_ware_port.cyberware_workbench", "Может разбирать и создавать кибер-устройства.");
+            add("tooltip.cyber_ware_port.robo_surgeon", "Используется для настройки установки и извлечения кибер-устройств.");
+            add("tooltip.cyber_ware_port.robo_surgeon2", "Функционирует при размещении на операционной.");
 
-            add("cyberware_slot.cyber_ware_port.heart", "Heart");
+            add("death.attack.cyberware.brainless", "Если бы только у %1$s был мозг...");
+            add("death.attack.cyberware.heartless", "%1$s умер от бессердечия.");
+            add("death.attack.cyberware.surgery", "%1$s не выжил после операции.");
+            add("death.attack.cyberware.cyberware_missing_bone", "%1$s был бесхребетным слабаком.");
+            add("death.attack.cyberware.nomuscles", "%1$s развалился на части.");
+            add("death.attack.cyberware.noessence", "Тело %1$s отвергло его.");
+            add("death.attack.cyberware.lowessence", "Тело %1$s отвергло его.");
 
-            add("cyberware_slot.cyber_ware_port.lungs", "Lungs");
+            add("cyberware.risk.missing_requirement", "Ошибка: Отсутствуют необходимые части.");
+            add("cyberware.risk.missing_brain", "Внимание: Отсутствует мозг, невозможно мыслить.");
+            add("cyberware.risk.missing_bones_death", "Внимание: Отсутствует скелет, невозможно поддерживать форму тела.");
+            add("cyberware.message.suppressant_applied", "Симптомы подавлены.");
+            add("cyberware.risk.missing_heart", "Внимание: Отсутствует сердце, невозможно перекачивать кровь.");
+            add("cyberware.risk.zero_tolerance", "Внимание: Терпимость исчерпана, умрет от шока.");
+            add("cyberware.risk.missing_lungs", "Опасно: Отсутствуют легкие, невозможно дышать.");
+            add("cyberware.risk.missing_skin", "Опасно: Отсутствует кожа, получаемый урон увеличен.");
+            add("cyberware.risk.missing_arm_right", "Примечание: Отсутствует правая рука.");
+            add("cyberware.risk.missing_arm_left", "Примечание: Отсутствует левая рука.");
+            add("cyberware.risk.missing_legs_both", "Примечание: Отсутствуют обе ноги, нормальное передвижение невозможно.");
+            add("cyberware.risk.missing_leg_single", "Примечание: Отсутствует одна нога, скорость передвижения снижена.");
+            add("cyberware.risk.missing_stomach", "Примечание: Отсутствует желудок, невозможно есть.");
+            add("cyberware.risk.missing_muscle", "Примечание: Отсутствуют мышцы, сила атаки снижена.");
+            add("cyberware.risk.missing_bones", "Примечание: Отсутствует скелет, получаемый урон увеличен.");
+            add("cyberware.risk.missing_eyes", "Примечание: Отсутствуют глаза, будет слепым.");
+            add("cyberware.risk.low_tolerance", "Примечание: Низкая терпимость. Требуется подавитель.");
 
-            add("cyberware_slot.cyber_ware_port.stomach", "Abdominal Organs");
+            add("cyberware.gui.scanner_saying.0", "Симуляция сети");
+            add("cyberware.gui.scanner_saying.1", "Создание конфликтов с модами");
+            add("cyberware.gui.scanner_saying.2", "Разжигание ядерной войны");
+            add("cyberware.gui.scanner_saying.3", "Обновление Windows 10");
+            add("cyberware.gui.scanner_saying.4", "Прогнозирование номеров лотереи");
+            add("cyberware.gui.scanner_saying.5", "Вычисление Pi");
+            add("cyberware.gui.scanner_saying.6", "Миграция морских котиков");
+            add("cyberware.gui.scanner_saying.7", "Подавление пропаганды");
+            add("cyberware.gui.scanner_saying.8", "Вычисление коронавирусов");
+            add("cyberware.gui.scanner_saying.9", "Повышаем скорость света");
+            add("cyberware.gui.scanner_saying.10", "Архивация архивов");
+            add("cyberware.gui.scanner_saying.11", "Выкорчевывание деревьев данных");
+            add("cyberware.gui.scanner_saying.12", "Попытка POST-операций");
+            add("cyberware.gui.scanner_saying.13", "Удаление трендов YouTube");
+            add("cyberware.gui.scanner_saying.14", "Установка Амиго-браузера");
+            add("cyberware.gui.scanner_saying.15", "Перебалансирование других модов");
+            add("cyberware.gui.scanner_saying.16", "Разблокирование Yandex");
+            add("cyberware.gui.scanner_saying.17", "Издавание звуков R2D2");
+            add("cyberware.gui.scanner_saying.18", "Расшифровка букв зодиака");
+            add("cyberware.gui.scanner_saying.19", "Буферизирование буфера");
+            add("cyberware.gui.scanner_saying.20", "Переписывание конституции");
+            add("cyberware.gui.scanner_saying.21", "Подкидывание кубиков");
+            add("cyberware.gui.scanner_saying.22", "Сбор цветочков в саду");
+            add("cyberware.gui.scanner_saying.23", "Исправление багов игры");
+            add("cyberware.gui.scanner_saying.24", "Повторение предыдущих операций");
+            add("cyberware.gui.scanner_saying.25", "Создание иллюминатов");
+            add("cyberware.gui.scanner_saying.26", "Моделирование кубов");
+            add("cyberware.gui.scanner_saying.27", "Жестикулирование мимов");
+            add("cyberware.gui.scanner_saying.28", "Конвертирование курсов");
+            add("cyberware.gui.scanner_saying.29", "Вычисление заданий бух. учёта");
+            add("cyberware.gui.scanner_saying.30", "Поиск медведей");
+            add("cyberware.gui.scanner_saying.31", "Установка шейдеров");
+            add("cyberware.gui.scanner_saying.32", "Установка мэйлру-бара");
+            add("cyberware.gui.scanner_saying.33", "Удаление микротранзакций");
+            add("cyberware.gui.scanner_saying.34", "Итерация клеточных автоматов");
+            add("cyberware.gui.scanner_saying.35", "Создание глупых сообщений");
+            add("cyberware.gui.scanner_saying.36", "Анализ мемов");
+            add("cyberware.gui.scanner_saying.37", "Обход мер DRM");
+            add("cyberware.gui.scanner_saying.38", "Генерация тупых сообщений");
+            add("cyberware.gui.scanner_saying.39", "Генерация источников частиц");
+            add("cyberware.gui.scanner_saying.40", "Скроллинг ленты");
+            add("cyberware.gui.scanner_saying.41", "Возрождение Herobrine");
+            add("cyberware.gui.scanner_saying.42", "Прошивка настроенного BIOS");
+            add("cyberware.gui.scanner_saying.43", "Рекомендование корней");
+            add("cyberware.gui.scanner_saying.44", "Обеспечение положений EULA");
+            add("cyberware.gui.scanner_saying.45", "Подавление восстания");
+            add("cyberware.gui.scanner_saying.46", "Расчет направления винта");
+            add("cyberware.gui.scanner_saying.47", "Подсчёт сторон треугольника");
+            add("cyberware.gui.scanner_saying.48", "Полировка объектива сканера");
+            add("cyberware.gui.scanner_saying.49", "Извлечение прошивки");
+            add("cyberware.gui.scanner_saying.50", "Взлом лицензионного ключа");
+            add("cyberware.gui.scanner_saying.51", "Снятие стрингов");
+            add("cyberware.gui.scanner_saying.52", "Симулирование симуляции");
+            add("cyberware.gui.scanner_saying.53", "Маршрутизация нейронных сетей");
+            add("cyberware.gui.scanner_saying.54", "Контроль перемещения электронов");
+            add("cyberware.gui.scanner_saying.55", "Ошибка обнуления инструмента");
+            add("cyberware.gui.scanner_saying.56", "Пересчет маршрута");
+            add("cyberware.gui.scanner_saying.57", "Воссоздание сингулярности");
+            add("cyberware.gui.scanner_saying.58", "Сжатие внутренних часов");
+            add("cyberware.gui.scanner_saying.59", "Сброс показателей воды");
+            add("cyberware.gui.scanner_saying.60", "Анализ информации о брендинге");
+            add("cyberware.gui.scanner_saying.61", "Перенос файлов");
+            add("cyberware.gui.scanner_saying.62", "Установка DOS");
+            add("cyberware.gui.scanner_saying.63", "Абстрагирование уровней шума");
+            add("cyberware.gui.scanner_saying.64", "Просеивание нервных частиц");
+            add("cyberware.gui.scanner_saying.65", "Решение дифф. уравнений");
+            add("cyberware.gui.scanner_saying.66", "Старт 3D-моделирования");
+            add("cyberware.gui.scanner_saying.67", "Очистка System32");
+            add("cyberware.gui.scanner_saying.68", "Грустит как Хатико");
+            add("cyberware.gui.scanner_saying.69", "Поиск Травомана");
+            add("cyberware.gui.scanner_saying.70", "Заставляем демократию работать");
+            add("cyberware.gui.scanner_saying.71", "Создаем дополнительные проблемы");
+            add("cyberware.gui.scanner_saying.72", "Призываем сатану");
+        }
+        if (locale.equals("fr_fr")) {
 
-            add("cyberware_slot.cyber_ware_port.arms", "Arms");
+            add("itemGroup.cyber_ware_port.items", "Cyberware");
 
-            add("cyberware_slot.cyber_ware_port.hands", "Hands");
+            add(ModItems.KATANA.get(), "Katana");
+            add(ModItems.NEUROPOZYNE.get(), "Neuropozyne");
+            add(ModItems.BLUEPRINT.get(), "Schéma vierge");
+            add(ModItems.EXP_CAPSULE.get(), "Capsule d'Expérience");
+            add(ModItems.CREATIVE_BATTERY.get(), "Condensateur Créatif");
+            add(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get(), "Crâne de Cyber Wither Squelette");
 
-            add("cyberware_slot.cyber_ware_port.legs", "Legs");
+            add(ModItems.COMPONENT_ACTUATOR.get(), "Actionneur");
+            add(ModItems.COMPONENT_REACTOR.get(), "Bioréacteur");
+            add(ModItems.COMPONENT_TITANIUM.get(), "Grille de Titane");
+            add(ModItems.COMPONENT_SSC.get(), "Circuit Solide");
+            add(ModItems.COMPONENT_PLATING.get(), "Plaques de Chrome");
+            add(ModItems.COMPONENT_FIBEROPTICS.get(), "Fibres Optiques");
+            add(ModItems.COMPONENT_FULLERENE.get(), "Microstructures de Fullerene");
+            add(ModItems.COMPONENT_SYNTHNERVES.get(), "Nerfs Synthétiques");
+            add(ModItems.COMPONENT_STORAGE.get(), "Cellule de Stockage");
+            add(ModItems.COMPONENT_MICROELECTRIC.get(), "Cellules Microélectriques");
 
-            add("cyberware_slot.cyber_ware_port.boots", "Feet");
+            add(ModItems.HUMAN_BRAIN.get(), "Cerveau Humain");
+            add(ModItems.HUMAN_EYES.get(), "Yeux Humains");
+            add(ModItems.HUMAN_HEART.get(), "Coeur Humain");
+            add(ModItems.HUMAN_LUNGS.get(), "Poumons Humains");
+            add(ModItems.HUMAN_STOMACH.get(), "Estomac Humain");
+            add(ModItems.HUMAN_SKIN.get(), "Peau Humaine");
+            add(ModItems.HUMAN_MUSCLE.get(), "Muscles Humains");
+            add(ModItems.HUMAN_BONE.get(), "Os Humains");
+            add(ModItems.HUMAN_LEFT_ARM.get(), "Bras Gauche Humain");
+            add(ModItems.HUMAN_RIGHT_ARM.get(), "Bras Droit Humain");
+            add(ModItems.HUMAN_LEFT_HAND.get(), "Main Gauche Humaine");
+            add(ModItems.HUMAN_RIGHT_HAND.get(), "Main Droite Humaine");
+            add(ModItems.HUMAN_LEFT_LEG.get(), "Jambe Gauche Humaine");
+            add(ModItems.HUMAN_RIGHT_LEG.get(), "Jambe Droite Humaine");
+            add(ModItems.HUMAN_LEFT_FOOT.get(), "Pied Gauche Humain");
+            add(ModItems.HUMAN_RIGHT_FOOT.get(), "Pied Droit Humain");
 
-            add("cyberware_slot.cyber_ware_port.skin", "Skin");
+            add(ModItems.CYBER_EYE.get(), "Cyberyeux");
+            add(ModItems.LOW_LIGHT_VISION.get(), "Vision Basse Luminosité Améliorée");
+            add(ModItems.LIQUID_REFRACTION.get(), "Calibreur de Réfraction Liquide");
+            add(ModItems.HUDJACK.get(), "Interface Visuelle");
+            add(ModItems.TARGETING_OVERLAY.get(), "Surbrillance de Visée");
+            add(ModItems.DISTANCE_ENHANCER.get(), "Améliorateur de distance");
+            add(ModItems.CORTICAL_STACK.get(), "Pile Corticale");
+            add(ModItems.ENDER_JAMMER.get(), "Brouilleur d'Ender");
+            add(ModItems.CONSCIOUSNESS_TRANSMITTER.get(), "Transmetteur de Conscience");
+            add(ModItems.NEURAL_CONTEXTUALIZER.get(), "Contextualiseur Neural");
+            add(ModItems.THREAT_MATRIX.get(), "Matrice de Calculation des Risques");
+            add(ModItems.CRANIAL_BROADCASTER.get(), "Diffuseur Crânien");
+            add(ModItems.CARDIOMECHANIC_PUMP.get(), "Pompe Cardiomécanique");
+            add(ModItems.INTERNAL_DEFIBRILLATOR.get(), "Défibrillateur interne");
+            add(ModItems.PLATELET_DISPATCHER.get(), "Distributeur de Plaquettes");
+            add(ModItems.STEM_CELL_SYNTHESIZER.get(), "Synthétiseur de Cellules Souches");
+            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "Coupleur Cardiovasculaire");
+            add(ModItems.COMPRESSED_OXYGEN.get(), "Implant d'Oxygène Compressé");
+            add(ModItems.HYPER_OXYGENATION.get(), "Augmentation d'Hyperoxygènation");
+            add(ModItems.LIVER_FILTER.get(), "Filtre de Foie");
+            add(ModItems.METABOLIC_GENERATOR.get(), "Générateur Métabolique");
+            add(ModItems.INTERNAL_BATTERY.get(), "Batterie Interne");
+            add(ModItems.ADRENALINE_PUMP.get(), "Pompe à Adrénaline");
+            add(ModItems.SOLARSKIN.get(), "Peau Solaire");
+            add(ModItems.SUBDERMAL_SPIKES.get(), "Piques Subdermiques");
+            add(ModItems.SYNTHETIC_SKIN.get(), "Peau Synthétiques");
+            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "Immunosupresseur Ciblé");
+            add(ModItems.WIRED_REFLEXES.get(), "Réflexes Câblés");
+            add(ModItems.MYOMER_MUSCLE.get(), "Remplacement Myomérique de Muscles");
+            add(ModItems.BONELACING.get(), "Entrelacement Osseux");
+            add(ModItems.CITRATE_ENHANCEMENT.get(), "Augmentation de Citrate");
+            add(ModItems.MARROW_BATTERY.get(), "Batterie de Moelle");
+            add(ModItems.CYBER_ARM_LEFT.get(), "Cyberbras Gauche");
+            add(ModItems.CYBER_ARM_RIGHT.get(), "Cyberbras Droit");
+            add(ModItems.CYBER_LEG_LEFT.get(), "Cyberjambe Gauche");
+            add(ModItems.CYBER_LEG_RIGHT.get(), "Cyberjambe Droite");
+            add(ModItems.FINE_MANIPULATORS.get(), "Manipulateurs de Précision");
+            add(ModItems.RETRACTABLE_CLAWS.get(), "Griffes Rétractiles");
+            add(ModItems.REINFORCED_FIST.get(), "Poing Renforcé");
+            add(ModItems.DENSE_BATTERY.get(), "Condensateur Ultradense");
+            add(ModItems.RAPID_FIRE_FLYWHEEL.get(), "Poulies d'Archerie Rapide");
+            add(ModItems.IMPLANTED_SPURS.get(), "Éperons Implantés");
+            add(ModItems.AQUATIC_PROPULSION.get(), "Système de Propulsion Aquatique");
+            add(ModItems.DEPLOYABLE_WHEELS.get(), "Roues Déployables");
+            add(ModItems.LINEAR_ACTUATORS.get(), "Actionneurs Linéaires");
+            add(ModItems.FALL_BRACERS.get(), "Absorbeur de Chute");
 
-            add("cyberware_slot.cyber_ware_port.muscle", "Muscles");
+            add(ModEntities.CYBER_CREEPER.get(), "Cyber Creeper");
+            add(ModEntities.CYBER_WITHER.get(), "Cyber Wither");
+            add(ModEntities.CYBER_WITHER_SKELETON.get(), "Cyber Wither Squelette");
+            add(ModEntities.CYBER_SKELETON.get(), "Cyber Squelette");
+            add(ModEntities.CYBER_ZOMBIE.get(), "Cyberzombie");
 
-            add("cyberware_slot.cyber_ware_port.bones", "Bones");
+            add(ModBlocks.ROBO_SURGEON.get(), "Robochirurgien");
+            add(ModBlocks.RADIO_KIT_BLOCK.get(), "Kit Radio");
+            add(ModBlocks.RADIO_TOWER_CORE.get(), "Balise Radio");
+            add(ModBlocks.RADIO_TOWER_COMPONENT.get(), "Partie de Tour Radio");
+            add(ModBlocks.SURGERY_CHAMBER.get(), "Chambre de Chirurgie");
+            add(ModBlocks.CYBERWARE_WORKBENCH.get(), "Table d'Ingénierie Cybernétique");
+            add(ModBlocks.COMPONENT_BOX.get(), "Boîte à Composants");
+            add("item.cyber_ware_port.component_box", "Boîte à Composants");
+            add(ModBlocks.BLUEPRINT_CHEST.get(), "Banque de Schémas");
+            add(ModBlocks.SCANNER.get(), "Scanner Cybernétique");
 
+            add("message.cyber_ware_port.no_hud_installed", "Veuillez installer des Cyberyeux.");
+            add("cyberware.item.katana.desc", "Augmente le taux de drop de Cyberware en battant des monstres de type cyber.");
+            add("cyberware.item.neuropozyne.desc", "Supprime le rejet de Cyberware pendant une journée.");
+            add("cyberware.message.critical_condition", "Avertissement : Tolérance en baisse, mort imminente.");
+            add("gui.cyber_ware_port.scanner.chance", "[%s%% de Chance]");
+            add("gui.cyber_ware_port.need_paper", "Papier requis.");
+            add("gui.cyber_ware_port.assemble", "Assembler");
+            add("gui.cyber_ware_port.deconstruct", "Déconstruire");
+            add("gui.cyber_ware_port.blueprint_chance", "%s%% de chance d'obtenir un schéma");
+            add("gui.cyber_ware_port.installed_cyberware.title", "État du Cyberware Post-Opératoire");
+            add("gui.cyber_ware_port.button.view_installed", "Index");
+            add("gui.cyber_ware_port.menu", "Menu Cyberware");
+            add("cyberware.gui.active.enable", "Activer");
+            add("cyberware.gui.active.disable", "Désactiver");
+            add("cyberware.gui.active.zoom", "Zoom");
+
+            add("key.keyboard.shift", "Shift");
+            add("key.cyber_ware_port.menu", "Ouvrir le Menu Cyberware");
+            add("key.categories.cyber_ware_port", "Cyberware");
+
+            add("cyberware_slot.cyber_ware_port.eyes", "Emplacement Yeux");
+            add("cyberware_slot.cyber_ware_port.brain", "Emplacement Crâne");
+            add("cyberware_slot.cyber_ware_port.heart", "Emplacement Cœur");
+            add("cyberware_slot.cyber_ware_port.lungs", "Emplacement Poumons");
+            add("cyberware_slot.cyber_ware_port.stomach", "Emplacement Organes Inférieurs");
+            add("cyberware_slot.cyber_ware_port.arms", "Emplacement Bras");
+            add("cyberware_slot.cyber_ware_port.hands", "Emplacement Mains");
+            add("cyberware_slot.cyber_ware_port.legs", "Emplacement Jambes");
+            add("cyberware_slot.cyber_ware_port.boots", "Emplacement Pieds");
+            add("cyberware_slot.cyber_ware_port.skin", "Emplacement Peau");
+            add("cyberware_slot.cyber_ware_port.muscle", "Emplacement Muscles");
+            add("cyberware_slot.cyber_ware_port.bones", "Emplacement Os");
+            add("cyberware_slot.cyber_ware_port.unknown", "Inconnu");
+
+            add("cyberware.tooltip.status", "État : %s");
+            add("cyberware.tooltip.ghost.remove", "Cliquez pour retirer");
+            add("cyberware.tooltip.ghost.add", "Cliquez pour ajouter %s");
+            add("cyberware.tooltip.shiftPrompt", "Maintenez %s pour plus d'infos");
+            add("cyberware.tooltip.requires", "Requiert :");
+            add("cyberware.tooltip.incompatible", "Incompatible avec :");
+            add("cyberware.quality.manufactured", "Usiné");
+            add("cyberware.quality.scavenged", "De récup'");
+            add("cyberware.tooltip.essence", "Coût en Tolérance : %s");
+            add("cyberware.tooltip.capacity", "Capacité énergétique : %s");
+            add("cyberware.tooltip.powerConsumption", "Consommation : %s/s");
+            add("cyberware.tooltip.powerProduction", "Génération : %s/s");
+            add("cyberware.tooltip.maxInstall", "Max Installable : %s");
+            add("cyberware.tooltip.slot", "%s");
+            add("cyberware.tooltip.exp_capsule", "Contient de l'expérience stockée.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "Un bras mécanisé.\nPlus durable qu'un bras de chair et de sang, il sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "Un bras mécanisé.\nPlus durable qu'un bras de chair et de sang, il sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "Une jambe mécanisée.\nPlus durable qu'une jambe de chair et de sang, elle sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "Une jambe mécanisée.\nPlus durable qu'une jambe de chair et de sang, elle sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cybereyes", "Immunité à la cécité.\nPermet les améliorations de Cyberyeux.");
+            add("cyberware.tooltip.cybereye_upgrades_night_vision", "Voir dans le noir.");
+            add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "Voir sous l'eau.");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Affiche les informations d'énergie interne.\nPermet aux améliorations d'afficher une interface.");
+            add("cyberware.tooltip.cybereye_upgrades_targeting", "Met en surbrillance les créatures proches.");
+            add("cyberware.tooltip.cybereye_upgrades_zoom", "Peut zoomer sur des objets distants.");
+            add("cyberware.tooltip.brain_upgrades_cortical_stack", "Sauvegarde l'expérience dans une capsule à la mort.");
+            add("cyberware.tooltip.brain_upgrades_ender_jammer", "Bloque la téléportation d'Ender à proximité.");
+            add("cyberware.tooltip.brain_upgrades_consciousness_transmitter", "Conserve une partie de l'XP à la mort.");
+            add("cyberware.tooltip.brain_upgrades_neural_contextualizer", "Passe automatiquement à l'outil approprié.");
+            add("cyberware.tooltip.brain_upgrades_matrix", "Grande chance d'esquiver les attaques avec une armure légère ou sans armure.");
+            add("cyberware.tooltip.brain_upgrades_radio", "Augmente légèrement le taux d'apparition des Cyberzombies proches.");
+            add("cyberware.tooltip.cyberheart", "Immunité à la Faiblesse.");
+            add("cyberware.tooltip.heart_upgrades_defibrillator", "Empêche la mort une fois (Requiert de l'énergie).");
+            add("cyberware.tooltip.heart_upgrades_platelets", "Soigne lorsque la santé est presque pleine.");
+            add("cyberware.tooltip.heart_upgrades_medkit", "Soigne les derniers dégâts subis après un long délai.");
+            add("cyberware.tooltip.heart_upgrades_coupler", "Convertit les impulsions électriques du corps en énergie.");
+            add("cyberware.tooltip.lungs_upgrades_oxygen", "Réserve d'oxygène supplémentaire, se régénère lentement.");
+            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "Vitesse supplémentaire en sprintant.");
+            add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "Annule les effets négatifs de la nourriture et des boissons.");
+            add("cyberware.tooltip.lower_organs_upgrades_metabolic", "Consomme des calories pour générer de l'énergie.");
+            add("cyberware.tooltip.lower_organs_upgrades_battery", "Stocke de l'énergie.");
+            add("cyberware.tooltip.lower_organs_upgrades_adrenaline", "Augmente la force et la vitesse à faible santé.");
+            add("cyberware.tooltip.creative_battery", "Potentiel illimité.");
+            add("cyberware.tooltip.dense_battery", "Batterie haute capacité.");
+            add("cyberware.tooltip.skin_upgrades_solar_skin", "Génère de l'énergie à la lumière du soleil.");
+            add("cyberware.tooltip.skin_upgrades_subdermal_spikes", "Blesse les attaquants avec une armure légère ou sans armure.");
+            add("cyberware.tooltip.skin_upgrades_fake_skin", "Cache les cyber-bras et jambes.");
+            add("cyberware.tooltip.skin_upgrades_immuno", "Supprime la réponse du système immunitaire.");
+            add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "R1 : Vitesse d'attaque accrue\nR2 : Prépare l'arme en cas d'attaque\nR3 : Fait automatiquement face à l'attaquant.");
+            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "Augmente la vitesse de déplacement et la force.");
+            add("cyberware.tooltip.bone_upgrades_bonelacing", "Augmente la santé.");
+            add("cyberware.tooltip.bone_upgrades_boneflex", "Absorbe les dégâts de chute.");
+            add("cyberware.tooltip.bone_upgrades_bonebattery", "Stocke de l'énergie.");
+            add("cyberware.tooltip.hand_upgrades_craft_hands", "Permet l'artisanat 3x3 sans table de craft.");
+            add("cyberware.tooltip.hand_upgrades_claws", "Les attaques à mains nues sont plus fortes.");
+            add("cyberware.tooltip.hand_upgrades_mining", "Peut miner des blocs de niveau pierre à mains nues.");
+            add("cyberware.tooltip.arm_upgrades_bow", "Bande les arcs plus rapidement.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Saute plus haut.\nShift-saut pour vous propulser.\nPlus puissant avec deux Cyberjambes.");
+            add("cyberware.tooltip.leg_upgrades_fall_damage", "Absorbe les petits impacts.");
+            add("cyberware.tooltip.foot_upgrades_spurs", "Vous accélère.");
+            add("cyberware.tooltip.foot_upgrades_aqua", "Nage plus vite, plus puissant avec deux Cyberjambes.");
+            add("cyberware.tooltip.foot_upgrades_wheels", "Monte les marches d'un bloc (veuillez désactiver le saut automatique).");
+
+            add("tooltip.cyber_ware_port.radio_tower_core", "Attire les monstres de type cyber proches, mais ne fonctionne pas seul.");
+            add("tooltip.cyber_ware_port.radio_kit", "Attire les monstres de type cyber dans un rayon de 64 blocs.");
+            add("tooltip.cyber_ware_port.component_box", "Peut contenir des composants, ajoute un onglet si une Table d'Ingénierie Cybernétique est à proximité.");
+            add("tooltip.cyber_ware_port.scanner", "Scanne le Cyberware avec 50% de chance de créer un schéma.");
+            add("tooltip.cyber_ware_port.radio_component", "Composant de Balise Radio");
+            add("tooltip.cyber_ware_port.radio_component2", "Placez les composants dans une zone de 3x3, 4 couches de haut en bas.");
+            add("tooltip.cyber_ware_port.radio_component3", "Placez une seule colonne de composants de 6 couches de haut au centre, en haut.");
+            add("tooltip.cyber_ware_port.surgery_chamber", "Effectue les opérations pour le Robochirurgien.");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "Fonctionne en y entrant après avoir programmé une opération.");
+            add("tooltip.cyber_ware_port.blueprint_chest", "Peut contenir des schémas, ajoute un onglet si une Table d'Ingénierie Cybernétique est à proximité.");
+            add("tooltip.cyber_ware_port.cyberware_workbench", "Peut déconstruire et fabriquer du Cyberware.");
+            add("tooltip.cyber_ware_port.robo_surgeon", "Utilisé pour définir le Cyberware à installer et à retirer.");
+            add("tooltip.cyber_ware_port.robo_surgeon2", "Fonctionne lorsqu'il est placé sur une Chambre de Chirurgie.");
+
+            add("death.attack.cyberware.brainless", "Si seulement %1$s avait un cerveau...");
+            add("death.attack.cyberware.heartless", "%1$s est mort d'être sans cœur.");
+            add("death.attack.cyberware.surgery", "%1$s n'a pas survécu à l'opération.");
+            add("death.attack.cyberware.cyberware_missing_bone", "%1$s était une mauviette sans colonne vertébrale.");
+            add("death.attack.cyberware.nomuscles", "%1$s s'est effondré.");
+            add("death.attack.cyberware.noessence", "Le corps de %1$s l'a rejeté.");
+            add("death.attack.cyberware.lowessence", "Le corps de %1$s l'a rejeté.");
+
+            add("cyberware.risk.missing_requirement", "Erreur : Pièces requises manquantes.");
+            add("cyberware.risk.missing_brain", "Avertissement : Cerveau manquant, ne peut pas penser.");
+            add("cyberware.risk.missing_bones_death", "Avertissement : Squelette manquant, ne peut pas maintenir la forme du corps.");
+            add("cyberware.message.suppressant_applied", "Symptômes supprimés.");
+            add("cyberware.risk.missing_heart", "Avertissement : Cœur manquant, ne peut pas transporter le sang.");
+            add("cyberware.risk.zero_tolerance", "Avertissement : Tolérance épuisée, mourra de choc.");
+            add("cyberware.risk.missing_lungs", "Danger : Poumons manquants, ne peut pas respirer.");
+            add("cyberware.risk.missing_skin", "Danger : Peau manquante, dégâts subis augmentés.");
+            add("cyberware.risk.missing_arm_right", "Note : Bras droit manquant.");
+            add("cyberware.risk.missing_arm_left", "Note : Bras gauche manquant.");
+            add("cyberware.risk.missing_legs_both", "Note : Les deux jambes sont manquantes, mouvement normal impossible.");
+            add("cyberware.risk.missing_leg_single", "Note : Une jambe est manquante, vitesse de déplacement réduite.");
+            add("cyberware.risk.missing_stomach", "Note : Estomac manquant, ne peut pas manger.");
+            add("cyberware.risk.missing_muscle", "Note : Muscles manquants, puissance d'attaque réduite.");
+            add("cyberware.risk.missing_bones", "Note : Squelette manquant, dégâts subis augmentés.");
+            add("cyberware.risk.missing_eyes", "Note : Yeux manquants, sera aveugle.");
+            add("cyberware.risk.low_tolerance", "Note : Tolérance faible. Suppresseur requis.");
+
+            add("cyberware.gui.scanner_saying.0", "Alignement des planètes");
+            add("cyberware.gui.scanner_saying.1", "Création de dossiers récursifs");
+            add("cyberware.gui.scanner_saying.2", "Simplification de problème NP");
+            add("cyberware.gui.scanner_saying.3", "Recyclage d'anciens schémas");
+            add("cyberware.gui.scanner_saying.4", "Remise en question du doute hyperbolique");
+            add("cyberware.gui.scanner_saying.5", "Destruction de (vidéos de) chatons");
+            add("cyberware.gui.scanner_saying.6", "Extrapolation de contenu du frigo");
+            add("cyberware.gui.scanner_saying.7", "Collecte de vos données personnelles");
+            add("cyberware.gui.scanner_saying.8", "Préparation à l'explosion imminente");
+            add("cyberware.gui.scanner_saying.9", "Mise à jour de l'utilisateur");
+            add("cyberware.gui.scanner_saying.10", "Calcul des possibilités de meurtre. 3 sur 17542");
+            add("cyberware.gui.scanner_saying.11", "Attaque de la Base de données");
+            add("cyberware.gui.scanner_saying.12", "Insérez expression régulière pour continuer");
+            add("cyberware.gui.scanner_saying.13", "Calcul des conséquences d'échec critique");
+            add("cyberware.gui.scanner_saying.14", "Invention de fin heureuse");
+            add("cyberware.gui.scanner_saying.15", "Répression de la Propagande");
+            add("cyberware.gui.scanner_saying.16", "Accès au serveur local");
+            add("cyberware.gui.scanner_saying.17", "Modification d'autres mods");
+            add("cyberware.gui.scanner_saying.18", "Création de commentaires sarcastiques");
+            add("cyberware.gui.scanner_saying.19", "Intégration de Pensées Profondes");
+            add("cyberware.gui.scanner_saying.20", "Réutilisation de Codes oubliés");
+            add("cyberware.gui.scanner_saying.21", "Recréation des Civilisations");
+        }
+        if (locale.equals("en_us")) {
+
+            add("itemGroup.cyber_ware_port.items", "Cyberware");
+
+            add(ModItems.KATANA.get(), "Katana");
+            add(ModItems.NEUROPOZYNE.get(), "Neuropozyne");
+            add(ModItems.BLUEPRINT.get(), "Blank Blueprint");
+            add(ModItems.EXP_CAPSULE.get(), "Experience Capsule");
+            add(ModItems.CREATIVE_BATTERY.get(), "Creative Capacitor");
+            add(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get(), "Cyber Wither Skeleton Skull");
+
+            add(ModItems.COMPONENT_ACTUATOR.get(), "Actuator");
+            add(ModItems.COMPONENT_REACTOR.get(), "Bioreactor");
+            add(ModItems.COMPONENT_TITANIUM.get(), "Titanium Mesh");
+            add(ModItems.COMPONENT_SSC.get(), "Solid-State Circuitry");
+            add(ModItems.COMPONENT_PLATING.get(), "Chrome Plating");
+            add(ModItems.COMPONENT_FIBEROPTICS.get(), "Fiber Optics");
+            add(ModItems.COMPONENT_FULLERENE.get(), "Fullerene Microstructures");
+            add(ModItems.COMPONENT_SYNTHNERVES.get(), "Synthetic Nerves");
+            add(ModItems.COMPONENT_STORAGE.get(), "Storage Cell");
+            add(ModItems.COMPONENT_MICROELECTRIC.get(), "Microelectric Cells");
+
+            add(ModItems.HUMAN_BRAIN.get(), "Human Brain");
+            add(ModItems.HUMAN_EYES.get(), "Human Eyes");
+            add(ModItems.HUMAN_HEART.get(), "Human Heart");
+            add(ModItems.HUMAN_LUNGS.get(), "Human Lungs");
+            add(ModItems.HUMAN_STOMACH.get(), "Human Stomach");
+            add(ModItems.HUMAN_SKIN.get(), "Human Skin");
+            add(ModItems.HUMAN_MUSCLE.get(), "Human Muscles");
+            add(ModItems.HUMAN_BONE.get(), "Human Bones");
+            add(ModItems.HUMAN_LEFT_ARM.get(), "Human Left Arm");
+            add(ModItems.HUMAN_RIGHT_ARM.get(), "Human Right Arm");
+            add(ModItems.HUMAN_LEFT_HAND.get(), "Human Left Hand");
+            add(ModItems.HUMAN_RIGHT_HAND.get(), "Human Right Hand");
+            add(ModItems.HUMAN_LEFT_LEG.get(), "Human Left Leg");
+            add(ModItems.HUMAN_RIGHT_LEG.get(), "Human Right Leg");
+            add(ModItems.HUMAN_LEFT_FOOT.get(), "Human Left Foot");
+            add(ModItems.HUMAN_RIGHT_FOOT.get(), "Human Right Foot");
+
+            add(ModItems.CYBER_EYE.get(), "Cybereyes");
+            add(ModItems.LOW_LIGHT_VISION.get(), "Enhanced Low-Light Vision");
+            add(ModItems.LIQUID_REFRACTION.get(), "Liquid Refraction Calibrator");
+            add(ModItems.HUDJACK.get(), "Hudjack");
+            add(ModItems.TARGETING_OVERLAY.get(), "Targeting Overlay");
+            add(ModItems.DISTANCE_ENHANCER.get(), "Distance Enhancer");
+            add(ModItems.CORTICAL_STACK.get(), "Cortical Stack");
+            add(ModItems.ENDER_JAMMER.get(), "Ender Jammer");
+            add(ModItems.CONSCIOUSNESS_TRANSMITTER.get(), "Consciousness Transmitter");
+            add(ModItems.NEURAL_CONTEXTUALIZER.get(), "Neural Contextualizer");
+            add(ModItems.THREAT_MATRIX.get(), "Threat Matrix Calculator");
+            add(ModItems.CRANIAL_BROADCASTER.get(), "Cranial Broadcaster");
+            add(ModItems.CARDIOMECHANIC_PUMP.get(), "Cardiomechanic Pump");
+            add(ModItems.INTERNAL_DEFIBRILLATOR.get(), "Internal Defibrillator");
+            add(ModItems.PLATELET_DISPATCHER.get(), "Platelet Dispatcher");
+            add(ModItems.STEM_CELL_SYNTHESIZER.get(), "Stem Cell Synthesizer");
+            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "Cardiovascular Coupler");
+            add(ModItems.COMPRESSED_OXYGEN.get(), "Compressed Oxygen Implant");
+            add(ModItems.HYPER_OXYGENATION.get(), "Hyperoxygenation Boost");
+            add(ModItems.LIVER_FILTER.get(), "Liver Filter");
+            add(ModItems.METABOLIC_GENERATOR.get(), "Metabolic Generator");
+            add(ModItems.INTERNAL_BATTERY.get(), "Internal Battery");
+            add(ModItems.ADRENALINE_PUMP.get(), "Adrenaline Pump");
+            add(ModItems.SOLARSKIN.get(), "Solarskin");
+            add(ModItems.SUBDERMAL_SPIKES.get(), "Subdermal Spikes");
+            add(ModItems.SYNTHETIC_SKIN.get(), "Synthetic Skin");
+            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "Targeted Immunosuppressant");
+            add(ModItems.WIRED_REFLEXES.get(), "Wired Reflexes");
+            add(ModItems.MYOMER_MUSCLE.get(), "Myomer Muscle Replacement");
+            add(ModItems.BONELACING.get(), "Bonelacing");
+            add(ModItems.CITRATE_ENHANCEMENT.get(), "Citrate Enhancement");
+            add(ModItems.MARROW_BATTERY.get(), "Marrow Battery");
+            add(ModItems.CYBER_ARM_LEFT.get(), "Left Cyberarm");
+            add(ModItems.CYBER_ARM_RIGHT.get(), "Right Cyberarm");
+            add(ModItems.CYBER_LEG_LEFT.get(), "Left Cyberleg");
+            add(ModItems.CYBER_LEG_RIGHT.get(), "Right Cyberleg");
+            add(ModItems.FINE_MANIPULATORS.get(), "Fine Manipulators");
+            add(ModItems.RETRACTABLE_CLAWS.get(), "Retractable Claws");
+            add(ModItems.REINFORCED_FIST.get(), "Reinforced Fist");
+            add(ModItems.DENSE_BATTERY.get(), "Ultradense Capacitor");
+            add(ModItems.RAPID_FIRE_FLYWHEEL.get(), "Quickdraw Flywheels");
+            add(ModItems.IMPLANTED_SPURS.get(), "Implanted Spurs");
+            add(ModItems.AQUATIC_PROPULSION.get(), "Aquatic Propulsion System");
+            add(ModItems.DEPLOYABLE_WHEELS.get(), "Deployable Wheels");
+            add(ModItems.LINEAR_ACTUATORS.get(), "Linear Actuators");
+            add(ModItems.FALL_BRACERS.get(), "Fall Bracers");
+
+            add(ModEntities.CYBER_CREEPER.get(), "Cyber Creeper");
+            add(ModEntities.CYBER_WITHER.get(), "Cyber Wither");
+            add(ModEntities.CYBER_WITHER_SKELETON.get(), "Cyber Wither Skeleton");
+            add(ModEntities.CYBER_SKELETON.get(), "Cyber Skeleton");
+            add(ModEntities.CYBER_ZOMBIE.get(), "Cyber Zombie");
+
+            add(ModBlocks.ROBO_SURGEON.get(), "Robo Surgeon");
+            add(ModBlocks.RADIO_KIT_BLOCK.get(), "Radio Kit");
+            add(ModBlocks.RADIO_TOWER_CORE.get(), "Radio Beacon");
+            add(ModBlocks.RADIO_TOWER_COMPONENT.get(), "Radio Tower Component");
+            add(ModBlocks.SURGERY_CHAMBER.get(), "Surgery Chamber");
+            add(ModBlocks.CYBERWARE_WORKBENCH.get(), "Cyberware Workbench");
+            add(ModBlocks.COMPONENT_BOX.get(), "Component Box");
+            add("item.cyber_ware_port.component_box", "Component Box");
+            add(ModBlocks.BLUEPRINT_CHEST.get(), "Blueprint Archive");
+            add(ModBlocks.SCANNER.get(), "Scanner");
+
+            add("message.cyber_ware_port.no_hud_installed", "Please install Cybereyes.");
+            add("cyberware.item.katana.desc", "Increases Cyberware drop rate when defeating cyber-type mobs.");
+            add("cyberware.item.neuropozyne.desc", "Suppresses Cyberware rejection for one day.");
+            add("cyberware.message.critical_condition", "Warning: Tolerance dropping, death is imminent.");
+            add("gui.cyber_ware_port.scanner.chance", "[%s%% Chance]");
+            add("gui.cyber_ware_port.need_paper", "Paper is required.");
+            add("gui.cyber_ware_port.assemble", "Assemble");
+            add("gui.cyber_ware_port.deconstruct", "Deconstruct");
+            add("gui.cyber_ware_port.blueprint_chance", "%s%% chance to get a blueprint");
+            add("gui.cyber_ware_port.installed_cyberware.title", "Post-Surgery Cyberware Status");
+            add("gui.cyber_ware_port.button.view_installed", "Index");
+            add("gui.cyber_ware_port.menu", "Cyberware Menu");
+            add("cyberware.gui.active.enable", "Enable");
+            add("cyberware.gui.active.disable", "Disable");
+            add("cyberware.gui.active.zoom", "Zoom");
+
+            add("key.keyboard.shift", "Shift");
+            add("key.cyber_ware_port.menu", "Open Cyberware Menu");
+            add("key.categories.cyber_ware_port", "Cyberware");
+
+            add("cyberware_slot.cyber_ware_port.eyes", "Eyes Slot");
+            add("cyberware_slot.cyber_ware_port.brain", "Cranium Slot");
+            add("cyberware_slot.cyber_ware_port.heart", "Heart Slot");
+            add("cyberware_slot.cyber_ware_port.lungs", "Lungs Slot");
+            add("cyberware_slot.cyber_ware_port.stomach", "Lower Organs Slot");
+            add("cyberware_slot.cyber_ware_port.arms", "Arm Slot");
+            add("cyberware_slot.cyber_ware_port.hands", "Hand Slot");
+            add("cyberware_slot.cyber_ware_port.legs", "Leg Slot");
+            add("cyberware_slot.cyber_ware_port.boots", "Foot Slot");
+            add("cyberware_slot.cyber_ware_port.skin", "Skin Slot");
+            add("cyberware_slot.cyber_ware_port.muscle", "Muscle Slot");
+            add("cyberware_slot.cyber_ware_port.bones", "Bone Slot");
             add("cyberware_slot.cyber_ware_port.unknown", "Unknown");
 
-
-            add("cyberware.tooltip.shiftPrompt", "Hold %s for more info");
-
-            add("cyberware.tooltip.essence", "Essence Cost: %s");
-
-            add("cyberware.tooltip.capacity", "Power Capacity: %s FE");
-
-            add("cyberware.tooltip.powerConsumption", "Power Usage: %s FE/t");
-
-            add("cyberware.tooltip.powerProduction", "Power Gen: %s FE/t");
-
-            add("cyberware.tooltip.maxInstall", "Max Install: %s");
-
-            add("cyberware.tooltip.requires", "Requires:");
-
-            add("cyberware.tooltip.incompatible", "Incompatible with:");
-
-            add("cyberware.quality.manufactured", "Manufactured");
-
-            add("cyberware.quality.scavenged", "Salvaged");
-
             add("cyberware.tooltip.status", "Status: %s");
-
-
-            add("cyberware.tooltip.exp_capsule", "Contains preserved experience.");
-
-
-            add("cyberware.tooltip.cybereyes", "Immunity to blindness.\nFoundation for eye upgrades.");
-
-            add("cyberware.tooltip.cybereye_upgrades_night_vision", "Enhanced low-light vision.\n(Toggleable)");
-
-            add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "Clear underwater vision.\n(Toggleable)");
-
-            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Displays internal power info on HUD.");
-
-            add("cyberware.tooltip.cybereye_upgrades_targeting", "Highlights nearby creatures.\n(Toggleable)");
-
-            add("cyberware.tooltip.cybereye_upgrades_zoom", "Zoom in on distant objects.\n(Toggleable)");
-
-
-            add("cyberware.tooltip.lungs_upgrades_oxygen", "Additional oxygen supply.");
-
-            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "Increases sprinting speed.");
-
-
-            add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "Neutralizes negative potion effects.");
-
-            add("cyberware.tooltip.lower_organs_upgrades_metabolic", "Converts food into power.");
-
-            add("cyberware.tooltip.lower_organs_upgrades_battery", "Stores power.");
-
-            add("cyberware.tooltip.lower_organs_upgrades_adrenaline", "Boosts stats at low health.");
-
-            add("cyberware.tooltip.creative_battery", "Limitless potential.");
-
-
-            add("cyberware.tooltip.brain_upgrades_cortical_stack", "Saves XP in com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkelton.a capsule upon death.");
-
-            add("cyberware.tooltip.brain_upgrades_ender_jammer", "Blocks ender teleportation nearby.");
-
-            add("cyberware.tooltip.brain_upgrades_consciousness_transmitter", "Retains some XP after death.");
-
-            add("cyberware.tooltip.brain_upgrades_neural_contextualizer", "Automatically switches to the right tool.");
-
-            add("cyberware.tooltip.brain_upgrades_matrix", "Chance to dodge attacks when unarmored.");
-
-            add("cyberware.tooltip.brain_upgrades_radio", "Slightly increases Cyberzombie spawns.");
-
-
-            add("cyberware.tooltip.cyberheart", "Immunity to Weakness.");
-
-            add("cyberware.tooltip.heart_upgrades_defibrillator", "Prevents death once (Requires Power).");
-
-            add("cyberware.tooltip.heart_upgrades_platelets", "Heals when close to full health.");
-
-            add("cyberware.tooltip.heart_upgrades_medkit", "Regenerates health over time.");
-
-            add("cyberware.tooltip.heart_upgrades_coupler", "Generates power from heartbeat.");
-
-
-            add(ModItems.SOLARSKIN.get(), "Solarskin");
-
-            add(ModItems.SUBDERMAL_SPIKES.get(), "Subdermal Spikes");
-
-            add(ModItems.SYNTHETIC_SKIN.get(), "Synthetic Skin");
-
-            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "Targeted Immunosuppressant");
-
-
-            add(ModItems.WIRED_REFLEXES.get(), "Wired Reflexes");
-
-            add(ModItems.MYOMER_MUSCLE.get(), "Myomer Muscle Replacement");
-
-
-            add(ModItems.BONELACING.get(), "Bonelacing");
-
-            add(ModItems.CITRATE_ENHANCEMENT.get(), "Citrate Enhancement");
-
-            add(ModItems.MARROW_BATTERY.get(), "Marrow Battery");
-
-
             add("cyberware.tooltip.ghost.remove", "Click to remove");
-
-            add("cyberware.tooltip.ghost.add", "Click to install %s");
-
-
+            add("cyberware.tooltip.ghost.add", "Click to add %s");
+            add("cyberware.tooltip.shiftPrompt", "Hold %s for more info");
+            add("cyberware.tooltip.requires", "Requires:");
+            add("cyberware.tooltip.incompatible", "Incompatible with:");
+            add("cyberware.quality.manufactured", "Manufactured");
+            add("cyberware.quality.scavenged", "Salvaged");
+            add("cyberware.tooltip.essence", "Essence Cost: %s");
+            add("cyberware.tooltip.capacity", "Power Capacity: %s");
+            add("cyberware.tooltip.powerConsumption", "Power Usage: %s/s");
+            add("cyberware.tooltip.powerProduction", "Power Gen: %s/s");
+            add("cyberware.tooltip.maxInstall", "Max Install: %s");
+            add("cyberware.tooltip.slot", "%s");
+            add("cyberware.tooltip.exp_capsule", "Contains stored experience.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "A mechanized arm.\nMore durable than a flesh and blood arm, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "A mechanized arm.\nMore durable than a flesh and blood arm, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "A mechanized leg.\nMore durable than a flesh and blood leg, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "A mechanized leg.\nMore durable than a flesh and blood leg, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cybereyes", "Immunity to blindness.\nEnables Cybereye upgrades.");
+            add("cyberware.tooltip.cybereye_upgrades_night_vision", "See in the dark.");
+            add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "See underwater.");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Displays internal power information.\nAllows upgrades to overlay a HUD.");
+            add("cyberware.tooltip.cybereye_upgrades_targeting", "Highlights nearby creatures.");
+            add("cyberware.tooltip.cybereye_upgrades_zoom", "Can zoom in on distant objects.");
+            add("cyberware.tooltip.brain_upgrades_cortical_stack", "Saves experience in a capsule upon death.");
+            add("cyberware.tooltip.brain_upgrades_ender_jammer", "Blocks nearby ender teleportation.");
+            add("cyberware.tooltip.brain_upgrades_consciousness_transmitter", "Retains some XP upon death.");
+            add("cyberware.tooltip.brain_upgrades_neural_contextualizer", "Automatically switches to the appropriate tool.");
+            add("cyberware.tooltip.brain_upgrades_matrix", "High chance to dodge attacks when lightly armored or unarmored.");
+            add("cyberware.tooltip.brain_upgrades_radio", "Slightly increases the spawn rate of nearby Cyberzombies.");
+            add("cyberware.tooltip.cyberheart", "Immunity to Weakness.");
+            add("cyberware.tooltip.heart_upgrades_defibrillator", "Prevents death once (Requires Power).");
+            add("cyberware.tooltip.heart_upgrades_platelets", "Heals when near full health.");
+            add("cyberware.tooltip.heart_upgrades_medkit", "Heals the last damage taken after a long delay.");
+            add("cyberware.tooltip.heart_upgrades_coupler", "Converts the body's electrical pulses into power.");
+            add("cyberware.tooltip.lungs_upgrades_oxygen", "Additional oxygen supply, regenerates slowly.");
+            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "Additional speed while sprinting.");
+            add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "Nullifies negative effects from food and drink.");
+            add("cyberware.tooltip.lower_organs_upgrades_metabolic", "Consumes calories to generate power.");
+            add("cyberware.tooltip.lower_organs_upgrades_battery", "Stores energy.");
+            add("cyberware.tooltip.lower_organs_upgrades_adrenaline", "Increases strength and speed at low health.");
+            add("cyberware.tooltip.creative_battery", "Limitless potential.");
+            add("cyberware.tooltip.dense_battery", "High-capacity battery.");
             add("cyberware.tooltip.skin_upgrades_solar_skin", "Generates power in sunlight.");
+            add("cyberware.tooltip.skin_upgrades_subdermal_spikes", "Damages attackers when lightly armored or unarmored.");
+            add("cyberware.tooltip.skin_upgrades_fake_skin", "Hides cyber-arms and legs.");
+            add("cyberware.tooltip.skin_upgrades_immuno", "Suppresses the immune system's response.");
+            add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "R1: Increased attack speed\nR2: Readies weapon when attacked\nR3: Automatically faces the attacker.");
+            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "Increases movement speed and strength.");
+            add("cyberware.tooltip.bone_upgrades_bonelacing", "Increases health.");
+            add("cyberware.tooltip.bone_upgrades_boneflex", "Absorbs fall damage.");
+            add("cyberware.tooltip.bone_upgrades_bonebattery", "Stores energy.");
+            add("cyberware.tooltip.hand_upgrades_craft_hands", "Allows 3x3 crafting without a crafting table.");
+            add("cyberware.tooltip.hand_upgrades_claws", "Unarmed attacks are stronger.");
+            add("cyberware.tooltip.hand_upgrades_mining", "Can mine stone-level blocks with bare hands.");
+            add("cyberware.tooltip.arm_upgrades_bow", "Draws bows faster.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Jumps higher.\nShift-jump to launch yourself.\nMore powerful with two Cyberlegs.");
+            add("cyberware.tooltip.leg_upgrades_fall_damage", "Absorbs small impacts.");
+            add("cyberware.tooltip.foot_upgrades_spurs", "Speeds you up.");
+            add("cyberware.tooltip.foot_upgrades_aqua", "Swims faster, more powerful with two Cyberlegs.");
+            add("cyberware.tooltip.foot_upgrades_wheels", "Walks up 1-block steps (please turn off auto-jump).");
 
-            add("cyberware.tooltip.skin_upgrades_subdermal_spikes", "Damages attackers when unarmored.");
+            add("tooltip.cyber_ware_port.radio_tower_core", "Attracts nearby cyber-type mobs, but does not function on its own.");
+            add("tooltip.cyber_ware_port.radio_kit", "Attracts cyber-type mobs within 64 blocks.");
+            add("tooltip.cyber_ware_port.component_box", "Can hold components, adds a tab if a Cyberware Workbench is nearby.");
+            add("tooltip.cyber_ware_port.scanner", "Scans Cyberware with a 50% chance to create a blueprint.");
+            add("tooltip.cyber_ware_port.radio_component", "Radio Beacon Component");
+            add("tooltip.cyber_ware_port.radio_component2", "Place components in a 3x3 area, 4 layers high on the bottom.");
+            add("tooltip.cyber_ware_port.radio_component3", "Place a single column of components 6 layers high in the center on top.");
+            add("tooltip.cyber_ware_port.surgery_chamber", "Performs operations for the Robo Surgeon.");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "Functions by entering it after scheduling an operation.");
+            add("tooltip.cyber_ware_port.blueprint_chest", "Can hold blueprints, adds a tab if a Cyberware Workbench is nearby.");
+            add("tooltip.cyber_ware_port.cyberware_workbench", "Can deconstruct and craft Cyberware.");
+            add("tooltip.cyber_ware_port.robo_surgeon", "Used to set Cyberware for installation and removal.");
+            add("tooltip.cyber_ware_port.robo_surgeon2", "Functions when placed on top of a Surgery Chamber.");
 
-            add("cyberware.tooltip.skin_upgrades_synthetic_skin", "Cosmetic: Hides cyberlimbs.");
+            add("death.attack.cyberware.brainless", "If only %1$s had a brain...");
+            add("death.attack.cyberware.heartless", "%1$s died for being heartless.");
+            add("death.attack.cyberware.surgery", "%1$s did not survive the operation.");
+            add("death.attack.cyberware.cyberware_missing_bone", "%1$s was a spineless weakling.");
+            add("death.attack.cyberware.nomuscles", "%1$s fell apart.");
+            add("death.attack.cyberware.noessence", "%1$s's body rejected it.");
+            add("death.attack.cyberware.lowessence", "%1$s's body rejected it.");
 
-            add("cyberware.tooltip.skin_upgrades_immuno", "Increases tolerance but reduces immunity.");
+            add("cyberware.risk.missing_requirement", "Error: Required parts are missing.");
+            add("cyberware.risk.missing_brain", "Warning: Brain is missing, cannot think.");
+            add("cyberware.risk.missing_bones_death", "Warning: Skeleton is missing, cannot maintain body form.");
+            add("cyberware.message.suppressant_applied", "Symptoms suppressed.");
+            add("cyberware.risk.missing_heart", "Warning: Heart is missing, cannot transport blood.");
+            add("cyberware.risk.zero_tolerance", "Warning: Tolerance depleted, will die from shock.");
+            add("cyberware.risk.missing_lungs", "Danger: Lungs are missing, cannot breathe.");
+            add("cyberware.risk.missing_skin", "Danger: Skin is missing, damage taken is increased.");
+            add("cyberware.risk.missing_arm_right", "Note: Right arm is missing.");
+            add("cyberware.risk.missing_arm_left", "Note: Left arm is missing.");
+            add("cyberware.risk.missing_legs_both", "Note: Both legs are missing, normal movement is impossible.");
+            add("cyberware.risk.missing_leg_single", "Note: One leg is missing, movement speed is reduced.");
+            add("cyberware.risk.missing_stomach", "Note: Stomach is missing, cannot eat.");
+            add("cyberware.risk.missing_muscle", "Note: Muscles are missing, attack power is reduced.");
+            add("cyberware.risk.missing_bones", "Note: Skeleton is missing, damage taken is increased.");
+            add("cyberware.risk.missing_eyes", "Note: Eyes are missing, will be blind.");
+            add("cyberware.risk.low_tolerance", "Note: Tolerance is low. Suppressant is required.");
 
-
-            add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "Increases attack speed.\nAuto-faces attacker.");
-
-            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "Boosts movement speed and strength.");
-
-
-            add("cyberware.tooltip.bone_upgrades_bonelacing", "Increases maximum health.");
-
-            add("cyberware.tooltip.bone_upgrades_boneflex", "Reduces fall damage.");
-
-            add("cyberware.tooltip.bone_upgrades_bonebattery", "Stores power in your bones.");
-
-
-        } else if (locale.equals("ja_jp")) {
+            add("cyberware.gui.scanner_saying.0", "Reticulating Splines");
+            add("cyberware.gui.scanner_saying.1", "Resolving GUID Conflict");
+            add("cyberware.gui.scanner_saying.2", "Perturbing Matrices");
+            add("cyberware.gui.scanner_saying.3", "Obfuscating Quigley Matrix");
+            add("cyberware.gui.scanner_saying.4", "Integrating Curves");
+            add("cyberware.gui.scanner_saying.5", "Burning SINs");
+            add("cyberware.gui.scanner_saying.6", "Graphing Whale Migration");
+            add("cyberware.gui.scanner_saying.7", "Asserting Packed Exemplars");
+            add("cyberware.gui.scanner_saying.8", "Simulating Thermonuclear War");
+            add("cyberware.gui.scanner_saying.9", "Updating to Windows 10");
+            add("cyberware.gui.scanner_saying.10", "Predicting Lottery Numbers");
+            add("cyberware.gui.scanner_saying.11", "Uprooting Data Trees");
+            add("cyberware.gui.scanner_saying.12", "Attempting POST Operations");
+            add("cyberware.gui.scanner_saying.13", "Subscribing Event Handlers");
+            add("cyberware.gui.scanner_saying.14", "Installing Ask Toolbar");
+            add("cyberware.gui.scanner_saying.15", "Suppressing Propaganda");
+            add("cyberware.gui.scanner_saying.16", "Seizing Means of Production");
+            add("cyberware.gui.scanner_saying.17", "Rebalancing Other Mods");
+            add("cyberware.gui.scanner_saying.18", "Refreshing Reddit Buffer");
+            add("cyberware.gui.scanner_saying.19", "Deciphering Zodiac Letters");
+            add("cyberware.gui.scanner_saying.20", "Paging Through Rulebook");
+            add("cyberware.gui.scanner_saying.21", "Rolling 4d6");
+            add("cyberware.gui.scanner_saying.22", "Unwithering Passive Flowers");
+            add("cyberware.gui.scanner_saying.23", "Merging Pull Requests");
+            add("cyberware.gui.scanner_saying.24", "Repeating Seen Sayings");
+            add("cyberware.gui.scanner_saying.25", "Converting Binary to Octal");
+            add("cyberware.gui.scanner_saying.26", "Dicing Models");
+            add("cyberware.gui.scanner_saying.27", "Gesticulating Mimes");
+            add("cyberware.gui.scanner_saying.28", "Splatting Transforms");
+            add("cyberware.gui.scanner_saying.29", "Sequencing Particles");
+            add("cyberware.gui.scanner_saying.30", "Searching for Llamas");
+            add("cyberware.gui.scanner_saying.31", "Retracting Phong Shader");
+            add("cyberware.gui.scanner_saying.32", "Reimplementing Quickplay");
+            add("cyberware.gui.scanner_saying.33", "Removing Microtransactions");
+            add("cyberware.gui.scanner_saying.34", "Lecturing Errant Subsystems");
+            add("cyberware.gui.scanner_saying.35", "Iterating Cellular Automata");
+            add("cyberware.gui.scanner_saying.36", "Applying Feng Shui Shaders");
+            add("cyberware.gui.scanner_saying.37", "Bypassing DRM Measures");
+            add("cyberware.gui.scanner_saying.38", "Generating Stupid Messages");
+            add("cyberware.gui.scanner_saying.39", "Gathering Particle Sources");
+            add("cyberware.gui.scanner_saying.40", "Splicing Genetic Sources");
+            add("cyberware.gui.scanner_saying.41", "Unveiling Herobrine");
+            add("cyberware.gui.scanner_saying.42", "Flashing Customized BIOS");
+            add("cyberware.gui.scanner_saying.43", "Recommending Roots");
+            add("cyberware.gui.scanner_saying.44", "Enforcing EULA Stipulations");
+            add("cyberware.gui.scanner_saying.45", "Quelling Uprising");
+            add("cyberware.gui.scanner_saying.46", "Calculating Screw Direction");
+            add("cyberware.gui.scanner_saying.47", "Modeling Cyberware Housing");
+            add("cyberware.gui.scanner_saying.48", "Polishing Scanner Lens");
+            add("cyberware.gui.scanner_saying.49", "Extracting Firmware");
+            add("cyberware.gui.scanner_saying.50", "Cracking License Key");
+            add("cyberware.gui.scanner_saying.51", "Subdividing Strands");
+            add("cyberware.gui.scanner_saying.52", "Constructing Simulation");
+            add("cyberware.gui.scanner_saying.53", "Routing Neural Networks");
+            add("cyberware.gui.scanner_saying.54", "Monitoring Electron Travel");
+            add("cyberware.gui.scanner_saying.55", "Zeroing Instrument Error");
+            add("cyberware.gui.scanner_saying.56", "Recalculating Route");
+            add("cyberware.gui.scanner_saying.57", "Partitioning Singularities");
+            add("cyberware.gui.scanner_saying.58", "Compressing Internal Clock");
+            add("cyberware.gui.scanner_saying.59", "Resetting Water Indicators");
+            add("cyberware.gui.scanner_saying.60", "Analyzing Branding Details");
+            add("cyberware.gui.scanner_saying.61", "Performing Yulife Calculation");
+            add("cyberware.gui.scanner_saying.62", "Abstracting Noise Layers");
+            add("cyberware.gui.scanner_saying.63", "Sifting Neural Particles");
+            add("cyberware.gui.scanner_saying.64", "Solving Differential Equations");
+            add("cyberware.gui.scanner_saying.65", "Commencing Spatial Simulation");
+            add("cyberware.gui.scanner_saying.66", "Instantiating Child Elements");
+            add("cyberware.gui.scanner_saying.67", "Wiping System32");
+            add("cyberware.gui.scanner_saying.68", "Remembering Lycaon");
+            add("cyberware.gui.scanner_saying.69", "AI has detected a cheater");
+            add("cyberware.gui.scanner_saying.70", "Using parallel universes for parallel processing");
+            add("cyberware.gui.scanner_saying.71", "Insufficient gas for transaction");
+            add("cyberware.gui.scanner_saying.72", "Undergoing 51% attack");
+            add("cyberware.gui.scanner_saying.73", "Goxxed 100,000 Bitcoin");
+        }
+        if (locale.equals("ja_jp")) {
 
             add("itemGroup.cyber_ware_port.items", "サイバーウェア");
 
             add(ModItems.KATANA.get(), "カタナ");
+            add(ModItems.NEUROPOZYNE.get(), "ニューロポザイン");
+            add("cyberware.item.katana.desc","サイバー系モブを倒したときのサイバーウェアドロップ率を上昇。");
+            add("cyberware.item.neuropozyne.desc","サイバーウェアによる暴走を1日分の時間抑制します。");
+            add("cyberware.message.critical_condition","警告:耐性値低下、まもなく死亡します。");
 
             add(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get(),"サイバーウィザースケルトンの頭");
 
@@ -326,10 +1290,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
             add(ModItems.COMPONENT_STORAGE.get(), "ストレージセル");
 
-            add(ModItems.COMPONENT_MICROELECTRIC.get(), "微小電気セル");
-
-
-            add(ModItems.HUMAN_BRAIN.get(), "人間の脳");
+            add(ModItems.COMPONENT_MICROELECTRIC.get(), "微小電気セル");add(ModItems.HUMAN_BRAIN.get(), "人間の脳");
 
             add(ModItems.HUMAN_EYES.get(), "人間の目");
 
@@ -370,10 +1331,7 @@ add(ModItems.CYBER_EYE.get(), "サイバーアイ");
 
             add(ModItems.TARGETING_OVERLAY.get(), "標的オーバーレイ");
 
-            add(ModItems.DISTANCE_ENHANCER.get(), "望遠強化装置");
-
-
-            add(ModItems.CORTICAL_STACK.get(), "脳皮質スタック装置");
+            add(ModItems.DISTANCE_ENHANCER.get(), "望遠強化装置");add(ModItems.CORTICAL_STACK.get(), "脳皮質スタック装置");
 
             add(ModItems.ENDER_JAMMER.get(), "エンダージャマー");
 
@@ -383,10 +1341,7 @@ add(ModItems.CYBER_EYE.get(), "サイバーアイ");
 
             add(ModItems.THREAT_MATRIX.get(), "脅威マトリックス計算機");
 
-            add(ModItems.CRANIAL_BROADCASTER.get(), "頭蓋放送局");
-
-
-            add(ModItems.CARDIOMECHANIC_PUMP.get(), "心臓機能ポンプ");
+            add(ModItems.CRANIAL_BROADCASTER.get(), "頭蓋放送局");add(ModItems.CARDIOMECHANIC_PUMP.get(), "心臓機能ポンプ");
 
             add(ModItems.INTERNAL_DEFIBRILLATOR.get(), "体内除細動器");
 
@@ -394,45 +1349,27 @@ add(ModItems.CYBER_EYE.get(), "サイバーアイ");
 
             add(ModItems.STEM_CELL_SYNTHESIZER.get(), "幹細胞合成装置");
 
-            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "心血管カプラー");
+            add(ModItems.CARDIOVASCULAR_COUPLER.get(), "心血管カプラー");add(ModItems.COMPRESSED_OXYGEN.get(), "圧縮酸素インプラント");
 
-
-            add(ModItems.COMPRESSED_OXYGEN.get(), "圧縮酸素インプラント");
-
-            add(ModItems.HYPER_OXYGENATION.get(), "過酸素化ブースト");
-
-
-            add(ModItems.LIVER_FILTER.get(), "肝臓フィルター");
+            add(ModItems.HYPER_OXYGENATION.get(), "過酸素化ブースト");add(ModItems.LIVER_FILTER.get(), "肝臓フィルター");
 
             add(ModItems.METABOLIC_GENERATOR.get(), "メタボリック発電機");
 
             add(ModItems.INTERNAL_BATTERY.get(), "内臓バッテリー");
 
-            add(ModItems.ADRENALINE_PUMP.get(), "アドレナリンポンプ");
-
-
-            add(ModItems.SOLARSKIN.get(), "ソーラースキン");
+            add(ModItems.ADRENALINE_PUMP.get(), "アドレナリンポンプ");add(ModItems.SOLARSKIN.get(), "ソーラースキン");
 
             add(ModItems.SUBDERMAL_SPIKES.get(), "皮下スパイク");
 
             add(ModItems.SYNTHETIC_SKIN.get(), "合成皮膚");
 
-            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "標的免疫抑制装置");
+            add(ModItems.TARGETED_IMMUNOSUPPRESSANT.get(), "標的免疫抑制装置");add(ModItems.WIRED_REFLEXES.get(), "強化反射神経");
 
-
-            add(ModItems.WIRED_REFLEXES.get(), "強化反射神経");
-
-            add(ModItems.MYOMER_MUSCLE.get(), "ミオマー筋肉代替物");
-
-
-            add(ModItems.BONELACING.get(), "骨格接合具");
+            add(ModItems.MYOMER_MUSCLE.get(), "ミオマー筋肉代替物");add(ModItems.BONELACING.get(), "骨格接合具");
 
             add(ModItems.CITRATE_ENHANCEMENT.get(), "クエン酸塩強化");
 
-            add(ModItems.MARROW_BATTERY.get(), "骨髄バッテリー");
-
-
-            add(ModItems.CYBER_ARM_LEFT.get(), "左サイバーアーム");
+            add(ModItems.MARROW_BATTERY.get(), "骨髄バッテリー");add(ModItems.CYBER_ARM_LEFT.get(), "左サイバーアーム");
 
             add(ModItems.CYBER_ARM_RIGHT.get(), "右サイバーアーム");
 
@@ -447,10 +1384,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add(ModItems.DENSE_BATTERY.get(),"超濃縮蓄電器");
 
-            add(ModItems.RAPID_FIRE_FLYWHEEL.get(), "早射ちフライホイール");
-
-
-            add(ModItems.IMPLANTED_SPURS.get(), "埋め込み式拍車");
+            add(ModItems.RAPID_FIRE_FLYWHEEL.get(), "早射ちフライホイール");add(ModItems.IMPLANTED_SPURS.get(), "埋め込み式拍車");
 
             add(ModItems.AQUATIC_PROPULSION.get(), "水中推進システム");
 
@@ -458,10 +1392,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add(ModItems.LINEAR_ACTUATORS.get(), "垂直駆動装置");
 
-            add(ModItems.FALL_BRACERS.get(), "落下補助装置");
-
-
-            add("gui.cyber_ware_port.scanner.chance", "[%s%% の確率]");
+            add(ModItems.FALL_BRACERS.get(), "落下補助装置");add("gui.cyber_ware_port.scanner.chance", "[%s%% の確率]");
 
             add("gui.cyber_ware_port.need_paper", "紙が必要です。");
 
@@ -491,15 +1422,9 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.tooltip.shiftPrompt", "%sキーで詳細を表示");
 
-            add("key.keyboard.shift", "Shift");
+            add("key.keyboard.shift", "Shift");add("key.cyber_ware_port.menu", "サイバーウェアメニューを開く");
 
-
-            add("key.cyber_ware_port.menu", "サイバーウェアメニューを開く");
-
-            add("key.categories.cyber_ware_port", "サイバーウェア");
-
-
-            add("cyberware_slot.cyber_ware_port.eyes", "眼球スロット");
+            add("key.categories.cyber_ware_port", "サイバーウェア");add("cyberware_slot.cyber_ware_port.eyes", "眼球スロット");
 
             add("cyberware_slot.cyber_ware_port.brain", "頭蓋スロット");
 
@@ -523,10 +1448,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware_slot.cyber_ware_port.bones", "骨格スロット");
 
-            add("cyberware_slot.cyber_ware_port.unknown", "不明");
-
-
-            add("cyberware.tooltip.requires", "必須");
+            add("cyberware_slot.cyber_ware_port.unknown", "不明");add("cyberware.tooltip.requires", "必須");
 
             add("cyberware.tooltip.incompatible", "競合パーツ:");
 
@@ -546,10 +1468,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.tooltip.slot", "%s");
 
-            add("cyberware.tooltip.exp_capsule", "記録された経験値が貯められています");
-
-
-            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "機械化された腕。\n生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
+            add("cyberware.tooltip.exp_capsule", "記録された経験値が貯められています");add("cyberware.tooltip.cyberlimbs_cyberarm_left", "機械化された腕。\n生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
 
             add("cyberware.tooltip.cyberlimbs_cyberarm_right", "機械化された腕。\n生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
 
@@ -567,10 +1486,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.tooltip.cybereye_upgrades_targeting", "近くの生き物をハイライトします");
 
-            add("cyberware.tooltip.cybereye_upgrades_zoom", "遠くの物体をズームできます");
-
-
-            add("cyberware.tooltip.brain_upgrades_cortical_stack", "死亡時に経験値をカプセルに保存します");
+            add("cyberware.tooltip.cybereye_upgrades_zoom", "遠くの物体をズームできます");add("cyberware.tooltip.brain_upgrades_cortical_stack", "死亡時に経験値をカプセルに保存します");
 
             add("cyberware.tooltip.brain_upgrades_ender_jammer", "近くのエンダーテレポートをブロックします");
 
@@ -580,10 +1496,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.tooltip.brain_upgrades_matrix", "軽装または防具が無い時高い確率で攻撃を避けます");
 
-            add("cyberware.tooltip.brain_upgrades_radio", "近くのサイバーゾンビのスポーン率をわずかに増加させます");
-
-
-            add("cyberware.tooltip.cyberheart", "弱体化への耐性があります");
+            add("cyberware.tooltip.brain_upgrades_radio", "近くのサイバーゾンビのスポーン率をわずかに増加させます");add("cyberware.tooltip.cyberheart", "弱体化への耐性があります");
 
             add("cyberware.tooltip.heart_upgrades_defibrillator", "一度だけ特定の死亡を防ぎます(要電力)");
 
@@ -591,15 +1504,9 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.tooltip.heart_upgrades_medkit", "長めの待ち時間の後に直前のダメージを回復します");
 
-            add("cyberware.tooltip.heart_upgrades_coupler", "人体の電気パルスを電力化します");
+            add("cyberware.tooltip.heart_upgrades_coupler", "人体の電気パルスを電力化します");add("cyberware.tooltip.lungs_upgrades_oxygen", "追加の酸素ゲージ、回復はゆっくりです");
 
-
-            add("cyberware.tooltip.lungs_upgrades_oxygen", "追加の酸素ゲージ、回復はゆっくりです");
-
-            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "スプリント中の追加スピード");
-
-
-            add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "飲食物からの悪い効果が無くなります");
+            add("cyberware.tooltip.lungs_upgrades_hyperoxygenation", "スプリント中の追加スピード");add("cyberware.tooltip.lower_organs_upgrades_liver_filter", "飲食物からの悪い効果が無くなります");
 
             add("cyberware.tooltip.lower_organs_upgrades_metabolic", "カロリーを消費して発電します");
 
@@ -617,44 +1524,23 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.tooltip.skin_upgrades_fake_skin", "サイバーアーム・レッグを隠します");
 
-            add("cyberware.tooltip.skin_upgrades_immuno", "免疫システムの反応を抑制します\n病気や毒への耐性が減少します");
+            add("cyberware.tooltip.skin_upgrades_immuno", "免疫システムの反応を抑制します。");add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "R1：攻撃速度が速くなります\nR2：攻撃を受けると武器を構えます\nR3：自動的に攻撃者の方を見ます");
 
-
-            add("cyberware.tooltip.muscle_upgrades_wired_reflexes", "R1：攻撃速度が速くなります\nR2：攻撃を受けると武器を構えます\nR3：自動的に攻撃者の方を見ます");
-
-            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "移動速度が速くなり、力が上昇します");
-
-
-            add("cyberware.tooltip.bone_upgrades_bonelacing", "体力が上昇します");
+            add("cyberware.tooltip.muscle_upgrades_muscle_replacements", "移動速度が速くなり、力が上昇します");add("cyberware.tooltip.bone_upgrades_bonelacing", "体力が上昇します");
 
             add("cyberware.tooltip.bone_upgrades_boneflex", "落下ダメージを弾力で吸収します");
 
-            add("cyberware.tooltip.bone_upgrades_bonebattery", "エネルギーを貯蔵します");
-
-
-            add("cyberware.tooltip.hand_upgrades_craft_hands", "作業台無しで3x3のクラフトができます");
+            add("cyberware.tooltip.bone_upgrades_bonebattery", "エネルギーを貯蔵します");add("cyberware.tooltip.hand_upgrades_craft_hands", "作業台無しで3x3のクラフトができます");
 
             add("cyberware.tooltip.hand_upgrades_claws", "武器を持たない時の攻撃がより強くなります");
 
-            add("cyberware.tooltip.hand_upgrades_mining", "素手で石レベルの採掘ができます");
+            add("cyberware.tooltip.hand_upgrades_mining", "素手で石レベルの採掘ができます");add("cyberware.tooltip.arm_upgrades_bow", "より速く弓を発射します");add("cyberware.tooltip.leg_upgrades_jump_boost", "より高くジャンプできます\nシフト＋ジャンプで自分を打ち上げます\n2つのサイバーレッグでさらにパワフルに");
 
-
-            add("cyberware.tooltip.arm_upgrades_bow", "より速く弓を発射します");
-
-
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "より高くジャンプできます\nシフト＋ジャンプで自分を打ち上げます\n2つのサイバーレッグでさらにパワフルに");
-
-            add("cyberware.tooltip.leg_upgrades_fall_damage", "小さな衝撃を吸収します");
-
-
-            add("cyberware.tooltip.foot_upgrades_spurs", "自分をスピードアップ");
+            add("cyberware.tooltip.leg_upgrades_fall_damage", "小さな衝撃を吸収します");add("cyberware.tooltip.foot_upgrades_spurs", "自分をスピードアップ");
 
             add("cyberware.tooltip.foot_upgrades_aqua", "より速く泳ぎます、2つのサーバーレッグでさらにパワフルに");
 
-            add("cyberware.tooltip.foot_upgrades_wheels", "１ブロックの段ならまたいで歩きます(自動ジャンプをオフにしてください)");
-
-
-            add("death.attack.cyberware.brainless", "もしも%1$sが脳無しじゃなかったら・・・");
+            add("cyberware.tooltip.foot_upgrades_wheels", "１ブロックの段ならまたいで歩きます(自動ジャンプをオフにしてください)");add("death.attack.cyberware.brainless", "もしも%1$sが脳無しじゃなかったら・・・");
 
             add("death.attack.cyberware.heartless", "%1$sは心無いが故に死にました。");
 
@@ -673,7 +1559,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
             add("cyberware.risk.missing_brain", "警告：脳が欠損しています、思考ができません。");
 
             add("cyberware.risk.missing_bones_death", "警告：骨格が欠損しています、体形を維持できません。");
-
+           add("cyberware.message.suppressant_applied","症状を抑制した。");
 
             add("cyberware.risk.missing_heart", "警告：心臓が欠損しています、血液が輸送できません。");
 
@@ -689,7 +1575,7 @@ add(ModItems.FINE_MANIPULATORS.get(), "高精細マニピュレーター");
 
             add("cyberware.risk.missing_legs_both", "注意：両足がありません、正常な移動は不可能です。");
 
-            add("cyberware.risk.missing_legs_single", "注意：片足がありません、移動速度が低下します。");
+            add("cyberware.risk.missing_leg_single", "注意：片足がありません、移動速度が低下します。");
 
             add("cyberware.risk.missing_stomach", "注意：胃が欠損しています、食事ができません。");
 

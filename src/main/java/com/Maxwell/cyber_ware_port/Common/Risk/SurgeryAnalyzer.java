@@ -1,27 +1,13 @@
-package com.Maxwell.cyber_ware_port.Common.Risk;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Risk;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.BodyPartType;
-
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-
 import net.minecraft.ChatFormatting;
-
 import net.minecraft.world.inventory.Slot;
-
 import net.minecraft.world.item.ItemStack;
 
-
 import java.util.EnumSet;
-
 import java.util.List;
-
-import java.util.Set;
-
-
-public class SurgeryAnalyzer {
+import java.util.Set;public class SurgeryAnalyzer {
 
     public static SurgeryAlert check(List<Slot> slots, int maxTolerance) {
         Set<BodyPartType> futureParts = EnumSet.noneOf(BodyPartType.class);
@@ -29,15 +15,12 @@ public class SurgeryAnalyzer {
         List<ItemStack> futureItems = new java.util.ArrayList<>();
 
         int projectedCost = 0;
-for (int i = 0;
- i < RobosurgeonBlockEntity.TOTAL_SLOTS;
- i++) {
+        for (int i = 0;
+             i < RobosurgeonBlockEntity.TOTAL_SLOTS;
+             i++) {
             if (i >= slots.size()) break;
 
-            ItemStack stack = slots.get(i).getItem();
-
-
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+            ItemStack stack = slots.get(i).getItem();if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
                 projectedCost += cyberware.getEssenceCost(stack) * stack.getCount();
 
                 BodyPartType type = cyberware.getBodyPartType(stack);
@@ -73,14 +56,14 @@ for (int i = 0;
         }
 
         int remainingTolerance = maxTolerance - projectedCost;
-boolean hasRightLeg = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_LEGS);
-     
-        boolean hasLeftLeg  = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_LEGS + 1);
- 
+        boolean hasRightLeg = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_LEGS);
+
+        boolean hasLeftLeg = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_LEGS + 1);
+
         boolean hasRightArm = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_ARMS);
 
-        boolean hasLeftArm  = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_ARMS + 1);
-if (!futureParts.contains(BodyPartType.BRAIN)) {
+        boolean hasLeftArm = hasItemInSlot(slots, RobosurgeonBlockEntity.SLOT_ARMS + 1);
+        if (!futureParts.contains(BodyPartType.BRAIN)) {
             return SurgeryAlert.create("cyberware.risk.missing_brain", ChatFormatting.RED);
 
         }
@@ -88,7 +71,7 @@ if (!futureParts.contains(BodyPartType.BRAIN)) {
             return SurgeryAlert.create("cyberware.risk.missing_heart", ChatFormatting.RED);
 
         }
-        if (!futureParts.contains(BodyPartType.MUSCLE)) { 
+        if (!futureParts.contains(BodyPartType.MUSCLE)) {
             return SurgeryAlert.create("cyberware.risk.missing_muscle_death", ChatFormatting.RED);
 
         }
@@ -127,7 +110,7 @@ if (!futureParts.contains(BodyPartType.BRAIN)) {
             return SurgeryAlert.create("cyberware.risk.missing_arm_left", ChatFormatting.YELLOW);
 
         }
-        if (!hasRightLeg || !hasLeftLeg) { 
+        if (!hasRightLeg || !hasLeftLeg) {
             return SurgeryAlert.create("cyberware.risk.missing_leg_single", ChatFormatting.YELLOW);
 
         }

@@ -1,139 +1,47 @@
-package com.Maxwell.cyber_ware_port.Client;
-
-
-
-import com.Maxwell.cyber_ware_port.Client.Screen.BlueprintChestScreen;
-
-
+package com.Maxwell.cyber_ware_port.Client;import com.Maxwell.cyber_ware_port.Client.Screen.BlueprintChestScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.CWB.CyberwareWorkbenchScreen;
-
-
 import com.Maxwell.cyber_ware_port.Client.Screen.ComponentBoxScreen;
-
-
 import com.Maxwell.cyber_ware_port.Client.Screen.RoboSurgeon.RobosurgeonScreen;
-
-
 import com.Maxwell.cyber_ware_port.Client.Screen.Scanner.ScannerScreen;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberWareWorkBenchModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.CyberSkull.CyberSkullRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.Radio.Tower.RadioTowerModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.Radio.Tower.RadioTowerRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.Scanner.ScannerBlockModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.Scanner.ScannerBlockRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.SurgeryChamber.SurgeryChamberModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.SurgeryChamber.SurgeryChamberRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberCreeper.CyberCreeperModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberCreeper.CyberCreeperRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberSkeleton.CyberSkeletonModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberSkeleton.CyberSkeletonRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither.CyberWitherBossRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither.CyberWitherModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton.CyberWitherSkeletonModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton.CyberWitherSkeletonRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberZombie.CyberZombieModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberZombie.CyberZombieRenderer;
-
-
 import com.Maxwell.cyber_ware_port.Common.Entity.PlayerPartsModel.PlayerInternalPartsModel;
-
-
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
-
-
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
-
 import com.Maxwell.cyber_ware_port.CyberWare;
-
-
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
-
-
 import com.Maxwell.cyber_ware_port.Init.ModEntities;
-
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
-
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
-
-
 import net.minecraft.client.gui.screens.MenuScreens;
-
-
 import net.minecraft.client.model.SkullModel;
-
-
 import net.minecraft.client.model.geom.ModelLayerLocation;
-
-
 import net.minecraft.client.renderer.item.ItemProperties;
-
-
 import net.minecraft.resources.ResourceLocation;
-
-
 import net.minecraft.world.item.Item;
-
-
 import net.minecraftforge.api.distmarker.Dist;
-
-
 import net.minecraftforge.client.event.EntityRenderersEvent;
-
-
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-
 import net.minecraftforge.fml.common.Mod;
-
-
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-
-import net.minecraftforge.registries.RegistryObject;
-
-
-@SuppressWarnings("removal")
+import net.minecraftforge.registries.RegistryObject;@SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
     public static final ModelLayerLocation CYBER_SKULL_LAYER =
@@ -209,15 +117,9 @@ public class ModClientEvents {
 
                     });
 
-            ResourceLocation scavengedProperty = new ResourceLocation(CyberWare.MODID, "is_scavenged");
-
-
-            for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
+            ResourceLocation scavengedProperty = new ResourceLocation(CyberWare.MODID, "is_scavenged");for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
                 if (entry.get() instanceof CyberwareItem) {
-                    Item item = entry.get();
-
-
-                    ItemProperties.register(item, scavengedProperty, (stack, level, entity, seed) -> {
+                    Item item = entry.get();ItemProperties.register(item, scavengedProperty, (stack, level, entity, seed) -> {
                         if (stack.getItem() instanceof CyberwareItem cw) {
                             return cw.isPristine(stack) ? 0.0F : 1.0F;
 

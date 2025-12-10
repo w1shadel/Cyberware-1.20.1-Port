@@ -1,34 +1,22 @@
 package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;
+
 import com.Maxwell.cyber_ware_port.CyberWare;
-
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import net.minecraft.client.model.HierarchicalModel;
-
 import net.minecraft.client.model.geom.ModelLayerLocation;
-
 import net.minecraft.client.model.geom.ModelPart;
-
 import net.minecraft.client.model.geom.PartPose;
-
 import net.minecraft.client.model.geom.builders.*;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.util.Mth;
-
 import net.minecraft.world.item.Items;
 
 @SuppressWarnings("removal")
 public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkeletonEntity> {
 
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_witherskeleton"), "main");
-
-
-    private final ModelPart waist;
+            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_witherskeleton"), "main");private final ModelPart waist;
 
     private final ModelPart body;
 
@@ -46,10 +34,7 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
 
     private final ModelPart rightLeg;
 
-    private final ModelPart leftLeg;
-
-
-    public CyberWitherSkeletonModel(ModelPart root) {
+    private final ModelPart leftLeg;public CyberWitherSkeletonModel(ModelPart root) {
         this.waist = root.getChild("waist");
 
         this.body = this.waist.getChild("body");
@@ -76,10 +61,7 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
 
         MeshDefinition meshdefinition = new MeshDefinition();
 
-        PartDefinition partdefinition = meshdefinition.getRoot();
-
-
-        PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder.create(), PartPose.offset(0.0F, 12.0F, 0.0F));
+        PartDefinition partdefinition = meshdefinition.getRoot();PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder.create(), PartPose.offset(0.0F, 12.0F, 0.0F));
 
         PartDefinition body = waist.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -12.0F, 0.0F));
 
@@ -99,10 +81,7 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
 
         PartDefinition rightLeg = body.addOrReplaceChild("rightLeg", CubeListBuilder.create().texOffs(0, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-2.0F, 12.0F, 0.0F));
 
-        PartDefinition leftLeg = body.addOrReplaceChild("leftLeg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(2.0F, 12.0F, 0.0F));
-
-
-        return LayerDefinition.create(meshdefinition, 64, 32);
+        PartDefinition leftLeg = body.addOrReplaceChild("leftLeg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(2.0F, 12.0F, 0.0F));return LayerDefinition.create(meshdefinition, 64, 32);
 
     }
 
@@ -130,10 +109,7 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
         }
         this.head.yRot = netHeadYaw * ((float)Math.PI / 180F);
 
-        this.head.xRot = headPitch * ((float)Math.PI / 180F);
-
-
-        this.rightArm.xRot = 0.0F;
+        this.head.xRot = headPitch * ((float)Math.PI / 180F);this.rightArm.xRot = 0.0F;
 
         this.rightArm.yRot = 0.0F;
 
@@ -143,24 +119,15 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
 
         this.leftArm.yRot = 0.0F;
 
-        this.leftArm.zRot = 0.0F;
-
-
-        this.rightArm.xRot += Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
+        this.leftArm.zRot = 0.0F;this.rightArm.xRot += Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
 
         this.leftArm.xRot += Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F;
 
         this.rightLeg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
 
-        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;boolean isAggressive = entity.isAggressive();
 
-
-        boolean isAggressive = entity.isAggressive();
-
-        boolean holdingBow = entity.getMainHandItem().is(Items.BOW);
-
-
-        if (isAggressive) {
+        boolean holdingBow = entity.getMainHandItem().is(Items.BOW);if (isAggressive) {
             if (holdingBow) {
 
                 this.rightArm.yRot = this.head.yRot - 0.1F;
@@ -179,10 +146,7 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
 
                 float sin1 = Mth.sin(attackTime * (float)Math.PI);
 
-                float sin2 = Mth.sin((1.0F - (1.0F - attackTime) * (1.0F - attackTime)) * (float)Math.PI);
-
-
-                this.rightArm.zRot = 0.0F;
+                float sin2 = Mth.sin((1.0F - (1.0F - attackTime) * (1.0F - attackTime)) * (float)Math.PI);this.rightArm.zRot = 0.0F;
 
                 this.leftArm.zRot = 0.0F;
 

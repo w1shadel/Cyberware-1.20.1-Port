@@ -1,25 +1,12 @@
-package com.Maxwell.cyber_ware_port.Common.Network;
-
-
-import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
-
+package com.Maxwell.cyber_ware_port.Common.Network;import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraftforge.network.NetworkEvent;
 
-
-import java.util.function.Supplier;
-
-
-public class ComponentChangePagePacket {
+import java.util.function.Supplier;public class ComponentChangePagePacket {
     private final int direction;
 
-    private final int targetPanel;
-
-
-    public ComponentChangePagePacket(int direction, int targetPanel) {
+    private final int targetPanel;public ComponentChangePagePacket(int direction, int targetPanel) {
         this.direction = direction;
 
         this.targetPanel = targetPanel;

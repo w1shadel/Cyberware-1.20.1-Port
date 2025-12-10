@@ -1,47 +1,23 @@
-package com.Maxwell.cyber_ware_port.Common.Block.CyberSkull;
-
-
-import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither.CyberWitherBoss;
-
+package com.Maxwell.cyber_ware_port.Common.Block.CyberSkull;import com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWither.CyberWitherBoss;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModEntities;
-
 import net.minecraft.advancements.CriteriaTriggers;
-
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.core.Direction;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.world.entity.LivingEntity;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.Blocks;
-
 import net.minecraft.world.level.block.SkullBlock;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
-
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
-
 import net.minecraft.world.level.block.state.pattern.BlockPatternBuilder;
 
-
-import javax.annotation.Nullable;
-
-
-public class CyberSkullBlock extends SkullBlock {
+import javax.annotation.Nullable;public class CyberSkullBlock extends SkullBlock {
     public CyberSkullBlock(SkullBlock.Type type, Properties properties) {
         super(type, properties);
 
@@ -68,16 +44,10 @@ public class CyberSkullBlock extends SkullBlock {
         if (!level.isClientSide) {
             BlockState blockstate = skull.getBlockState();
 
-            boolean isBase = blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get()) || blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get());
-
-
-            if (isBase && pos.getY() >= level.getMinBuildHeight() && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL) {
+            boolean isBase = blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get()) || blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get());if (isBase && pos.getY() >= level.getMinBuildHeight() && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL) {
                 BlockPattern pattern = getOrCreateWitherFull();
 
-                BlockPattern.BlockPatternMatch match = pattern.find(level, pos);
-
-
-                if (match != null) {
+                BlockPattern.BlockPatternMatch match = pattern.find(level, pos);if (match != null) {
 
                     for(int i = 0;
  i < pattern.getWidth();
@@ -101,18 +71,12 @@ public class CyberSkullBlock extends SkullBlock {
 
                         boss.moveTo((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.55D, (double)blockpos.getZ() + 0.5D, match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
 
-                        boss.yBodyRot = match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
-
-
-                        for(ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, boss.getBoundingBox().inflate(50.0D))) {
+                        boss.yBodyRot = match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;for(ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, boss.getBoundingBox().inflate(50.0D))) {
                             CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, boss);
 
                         }
 
-                        level.addFreshEntity(boss);
-
-
-                        for(int k = 0;
+                        level.addFreshEntity(boss);for(int k = 0;
  k < pattern.getWidth();
  ++k) {
                             for(int l = 0;

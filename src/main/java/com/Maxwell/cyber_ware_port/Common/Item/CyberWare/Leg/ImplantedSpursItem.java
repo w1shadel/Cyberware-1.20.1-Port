@@ -1,16 +1,7 @@
-package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
-
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-
-import net.minecraft.world.entity.ai.attributes.Attributes;
-
-
-public class ImplantedSpursItem extends CyberwareItem {
+import net.minecraft.world.entity.ai.attributes.Attributes;public class ImplantedSpursItem extends CyberwareItem {
     public ImplantedSpursItem() {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_BOOTS)
                 .maxInstall(4)

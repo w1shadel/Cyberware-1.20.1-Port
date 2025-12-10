@@ -1,34 +1,22 @@
 package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberSkeleton;
+
 import com.Maxwell.cyber_ware_port.CyberWare;
-
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import net.minecraft.client.model.HierarchicalModel;
-
 import net.minecraft.client.model.geom.ModelLayerLocation;
-
 import net.minecraft.client.model.geom.ModelPart;
-
 import net.minecraft.client.model.geom.PartPose;
-
 import net.minecraft.client.model.geom.builders.*;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.util.Mth;
-
 import net.minecraft.world.item.Items;
 
 @SuppressWarnings("remeoval")
 public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
 
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_skeleton"), "main");
-
-
-    private final ModelPart waist;
+            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_skeleton"), "main");private final ModelPart waist;
 
     private final ModelPart body;
 
@@ -40,10 +28,7 @@ public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
 
     private final ModelPart rightLeg;
 
-    private final ModelPart leftLeg;
-
-
-    public CyberSkeletonModel(ModelPart root) {
+    private final ModelPart leftLeg;public CyberSkeletonModel(ModelPart root) {
         this.waist = root.getChild("waist");
 
         this.body = this.waist.getChild("body");
@@ -62,43 +47,10 @@ public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
     public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 
-		PartDefinition partdefinition = meshdefinition.getRoot();
-
-
-		PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder.create(), PartPose.offset(0.0F, 12.0F, 0.0F));
-
-
-		PartDefinition body = waist.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -12.0F, 0.0F));
-
-
-		PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
-
-
-		PartDefinition hat = head.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
-
-
-		PartDefinition rightArm = body.addOrReplaceChild("rightArm", CubeListBuilder.create().texOffs(40, 16).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F))
+		PartDefinition partdefinition = meshdefinition.getRoot();PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder.create(), PartPose.offset(0.0F, 12.0F, 0.0F));PartDefinition body = waist.addOrReplaceChild("body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -12.0F, 0.0F));PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));PartDefinition hat = head.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));PartDefinition rightArm = body.addOrReplaceChild("rightArm", CubeListBuilder.create().texOffs(40, 16).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F))
 		.texOffs(44, 1).addBox(-3.0F, 5.0F, -2.0F, 6.0F, 9.0F, 4.0F, new CubeDeformation(0.0F))
-		.texOffs(24, 0).addBox(-5.0F, 11.0F, -1.0F, 10.0F, 2.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, 2.0F, 0.0F, 0.0436F, 0.0F, 0.0F));
-
-
-		PartDefinition rightItem = rightArm.addOrReplaceChild("rightItem", CubeListBuilder.create(), PartPose.offset(-1.0F, 7.0F, 1.0F));
-
-
-		PartDefinition leftArm = body.addOrReplaceChild("leftArm", CubeListBuilder.create().texOffs(40, 16).mirror().addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false)
-		.texOffs(33, 6).addBox(-1.0F, 7.0F, -1.0F, 2.0F, 7.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(5.0F, 2.0F, 0.0F));
-
-
-		PartDefinition leftItem = leftArm.addOrReplaceChild("leftItem", CubeListBuilder.create(), PartPose.offset(1.0F, 7.0F, 1.0F));
-
-
-		PartDefinition rightLeg = body.addOrReplaceChild("rightLeg", CubeListBuilder.create().texOffs(0, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-2.0F, 12.0F, 0.0F));
-
-
-		PartDefinition leftLeg = body.addOrReplaceChild("leftLeg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(2.0F, 12.0F, 0.0F));
-
-
-		return LayerDefinition.create(meshdefinition, 64, 32);
+		.texOffs(24, 0).addBox(-5.0F, 11.0F, -1.0F, 10.0F, 2.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-5.0F, 2.0F, 0.0F, 0.0436F, 0.0F, 0.0F));PartDefinition rightItem = rightArm.addOrReplaceChild("rightItem", CubeListBuilder.create(), PartPose.offset(-1.0F, 7.0F, 1.0F));PartDefinition leftArm = body.addOrReplaceChild("leftArm", CubeListBuilder.create().texOffs(40, 16).mirror().addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false)
+		.texOffs(33, 6).addBox(-1.0F, 7.0F, -1.0F, 2.0F, 7.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(5.0F, 2.0F, 0.0F));PartDefinition leftItem = leftArm.addOrReplaceChild("leftItem", CubeListBuilder.create(), PartPose.offset(1.0F, 7.0F, 1.0F));PartDefinition rightLeg = body.addOrReplaceChild("rightLeg", CubeListBuilder.create().texOffs(0, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-2.0F, 12.0F, 0.0F));PartDefinition leftLeg = body.addOrReplaceChild("leftLeg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(2.0F, 12.0F, 0.0F));return LayerDefinition.create(meshdefinition, 64, 32);
 
 	}
     @Override
@@ -118,62 +70,32 @@ public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
 
         this.leftArm.yRot = 0.0F;
 
-        this.leftArm.zRot = 0.0F;
-
-
-        this.rightArm.xRot += Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
+        this.leftArm.zRot = 0.0F;this.rightArm.xRot += Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
 
         this.leftArm.xRot += Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F;
 
         this.rightLeg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
 
-        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;boolean isAggressive = entity.isAggressive();
 
-
-        boolean isAggressive = entity.isAggressive();
-
-        boolean holdingBow = entity.getMainHandItem().is(Items.BOW);
-
-
-        if (isAggressive) {
+        boolean holdingBow = entity.getMainHandItem().is(Items.BOW);if (isAggressive) {
             if (holdingBow) {this.rightArm.yRot = this.head.yRot - 0.1F;
 
-                this.leftArm.yRot = this.head.yRot + 0.1F;
+                this.leftArm.yRot = this.head.yRot + 0.1F;this.rightArm.xRot = (-(float)Math.PI / 2F) + this.head.xRot;
 
+                this.leftArm.xRot = (-(float)Math.PI / 2F) + this.head.xRot;this.leftArm.xRot -= 0.05F;
 
-                this.rightArm.xRot = (-(float)Math.PI / 2F) + this.head.xRot;
-
-                this.leftArm.xRot = (-(float)Math.PI / 2F) + this.head.xRot;
-
-
-                this.leftArm.xRot -= 0.05F;
-
-                this.leftArm.yRot += 0.3F;
-
-
-            } else {float attackTime = entity.getAttackAnim(ageInTicks);
+                this.leftArm.yRot += 0.3F;} else {float attackTime = entity.getAttackAnim(ageInTicks);
 
                 float sin1 = Mth.sin(attackTime * (float)Math.PI);
 
-                float sin2 = Mth.sin((1.0F - (1.0F - attackTime) * (1.0F - attackTime)) * (float)Math.PI);
+                float sin2 = Mth.sin((1.0F - (1.0F - attackTime) * (1.0F - attackTime)) * (float)Math.PI);this.rightArm.zRot = 0.0F;
 
+                this.leftArm.zRot = 0.0F;this.rightArm.yRot = -(0.1F - sin1 * 0.6F);
 
-                this.rightArm.zRot = 0.0F;
+                this.leftArm.yRot = 0.1F - sin1 * 0.6F;this.rightArm.xRot = (-(float)Math.PI / 2F);
 
-                this.leftArm.zRot = 0.0F;
-
-
-                this.rightArm.yRot = -(0.1F - sin1 * 0.6F);
-
-                this.leftArm.yRot = 0.1F - sin1 * 0.6F;
-
-
-                this.rightArm.xRot = (-(float)Math.PI / 2F);
-
-                this.leftArm.xRot = (-(float)Math.PI / 2F);
-
-
-                this.rightArm.xRot -= sin1 * 1.2F - sin2 * 0.4F;
+                this.leftArm.xRot = (-(float)Math.PI / 2F);this.rightArm.xRot -= sin1 * 1.2F - sin2 * 0.4F;
 
                 this.leftArm.xRot -= sin1 * 1.2F - sin2 * 0.4F;
 

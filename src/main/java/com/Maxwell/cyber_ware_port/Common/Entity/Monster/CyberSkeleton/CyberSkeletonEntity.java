@@ -1,55 +1,27 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberSkeleton;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Radio.TemptToBlockGoal;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberSkeleton;import com.Maxwell.cyber_ware_port.Common.Block.Radio.TemptToBlockGoal;
 import com.Maxwell.cyber_ware_port.Common.Entity.ICyberwareMob;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.sounds.SoundEvents;
-
 import net.minecraft.world.InteractionHand;
-
 import net.minecraft.world.entity.EntityType;
-
 import net.minecraft.world.entity.LivingEntity;
-
 import net.minecraft.world.entity.ai.goal.*;
-
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-
 import net.minecraft.world.entity.animal.IronGolem;
-
 import net.minecraft.world.entity.monster.Skeleton;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.entity.projectile.AbstractArrow;
-
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-
 import net.minecraft.world.item.Item;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.phys.Vec3;
 
-
 import java.util.Arrays;
-
 import java.util.EnumSet;
-
-import java.util.List;
-
-
-@SuppressWarnings("removal")
+import java.util.List;@SuppressWarnings("removal")
 public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
     private static final int MELEE_TRIGGER_DIST_SQR = 5 * 5;
@@ -88,17 +60,11 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
     private boolean isMeleeMode = false;
 
-    private boolean isBackstepping = false;
-
-
-    private RangedBowAttackGoal<CyberSkeletonEntity> bowGoal;
+    private boolean isBackstepping = false;private RangedBowAttackGoal<CyberSkeletonEntity> bowGoal;
 
     private CyberMeleeGoal meleeGoal;
 
-    private CyberBackstepGoal backstepGoal;
-
-
-    public CyberSkeletonEntity(EntityType<? extends Skeleton> type, Level level) {
+    private CyberBackstepGoal backstepGoal;public CyberSkeletonEntity(EntityType<? extends Skeleton> type, Level level) {
         super(type, level);
 
     }
@@ -108,10 +74,7 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
         this.goalSelector.addGoal(2, new RestrictSunGoal(this));
 
-        this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
-
-
-        this.bowGoal = new RangedBowAttackGoal<>(this, 1.0D, 10, 15.0F);
+        this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));this.bowGoal = new RangedBowAttackGoal<>(this, 1.0D, 10, 15.0F);
 
         this.meleeGoal = new CyberMeleeGoal(this, 1.2D, false);
 
@@ -123,17 +86,11 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
         this.goalSelector.addGoal(5, this.meleeGoal);
 
-        this.goalSelector.addGoal(6, this.bowGoal);
-
-
-        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, this.bowGoal);this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
 
-        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-
-
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
 
@@ -150,24 +107,12 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
     @Override
     public void aiStep() {
-        super.aiStep();
-
-
-        if (this.level().isClientSide) return;
-
-
-        if (this.meleeCooldown > 0) {
+        super.aiStep();if (this.level().isClientSide) return;if (this.meleeCooldown > 0) {
             this.meleeCooldown--;
 
         }
 
-        LivingEntity target = this.getTarget();
-
-
-        if (target == null || isBackstepping) return;
-
-
-        double distSqr = this.distanceToSqr(target);
+        LivingEntity target = this.getTarget();if (target == null || isBackstepping) return;double distSqr = this.distanceToSqr(target);
 if (!isMeleeMode && meleeCooldown == 0 && distSqr <= MELEE_TRIGGER_DIST_SQR) {
             startMeleeMode();
 
@@ -259,15 +204,9 @@ if (!isMeleeMode && meleeCooldown == 0 && distSqr <= MELEE_TRIGGER_DIST_SQR) {
             double d0 = this.getAttackReachSqr(pEnemy);
 
             if (pDistToEnemySqr <= d0 && this.getTicksUntilNextAttack() <= 0) {
-                this.resetAttackCooldown();
+                this.resetAttackCooldown();this.mob.swing(InteractionHand.OFF_HAND);
 
-
-                this.mob.swing(InteractionHand.OFF_HAND);
-
-                this.mob.doHurtTarget(pEnemy);
-
-
-                ((CyberSkeletonEntity)this.mob).incrementAttackCounter();
+                this.mob.doHurtTarget(pEnemy);((CyberSkeletonEntity)this.mob).incrementAttackCounter();
 
             }
         }
@@ -278,10 +217,7 @@ if (!isMeleeMode && meleeCooldown == 0 && distSqr <= MELEE_TRIGGER_DIST_SQR) {
 
         private int timer;
 
-        private double targetX, targetY, targetZ;
-
-
-        public CyberBackstepGoal(CyberSkeletonEntity mob, double speedModifier) {
+        private double targetX, targetY, targetZ;public CyberBackstepGoal(CyberSkeletonEntity mob, double speedModifier) {
             this.mob = mob;
 
             this.speedModifier = speedModifier;
@@ -305,20 +241,11 @@ if (!isMeleeMode && meleeCooldown == 0 && distSqr <= MELEE_TRIGGER_DIST_SQR) {
 
             if (target != null) {
 
-                Vec3 direction = this.mob.position().subtract(target.position()).normalize();
-
-
-                Vec3 targetPos = this.mob.position().add(direction.scale(5.0));
-
-
-                this.targetX = targetPos.x;
+                Vec3 direction = this.mob.position().subtract(target.position()).normalize();Vec3 targetPos = this.mob.position().add(direction.scale(5.0));this.targetX = targetPos.x;
 
                 this.targetY = targetPos.y;
 
-                this.targetZ = targetPos.z;
-
-
-                this.mob.getNavigation().moveTo(this.targetX, this.targetY, this.targetZ, this.speedModifier * 1.5);
+                this.targetZ = targetPos.z;this.mob.getNavigation().moveTo(this.targetX, this.targetY, this.targetZ, this.speedModifier * 1.5);
 
             }
         }
@@ -331,10 +258,7 @@ if (!isMeleeMode && meleeCooldown == 0 && distSqr <= MELEE_TRIGGER_DIST_SQR) {
 
         @Override
         public void tick() {
-            this.timer--;
-
-
-            if (this.mob.getTarget() != null) {
+            this.timer--;if (this.mob.getTarget() != null) {
                 this.mob.getLookControl().setLookAt(this.mob.getTarget(), 30.0F, 30.0F);
 
             }

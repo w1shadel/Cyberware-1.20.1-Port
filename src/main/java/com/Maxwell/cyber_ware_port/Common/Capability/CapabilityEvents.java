@@ -1,57 +1,28 @@
-package com.Maxwell.cyber_ware_port.Common.Capability;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Capability;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.BodyPartType;
-
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-
 import com.Maxwell.cyber_ware_port.Config.CyberwareConfig;
-
 import com.Maxwell.cyber_ware_port.CyberWare;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.world.InteractionHand;
-
 import net.minecraft.world.damagesource.DamageSource;
-
 import net.minecraft.world.entity.Entity;
-
 import net.minecraft.world.entity.HumanoidArm;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-
 import net.minecraftforge.event.TickEvent;
-
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-
 import net.minecraftforge.event.entity.player.PlayerEvent;
-
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
 import net.minecraftforge.fml.common.Mod;
-
 import net.minecraftforge.items.ItemStackHandler;
 
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-
-@SuppressWarnings("removal")
+import java.util.concurrent.atomic.AtomicBoolean;@SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID)
 public class CapabilityEvents {
 
@@ -64,7 +35,6 @@ public class CapabilityEvents {
             }
         }
     }
-
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -108,12 +78,16 @@ public class CapabilityEvents {
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
         Player original = event.getOriginal();
-
         Player newPlayer = event.getEntity();
-
-
         original.reviveCaps();
-
+        if (event.isWasDeath()) {
+            original.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(oldData -> {
+                newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(newData -> {
+                    newData.copyFrom(oldData);
+                    newData.setRespawnGracePeriod(12000);
+                });
+            });
+        }
 
         try {
             if (event.isWasDeath()) {
@@ -139,10 +113,7 @@ newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPres
                 }newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(newData -> {
                     ensureEssentialParts(newData);
 
-                });
-
-
-            } else {
+                });} else {
 
                 original.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(oldData -> {
                     newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(newData -> {
@@ -169,10 +140,7 @@ newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPres
         }
     }
     private static void ensureEssentialParts(CyberwareUserData userData) {
-        ItemStackHandler handler = userData.getInstalledCyberware();
-
-
-        if (handler.getStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN).isEmpty()) {
+        ItemStackHandler handler = userData.getInstalledCyberware();if (handler.getStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN).isEmpty()) {
             handler.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
 
         }
@@ -219,33 +187,21 @@ newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPres
         }
     }
     private static boolean isHandFunctional(Player player, InteractionHand hand) {
-        AtomicBoolean isFunctional = new AtomicBoolean(true);
-
-
-        player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
+        AtomicBoolean isFunctional = new AtomicBoolean(true);player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             ItemStackHandler handler = data.getInstalledCyberware();
 HumanoidArm mainArm = player.getMainArm();
  
-            boolean isRightHand;
-
-
-            if (hand == InteractionHand.MAIN_HAND) {
+            boolean isRightHand;if (hand == InteractionHand.MAIN_HAND) {
                 isRightHand = (mainArm == HumanoidArm.RIGHT);
 
             } else {
                 isRightHand = (mainArm == HumanoidArm.LEFT);
 
-            }int slotIndex = isRightHand ? RobosurgeonBlockEntity.SLOT_ARMS : RobosurgeonBlockEntity.SLOT_ARMS + 1;
-
-
-            if (handler.getStackInSlot(slotIndex).isEmpty()) {
+            }int slotIndex = isRightHand ? RobosurgeonBlockEntity.SLOT_ARMS : RobosurgeonBlockEntity.SLOT_ARMS + 1;if (handler.getStackInSlot(slotIndex).isEmpty()) {
                 isFunctional.set(false);
 
             }
-        });
-
-
-        return isFunctional.get();
+        });return isFunctional.get();
 
     }
 
@@ -328,10 +284,7 @@ for (int i = 0;
                     if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
                         BodyPartType type = cw.getBodyPartType(stack);
 
-                        if (type == BodyPartType.SKIN) hasSkin = true;
-
-
-                    }
+                        if (type == BodyPartType.SKIN) hasSkin = true;}
                 }
 
                 float multiplier = 1.0f;

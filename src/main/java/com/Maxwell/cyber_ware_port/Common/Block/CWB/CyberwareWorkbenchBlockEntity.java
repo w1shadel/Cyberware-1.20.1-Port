@@ -1,83 +1,41 @@
-package com.Maxwell.cyber_ware_port.Common.Block.CWB;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
-
+package com.Maxwell.cyber_ware_port.Common.Block.CWB;import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
-
 import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
-
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
-
 import com.Maxwell.cyber_ware_port.Init.ModRecipes;
-
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.core.Direction;
-
 import net.minecraft.nbt.CompoundTag;
-
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.network.protocol.Packet;
-
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-
 import net.minecraft.sounds.SoundEvents;
-
 import net.minecraft.world.Containers;
-
 import net.minecraft.world.MenuProvider;
-
 import net.minecraft.world.SimpleContainer;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import net.minecraft.world.item.Item;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.item.Items;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraftforge.common.capabilities.Capability;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import net.minecraftforge.common.util.LazyOptional;
-
 import net.minecraftforge.items.IItemHandler;
-
 import net.minecraftforge.items.ItemStackHandler;
-
 import net.minecraftforge.items.wrapper.RangedWrapper;
-
 import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.Nullable;
 
-
 import java.util.List;
-
-import java.util.Objects;
-
-
-public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
+import java.util.Objects;public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int INPUT_SLOT = 0;
 
@@ -92,16 +50,10 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public static final int SPECIAL_OUTPUT_SLOT = 9;
 
     private static final int INVENTORY_SIZE = 10;
-private AssemblyRecipe cachedRecipe = null;
-
-
-    private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
+private AssemblyRecipe cachedRecipe = null;private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int slot) {
-            setChanged();
-
-
-            if (slot == BLUEPRINT_SLOT) {
+            setChanged();if (slot == BLUEPRINT_SLOT) {
                 cachedRecipe = null;
 
             }
@@ -152,10 +104,7 @@ public void drops() {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty()) return stack;
-
-
-            if (stack.is(Items.PAPER)) {
+            if (stack.isEmpty()) return stack;if (stack.is(Items.PAPER)) {
                 return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
 
             }
@@ -168,10 +117,7 @@ public void drops() {
 
             }
 
-            AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-
-
-            if (activeRecipe != null) {
+            AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();if (activeRecipe != null) {
 
                 if (!isItemNeededForRecipe(activeRecipe, stack)) {
                     return stack;
@@ -208,10 +154,7 @@ public void drops() {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true;
  }
-    };
-
-
-    private final IItemHandler automationOutputHandler = new RangedWrapper(itemHandler, OUTPUT_SLOT_START, INVENTORY_SIZE) {
+    };private final IItemHandler automationOutputHandler = new RangedWrapper(itemHandler, OUTPUT_SLOT_START, INVENTORY_SIZE) {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
@@ -221,10 +164,7 @@ public void drops() {
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            int absoluteSlot = slot + OUTPUT_SLOT_START;
-
-
-            if (absoluteSlot == SPECIAL_OUTPUT_SLOT) {
+            int absoluteSlot = slot + OUTPUT_SLOT_START;if (absoluteSlot == SPECIAL_OUTPUT_SLOT) {
                 return super.extractItem(slot, amount, simulate);
 
             }
@@ -232,10 +172,7 @@ public void drops() {
             AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
 
             if (activeRecipe != null) {
-                ItemStack stackInSlot = itemHandler.getStackInSlot(absoluteSlot);
-
-
-                if (!stackInSlot.isEmpty() && isItemNeededForRecipe(activeRecipe, stackInSlot)) {
+                ItemStack stackInSlot = itemHandler.getStackInSlot(absoluteSlot);if (!stackInSlot.isEmpty() && isItemNeededForRecipe(activeRecipe, stackInSlot)) {
                     return ItemStack.EMPTY;
 
                 }
@@ -244,17 +181,11 @@ public void drops() {
             return super.extractItem(slot, amount, simulate);
 
         }
-    };
-
-
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    };private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     private LazyOptional<IItemHandler> lazyInputHandler = LazyOptional.empty();
 
-    private LazyOptional<IItemHandler> lazyOutputHandler = LazyOptional.empty();
-
-
-    private int progress = 0;
+    private LazyOptional<IItemHandler> lazyOutputHandler = LazyOptional.empty();private int progress = 0;
 
     private boolean isCrafting = false;
 
@@ -262,10 +193,7 @@ public void drops() {
 
     public float prevAnimationProgress = 0.0f;
 
-    private int cooldown = 0;
-
-
-    public CyberwareWorkbenchBlockEntity(BlockPos pPos, BlockState pBlockState) {
+    private int cooldown = 0;public CyberwareWorkbenchBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CYBERWARE_WORKBENCH.get(), pPos, pBlockState);
 
     }
@@ -510,10 +438,7 @@ public void drops() {
 
         }
 
-        if (this.level == null) return null;
-
-
-        ItemStack blueprintStack = this.itemHandler.getStackInSlot(BLUEPRINT_SLOT);
+        if (this.level == null) return null;ItemStack blueprintStack = this.itemHandler.getStackInSlot(BLUEPRINT_SLOT);
 
         if (blueprintStack.isEmpty() || !(blueprintStack.getItem() instanceof BlueprintItem)) {
             return null;
@@ -522,10 +447,7 @@ public void drops() {
 
         Item targetItem = BlueprintItem.getTargetItem(blueprintStack);
 
-        if (targetItem == null) return null;
-
-
-        var recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
+        if (targetItem == null) return null;var recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
 
         for (AssemblyRecipe recipe : recipes) {
             if (recipe.getResultItem(this.level.registryAccess()).getItem() == targetItem) {
@@ -541,10 +463,7 @@ public void drops() {
     }
 
         private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
-        if (stack.isEmpty()) return false;
-
-
-        for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
+        if (stack.isEmpty()) return false;for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
             if (input.ingredient.test(stack)) {
                 return true;
 
@@ -638,10 +557,7 @@ public void drops() {
 
         this.isCrafting = pTag.getBoolean("workbench.isCrafting");
 
-        this.cooldown = pTag.getInt("workbench.cooldown");
-
-
-        this.cachedRecipe = null;
+        this.cooldown = pTag.getInt("workbench.cooldown");this.cachedRecipe = null;
 
     }
 

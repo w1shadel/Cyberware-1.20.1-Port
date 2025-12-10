@@ -1,38 +1,19 @@
-package com.Maxwell.cyber_ware_port.Common.Block.SurgeryChamber;
-
-
-import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
-
+package com.Maxwell.cyber_ware_port.Common.Block.SurgeryChamber;import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.nbt.CompoundTag;
-
 import net.minecraft.network.protocol.Packet;
-
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraft.world.phys.AABB;
 
-
-import javax.annotation.Nullable;
-
-
-public class SurgeryChamberBlockEntity extends BlockEntity {
+import javax.annotation.Nullable;public class SurgeryChamberBlockEntity extends BlockEntity {
 
     public float animationProgress = 0;
 
-    public float prevAnimationProgress = 0;
-
-
-    public SurgeryChamberBlockEntity(BlockPos pPos, BlockState pBlockState) {
+    public float prevAnimationProgress = 0;public SurgeryChamberBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.SURGERY_CHAMBER.get(), pPos, pBlockState);
 
     }
@@ -51,18 +32,9 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SurgeryChamberBlockEntity entity) {
-        entity.prevAnimationProgress = entity.animationProgress;
+        entity.prevAnimationProgress = entity.animationProgress;boolean isOpen = state.getValue(SurgeryChamberBlock.OPEN);
 
-
-        boolean isOpen = state.getValue(SurgeryChamberBlock.OPEN);
-
-        float target = isOpen ? 1.0F : 0.0F;
-
-
-        float speed = 0.04F;
-
-
-        if (entity.animationProgress < target) {
+        float target = isOpen ? 1.0F : 0.0F;float speed = 0.04F;if (entity.animationProgress < target) {
             entity.animationProgress = Math.min(entity.animationProgress + speed, target);
 
         } else if (entity.animationProgress > target) {
@@ -79,13 +51,7 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
     }
 
     public void setDoorState(boolean open) {
-        if (this.level == null || this.level.isClientSide) return;
-
-
-        BlockState currentState = this.getBlockState();
-
-
-        if (currentState.getValue(SurgeryChamberBlock.OPEN) != open) {
+        if (this.level == null || this.level.isClientSide) return;BlockState currentState = this.getBlockState();if (currentState.getValue(SurgeryChamberBlock.OPEN) != open) {
             this.level.setBlock(this.worldPosition, currentState.setValue(SurgeryChamberBlock.OPEN, open), 3);
 
             BlockPos abovePos = this.worldPosition.above();

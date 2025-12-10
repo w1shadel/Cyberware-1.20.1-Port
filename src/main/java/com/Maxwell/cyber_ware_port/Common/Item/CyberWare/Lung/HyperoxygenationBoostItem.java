@@ -1,22 +1,10 @@
-package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lung;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lung;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
-
 import net.minecraft.world.effect.MobEffectInstance;
-
 import net.minecraft.world.effect.MobEffects;
-
 import net.minecraft.world.entity.LivingEntity;
-
 import net.minecraft.world.item.ItemStack;
-
-import net.minecraftforge.energy.IEnergyStorage;
-
-
-public class HyperoxygenationBoostItem extends CyberwareItem {
+import net.minecraftforge.energy.IEnergyStorage;public class HyperoxygenationBoostItem extends CyberwareItem {
     public HyperoxygenationBoostItem() {
         super(new Builder(4, RobosurgeonBlockEntity.SLOT_LUNGS)
                 .maxInstall(3)

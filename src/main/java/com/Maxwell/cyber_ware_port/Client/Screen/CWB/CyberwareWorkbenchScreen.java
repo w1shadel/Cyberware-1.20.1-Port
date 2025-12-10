@@ -1,262 +1,62 @@
-package com.Maxwell.cyber_ware_port.Client.Screen.CWB;
-
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlockEntity;
-
-
+package com.Maxwell.cyber_ware_port.Client.Screen.CWB;import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.AssemblyRecipe;
-
-
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
-
-
 import com.Maxwell.cyber_ware_port.Common.Container.CyberwareWorkbenchMenu;
-
-
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
-
 import com.Maxwell.cyber_ware_port.Common.Network.A_PacketHandler;
-
-
 import com.Maxwell.cyber_ware_port.Common.Network.ComponentChangePagePacket;
-
-
 import com.Maxwell.cyber_ware_port.Common.Network.ComponentToggleExtendTabPacket;
-
-
 import com.Maxwell.cyber_ware_port.Common.Network.StartWorkbenchCraftingPacket;
-
-
 import com.Maxwell.cyber_ware_port.CyberWare;
-
-
 import com.Maxwell.cyber_ware_port.Init.ModRecipes;
-
-
 import com.mojang.blaze3d.systems.RenderSystem;
-
-
 import net.minecraft.ChatFormatting;
-
-
 import net.minecraft.client.gui.GuiGraphics;
-
-
 import net.minecraft.client.gui.components.AbstractWidget;
-
-
 import net.minecraft.client.gui.components.Button;
-
-
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-
-
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-
-
 import net.minecraft.client.renderer.GameRenderer;
-
-
 import net.minecraft.network.chat.Component;
-
-
 import net.minecraft.resources.ResourceLocation;
-
-
 import net.minecraft.world.SimpleContainer;
-
-
 import net.minecraft.world.entity.player.Inventory;
-
-
 import net.minecraft.world.inventory.Slot;
-
-
 import net.minecraft.world.item.Item;
-
-
 import net.minecraft.world.item.ItemStack;
 
-
-
 import java.util.ArrayList;
-
-
 import java.util.List;
-
-
-import java.util.Optional;
-
-
-
-@SuppressWarnings("removal")
+import java.util.Optional;@SuppressWarnings("removal")
 public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareWorkbenchMenu> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png");private static final ResourceLocation COMPONENT_BOX_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/component_box.png");private static final ResourceLocation BLUEPRINT_PANEL_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/blueprint_chest.png");
 
-
-    private static final ResourceLocation COMPONENT_BOX_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/component_box.png");
-
-
-    private static final ResourceLocation BLUEPRINT_PANEL_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/blueprint_chest.png");
-
-private ItemStack cachedBlueprint = ItemStack.EMPTY;
-
-
-    private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;
-
-
-    private float slideProgress = 1.0f;
-
-
-    private Button toggleButton;
-
-
-    private Button prevButton;
-
-
-    private Button nextButton;
-
-
-    private Button prevBlueprintBtn;
-
-
-    private Button nextBlueprintBtn;
-
-
-
-    public CyberwareWorkbenchScreen(CyberwareWorkbenchMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle);
-
-
-        this.imageWidth = 176;
-
-
-        this.imageHeight = 166;
-
-
-        this.titleLabelY = 6;
-
-
-        this.inventoryLabelY = this.imageHeight - 94;
-
-
-    }
+private ItemStack cachedBlueprint = ItemStack.EMPTY;private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;private float slideProgress = 1.0f;private Button toggleButton;private Button prevButton;private Button nextButton;private Button prevBlueprintBtn;private Button nextBlueprintBtn;public CyberwareWorkbenchScreen(CyberwareWorkbenchMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
+        super(pMenu, pPlayerInventory, pTitle);this.imageWidth = 176;this.imageHeight = 166;this.titleLabelY = 6;this.inventoryLabelY = this.imageHeight - 94;}
 
     @Override
     protected void init() {
-        super.init();
+        super.init();this.prevButton = Button.builder(Component.literal("<"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(-1, 0)))
+                .pos(0, 0).size(15, 20).build();this.nextButton = Button.builder(Component.literal(">"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(1, 0)))
+                .pos(0, 0).size(15, 20).build();this.addRenderableWidget(prevButton);this.addRenderableWidget(nextButton);this.prevBlueprintBtn = Button.builder(Component.literal("<"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(-1, 1)))
+                .pos(0, 0).size(15, 20).build();this.nextBlueprintBtn = Button.builder(Component.literal(">"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(1, 1)))
+                .pos(0, 0).size(15, 20).build();this.addRenderableWidget(prevBlueprintBtn);this.addRenderableWidget(nextBlueprintBtn);
 
-
-
-        this.prevButton = Button.builder(Component.literal("<"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(-1, 0)))
-                .pos(0, 0).size(15, 20).build();
-
-
-        this.nextButton = Button.builder(Component.literal(">"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(1, 0)))
-                .pos(0, 0).size(15, 20).build();
-
-
-
-        this.addRenderableWidget(prevButton);
-
-
-        this.addRenderableWidget(nextButton);
-
-
-
-        this.prevBlueprintBtn = Button.builder(Component.literal("<"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(-1, 1)))
-                .pos(0, 0).size(15, 20).build();
-
-
-        this.nextBlueprintBtn = Button.builder(Component.literal(">"), (btn) -> A_PacketHandler.INSTANCE.sendToServer(new ComponentChangePagePacket(1, 1)))
-                .pos(0, 0).size(15, 20).build();
-
-
-
-        this.addRenderableWidget(prevBlueprintBtn);
-
-
-        this.addRenderableWidget(nextBlueprintBtn);
-
-int toggleX = this.leftPos + 5;
-
-
-        int toggleY = this.topPos -10;
-
-
-        this.toggleButton = Button.builder(Component.literal("≡"), (btn) -> {
-            boolean newState = !this.menu.isExtendedOpen;
-
-
-            A_PacketHandler.INSTANCE.sendToServer(new ComponentToggleExtendTabPacket(newState));
-
-
-            this.menu.isExtendedOpen = newState;
-
-
-        }).pos(toggleX, toggleY).size(12, 12).build();
-
-
-
-        if (!this.menu.hasExtendedInventory && !this.menu.hasBlueprintLibrary) {
-            this.toggleButton.visible = false;
-
-
-        }
-        this.addRenderableWidget(toggleButton);
-
-
-
-        this.addRenderableWidget(new AbstractWidget(this.leftPos + 40, this.topPos + 35, 18, 18, Component.empty()) {
+int toggleX = this.leftPos + 5;int toggleY = this.topPos -10;this.toggleButton = Button.builder(Component.literal("≡"), (btn) -> {
+            boolean newState = !this.menu.isExtendedOpen;A_PacketHandler.INSTANCE.sendToServer(new ComponentToggleExtendTabPacket(newState));this.menu.isExtendedOpen = newState;}).pos(toggleX, toggleY).size(12, 12).build();if (!this.menu.hasExtendedInventory && !this.menu.hasBlueprintLibrary) {
+            this.toggleButton.visible = false;}
+        this.addRenderableWidget(toggleButton);this.addRenderableWidget(new AbstractWidget(this.leftPos + 40, this.topPos + 35, 18, 18, Component.empty()) {
             @Override
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-                ItemStack inputStack = menu.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();
-
-
-                ItemStack blueprintStack = menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
-
-
-                boolean hasInput = !inputStack.isEmpty();
-
-
-                if (this.isHovered() && hasInput) {
-                    guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);
-
-
-                }
+                ItemStack inputStack = menu.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();ItemStack blueprintStack = menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();boolean hasInput = !inputStack.isEmpty();if (this.isHovered() && hasInput) {
+                    guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);}
                 if (this.isHovered()) {
-                    List<Component> tooltip = new ArrayList<>();
-
-
-                    if (!blueprintStack.isEmpty()) {
-                        tooltip.add(Component.translatable("gui.cyber_ware_port.assemble").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN));
-
-
-                    } else if (hasInput) {
-                        tooltip.add(Component.translatable("gui.cyber_ware_port.deconstruct").withStyle(ChatFormatting.BOLD, ChatFormatting.RED));
-
-
-                        if (minecraft != null && minecraft.level != null) {
-                            SimpleContainer tempInv = new SimpleContainer(inputStack);
-
-
-                            Optional<EngineeringRecipe> recipeOpt = minecraft.level.getRecipeManager().getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempInv, minecraft.level);
-
-
-                            if (recipeOpt.isPresent()) {
-                                float chance = recipeOpt.get().getBlueprintChance();
-
-
-                                String chanceStr = String.format("%.0f", chance * 100);
-
-
-                                tooltip.add(Component.translatable("gui.cyber_ware_port.blueprint_chance", chanceStr).withStyle(ChatFormatting.GRAY));
-
-
-                            }
+                    List<Component> tooltip = new ArrayList<>();if (!blueprintStack.isEmpty()) {
+                        tooltip.add(Component.translatable("gui.cyber_ware_port.assemble").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN));} else if (hasInput) {
+                        tooltip.add(Component.translatable("gui.cyber_ware_port.deconstruct").withStyle(ChatFormatting.BOLD, ChatFormatting.RED));if (minecraft != null && minecraft.level != null) {
+                            SimpleContainer tempInv = new SimpleContainer(inputStack);Optional<EngineeringRecipe> recipeOpt = minecraft.level.getRecipeManager().getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempInv, minecraft.level);if (recipeOpt.isPresent()) {
+                                float chance = recipeOpt.get().getBlueprintChance();String chanceStr = String.format("%.0f", chance * 100);tooltip.add(Component.translatable("gui.cyber_ware_port.blueprint_chance", chanceStr).withStyle(ChatFormatting.GRAY));}
                         }
                     }
                     if (!tooltip.isEmpty()) {
@@ -275,19 +75,13 @@ int toggleX = this.leftPos + 5;
  }
             @Override protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) { this.defaultButtonNarrationText(pNarrationElementOutput);
  }
-        });
-
-
-        updateButtons();
+        });updateButtons();
 
     }
 
     @Override
     protected void containerTick() {
-        super.containerTick();
-
-
-        float target = this.menu.isExtendedOpen ? 1.0f : 0.0f;
+        super.containerTick();float target = this.menu.isExtendedOpen ? 1.0f : 0.0f;
 
         float speed = 0.2f;
 
@@ -303,24 +97,15 @@ int toggleX = this.leftPos + 5;
     }
 
     private void updateButtons() {
-        boolean isPanelVisible = this.menu.isExtendedOpen;
-
-
-        boolean showLeftButtons = isPanelVisible && this.menu.hasExtendedInventory && this.menu.getMaxPages() > 1;
+        boolean isPanelVisible = this.menu.isExtendedOpen;boolean showLeftButtons = isPanelVisible && this.menu.hasExtendedInventory && this.menu.getMaxPages() > 1;
 
         this.prevButton.visible = showLeftButtons;
 
-        this.nextButton.visible = showLeftButtons;
-
-
-        if (showLeftButtons) {
+        this.nextButton.visible = showLeftButtons;if (showLeftButtons) {
 
             this.prevButton.active = (this.menu.getCurrentPage() > 0);
 
-            this.nextButton.active = (this.menu.getCurrentPage() < this.menu.getMaxPages() - 1);
-
-
-            int panelOriginX = (int) (-61 * slideProgress);
+            this.nextButton.active = (this.menu.getCurrentPage() < this.menu.getMaxPages() - 1);int panelOriginX = (int) (-61 * slideProgress);
 
             int btnY = this.topPos + 12 + 125;
 
@@ -340,26 +125,17 @@ int toggleX = this.leftPos + 5;
 
         this.prevBlueprintBtn.visible = showRightButtons;
 
-        this.nextBlueprintBtn.visible = showRightButtons;
-
-
-        if (showRightButtons) {
+        this.nextBlueprintBtn.visible = showRightButtons;if (showRightButtons) {
 
             this.prevBlueprintBtn.active = (this.menu.getBlueprintCurrentPage() > 0);
 
-            this.nextBlueprintBtn.active = (this.menu.getBlueprintCurrentPage() < this.menu.getBlueprintMaxPages() - 1);
-
-
-            int panelWidth = 61;
+            this.nextBlueprintBtn.active = (this.menu.getBlueprintCurrentPage() < this.menu.getBlueprintMaxPages() - 1);int panelWidth = 61;
 
             int guiWidth = 176;
 
             int slideOffset = (int) (panelWidth * slideProgress);
 
-            int panelDrawX = this.leftPos + guiWidth - panelWidth + slideOffset;
-
-
-            int btnY = this.topPos + 12 + 125;
+            int panelDrawX = this.leftPos + guiWidth - panelWidth + slideOffset;int btnY = this.topPos + 12 + 125;
 
             this.prevBlueprintBtn.setX(panelDrawX + 5);
 
@@ -376,18 +152,9 @@ int toggleX = this.leftPos + 5;
     protected void renderBg(GuiGraphics guiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);int x = (this.width - this.imageWidth) / 2;
 
-
-        int x = (this.width - this.imageWidth) / 2;
-
-        int y = (this.height - this.imageHeight) / 2;
-
-
-        float currentAnim = slideProgress;
-
-
-        if (this.menu.hasExtendedInventory) {
+        int y = (this.height - this.imageHeight) / 2;float currentAnim = slideProgress;if (this.menu.hasExtendedInventory) {
             RenderSystem.setShaderTexture(0, COMPONENT_BOX_TEXTURE);
 
             int moveX = (int) (61 * currentAnim);
@@ -413,10 +180,7 @@ int toggleX = this.leftPos + 5;
 
             int panelWidth = 61;
 
-            int slideOffset = (int) (panelWidth * currentAnim);
-
-
-            int drawX = x + 176 - panelWidth + slideOffset;
+            int slideOffset = (int) (panelWidth * currentAnim);int drawX = x + 176 - panelWidth + slideOffset;
 
             int drawY = y;
 
@@ -441,10 +205,7 @@ int toggleX = this.leftPos + 5;
     @Override
     public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(guiGraphics);
-super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
-
-
-        renderBlueprintGhosts(guiGraphics);
+super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);renderBlueprintGhosts(guiGraphics);
 
         this.renderTooltip(guiGraphics, pMouseX, pMouseY);
 
@@ -453,10 +214,7 @@ super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
     private void renderBlueprintGhosts(GuiGraphics guiGraphics) {
         Slot blueprintSlot = this.menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT);
 
-        ItemStack currentBlueprint = blueprintSlot.getItem();
-
-
-        if (currentBlueprint.isEmpty() || !(currentBlueprint.getItem() instanceof BlueprintItem)) {
+        ItemStack currentBlueprint = blueprintSlot.getItem();if (currentBlueprint.isEmpty() || !(currentBlueprint.getItem() instanceof BlueprintItem)) {
             cachedBlueprint = ItemStack.EMPTY;
 
             cachedIngredients = null;
@@ -470,17 +228,11 @@ super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
         if (isChanged || cachedIngredients == null) {
             cachedBlueprint = currentBlueprint.copy();
 
-            cachedIngredients = null;
-
-
-            Item targetItem = BlueprintItem.getTargetItem(currentBlueprint);
+            cachedIngredients = null;Item targetItem = BlueprintItem.getTargetItem(currentBlueprint);
 
             if (targetItem != null && this.minecraft != null && this.minecraft.level != null) {
                 List<AssemblyRecipe> recipes = this.minecraft.level.getRecipeManager()
-                        .getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
-
-
-                for (AssemblyRecipe recipe : recipes) {
+                        .getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());for (AssemblyRecipe recipe : recipes) {
                     if (recipe.getResultItem(this.minecraft.level.registryAccess()).getItem() == targetItem) {
                         cachedIngredients = recipe.getInputs();
 
@@ -494,66 +246,33 @@ super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
         if (cachedIngredients != null) {
             int startSlotIndex = 3;
 
-            int maxSlots = 6;
+            int maxSlots = 6;RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-            guiGraphics.pose().pushPose();
-
-
-            guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
-
-
-            for (int i = 0;
+            guiGraphics.pose().pushPose();guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);for (int i = 0;
  i < cachedIngredients.size();
  i++) {
-                if (i >= maxSlots) break;
+                if (i >= maxSlots) break;AssemblyRecipe.SizedIngredient req = cachedIngredients.get(i);
 
+                if (req.ingredient.getItems().length == 0) continue;int slotIndex = startSlotIndex + i;
 
-                AssemblyRecipe.SizedIngredient req = cachedIngredients.get(i);
-
-                if (req.ingredient.getItems().length == 0) continue;
-
-
-                int slotIndex = startSlotIndex + i;
-
-                if (slotIndex >= this.menu.slots.size()) break;
-
-
-                Slot targetSlot = this.menu.getSlot(slotIndex);
+                if (slotIndex >= this.menu.slots.size()) break;Slot targetSlot = this.menu.getSlot(slotIndex);
 
                 ItemStack displayStack = req.ingredient.getItems()[0];
 
-                int requiredCount = req.count;
+                int requiredCount = req.count;int x = this.leftPos + targetSlot.x;
 
-
-                int x = this.leftPos + targetSlot.x;
-
-                int y = this.topPos + targetSlot.y;
-
-
-                ItemStack stackInSlot = targetSlot.getItem();
+                int y = this.topPos + targetSlot.y;ItemStack stackInSlot = targetSlot.getItem();
 
                 boolean isFulfilled = !stackInSlot.isEmpty()
                         && req.ingredient.test(stackInSlot)
-                        && stackInSlot.getCount() >= requiredCount;
-
-
-                if (!isFulfilled) {
-                    guiGraphics.renderItem(displayStack, x, y);
-
-
-                    RenderSystem.enableBlend();
+                        && stackInSlot.getCount() >= requiredCount;if (!isFulfilled) {
+                    guiGraphics.renderItem(displayStack, x, y);RenderSystem.enableBlend();
 
                     RenderSystem.defaultBlendFunc();
 
                     guiGraphics.fill(x, y, x + 16, y + 16, 0x80000000);
 
-                    RenderSystem.disableBlend();
-
-
-                    String countStr = String.valueOf(requiredCount);
+                    RenderSystem.disableBlend();String countStr = String.valueOf(requiredCount);
 
                     guiGraphics.pose().pushPose();
 

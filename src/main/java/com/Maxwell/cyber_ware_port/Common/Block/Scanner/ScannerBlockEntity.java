@@ -1,72 +1,35 @@
-package com.Maxwell.cyber_ware_port.Common.Block.Scanner;
-
-
-import com.Maxwell.cyber_ware_port.Common.Container.ScannerMenu;
-
+package com.Maxwell.cyber_ware_port.Common.Block.Scanner;import com.Maxwell.cyber_ware_port.Common.Container.ScannerMenu;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
-
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlockEntities;
-
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.core.Direction;
-
 import net.minecraft.nbt.CompoundTag;
-
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.network.protocol.Packet;
-
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-
 import net.minecraft.world.Containers;
-
 import net.minecraft.world.MenuProvider;
-
 import net.minecraft.world.SimpleContainer;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import net.minecraft.world.inventory.ContainerData;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.item.Items;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraftforge.common.capabilities.Capability;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import net.minecraftforge.common.util.LazyOptional;
-
 import net.minecraftforge.items.IItemHandler;
-
 import net.minecraftforge.items.ItemStackHandler;
-
 import net.minecraftforge.items.wrapper.RangedWrapper;
-
 import org.jetbrains.annotations.NotNull;
-
-import org.jetbrains.annotations.Nullable;
-
-
-public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
+import org.jetbrains.annotations.Nullable;public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
     public static final int SLOT_PAPER = 0;
 
@@ -76,10 +39,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
     private static final int SLOT_COUNT = 3;
 
-    public static final int MAX_PROGRESS = 2400;
-
-
-    private final ItemStackHandler itemHandler = new ItemStackHandler(SLOT_COUNT) {
+    public static final int MAX_PROGRESS = 2400;private final ItemStackHandler itemHandler = new ItemStackHandler(SLOT_COUNT) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -106,28 +66,19 @@ private final IItemHandler paperInputHandler = new RangedWrapper(itemHandler, SL
             return ItemStack.EMPTY;
 
         }
-    };
-
-
-    private final IItemHandler componentInputHandler = new RangedWrapper(itemHandler, SLOT_INPUT, SLOT_INPUT + 1) {
+    };private final IItemHandler componentInputHandler = new RangedWrapper(itemHandler, SLOT_INPUT, SLOT_INPUT + 1) {
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
             return ItemStack.EMPTY;
 
         }
-    };
-
-
-    private final IItemHandler outputHandler = new RangedWrapper(itemHandler, SLOT_OUTPUT, SLOT_OUTPUT + 1) {
+    };private final IItemHandler outputHandler = new RangedWrapper(itemHandler, SLOT_OUTPUT, SLOT_OUTPUT + 1) {
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             return stack;
 
         }
-    };
-
-
-    private final IItemHandler genericInputHandler = new RangedWrapper(itemHandler, 0, 2) {
+    };private final IItemHandler genericInputHandler = new RangedWrapper(itemHandler, 0, 2) {
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
             return ItemStack.EMPTY;
@@ -142,17 +93,11 @@ private LazyOptional<IItemHandler> lazyPaperHandler = LazyOptional.empty();
 
     private LazyOptional<IItemHandler> lazyGenericInputHandler = LazyOptional.empty();
 
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-
-
-    protected final ContainerData data;
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();protected final ContainerData data;
 
     private int progress = 0;
 
-    private boolean isWorking = false;
-
-
-    public ScannerBlockEntity(BlockPos pPos, BlockState pBlockState) {
+    private boolean isWorking = false;public ScannerBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.SCANNER.get(), pPos, pBlockState);
 
         this.data = new ContainerData() {
@@ -225,10 +170,7 @@ Direction right = facing.getCounterClockWise();
 
             Direction left = facing.getClockWise();
 
-            Direction back = facing.getOpposite();
-
-
-            if (side == right) {
+            Direction back = facing.getOpposite();if (side == right) {
                 return lazyOutputHandler.cast();
 
             }
@@ -270,25 +212,16 @@ Direction right = facing.getCounterClockWise();
         }
 
         if (pEntity.hasRecipe()) {
-            pEntity.progress++;
-
-
-            if (!pEntity.isWorking) {
+            pEntity.progress++;if (!pEntity.isWorking) {
                 pEntity.isWorking = true;
 
                 pEntity.syncToClient();
 
             }
-            setChanged(pLevel, pPos, pState);
-
-
-            if (pEntity.progress >= MAX_PROGRESS) {
+            setChanged(pLevel, pPos, pState);if (pEntity.progress >= MAX_PROGRESS) {
                 pEntity.craftItem();
 
-                pEntity.progress = 0;
-
-
-                if (!pEntity.hasRecipe()) {
+                pEntity.progress = 0;if (!pEntity.hasRecipe()) {
                     pEntity.isWorking = false;
 
                     pEntity.syncToClient();
@@ -296,10 +229,7 @@ Direction right = facing.getCounterClockWise();
                 }
             }
         } else {
-            pEntity.resetProgress();
-
-
-            if (pEntity.isWorking) {
+            pEntity.resetProgress();if (pEntity.isWorking) {
                 pEntity.isWorking = false;
 
                 pEntity.syncToClient();

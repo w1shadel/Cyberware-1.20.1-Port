@@ -1,47 +1,23 @@
-package com.Maxwell.cyber_ware_port.Common.Container;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Container;import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlockEntity;
-
 import com.Maxwell.cyber_ware_port.Common.Block.Component_Box.ComponentBoxBlockEntity;
-
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
-
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.world.entity.player.Inventory;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.inventory.*;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import net.minecraftforge.items.SlotItemHandler;
-
 import org.jetbrains.annotations.NotNull;
 
-
 import java.util.ArrayList;
-
-import java.util.List;
-
-
-public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
+import java.util.List;public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
 
     public final CyberwareWorkbenchBlockEntity blockEntity;
 
@@ -73,10 +49,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
 
     private static final int SLOT_OFFSET_X = 10;
 
-    private static final int SLOT_OFFSET_Y = 6;
-
-
-    private final ContainerData pageData = new SimpleContainerData(6) {
+    private static final int SLOT_OFFSET_Y = 6;private final ContainerData pageData = new SimpleContainerData(6) {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -131,10 +104,7 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
 
         this.blockEntity = (CyberwareWorkbenchBlockEntity) entity;
 
-        this.level = inv.player.level();
-
-
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        this.level = inv.player.level();this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
             this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
 
             this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
@@ -153,23 +123,11 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
             }
             this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.SPECIAL_OUTPUT_SLOT, 141, 21));
 
-        });
-
-
-        findAndAddExternalInventory();
-
-
-        findAndAddBlueprintLibrary();
-
-
-        addDataSlots(pageData);
+        });findAndAddExternalInventory();findAndAddBlueprintLibrary();addDataSlots(pageData);
 
         addPlayerInventory(inv);
 
-        addPlayerHotbar(inv);
-
-
-        updateSlotPositions();
+        addPlayerHotbar(inv);updateSlotPositions();
 
     }
 
@@ -230,10 +188,7 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
     private void findAndAddBlueprintLibrary() {
         BlockPos center = blockEntity.getBlockPos();
 
-        List<BlueprintChestBlockEntity> foundChests = new ArrayList<>();
-
-
-        for (int x = -3;
+        List<BlueprintChestBlockEntity> foundChests = new ArrayList<>();for (int x = -3;
  x <= 3;
  x++) {
             for (int y = -1;
@@ -257,10 +212,7 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
         if (!foundChests.isEmpty()) {
             this.hasBlueprintLibrary = true;
 
-            this.blueprintMaxPages = foundChests.size();
-
-
-            for (BlueprintChestBlockEntity chest : foundChests) {
+            this.blueprintMaxPages = foundChests.size();for (BlueprintChestBlockEntity chest : foundChests) {
                 List<Slot> currentChestSlots = new ArrayList<>();
 
                 chest.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
@@ -273,10 +225,7 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
  col++) {
                             int index = col + row * 3;
 
-                            if (index >= 18) continue;
- 
-
-                            Slot slot = new SlotItemHandler(handler, index, -10000, -10000) {
+                            if (index >= 18) continue;Slot slot = new SlotItemHandler(handler, index, -10000, -10000) {
                                 @Override
                                 public boolean mayPlace(@NotNull ItemStack stack) {
                                     return stack.getItem() instanceof BlueprintItem;
@@ -333,10 +282,7 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
     }
 
     private void updateSlotPositions() {
-        int startY = PANEL_Y + SLOT_OFFSET_Y;
-
-
-        int leftStartX = PANEL_X + SLOT_OFFSET_X;
+        int startY = PANEL_Y + SLOT_OFFSET_Y;int leftStartX = PANEL_X + SLOT_OFFSET_X;
 
         for (int i = 0;
  i < pageSlots.size();
@@ -347,10 +293,7 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
 
             layoutSlots(slots, isVisible, leftStartX, startY);
 
-        }int rightStartX = 176 + 5;
-
-
-        for (int i = 0;
+        }int rightStartX = 176 + 5;for (int i = 0;
  i < blueprintPageSlots.size();
  i++) {
             List<Slot> slots = blueprintPageSlots.get(i);
@@ -407,37 +350,19 @@ public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf e
 
         ItemStack sourceStack = sourceSlot.getItem();
 
-        ItemStack copyOfSourceStack = sourceStack.copy();
+        ItemStack copyOfSourceStack = sourceStack.copy();int totalSlots = this.slots.size();int WB_START = 0;
 
-
-        int totalSlots = this.slots.size();
-
-
-        int WB_START = 0;
-
-        int WB_END = WORKBENCH_SLOTS;
-
-
-        int EXT_START = WB_END;
+        int WB_END = WORKBENCH_SLOTS;int EXT_START = WB_END;
 
         int leftCount = pageSlots.stream().mapToInt(List::size).sum();
 
-        int EXT_END = EXT_START + leftCount;
-
-
-        int LIB_START = EXT_END;
+        int EXT_END = EXT_START + leftCount;int LIB_START = EXT_END;
 
         int rightCount = blueprintPageSlots.stream().mapToInt(List::size).sum();
 
-        int LIB_END = LIB_START + rightCount;
+        int LIB_END = LIB_START + rightCount;int PLAYER_START = LIB_END;
 
-
-        int PLAYER_START = LIB_END;
-
-        int PLAYER_END = totalSlots;
-
-
-        if (pIndex < WB_END) { 
+        int PLAYER_END = totalSlots;if (pIndex < WB_END) {
             if (!moveItemStackTo(sourceStack, PLAYER_START, PLAYER_END, true)) return ItemStack.EMPTY;
 
         } else if (pIndex >= EXT_START && pIndex < EXT_END) { 

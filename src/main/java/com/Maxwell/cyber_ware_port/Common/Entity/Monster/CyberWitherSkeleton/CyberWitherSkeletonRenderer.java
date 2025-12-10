@@ -1,12 +1,6 @@
-package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberWitherSkeleton;import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-
 import net.minecraft.client.renderer.entity.MobRenderer;
-
 import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")

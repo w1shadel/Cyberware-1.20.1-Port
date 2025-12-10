@@ -1,34 +1,20 @@
-package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lower_Organs;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Lower_Organs;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
-
 import net.minecraft.world.entity.LivingEntity;
-
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraft.world.item.ItemStack;
-
-import net.minecraftforge.energy.IEnergyStorage;
-
-
-public class MetabolicGeneratorItem extends CyberwareItem {
+import net.minecraftforge.energy.IEnergyStorage;public class MetabolicGeneratorItem extends CyberwareItem {
     public MetabolicGeneratorItem() {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH)
-                .maxInstall(64)
+                .maxInstall(2)
 
-                .energy(0, 25, 25, StackingRule.LINEAR));
+                .energy(0, 40, 40, StackingRule.LINEAR));
 
     }
 
     @Override
     public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
-        if (!(entity instanceof Player player)) return;
-
-
-        if (energyStorage.getEnergyStored() < energyStorage.getMaxEnergyStored()) {
+        if (!(entity instanceof Player player)) return;if (energyStorage.getEnergyStored() < energyStorage.getMaxEnergyStored()) {
 
             if (player.tickCount % 20 == 0) {
 

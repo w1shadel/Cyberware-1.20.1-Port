@@ -1,26 +1,12 @@
-package com.Maxwell.cyber_ware_port.Common.Network;
-
-
-import net.minecraft.nbt.CompoundTag;
-
+package com.Maxwell.cyber_ware_port.Common.Network;import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraftforge.api.distmarker.Dist;
-
 import net.minecraftforge.fml.DistExecutor;
-
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.function.Supplier;public class SyncCyberwareDataPacket {
 
-import java.util.function.Supplier;
-
-
-public class SyncCyberwareDataPacket {
-
-    private final CompoundTag data;
-
-
-    public SyncCyberwareDataPacket(CompoundTag data) {
+    private final CompoundTag data;public SyncCyberwareDataPacket(CompoundTag data) {
         this.data = data;
 
     }

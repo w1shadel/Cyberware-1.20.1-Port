@@ -1,14 +1,7 @@
-package com.Maxwell.cyber_ware_port.Common.Network;
-
-
-import com.Maxwell.cyber_ware_port.CyberWare;
-
+package com.Maxwell.cyber_ware_port.Common.Network;import com.Maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraftforge.network.NetworkDirection;
-
 import net.minecraftforge.network.NetworkRegistry;
-
 import net.minecraftforge.network.simple.SimpleChannel;
 
 @SuppressWarnings("removal")
@@ -26,10 +19,7 @@ public class A_PacketHandler {
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
-    );
-
-
-    public static void register() {
+    );public static void register() {
         INSTANCE.messageBuilder(SyncCyberwareDataPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(SyncCyberwareDataPacket::fromBytes)
                 .encoder(SyncCyberwareDataPacket::toBytes)

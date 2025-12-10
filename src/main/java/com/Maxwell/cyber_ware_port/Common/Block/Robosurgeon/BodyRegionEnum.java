@@ -13,13 +13,7 @@ public enum BodyRegionEnum {EYES,
     HANDS,      
 
     LEGS,       
-    BOOTS;
-      
-
-    public static final int SLOTS_PER_PART = 9;
-
-
-    public int getStartSlot() {
+    BOOTS;public static final int SLOTS_PER_PART = 9;public int getStartSlot() {
         return this.ordinal() * SLOTS_PER_PART;
 
     }

@@ -1,37 +1,18 @@
-package com.Maxwell.cyber_ware_port.Common.Network;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
-
+package com.Maxwell.cyber_ware_port.Common.Network;import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
-
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.level.Level;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import net.minecraftforge.items.ItemStackHandler;
-
 import net.minecraftforge.network.NetworkEvent;
 
-
-import java.util.function.Supplier;
-
-
-public class SurgeryGhostTogglePacket {
+import java.util.function.Supplier;public class SurgeryGhostTogglePacket {
     private final BlockPos pos;
 
-    private final int slotId;
-
-
-    public SurgeryGhostTogglePacket(BlockPos pos, int slotId) {
+    private final int slotId;public SurgeryGhostTogglePacket(BlockPos pos, int slotId) {
         this.pos = pos;
 
         this.slotId = slotId;
@@ -79,10 +60,7 @@ public class SurgeryGhostTogglePacket {
     private void handleToggle(RobosurgeonBlockEntity tile, ServerPlayer player, int slotId) {
         ItemStack currentStack = tile.getItemHandler().getStackInSlot(slotId);
 
-        boolean changed = false;
-
-
-        if (!currentStack.isEmpty() && currentStack.hasTag() && currentStack.getTag().getBoolean("cyberware_ghost")) {
+        boolean changed = false;if (!currentStack.isEmpty() && currentStack.hasTag() && currentStack.getTag().getBoolean("cyberware_ghost")) {
             tile.getItemHandler().setStackInSlot(slotId, ItemStack.EMPTY);
 
             changed = true;
@@ -96,10 +74,7 @@ public class SurgeryGhostTogglePacket {
             if (cap.isPresent()) {
                 ItemStackHandler body = cap.resolve().get().getInstalledCyberware();
 
-                ItemStack installed = body.getStackInSlot(slotId);
-
-
-                if (!installed.isEmpty()) {
+                ItemStack installed = body.getStackInSlot(slotId);if (!installed.isEmpty()) {
                     ItemStack ghost = installed.copy();
 
                     ghost.getOrCreateTag().putBoolean("cyberware_ghost", true);
@@ -113,10 +88,7 @@ public class SurgeryGhostTogglePacket {
         }
 
         if (changed) {
-            tile.setChanged();
-
-
-            player.level().sendBlockUpdated(tile.getBlockPos(), tile.getBlockState(), tile.getBlockState(), 3);
+            tile.setChanged();player.level().sendBlockUpdated(tile.getBlockPos(), tile.getBlockState(), tile.getBlockState(), 3);
 
         }
     }

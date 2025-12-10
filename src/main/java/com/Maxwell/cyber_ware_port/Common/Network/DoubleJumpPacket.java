@@ -1,23 +1,11 @@
-package com.Maxwell.cyber_ware_port.Common.Network;
-
-
-import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
-
+package com.Maxwell.cyber_ware_port.Common.Network;import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
 import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.ModCyberwareEvents;
-
 import com.Maxwell.cyber_ware_port.Init.ModItems;
-
 import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraftforge.network.NetworkEvent;
 
-
-import java.util.function.Supplier;
-
-
-public class DoubleJumpPacket {
+import java.util.function.Supplier;public class DoubleJumpPacket {
 
     public DoubleJumpPacket() {}
 

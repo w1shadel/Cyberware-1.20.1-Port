@@ -1,40 +1,20 @@
-package com.Maxwell.cyber_ware_port.Common.Plugin;
-
-
-import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
-
+package com.Maxwell.cyber_ware_port.Common.Plugin;import com.Maxwell.cyber_ware_port.Common.Block.CWB.Recipe.EngineeringRecipe;
 import com.Maxwell.cyber_ware_port.Common.Item.BlueprintItem;
-
 import com.Maxwell.cyber_ware_port.CyberWare;
-
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
-
 import mezz.jei.api.constants.VanillaTypes;
-
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-
 import mezz.jei.api.gui.drawable.IDrawable;
-
 import mezz.jei.api.helpers.IGuiHelper;
-
 import mezz.jei.api.recipe.IFocusGroup;
-
 import mezz.jei.api.recipe.RecipeIngredientRole;
-
 import mezz.jei.api.recipe.category.IRecipeCategory;
-
 import net.minecraft.ChatFormatting;
-
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.item.Items;
-
 import net.minecraft.world.item.crafting.Ingredient;
-
 
 import java.util.List;
 
@@ -42,10 +22,7 @@ import java.util.List;
 public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRecipe> {
     private final IDrawable background;
 
-    private final IDrawable icon;
-
-
-    public EngineeringRecipeCategory(IGuiHelper helper) {
+    private final IDrawable icon;public EngineeringRecipeCategory(IGuiHelper helper) {
 
         this.background = helper.createDrawable(
                 new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png"),
@@ -93,30 +70,15 @@ public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRec
                 .addTooltipCallback((view, tooltip) -> {
                     tooltip.add(Component.translatable("gui.cyber_ware_port.need_paper").withStyle(ChatFormatting.GRAY));
 
-                });
+                });int outputX = 71;
 
-
-        int outputX = 71;
-
-        int outputY = 17;
-
-
-        List<EngineeringRecipe.OutputEntry> outputs = recipe.getOutputs();
-
-
-        if (outputs != null) {
+        int outputY = 17;List<EngineeringRecipe.OutputEntry> outputs = recipe.getOutputs();if (outputs != null) {
             int slotIdx = 0;
 
             for (EngineeringRecipe.OutputEntry entry : outputs) {
-                if (slotIdx >= 6) break;
+                if (slotIdx >= 6) break;int x = outputX + (slotIdx % 2) * 18;
 
-
-                int x = outputX + (slotIdx % 2) * 18;
-
-                int y = outputY + (slotIdx / 2) * 18;
-
-
-                builder.addSlot(RecipeIngredientRole.OUTPUT, x, y)
+                int y = outputY + (slotIdx / 2) * 18;builder.addSlot(RecipeIngredientRole.OUTPUT, x, y)
                         .addItemStack(entry.stack)
                         .addTooltipCallback((view, tooltip) -> {
                             float chance = entry.chance * 100;
@@ -138,15 +100,9 @@ public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRec
             if (!recipe.getIngredients().isEmpty()) {
                 Ingredient inputIng = recipe.getIngredients().get(0);
 
-                ItemStack[] inputItems = inputIng.getItems();
+                ItemStack[] inputItems = inputIng.getItems();if (inputItems.length > 0) {
 
-
-                if (inputItems.length > 0) {
-
-                    ItemStack blueprint = BlueprintItem.createBlueprintFor(inputItems[0].getItem());
-
-
-                    if (!blueprint.isEmpty()) {
+                    ItemStack blueprint = BlueprintItem.createBlueprintFor(inputItems[0].getItem());if (!blueprint.isEmpty()) {
                         builder.addSlot(RecipeIngredientRole.OUTPUT, 115, 53)
                                 .addItemStack(blueprint)
                                 .addTooltipCallback((view, tooltip) -> {
