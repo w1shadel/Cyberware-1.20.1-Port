@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-
 public class ComponentBoxScreen extends AbstractContainerScreen<ComponentBoxMenu> {
 
     private static final ResourceLocation TEXTURE =

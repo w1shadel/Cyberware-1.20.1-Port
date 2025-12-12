@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Items;
 
-
 public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
 
     public static final ModelLayerLocation LAYER_LOCATION =

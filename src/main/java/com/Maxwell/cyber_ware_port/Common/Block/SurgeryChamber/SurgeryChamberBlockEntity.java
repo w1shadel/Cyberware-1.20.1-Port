@@ -28,7 +28,7 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
         entity.prevAnimationProgress = entity.animationProgress;
         boolean isOpen = state.getValue(SurgeryChamberBlock.OPEN);
         float target = isOpen ? 1.0F : 0.0F;
-        float speed = 0.04F;
+        float speed = 0.1F;
         if (entity.animationProgress < target) {
             entity.animationProgress = Math.min(entity.animationProgress + speed, target);
 

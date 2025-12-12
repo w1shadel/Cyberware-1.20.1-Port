@@ -6,7 +6,11 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityTeleportEvent;
+import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Collections;
 import java.util.Set;
@@ -33,6 +37,10 @@ public interface ICyberware {
 
     int getEnergyConsumption(ItemStack stack);
 
+    default int getEventConsumption(ItemStack stack) {
+        return 0;
+    }
+
     int getEnergyGeneration(ItemStack stack);
 
     int getEnergyStorage(ItemStack stack);
@@ -50,28 +58,54 @@ public interface ICyberware {
         return BodyPartType.NONE;
     }
 
-    default void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
-    }
-
     default boolean canToggle(ItemStack stack) {
         return false;
-
     }
 
     default boolean isActive(ItemStack stack) {
         return !stack.hasTag() || !stack.getTag().contains("active") || stack.getTag().getBoolean("active");
-
     }
 
     default void toggle(ItemStack stack) {
         boolean currentState = isActive(stack);
         stack.getOrCreateTag().putBoolean("active", !currentState);
-
     }
 
     default Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
         return com.google.common.collect.ArrayListMultimap.create();
+    }
 
+    default void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onItemUseTick(LivingEntityUseItemEvent.Tick event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onLivingAttack(LivingAttackEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onEntityTeleport(EntityTeleportEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onPotionApplicable(MobEffectEvent.Applicable event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onLivingDeath(LivingDeathEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onHarvestCheck(PlayerEvent.HarvestCheck event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onBreakSpeed(PlayerEvent.BreakSpeed event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onLivingFall(LivingFallEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onLivingJump(LivingEvent.LivingJumpEvent event, ItemStack stack, LivingEntity wearer) {
     }
 
     enum StackingRule {

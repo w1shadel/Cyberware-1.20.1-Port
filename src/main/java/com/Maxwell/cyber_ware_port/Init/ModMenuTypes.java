@@ -17,13 +17,17 @@ public class ModMenuTypes {
 
     private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(IContainerFactory<T> factory, String name) {
         return MENUS.register(name, () -> IForgeMenuType.create(factory));
-    }    public static final RegistryObject<MenuType<RobosurgeonMenu>> ROBO_SURGEON_MENU =
-            MENUS.register("robosurgeon_menu",
-                    () -> IForgeMenuType.create(RobosurgeonMenu::new));
+    }
 
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
-    }    public static final RegistryObject<MenuType<CyberwareWorkbenchMenu>> CYBERWARE_WORKBENCH_MENU =
+    }
+
+    public static final RegistryObject<MenuType<RobosurgeonMenu>> ROBO_SURGEON_MENU =
+            MENUS.register("robosurgeon_menu",
+                    () -> IForgeMenuType.create(RobosurgeonMenu::new));
+
+    public static final RegistryObject<MenuType<CyberwareWorkbenchMenu>> CYBERWARE_WORKBENCH_MENU =
             registerMenuType(CyberwareWorkbenchMenu::new, "cyberware_workbench_menu");
     public static final RegistryObject<MenuType<ScannerMenu>> SCANNER_MENU =
             registerMenuType(ScannerMenu::new, "scanner_menu");
@@ -31,8 +35,6 @@ public class ModMenuTypes {
             registerMenuType(ComponentBoxMenu::new, "component_menu");
     public static final RegistryObject<MenuType<BlueprintChestMenu>> BLUEPRINT_CHEST_MENU =
             registerMenuType(BlueprintChestMenu::new, "blueprint_chest_menu");
-
-
 
 
 }

@@ -23,16 +23,20 @@ public class ModBlockEntities {
                     CyberSkullBlockEntity::new,
                     ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
                     ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get()
-            ).build(null));    public static final RegistryObject<BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
+            ).build(null));
+
+    public static void register(IEventBus eventBus) {
+        BLOCK_ENTITIES.register(eventBus);
+    }
+
+    public static final RegistryObject<BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
             BLOCK_ENTITIES.register("surgery_chamber",
                     () -> BlockEntityType.Builder.of(
                             SurgeryChamberBlockEntity::new,
                             ModBlocks.SURGERY_CHAMBER.get()
                     ).build(null));
 
-    public static void register(IEventBus eventBus) {
-        BLOCK_ENTITIES.register(eventBus);
-    }    public static final RegistryObject<BlockEntityType<RobosurgeonBlockEntity>> ROBO_SURGEON =
+    public static final RegistryObject<BlockEntityType<RobosurgeonBlockEntity>> ROBO_SURGEON =
             BLOCK_ENTITIES.register("robo_surgeon",
                     () -> BlockEntityType.Builder.of(
                             RobosurgeonBlockEntity::new,
@@ -61,7 +65,6 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("blueprint_chest", () ->
                     BlockEntityType.Builder.of(BlueprintChestBlockEntity::new,
                             ModBlocks.BLUEPRINT_CHEST.get()).build(null));
-
 
 
 }

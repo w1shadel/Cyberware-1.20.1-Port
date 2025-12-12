@@ -31,7 +31,7 @@ public class CyberwareItem extends Item implements ICyberware {
     private final int energyConsumption;
 
     private final int energyGeneration;
-
+    private final int eventConsumption;
     private final int energyStorage;
 
     private final StackingRule stackingRule;
@@ -55,7 +55,7 @@ public class CyberwareItem extends Item implements ICyberware {
         this.incompatibleRegistryObjects = Set.copyOf(builder.incompatibleItems);
         this.bodyPartType = builder.bodyPartType;
         this.attributeModifiers = builder.attributeModifiers;
-
+        this.eventConsumption = builder.eventConsumption;
     }
 
     @Override
@@ -140,7 +140,12 @@ public class CyberwareItem extends Item implements ICyberware {
     public int getEnergyConsumption(ItemStack stack) {
         int base = this.energyConsumption;
         return isPristine(stack) ? base : base * 2;
+    }
 
+    @Override
+    public int getEventConsumption(ItemStack stack) {
+        int base = this.eventConsumption;
+        return isPristine(stack) ? base : base * 2;
     }
 
     @Override
@@ -196,6 +201,7 @@ public class CyberwareItem extends Item implements ICyberware {
         private int energyConsumption = 0;
         private int energyGeneration = 0;
         private int energyStorage = 0;
+        private int eventConsumption = 0;
         private StackingRule stackingRule = StackingRule.LINEAR;
         private BodyPartType bodyPartType = BodyPartType.NONE;
 
@@ -233,6 +239,11 @@ public class CyberwareItem extends Item implements ICyberware {
             Collections.addAll(this.prerequisites, items);
             return this;
 
+        }
+
+        public Builder eventCost(int cost) {
+            this.eventConsumption = cost;
+            return this;
         }
 
         public Builder properties(java.util.function.Consumer<Properties> consumer) {

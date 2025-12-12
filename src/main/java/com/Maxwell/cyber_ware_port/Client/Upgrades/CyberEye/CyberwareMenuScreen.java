@@ -4,11 +4,13 @@ import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider
 import com.Maxwell.cyber_ware_port.Common.Item.Base.ICyberware;
 import com.Maxwell.cyber_ware_port.Common.Network.A_PacketHandler;
 import com.Maxwell.cyber_ware_port.Common.Network.ToggleCyberwarePacket;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,6 +29,7 @@ public class CyberwareMenuScreen extends Screen {
     private static final float OUTER_RADIUS = 100.0f;
     private static final float ITEM_RADIUS = (INNER_RADIUS + OUTER_RADIUS) / 2.0f;
     private final List<ToggleablePart> parts = new ArrayList<>();
+
     public CyberwareMenuScreen() {
         super(Component.translatable("gui.cyber_ware_port.menu"));
     }
@@ -38,9 +41,7 @@ public class CyberwareMenuScreen extends Screen {
         if (this.minecraft != null && this.minecraft.player != null) {
             this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                 ItemStackHandler handler = data.getInstalledCyberware();
-                for (int i = 0;
-                     i < handler.getSlots();
-                     i++) {
+                for (int i = 0; i < handler.getSlots(); i++) {
                     ItemStack stack = handler.getStackInSlot(i);
                     if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
                         if (cw.canToggle(stack)) {
@@ -50,6 +51,30 @@ public class CyberwareMenuScreen extends Screen {
                 }
             });
         }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        handleMovementInput();
+    }
+
+    private void handleMovementInput() {
+        if (this.minecraft == null || this.minecraft.player == null) return;
+        updateKey(this.minecraft.options.keyUp);
+        updateKey(this.minecraft.options.keyDown);
+        updateKey(this.minecraft.options.keyLeft);
+        updateKey(this.minecraft.options.keyRight);
+        updateKey(this.minecraft.options.keyJump);
+        updateKey(this.minecraft.options.keySprint);
+        updateKey(this.minecraft.options.keyShift);
+    }
+
+    private void updateKey(KeyMapping keyMapping) {
+        long window = Minecraft.getInstance().getWindow().getWindow();
+        int keyCode = keyMapping.getKey().getValue();
+        boolean isDown = InputConstants.isKeyDown(window, keyCode);
+        keyMapping.setDown(isDown);
     }
 
     @Override
@@ -68,9 +93,7 @@ public class CyberwareMenuScreen extends Screen {
         float alpha = 0.4f;
         buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         int segments = 60;
-        for (int i = 0;
-             i <= segments;
-             i++) {
+        for (int i = 0; i <= segments; i++) {
             double angle = 2 * Math.PI * i / segments;
             float cos = (float) Math.cos(angle);
             float sin = (float) Math.sin(angle);
@@ -82,17 +105,11 @@ public class CyberwareMenuScreen extends Screen {
         tesselator.end();
         RenderSystem.disableBlend();
         if (parts.isEmpty()) {
-            g.drawCenteredString(this.font, "No Active Cyberware", centerX, centerY, 0xFFFFFFFF);
+            g.drawCenteredString(this.font, Component.translatable("cyberware.gui.no_active"), centerX, centerY, 0xFFFFFFFF);
             return;
         }
         double angleStep = 2 * Math.PI / parts.size();
-        double dx = mouseX - centerX;
-        double dy = mouseY - centerY;
-        double dist = Math.sqrt(dx * dx + dy * dy);
-        double mouseAngle = Math.atan2(dy, dx);
-        for (int i = 0;
-             i < parts.size();
-             i++) {
+        for (int i = 0; i < parts.size(); i++) {
             ToggleablePart part = parts.get(i);
             double itemAngle = i * angleStep - Math.PI / 2;
             int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
@@ -100,24 +117,21 @@ public class CyberwareMenuScreen extends Screen {
             boolean isActive = part.item.isActive(part.stack);
             boolean isHovered = (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12);
             g.pose().pushPose();
-            String statusText = isActive ? "有効化" : "無効化";
-            int textColor = 0xFFFFFFFF;
-            if (isHovered) textColor = 0xFFFFFF00;
+            Component statusText = isActive
+                    ? Component.translatable("cyberware.gui.active")
+                    : Component.translatable("cyberware.gui.inactive");
+            int textColor = isHovered ? 0xFFFFFF00 : 0xFFFFFFFF;
             g.drawCenteredString(this.font, statusText, x, y - 20, textColor);
             g.renderItem(part.stack, x - 8, y - 8);
             if (isActive) {
                 g.renderOutline(x - 10, y - 10, 20, 20, 0xFF00FF00);
-
             } else {
                 g.renderOutline(x - 10, y - 10, 20, 20, 0xFFFF0000);
-
             }
             if (isHovered) {
                 g.renderTooltip(this.font, part.stack, mouseX, mouseY);
-
             }
             g.pose().popPose();
-
         }
     }
 
@@ -127,9 +141,7 @@ public class CyberwareMenuScreen extends Screen {
             int centerX = width / 2;
             int centerY = height / 2;
             double angleStep = 2 * Math.PI / parts.size();
-            for (int i = 0;
-                 i < parts.size();
-                 i++) {
+            for (int i = 0; i < parts.size(); i++) {
                 ToggleablePart part = parts.get(i);
                 double itemAngle = i * angleStep - Math.PI / 2;
                 int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
@@ -139,18 +151,15 @@ public class CyberwareMenuScreen extends Screen {
                     Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     part.item.toggle(part.stack);
                     return true;
-
                 }
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
-
     }
 
     @Override
     public boolean isPauseScreen() {
         return false;
-
     }
 
     private record ToggleablePart(int slotId, ItemStack stack, ICyberware item) {

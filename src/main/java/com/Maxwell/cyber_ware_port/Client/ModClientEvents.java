@@ -5,6 +5,8 @@ import com.Maxwell.cyber_ware_port.Client.Screen.CWB.CyberwareWorkbenchScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.ComponentBoxScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.RoboSurgeon.RobosurgeonScreen;
 import com.Maxwell.cyber_ware_port.Client.Screen.Scanner.ScannerScreen;
+import com.Maxwell.cyber_ware_port.Client.Upgrades.CyberLimbModel;
+import com.Maxwell.cyber_ware_port.Client.Upgrades.CyberwarePlayerLayer;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberWareWorkBenchModel;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchRenderer;
 import com.Maxwell.cyber_ware_port.Common.Block.CyberSkull.CyberSkullRenderer;
@@ -35,6 +37,7 @@ import com.Maxwell.cyber_ware_port.Init.ModMenuTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -79,7 +82,7 @@ public class ModClientEvents {
         event.registerLayerDefinition(CyberCreeperModel.LAYER_LOCATION, CyberCreeperModel::createBodyLayer);
         event.registerLayerDefinition(CyberWitherModel.LAYER_LOCATION, CyberWitherModel::createBodyLayer);
         event.registerLayerDefinition(CYBER_SKULL_LAYER, SkullModel::createMobHeadLayer);
-
+        event.registerLayerDefinition(CyberLimbModel.LAYER_LOCATION, CyberLimbModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -113,6 +116,16 @@ public class ModClientEvents {
             }
         });
 
+    }
+
+    @SubscribeEvent
+    public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
+        for (String skinType : new String[]{"default", "slim"}) {
+            PlayerRenderer renderer = event.getSkin(skinType);
+            if (renderer != null) {
+                renderer.addLayer(new CyberwarePlayerLayer(renderer));
+            }
+        }
     }
 
 }

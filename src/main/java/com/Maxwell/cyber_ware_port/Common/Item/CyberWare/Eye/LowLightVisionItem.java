@@ -7,7 +7,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.event.TickEvent;
 
 public class LowLightVisionItem extends CyberwareItem {
 
@@ -33,10 +33,9 @@ public class LowLightVisionItem extends CyberwareItem {
     }
 
     @Override
-    public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
+    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
         if (isActive(stack)) {
-            entity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false));
-
+            wearer.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false));
         }
     }
 }

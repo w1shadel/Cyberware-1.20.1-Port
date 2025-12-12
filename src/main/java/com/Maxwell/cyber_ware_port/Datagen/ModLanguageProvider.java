@@ -25,6 +25,9 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.item.katana.desc", "击败赛博格类生物时提高电子义体掉落率。");
             add("cyberware.item.neuropozyne.desc", "抑制电子义体排斥反应，效果持续一天。");
             add("cyberware.message.critical_condition", "警告：排斥反应加剧，即将死亡。");
+            add("cyberware.gui.no_active", "没有电子义体");
+            add("cyberware.gui.active", "使能够");
+            add("cyberware.gui.inactive", "禁用");
             add(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get(), "赛博凋灵骷髅头颅");
             add(ModItems.BLUEPRINT.get(), "空白蓝图");
             add(ModItems.EXP_CAPSULE.get(), "经验胶囊");
@@ -43,6 +46,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.COMPONENT_BOX.get(), "元件收纳盒");
             add("item.cyber_ware_port.component_box", "元件收纳盒");
             add(ModBlocks.BLUEPRINT_CHEST.get(), "蓝图档案室");
+            add("cyberware.tooltip.eventCost", "激活消耗：%s");
             add(ModBlocks.SCANNER.get(), "机械扫描仪");
             add("message.cyber_ware_port.no_hud_installed", "请安装机械眼。");
             add("gui.cyber_ware_port.scanner.chance", "[%s%% 概率]");
@@ -159,14 +163,14 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.maxInstall", "最多安装：%s");
             add("cyberware.tooltip.slot", "%s");
             add("cyberware.tooltip.exp_capsule", "存储着记录下来的经验值。");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "机械化的手臂。\n比血肉之躯更坚固，是安装各种升级的平台。");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "机械化的手臂。\n比血肉之躯更坚固，是安装各种升级的平台。");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "机械化的腿部。\n比血肉之躯更坚固，是安装各种升级的平台。");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "机械化的腿部。\n比血肉之躯更坚固，是安装各种升级的平台。");
-            add("cyberware.tooltip.cybereyes", "免疫失明\n可以安装机械眼升级");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "机械化的手臂。 比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "机械化的手臂。 比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "机械化的腿部。 比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "机械化的腿部。 比血肉之躯更坚固，是安装各种升级的平台。");
+            add("cyberware.tooltip.cybereyes", "免疫失明 可以安装机械眼升级");
             add("cyberware.tooltip.cybereye_upgrades_night_vision", "在黑暗中也能看见");
             add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "在水中也能看见");
-            add("cyberware.tooltip.cybereye_upgrades_hudjack", "显示体内电力信息\n允许升级以覆盖HUD");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "显示体内电力信息 允许升级以覆盖HUD");
             add("cyberware.tooltip.cybereye_upgrades_targeting", "高亮显示附近的生物");
             add("cyberware.tooltip.cybereye_upgrades_zoom", "可以放大远处的物体");
             add("cyberware.tooltip.brain_upgrades_cortical_stack", "死亡时将经验值保存在胶囊中");
@@ -201,7 +205,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "空手攻击更强");
             add("cyberware.tooltip.hand_upgrades_mining", "可以用手挖掘石质方块");
             add("cyberware.tooltip.arm_upgrades_bow", "拉弓更快");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "跳得更高\nShift+跳跃发射自己\n两条机械腿效果更强");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "跳得更高 Shift+跳跃发射自己 两条机械腿效果更强");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "吸收微小冲击");
             add("cyberware.tooltip.foot_upgrades_spurs", "提升自身速度");
             add("cyberware.tooltip.foot_upgrades_aqua", "游泳更快，两条机械腿效果更强");
@@ -214,7 +218,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("tooltip.cyber_ware_port.radio_component2", "在下方3x3范围内放置4层零件");
             add("tooltip.cyber_ware_port.radio_component3", "在上方中央放置6层单个零件");
             add("tooltip.cyber_ware_port.surgery_chamber", "代替机械手术核心执行手术。");
-            add("tooltip.cyber_ware_port.surgery_chamber2", "预约手术后，进入其中即可工作。");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "预约手术后，进入其中并关门即可工作。");
             add("tooltip.cyber_ware_port.blueprint_chest", "可放入蓝图，附近有机械工程桌时会增加标签页。");
             add("tooltip.cyber_ware_port.cyberware_workbench", "可以分解和制作电子义体。");
             add("tooltip.cyber_ware_port.robo_surgeon", "用于设置移植和摘除的电子义体。");
@@ -320,6 +324,10 @@ public class ModLanguageProvider extends LanguageProvider {
         }
         if (locale.equals("ru_ru")) {
             add("itemGroup.cyber_ware_port.items", "Cyberware");
+            add("cyberware.gui.no_active", "нет кибер-устройства");
+            add("cyberware.gui.active", "давать возможность");
+            add("cyberware.tooltip.eventCost", "Стоимость активации: %s");
+            add("cyberware.gui.inactive", "Запрещать");
             add(ModItems.KATANA.get(), "Катана");
             add(ModItems.NEUROPOZYNE.get(), "Нейронный стимулятор");
             add(ModItems.BLUEPRINT.get(), "Пустой чертеж");
@@ -459,11 +467,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.maxInstall", "Макс. установка: %s");
             add("cyberware.tooltip.slot", "%s");
             add("cyberware.tooltip.exp_capsule", "Содержит сохраненный опыт.");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "Механизированная рука.\nБолее прочная, чем рука из плоти и крови, и служит платформой для различных улучшений.");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "Механизированная рука.\nБолее прочная, чем рука из плоти и крови, и служит платформой для различных улучшений.");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "Механизированная нога.\nБолее прочная, чем нога из плоти и крови, и служит платформой для различных улучшений.");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "Механизированная нога.\nБолее прочная, чем нога из плоти и крови, и служит платформой для различных улучшений.");
-            add("cyberware.tooltip.cybereyes", "Иммунитет к слепоте.\nПозволяет улучшать кибер-глаза.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "Механизированная рука. Более прочная, чем рука из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "Механизированная рука. Более прочная, чем рука из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "Механизированная нога. Более прочная, чем нога из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "Механизированная нога. Более прочная, чем нога из плоти и крови, и служит платформой для различных улучшений.");
+            add("cyberware.tooltip.cybereyes", "Иммунитет к слепоте. Позволяет улучшать кибер-глаза.");
             add("cyberware.tooltip.cybereye_upgrades_night_vision", "Ночное зрение.");
             add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "Подводное зрение.");
             add("cyberware.tooltip.cybereye_upgrades_hudjack", "Отображает информацию о внутренней энергии.\nПозволяет улучшениям накладывать HUD.");
@@ -501,7 +509,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "Атаки без оружия сильнее.");
             add("cyberware.tooltip.hand_upgrades_mining", "Может добывать блоки каменного уровня голыми руками.");
             add("cyberware.tooltip.arm_upgrades_bow", "Быстрее натягивает лук.");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "Прыгает выше.\nShift+прыжок для запуска себя.\nБолее мощный с двумя кибер-ногами.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Прыгает выше. Shift+прыжок для запуска себя. Более мощный с двумя кибер-ногами.");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "Поглощает небольшие удары.");
             add("cyberware.tooltip.foot_upgrades_spurs", "Ускоряет вас.");
             add("cyberware.tooltip.foot_upgrades_aqua", "Плавает быстрее, более мощный с двумя кибер-ногами.");
@@ -514,7 +522,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("tooltip.cyber_ware_port.radio_component2", "Разместите компоненты в области 3x3, 4 слоя в высоту снизу.");
             add("tooltip.cyber_ware_port.radio_component3", "Разместите один столбец компонентов высотой 6 слоев в центре сверху.");
             add("tooltip.cyber_ware_port.surgery_chamber", "Выполняет операции для робохирурга.");
-            add("tooltip.cyber_ware_port.surgery_chamber2", "Функционирует при входе после назначения операции.");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "Функционирует при входе и закрытии двери после назначения операции.");
             add("tooltip.cyber_ware_port.blueprint_chest", "Может хранить чертежи, добавляет вкладку, если рядом есть кибер-верстак.");
             add("tooltip.cyber_ware_port.cyberware_workbench", "Может разбирать и создавать кибер-устройства.");
             add("tooltip.cyber_ware_port.robo_surgeon", "Используется для настройки установки и извлечения кибер-устройств.");
@@ -620,6 +628,10 @@ public class ModLanguageProvider extends LanguageProvider {
         if (locale.equals("fr_fr")) {
             add("itemGroup.cyber_ware_port.items", "Cyberware");
             add(ModItems.KATANA.get(), "Katana");
+            add("cyberware.tooltip.eventCost", "Coût d'activation : %s");
+            add("cyberware.gui.no_active", "pas de cyberware");
+            add("cyberware.gui.active", "activer");
+            add("cyberware.gui.inactive", "Désactiver");
             add(ModItems.NEUROPOZYNE.get(), "Neuropozyne");
             add(ModItems.BLUEPRINT.get(), "Schéma vierge");
             add(ModItems.EXP_CAPSULE.get(), "Capsule d'Expérience");
@@ -758,14 +770,14 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.maxInstall", "Max Installable : %s");
             add("cyberware.tooltip.slot", "%s");
             add("cyberware.tooltip.exp_capsule", "Contient de l'expérience stockée.");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "Un bras mécanisé.\nPlus durable qu'un bras de chair et de sang, il sert de plateforme pour diverses améliorations.");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "Un bras mécanisé.\nPlus durable qu'un bras de chair et de sang, il sert de plateforme pour diverses améliorations.");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "Une jambe mécanisée.\nPlus durable qu'une jambe de chair et de sang, elle sert de plateforme pour diverses améliorations.");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "Une jambe mécanisée.\nPlus durable qu'une jambe de chair et de sang, elle sert de plateforme pour diverses améliorations.");
-            add("cyberware.tooltip.cybereyes", "Immunité à la cécité.\nPermet les améliorations de Cyberyeux.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "Un bras mécanisé. Plus durable qu'un bras de chair et de sang, il sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "Un bras mécanisé. Plus durable qu'un bras de chair et de sang, il sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "Une jambe mécanisée. Plus durable qu'une jambe de chair et de sang, elle sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "Une jambe mécanisée. Plus durable qu'une jambe de chair et de sang, elle sert de plateforme pour diverses améliorations.");
+            add("cyberware.tooltip.cybereyes", "Immunité à la cécité. Permet les améliorations de Cyberyeux.");
             add("cyberware.tooltip.cybereye_upgrades_night_vision", "Voir dans le noir.");
             add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "Voir sous l'eau.");
-            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Affiche les informations d'énergie interne.\nPermet aux améliorations d'afficher une interface.");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Affiche les informations d'énergie interne. Permet aux améliorations d'afficher une interface.");
             add("cyberware.tooltip.cybereye_upgrades_targeting", "Met en surbrillance les créatures proches.");
             add("cyberware.tooltip.cybereye_upgrades_zoom", "Peut zoomer sur des objets distants.");
             add("cyberware.tooltip.brain_upgrades_cortical_stack", "Sauvegarde l'expérience dans une capsule à la mort.");
@@ -800,7 +812,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "Les attaques à mains nues sont plus fortes.");
             add("cyberware.tooltip.hand_upgrades_mining", "Peut miner des blocs de niveau pierre à mains nues.");
             add("cyberware.tooltip.arm_upgrades_bow", "Bande les arcs plus rapidement.");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "Saute plus haut.\nShift-saut pour vous propulser.\nPlus puissant avec deux Cyberjambes.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Saute plus haut. Shift-saut pour vous propulser. Plus puissant avec deux Cyberjambes.");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "Absorbe les petits impacts.");
             add("cyberware.tooltip.foot_upgrades_spurs", "Vous accélère.");
             add("cyberware.tooltip.foot_upgrades_aqua", "Nage plus vite, plus puissant avec deux Cyberjambes.");
@@ -813,7 +825,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("tooltip.cyber_ware_port.radio_component2", "Placez les composants dans une zone de 3x3, 4 couches de haut en bas.");
             add("tooltip.cyber_ware_port.radio_component3", "Placez une seule colonne de composants de 6 couches de haut au centre, en haut.");
             add("tooltip.cyber_ware_port.surgery_chamber", "Effectue les opérations pour le Robochirurgien.");
-            add("tooltip.cyber_ware_port.surgery_chamber2", "Fonctionne en y entrant après avoir programmé une opération.");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "Fonctionne en y entrant et en fermant la porte après avoir programmé une opération.");
             add("tooltip.cyber_ware_port.blueprint_chest", "Peut contenir des schémas, ajoute un onglet si une Table d'Ingénierie Cybernétique est à proximité.");
             add("tooltip.cyber_ware_port.cyberware_workbench", "Peut déconstruire et fabriquer du Cyberware.");
             add("tooltip.cyber_ware_port.robo_surgeon", "Utilisé pour définir le Cyberware à installer et à retirer.");
@@ -867,6 +879,10 @@ public class ModLanguageProvider extends LanguageProvider {
         }
         if (locale.equals("en_us")) {
             add("itemGroup.cyber_ware_port.items", "Cyberware");
+            add("cyberware.gui.no_active", "No cyberware");
+            add("cyberware.gui.active", "Enable");
+            add("cyberware.tooltip.eventCost", "Active Cost: %s");
+            add("cyberware.gui.inactive", "Disable");
             add(ModItems.KATANA.get(), "Katana");
             add(ModItems.NEUROPOZYNE.get(), "Neuropozyne");
             add(ModItems.BLUEPRINT.get(), "Blank Blueprint");
@@ -1006,14 +1022,14 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.maxInstall", "Max Install: %s");
             add("cyberware.tooltip.slot", "%s");
             add("cyberware.tooltip.exp_capsule", "Contains stored experience.");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "A mechanized arm.\nMore durable than a flesh and blood arm, and serves as a platform for various upgrades.");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "A mechanized arm.\nMore durable than a flesh and blood arm, and serves as a platform for various upgrades.");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "A mechanized leg.\nMore durable than a flesh and blood leg, and serves as a platform for various upgrades.");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "A mechanized leg.\nMore durable than a flesh and blood leg, and serves as a platform for various upgrades.");
-            add("cyberware.tooltip.cybereyes", "Immunity to blindness.\nEnables Cybereye upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "A mechanized arm. More durable than a flesh and blood arm, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "A mechanized arm. More durable than a flesh and blood arm, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "A mechanized leg. More durable than a flesh and blood leg, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "A mechanized leg. More durable than a flesh and blood leg, and serves as a platform for various upgrades.");
+            add("cyberware.tooltip.cybereyes", "Immunity to blindness. Enables Cybereye upgrades.");
             add("cyberware.tooltip.cybereye_upgrades_night_vision", "See in the dark.");
             add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "See underwater.");
-            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Displays internal power information.\nAllows upgrades to overlay a HUD.");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "Displays internal power information. Allows upgrades to overlay a HUD.");
             add("cyberware.tooltip.cybereye_upgrades_targeting", "Highlights nearby creatures.");
             add("cyberware.tooltip.cybereye_upgrades_zoom", "Can zoom in on distant objects.");
             add("cyberware.tooltip.brain_upgrades_cortical_stack", "Saves experience in a capsule upon death.");
@@ -1048,7 +1064,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "Unarmed attacks are stronger.");
             add("cyberware.tooltip.hand_upgrades_mining", "Can mine stone-level blocks with bare hands.");
             add("cyberware.tooltip.arm_upgrades_bow", "Draws bows faster.");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "Jumps higher.\nShift-jump to launch yourself.\nMore powerful with two Cyberlegs.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Jumps higher. Shift-jump to launch yourself. More powerful with two Cyberlegs.");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "Absorbs small impacts.");
             add("cyberware.tooltip.foot_upgrades_spurs", "Speeds you up.");
             add("cyberware.tooltip.foot_upgrades_aqua", "Swims faster, more powerful with two Cyberlegs.");
@@ -1061,7 +1077,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("tooltip.cyber_ware_port.radio_component2", "Place components in a 3x3 area, 4 layers high on the bottom.");
             add("tooltip.cyber_ware_port.radio_component3", "Place a single column of components 6 layers high in the center on top.");
             add("tooltip.cyber_ware_port.surgery_chamber", "Performs operations for the Robo Surgeon.");
-            add("tooltip.cyber_ware_port.surgery_chamber2", "Functions by entering it after scheduling an operation.");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "Functions by entering it and closing the door after scheduling an operation.");
             add("tooltip.cyber_ware_port.blueprint_chest", "Can hold blueprints, adds a tab if a Cyberware Workbench is nearby.");
             add("tooltip.cyber_ware_port.cyberware_workbench", "Can deconstruct and craft Cyberware.");
             add("tooltip.cyber_ware_port.robo_surgeon", "Used to set Cyberware for installation and removal.");
@@ -1167,6 +1183,10 @@ public class ModLanguageProvider extends LanguageProvider {
         }
         if (locale.equals("ja_jp")) {
             add("itemGroup.cyber_ware_port.items", "サイバーウェア");
+            add("cyberware.gui.no_active", "サイバーウェアがありません");
+            add("cyberware.gui.active", "有効化");
+            add("cyberware.tooltip.eventCost", "発動コスト：%s");
+            add("cyberware.gui.inactive", "無効化");
             add(ModItems.KATANA.get(), "カタナ");
             add(ModItems.NEUROPOZYNE.get(), "ニューロポザイン");
             add("cyberware.item.katana.desc", "サイバー系モブを倒したときのサイバーウェアドロップ率を上昇。");
@@ -1306,14 +1326,14 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.maxInstall", "最大%sつまでインストールできます");
             add("cyberware.tooltip.slot", "%s");
             add("cyberware.tooltip.exp_capsule", "記録された経験値が貯められています");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "機械化された腕。\n生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
-            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "機械化された腕。\n生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "機械化された脚部。\n生身の脚部よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
-            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "機械化された脚部。\n生身の脚部よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
-            add("cyberware.tooltip.cybereyes", "盲目への耐性があります\nサイバーアイのアップグレードが可能になります");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_left", "機械化された腕。生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
+            add("cyberware.tooltip.cyberlimbs_cyberarm_right", "機械化された腕。生身の腕よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_left", "機械化された脚部。生身の脚部よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
+            add("cyberware.tooltip.cyberlimbs_cyberleg_right", "機械化された脚部。生身の脚部よりも頑丈で、様々なアップグレードをインストールするためのプラットフォームとなる。");
+            add("cyberware.tooltip.cybereyes", "盲目への耐性があります、サイバーアイのアップグレードが可能になります");
             add("cyberware.tooltip.cybereye_upgrades_night_vision", "暗闇の中でも見えます");
             add("cyberware.tooltip.cybereye_upgrades_underwater_vision", "水中でも見えます");
-            add("cyberware.tooltip.cybereye_upgrades_hudjack", "体内の電力情報を表示します\nHUDをオーバーレイするアップグレードが可能になります");
+            add("cyberware.tooltip.cybereye_upgrades_hudjack", "体内の電力情報を表示します、HUDをオーバーレイするアップグレードが可能になります");
             add("cyberware.tooltip.cybereye_upgrades_targeting", "近くの生き物をハイライトします");
             add("cyberware.tooltip.cybereye_upgrades_zoom", "遠くの物体をズームできます");
             add("cyberware.tooltip.brain_upgrades_cortical_stack", "死亡時に経験値をカプセルに保存します");
@@ -1348,7 +1368,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "武器を持たない時の攻撃がより強くなります");
             add("cyberware.tooltip.hand_upgrades_mining", "素手で石レベルの採掘ができます");
             add("cyberware.tooltip.arm_upgrades_bow", "より速く弓を発射します");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "より高くジャンプできます\nシフト＋ジャンプで自分を打ち上げます\n2つのサイバーレッグでさらにパワフルに");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "より高くジャンプできます、シフト＋ジャンプで自分を打ち上げます、2つのサイバーレッグでさらにパワフルに");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "小さな衝撃を吸収します");
             add("cyberware.tooltip.foot_upgrades_spurs", "自分をスピードアップ");
             add("cyberware.tooltip.foot_upgrades_aqua", "より速く泳ぎます、2つのサーバーレッグでさらにパワフルに");
@@ -1385,7 +1405,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("tooltip.cyber_ware_port.radio_component2", "下段に3x3の範囲で4層に構成部品を設置");
             add("tooltip.cyber_ware_port.radio_component3", "上段の中央に1本の構成部品を6層に設置");
             add("tooltip.cyber_ware_port.surgery_chamber", "ロボ外科医のオペを代行します。");
-            add("tooltip.cyber_ware_port.surgery_chamber2", "オペの予約後、内部に入ることで機能します。");
+            add("tooltip.cyber_ware_port.surgery_chamber2", "オペの予約後、内部に入りドアを閉じることで機能します。");
             add("tooltip.cyber_ware_port.blueprint_chest", "設計図を入れられます、近くにサイバーウェア工作台があるならタブを追加します。");
             add("tooltip.cyber_ware_port.cyberware_workbench", "サイバーウェアの分解と制作ができます。");
             add("tooltip.cyber_ware_port.robo_surgeon", "サイバーウェアの移植と摘出の設定に使用します。");

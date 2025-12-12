@@ -7,7 +7,7 @@ import com.Maxwell.cyber_ware_port.Init.ModItems;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.event.TickEvent;
 
 public class CybereyesItem extends CyberwareItem {
 
@@ -21,10 +21,9 @@ public class CybereyesItem extends CyberwareItem {
     }
 
     @Override
-    public void onWornTick(LivingEntity entity, ItemStack stack, IEnergyStorage energyStorage) {
-        if (entity.hasEffect(MobEffects.BLINDNESS)) {
-            entity.removeEffect(MobEffects.BLINDNESS);
-
+    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+        if (wearer.hasEffect(MobEffects.BLINDNESS)) {
+            wearer.removeEffect(MobEffects.BLINDNESS);
         }
     }
 }

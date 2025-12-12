@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-
 public class RadioTowerRenderer implements BlockEntityRenderer<RadioTowerCoreBlockEntity> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/radio_tower_complete.png");

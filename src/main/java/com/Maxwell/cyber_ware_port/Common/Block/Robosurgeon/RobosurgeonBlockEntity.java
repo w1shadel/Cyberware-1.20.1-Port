@@ -181,14 +181,26 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             entity.resetProgress();
             return;
         }
+        BlockEntity be = level.getBlockEntity(chamberPos);
+        if (!(be instanceof SurgeryChamberBlockEntity chamber)) {
+            entity.resetProgress();
+            return;
+        }
+        if (chamber.isOpen()) {
+            if (entity.progress > 0) {
+                entity.resetProgress();
+                A_PacketHandler.INSTANCE.send(
+                        net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity.findPatient(chamberPos)),
+                        new SyncSurgeryProgressPacket(0, entity.maxProgress)
+                );
+            }
+            return;
+        }
         LivingEntity patient = entity.findPatient(chamberPos);
         if (patient == null || !(patient instanceof ServerPlayer serverPlayer)) {
             if (entity.progress > 0) {
                 entity.resetProgress();
-                BlockEntity be = level.getBlockEntity(chamberPos);
-                if (be instanceof SurgeryChamberBlockEntity chamber) {
-                    chamber.setDoorState(true);
-                }
+                chamber.setDoorState(true);
             }
             return;
         }
@@ -205,12 +217,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                 serverPlayer.hurt(level.damageSources().magic(), 1.0f);
                 level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
             }
-            BlockEntity be = level.getBlockEntity(chamberPos);
-            if (be instanceof SurgeryChamberBlockEntity chamber) {
-                if (chamber.isOpen()) {
-                    chamber.setDoorState(false);
-                }
-            }
             if (entity.progress >= entity.maxProgress) {
                 entity.performSurgery(serverPlayer);
                 entity.resetProgress();
@@ -218,9 +224,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                         net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
                         new SyncSurgeryProgressPacket(0, entity.maxProgress)
                 );
-                if (be instanceof SurgeryChamberBlockEntity chamber) {
-                    chamber.setDoorState(true);
-                }
+                chamber.setDoorState(true);
             }
         } else {
             if (entity.progress > 0) {
@@ -229,10 +233,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                         net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
                         new SyncSurgeryProgressPacket(0, entity.maxProgress)
                 );
-                BlockEntity be = level.getBlockEntity(chamberPos);
-                if (be instanceof SurgeryChamberBlockEntity chamber) {
-                    chamber.setDoorState(true);
-                }
+                chamber.setDoorState(true);
             }
         }
     }
@@ -273,7 +274,13 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     private LivingEntity findPatient(BlockPos chamberPos) {
-        AABB box = new AABB(chamberPos).expandTowards(0, 1.8, 0).deflate(0.1);
+        double x = chamberPos.getX();
+        double y = chamberPos.getY();
+        double z = chamberPos.getZ();
+        AABB box = new AABB(
+                x + 0.3, y + 0.1, z + 0.3,
+                x + 0.7, y + 1.9, z + 0.7
+        );
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box);
         if (!entities.isEmpty()) {
             return entities.get(0);

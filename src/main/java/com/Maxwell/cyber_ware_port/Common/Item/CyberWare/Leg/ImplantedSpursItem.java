@@ -14,6 +14,5 @@ public class ImplantedSpursItem extends CyberwareItem {
                         0.1,
                         AttributeModifier.Operation.MULTIPLY_TOTAL)
         );
-
     }
 }

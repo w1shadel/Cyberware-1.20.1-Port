@@ -4,22 +4,30 @@ import com.Maxwell.cyber_ware_port.Client.Upgrades.CyberEye.CyberwareMenuScreen;
 import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareSlotType;
+import com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Leg.LinearActuatorsItem;
+import com.Maxwell.cyber_ware_port.Common.Network.A_PacketHandler;
+import com.Maxwell.cyber_ware_port.Common.Network.DoubleJumpPacket;
 import com.Maxwell.cyber_ware_port.CyberWare;
 import com.Maxwell.cyber_ware_port.Init.ModBlocks;
 import com.Maxwell.cyber_ware_port.Init.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.Set;
@@ -27,6 +35,7 @@ import java.util.Set;
 @SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ForgeClientEvents {
+    private static final String NBT_DOUBLE_JUMPED = "cyberware_double_jumped";
 
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
@@ -141,6 +150,11 @@ public class ForgeClientEvents {
                             .withStyle(ChatFormatting.AQUA));
 
                 }
+                int eventCost = cyberware.getEventConsumption(stack);
+                if (eventCost > 0) {
+                    tooltip.add(Component.translatable("cyberware.tooltip.eventCost", eventCost)
+                            .withStyle(ChatFormatting.RED));
+                }
             }
             if (cyberware.getMaxInstallAmount(stack) > 1) {
                 tooltip.add(Component.translatable("cyberware.tooltip.maxInstall", cyberware.getMaxInstallAmount(stack))
@@ -189,10 +203,10 @@ public class ForgeClientEvents {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {
+        Minecraft mc = Minecraft.getInstance();
+        var player = mc.player;
+        if (player == null) return;
         if (KeyInit.MENU_KEY.consumeClick()) {
-            Minecraft mc = Minecraft.getInstance();
-            var player = mc.player;
-            if (player == null) return;
             player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
                 if (userData.isCyberwareInstalled(ModItems.CYBER_EYE.get())) {
                     if (mc.screen == null) {
@@ -206,6 +220,54 @@ public class ForgeClientEvents {
             });
 
         }
+        if (event.getKey() == mc.options.keyJump.getKey().getValue() && event.getAction() == GLFW.GLFW_PRESS) {
+            if (!player.onGround() && !player.isCreative() && !player.isSpectator()) {
+                player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
+                    if (data.isCyberwareInstalled(ModItems.LINEAR_ACTUATORS.get())) {
+                        if (!player.getPersistentData().getBoolean(NBT_DOUBLE_JUMPED)) {
+                            A_PacketHandler.INSTANCE.sendToServer(new DoubleJumpPacket());
+                            LinearActuatorsItem.performDoubleJump(player);
+                        }
+                    }
+                });
+            }
+        }
     }
+
+    @SubscribeEvent
+    public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
+        Player player = event.getEntity();
+        PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
+        model.leftArm.visible = true;
+        model.leftSleeve.visible = true;
+        model.rightArm.visible = true;
+        model.rightSleeve.visible = true;
+        model.leftLeg.visible = true;
+        model.leftPants.visible = true;
+        model.rightLeg.visible = true;
+        model.rightPants.visible = true;
+        player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
+            if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) {
+                return;
+            }
+            if (data.hasCyberLeftArm()) {
+                model.leftArm.visible = false;
+                model.leftSleeve.visible = false;
+            }
+            if (data.hasCyberRightArm()) {
+                model.rightArm.visible = false;
+                model.rightSleeve.visible = false;
+            }
+            if (data.hasCyberLeftLeg()) {
+                model.leftLeg.visible = false;
+                model.leftPants.visible = false;
+            }
+            if (data.hasCyberRightLeg()) {
+                model.rightLeg.visible = false;
+                model.rightPants.visible = false;
+            }
+        });
+    }
+
 
 }

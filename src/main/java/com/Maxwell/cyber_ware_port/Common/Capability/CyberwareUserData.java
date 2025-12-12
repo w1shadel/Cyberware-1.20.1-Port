@@ -28,13 +28,17 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergyStorage {
-    private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
+    private boolean hasCyberLeftArm = false;
+    private boolean hasCyberRightArm = false;
+    private boolean hasCyberLeftLeg = false;
+    private boolean hasCyberRightLeg = false;
+    private boolean isInitialized = false;
+    private int maxTolerance = 100;    private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
+            updateLimbStatus();
         }
     };
-    private boolean isInitialized = false;
-    private int maxTolerance = 100;
     private int currentEnergy = 0;
     private int maxEnergy = 0;
     private int respawnGracePeriod = 0;
@@ -109,6 +113,53 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         this.respawnGracePeriod = ticks;
     }
 
+    private void updateLimbStatus() {
+        this.hasCyberLeftArm = false;
+        this.hasCyberRightArm = false;
+        this.hasCyberLeftLeg = false;
+        this.hasCyberRightLeg = false;
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            if (!(stack.getItem() instanceof ICyberware) || isHumanPart(stack)) {
+                continue;
+            }
+            if (i == RobosurgeonBlockEntity.SLOT_ARMS) {
+                this.hasCyberLeftArm = true;
+            } else if (i == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
+                this.hasCyberRightArm = true;
+            } else if (i == RobosurgeonBlockEntity.SLOT_LEGS) {
+                this.hasCyberLeftLeg = true;
+            } else if (i == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
+                this.hasCyberRightLeg = true;
+            }
+        }
+    }
+
+    private boolean isHumanPart(ItemStack stack) {
+        Item item = stack.getItem();
+        return item == ModItems.HUMAN_LEFT_ARM.get() ||
+                item == ModItems.HUMAN_RIGHT_ARM.get() ||
+                item == ModItems.HUMAN_LEFT_LEG.get() ||
+                item == ModItems.HUMAN_RIGHT_LEG.get();
+    }
+
+    public boolean hasCyberLeftArm() {
+        return this.hasCyberLeftArm;
+    }
+
+    public boolean hasCyberRightArm() {
+        return this.hasCyberRightArm;
+    }
+
+    public boolean hasCyberLeftLeg() {
+        return this.hasCyberLeftLeg;
+    }
+
+    public boolean hasCyberRightLeg() {
+        return this.hasCyberRightLeg;
+    }
+
     private UUID generateUUID(int slot, UUID originalId) {
         return UUID.nameUUIDFromBytes((originalId.toString() + "_" + slot).getBytes());
 
@@ -155,23 +206,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             } else {
                 hasSufficientPower = false;
                 this.currentEnergy = 0;
-            }
-        }
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
-                boolean shouldRun = true;
-                if (cyberware.hasEnergyProperties(stack)) {
-                    int count = stack.getCount();
-                    ICyberware.StackingRule rule = cyberware.getStackingEnergyRule(stack);
-                    int consumption = rule.calculate(cyberware.getEnergyConsumption(stack), count);
-                    if (consumption > 0 && !hasSufficientPower) {
-                        shouldRun = false;
-                    }
-                }
-                if (shouldRun) {
-                    cyberware.onWornTick(player, stack, this);
-                }
             }
         }
         if (player.tickCount % 20 == 0) {
@@ -334,7 +368,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS + 1, new ItemStack(ModItems.HUMAN_LEFT_FOOT.get()));
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS, new ItemStack(ModItems.HUMAN_RIGHT_FOOT.get()));
         this.isInitialized = true;
-
+        updateLimbStatus();
     }
 
     public int getTolerance() {
@@ -419,6 +453,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (nbt.contains("ImmunityTime")) {
             this.toleranceImmunityTime = nbt.getInt("ImmunityTime");
         }
+        updateLimbStatus();
     }
 
     public boolean isInitialized() {
@@ -473,4 +508,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return maxEnergy > 0;
 
     }
+
+
+
+
 }

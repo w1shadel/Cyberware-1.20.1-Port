@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-
 public class BlueprintChestScreen extends AbstractContainerScreen<BlueprintChestMenu> {
 
     private static final ResourceLocation TEXTURE =

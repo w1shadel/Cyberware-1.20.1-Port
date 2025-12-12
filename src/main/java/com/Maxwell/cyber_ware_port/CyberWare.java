@@ -26,6 +26,5 @@ public class CyberWare {
         ModLootModifiers.register(modEventBus);
         A_PacketHandler.register();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CyberwareConfig.COMMON_CONFIG, "cyberware-common.toml");
-
     }
 }

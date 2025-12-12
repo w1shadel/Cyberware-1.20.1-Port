@@ -28,6 +28,7 @@ public class ComponentBoxBlock extends HorizontalDirectionalBlock implements Ent
     private static final VoxelShape SHAPE_EAST = Block.box(4, 0, 1, 12, 11, 15);
     private static final VoxelShape SHAPE_SOUTH = Block.box(1, 0, 4, 15, 11, 12);
     private static final VoxelShape SHAPE_WEST = Block.box(4, 0, 1, 12, 11, 15);
+
     public ComponentBoxBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));

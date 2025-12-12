@@ -9,7 +9,7 @@ public class CardiovascularCouplerItem extends CyberwareItem {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .requires(ModItems.CARDIOMECHANIC_PUMP)
-                .energy(0, 5, 0, StackingRule.STATIC));
+                .energy(0, 95, 0, StackingRule.STATIC));
 
     }
 }

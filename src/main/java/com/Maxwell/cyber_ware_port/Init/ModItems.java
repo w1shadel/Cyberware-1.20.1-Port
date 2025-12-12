@@ -108,14 +108,13 @@ public class ModItems {
     public static final RegistryObject<Item> NEUROPOZYNE = ITEMS.register("neuropozyne", NeuropozyneItem::new);
     public static final RegistryObject<Item> SOLARSKIN = ITEMS.register("skin_upgrades_solar_skin", SolarskinItem::new);
     public static final RegistryObject<Item> SUBDERMAL_SPIKES = ITEMS.register("skin_upgrades_subdermal_spikes", SubdermalSpikesItem::new);
-    public static final RegistryObject<Item> SYNTHETIC_SKIN = ITEMS.register("skin_upgrades_fake_skin", SyntheticSkinItem::new);    public static final RegistryObject<Item> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
+    public static final RegistryObject<Item> SYNTHETIC_SKIN = ITEMS.register("skin_upgrades_fake_skin", SyntheticSkinItem::new);
     public static final RegistryObject<Item> TARGETED_IMMUNOSUPPRESSANT = ITEMS.register("skin_upgrades_immuno", TargetedImmunosuppressantItem::new);
-    public static final RegistryObject<Item> WIRED_REFLEXES = ITEMS.register("muscle_upgrades_wired_reflexes", WiredReflexesItem::new);    public static final RegistryObject<Item> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
-    public static final RegistryObject<Item> MYOMER_MUSCLE = ITEMS.register("muscle_upgrades_muscle_replacements", MyomerMuscleReplacementItem::new);
+    public static final RegistryObject<Item> WIRED_REFLEXES = ITEMS.register("muscle_upgrades_wired_reflexes", WiredReflexesItem::new);    public static final RegistryObject<Item> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
     public static final RegistryObject<Item> BONELACING = ITEMS.register("bone_upgrades_bonelacing", BonelacingItem::new);
     public static final RegistryObject<Item> CITRATE_ENHANCEMENT = ITEMS.register("bone_upgrades_boneflex", CitrateEnhancementItem::new);
     public static final RegistryObject<Item> DENSE_BATTERY = ITEMS.register("dense_battery", DenseBatteryItem::new);
-    public static final RegistryObject<Item> MARROW_BATTERY = ITEMS.register("bone_upgrades_bonebattery", MarrowBatteryItem::new);
+    public static final RegistryObject<Item> MARROW_BATTERY = ITEMS.register("bone_upgrades_bonebattery", MarrowBatteryItem::new);    public static final RegistryObject<Item> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
     public static final RegistryObject<Item> HUMAN_BRAIN = registerHumanPart("body_part_brain", RobosurgeonBlockEntity.SLOT_BRAIN, 1, BodyPartType.BRAIN);
     public static final RegistryObject<Item> RAPID_FIRE_FLYWHEEL = ITEMS.register("arm_upgrades_bow",
             RapidFireFlywheelItem::new);
@@ -132,6 +131,7 @@ public class ModItems {
     public static final RegistryObject<Item> HUMAN_STOMACH = registerHumanPart("body_part_stomach", RobosurgeonBlockEntity.SLOT_STOMACH, 1, BodyPartType.STOMACH);
     public static final RegistryObject<Item> HUMAN_SKIN = registerHumanPart("body_part_skin", RobosurgeonBlockEntity.SLOT_SKIN, 1, BodyPartType.SKIN);
     public static final RegistryObject<Item> HUMAN_MUSCLE = registerHumanPart("body_part_muscles", RobosurgeonBlockEntity.SLOT_MUSCLE, 1, BodyPartType.MUSCLE);
+    public static final RegistryObject<Item> MYOMER_MUSCLE = ITEMS.register("muscle_upgrades_muscle_replacements", MyomerMuscleReplacementItem::new);
     public static final RegistryObject<Item> HUMAN_BONE = registerHumanPart("body_part_bones", RobosurgeonBlockEntity.SLOT_BONES, 1, BodyPartType.BONES);
     public static final RegistryObject<Item> HUMAN_EYES = registerHumanPart("body_part_eyes", RobosurgeonBlockEntity.SLOT_EYES, 1, BodyPartType.EYES);
     public static final RegistryObject<Item> CYBER_EYE = ITEMS.register("cybereyes", CybereyesItem::new);
@@ -199,6 +199,8 @@ public class ModItems {
         TABS.register(eventBus);
 
     }
+
+
 
 
 

@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class EngineeringRecipe implements Recipe<SimpleContainer> {
     private final ResourceLocation id;
 

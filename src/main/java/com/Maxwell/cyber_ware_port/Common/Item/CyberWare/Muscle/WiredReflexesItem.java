@@ -1,10 +1,13 @@
 package com.Maxwell.cyber_ware_port.Common.Item.CyberWare.Muscle;
 
 import com.Maxwell.cyber_ware_port.Common.Block.Robosurgeon.RobosurgeonBlockEntity;
+import com.Maxwell.cyber_ware_port.Common.Capability.CyberwareCapabilityProvider;
 import com.Maxwell.cyber_ware_port.Common.Item.Base.CyberwareItem;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 public class WiredReflexesItem extends CyberwareItem {
 
@@ -24,5 +27,17 @@ public class WiredReflexesItem extends CyberwareItem {
     public boolean canToggle(ItemStack stack) {
         return true;
 
+    }
+
+    @Override
+    public void onLivingAttack(LivingAttackEvent event, ItemStack stack, LivingEntity wearer) {
+        if (event.getSource().getEntity() instanceof LivingEntity attacker) {
+            wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
+                int reflexCost = 10;
+                if (data.extractEnergy(reflexCost, false) == reflexCost) {
+                    wearer.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, attacker.getEyePosition());
+                }
+            });
+        }
     }
 }
