@@ -1,0 +1,19 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:muscle_upgrades_muscle_replacements"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "count": 2,
+      "item": "cyber_ware_port:component_fullerene"
+    },
+    {
+      "chance": 1.0,
+      "count": 2,
+      "item": "cyber_ware_port:component_actuator"
+    }
+  ]
+}

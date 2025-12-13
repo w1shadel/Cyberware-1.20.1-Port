@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    " A ",
+    "IRI",
+    "III"
+  ],
+  "result": {
+    "item": "cyber_ware_port:radio_kit"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_fullerene"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_synthnerves"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "minecraft:leather"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:skin_upgrades_fake_skin"
+}

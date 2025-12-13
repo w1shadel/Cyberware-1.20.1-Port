@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "cyber_ware_port:item/cybereye_upgrades_hudjack_scavenged",
+      "predicate": {
+        "cyber_ware_port:is_scavenged": 1.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "cyber_ware_port:item/cybereye_upgrades_hudjack"
+  }
+}

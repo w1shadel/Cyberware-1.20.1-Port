@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "cyber_ware_port:item/scanner_item"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "cyber_ware_port:block/robo_surgeon"
+    }
+  }
+}

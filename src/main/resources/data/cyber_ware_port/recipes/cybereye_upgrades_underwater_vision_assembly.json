@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_fiberoptics"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:prismarine_shard"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "minecraft:glass_pane"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:cybereye_upgrades_underwater_vision"
+}
