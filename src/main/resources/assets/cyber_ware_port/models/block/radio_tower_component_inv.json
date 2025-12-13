@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/fence_inventory",
-  "textures": {
-    "texture": "cyber_ware_port:block/radio_tower_texture"
-  }
-}
