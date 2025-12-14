@@ -5,6 +5,6 @@
     "type": "cyber_ware_port:cyber_zombie",
     "maxCount": 3,
     "minCount": 1,
-    "weight": 10
+    "weight": 3
   }
 }

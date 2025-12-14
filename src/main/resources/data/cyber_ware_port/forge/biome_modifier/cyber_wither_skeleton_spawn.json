@@ -3,8 +3,8 @@
   "biomes": "#minecraft:is_nether",
   "spawners": {
     "type": "cyber_ware_port:cyber_wither_skeleton",
-    "maxCount": 2,
+    "maxCount": 1,
     "minCount": 1,
-    "weight": 15
+    "weight": 1
   }
 }

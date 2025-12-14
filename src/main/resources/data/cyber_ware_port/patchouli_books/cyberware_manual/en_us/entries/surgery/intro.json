@@ -1,0 +1,16 @@
+{
+  "name": "手術の始め方",
+  "icon": "cyber_ware_port:surgery_chamber",
+  "category": "cyber_ware_port:surgery",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Cyberwareの世界へようこそ。$(br)まずは$(l:surgery/robosurgeon)Robosurgeon$(/l)（ロボ外科医）を作成し、手術台をセットアップする必要があります。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "cyber_ware_port:surgery_chamber",
+      "text": "手術台のレシピ。これの上で寝ることでGUIが開きます。"
+    }
+  ]
+}

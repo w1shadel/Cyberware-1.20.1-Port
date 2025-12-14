@@ -1,11 +1,16 @@
 package com.Maxwell.cyber_ware_port.Common.Block.Radio;
 
+import com.Maxwell.cyber_ware_port.Init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -21,6 +26,9 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RadioKitBlock extends HorizontalDirectionalBlock {
 
@@ -97,25 +105,83 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
+    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
         if (!pLevel.isClientSide) {
             boolean isPowered = pLevel.hasNeighborSignal(pPos);
-            if (isPowered != pState.getValue(POWERED)) {
-                pLevel.setBlock(pPos, pState.setValue(POWERED, Boolean.valueOf(isPowered)), 3);
-
+            if (isPowered) {
+                pLevel.scheduleTick(pPos, this, 20);
             }
         }
     }
 
     @Override
-    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
-        if (!pOldState.is(pState.getBlock()) && !pLevel.isClientSide) {
-            boolean isPowered = pLevel.hasNeighborSignal(pPos);
-            if (isPowered != pState.getValue(POWERED)) {
-                pLevel.setBlock(pPos, pState.setValue(POWERED, Boolean.valueOf(isPowered)), 2);
-
+    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
+        if (!pLevel.isClientSide) {
+            boolean isPoweredNow = pLevel.hasNeighborSignal(pPos);
+            boolean wasPowered = pState.getValue(POWERED);
+            if (isPoweredNow != wasPowered) {
+                pLevel.setBlock(pPos, pState.setValue(POWERED, isPoweredNow), 3);
+                if (isPoweredNow) {
+                    pLevel.scheduleTick(pPos, this, 20);
+                }
             }
         }
+    }
+
+    @Override
+    public void tick(BlockState pState, ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        if (!pState.getValue(POWERED) || pLevel.isClientSide()) {
+            return;
+        }
+        if (pRandom.nextFloat() < 0.3F) {
+            spawnCyberMob(pLevel, pPos, pRandom);
+        }
+        pLevel.scheduleTick(pPos, this, 400);
+    }
+
+    private void spawnCyberMob(ServerLevel pLevel, BlockPos pPos, RandomSource pRandom) {
+        List<EntityType<? extends Monster>> spawnList = new ArrayList<>();
+        if (pLevel.dimension() == Level.NETHER) {
+            spawnList.add(ModEntities.CYBER_WITHER_SKELETON.get());
+        } else {
+            spawnList.add(ModEntities.CYBER_ZOMBIE.get());
+            spawnList.add(ModEntities.CYBER_SKELETON.get());
+            spawnList.add(ModEntities.CYBER_CREEPER.get());
+        }
+        EntityType<? extends Monster> mobToSpawn = spawnList.get(pRandom.nextInt(spawnList.size()));
+        for (int i = 0; i < 10; i++) {
+            int x = pPos.getX() + pRandom.nextInt(17) - 8;
+            int z = pPos.getZ() + pRandom.nextInt(17) - 8;
+            BlockPos spawnPos = findValidSpawnPos(pLevel, new BlockPos(x, pPos.getY(), z));
+            if (spawnPos != null) {
+                Monster monster = mobToSpawn.create(pLevel);
+                if (monster != null) {
+                    monster.moveTo(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, pRandom.nextFloat() * 360.0F, 0.0F);
+                    monster.finalizeSpawn(pLevel, pLevel.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null, null);
+                    pLevel.addFreshEntity(monster);
+                    return;
+                }
+            }
+        }
+    }
+
+    @Nullable
+    private BlockPos findValidSpawnPos(Level pLevel, BlockPos pPos) {
+        BlockPos groundPos = new BlockPos(pPos.getX(), pPos.getY(), pPos.getZ());
+        for (int yOffset = 0; yOffset <= 3; yOffset++) {
+            BlockPos currentPos = groundPos.above(yOffset);
+            if (isValidSpawnLocation(pLevel, currentPos)) return currentPos;
+            currentPos = groundPos.below(yOffset);
+            if (isValidSpawnLocation(pLevel, currentPos)) return currentPos;
+        }
+        return null;
+    }
+
+    private boolean isValidSpawnLocation(Level level, BlockPos pos) {
+        BlockState groundState = level.getBlockState(pos.below());
+        BlockState mainState = level.getBlockState(pos);
+        BlockState headState = level.getBlockState(pos.above());
+        return groundState.isSolidRender(level, pos.below()) && !mainState.isCollisionShapeFullBlock(level, pos) && !headState.isCollisionShapeFullBlock(level, pos);
     }
 
     @Override

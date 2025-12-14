@@ -1,8 +1,6 @@
 package com.Maxwell.cyber_ware_port.Common.Entity.Monster.CyberCreeper;
 
-import com.Maxwell.cyber_ware_port.Common.Block.Radio.TemptToBlockGoal;
 import com.Maxwell.cyber_ware_port.Common.Entity.ICyberwareMob;
-import com.Maxwell.cyber_ware_port.Init.ModBlocks;
 import com.Maxwell.cyber_ware_port.Init.ModItems;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Creeper;
@@ -29,13 +27,6 @@ public class CyberCreeperEntity extends Creeper implements ICyberwareMob {
                 ModItems.SYNTHETIC_SKIN.get(),
                 ModItems.TARGETED_IMMUNOSUPPRESSANT.get()
         );
-
-    }
-
-    @Override
-    protected void registerGoals() {
-        super.registerGoals();
-        this.goalSelector.addGoal(3, new TemptToBlockGoal(this, 1.0D, ModBlocks.RADIO_KIT_BLOCK.get(), 64));
 
     }
 

@@ -3,8 +3,8 @@
   "biomes": "#minecraft:is_overworld",
   "spawners": {
     "type": "cyber_ware_port:cyber_creeper",
-    "maxCount": 2,
+    "maxCount": 3,
     "minCount": 1,
-    "weight": 8
+    "weight": 3
   }
 }

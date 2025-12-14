@@ -1,0 +1,8 @@
+{
+  "name": "Cyberware Manual",
+  "landing_text": "Cyberware導入マニュアルへようこそ。$(br)この本はインプラントによる人体拡張のガイドです。",
+  "version": "1.0",
+  "model": "cyber_ware_port:cyberware_manual",
+  "creative_tab": "cyber_ware_port",
+  "show_progress": false
+}
