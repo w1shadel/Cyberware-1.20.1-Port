@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "cyber_ware_port:item/skin_upgrades_immuno_scavenged"
-  }
-}
