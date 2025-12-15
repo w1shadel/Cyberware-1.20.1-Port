@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.1,
+  "input": {
+    "item": "cyber_ware_port:heart_upgrades_medkit"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "count": 2,
+      "item": "cyber_ware_port:component_reactor"
+    },
+    {
+      "chance": 1.0,
+      "count": 1,
+      "item": "cyber_ware_port:component_microelectric"
+    },
+    {
+      "chance": 0.2,
+      "count": 1,
+      "item": "minecraft:ghast_tear"
+    }
+  ]
+}

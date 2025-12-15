@@ -1,0 +1,15 @@
+{
+  "values": [
+    "cyber_ware_port:radio_tower_component",
+    "cyber_ware_port:radio_tower_core",
+    "cyber_ware_port:robo_surgeon",
+    "cyber_ware_port:surgery_chamber",
+    "cyber_ware_port:cyberware_workbench",
+    "cyber_ware_port:scanner",
+    "cyber_ware_port:blueprint_chest",
+    "cyber_ware_port:radio_kit",
+    "cyber_ware_port:component_box",
+    "cyber_ware_port:cyber_wither_skeleton_skull",
+    "cyber_ware_port:cyber_wither_skeleton_wall_skull"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:lungs_upgrades_hyperoxygenation"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "count": 1,
+      "item": "cyber_ware_port:component_reactor"
+    },
+    {
+      "chance": 1.0,
+      "count": 1,
+      "item": "cyber_ware_port:component_actuator"
+    },
+    {
+      "chance": 1.0,
+      "count": 1,
+      "item": "cyber_ware_port:component_fullerene"
+    }
+  ]
+}

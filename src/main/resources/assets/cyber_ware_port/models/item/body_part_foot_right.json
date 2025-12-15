@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "cyber_ware_port:item/body_part_foot_right"
+  }
+}
