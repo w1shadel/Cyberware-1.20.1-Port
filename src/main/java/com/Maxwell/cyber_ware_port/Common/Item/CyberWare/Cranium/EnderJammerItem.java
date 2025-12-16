@@ -24,8 +24,7 @@ public class EnderJammerItem extends CyberwareItem {
     @Override
     public void onEntityTeleport(EntityTeleportEvent event, ItemStack stack, LivingEntity wearer) {
         wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            int cost = this.getEventConsumption(stack);
-            if (data.extractEnergy(cost, false) == cost) {
+            if (this.tryConsumeEventEnergy(data, stack)) {
                 event.setCanceled(true);
             }
         });

@@ -7,9 +7,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -52,6 +56,12 @@ public class MobSpawnerEvents {
             int z = (int) player.getZ() + RANDOM.nextInt(48) - 24;
             int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
             BlockPos spawnPos = new BlockPos(x, y, z);
+            if (!level.getFluidState(spawnPos.below()).isEmpty()) {
+                continue;
+            }
+            if (!level.getFluidState(spawnPos).isEmpty()) {
+                continue;
+            }
             if (player.distanceToSqr(x, y, z) > 24 * 24 && level.noCollision(mobToSpawn.getAABB(x, y, z))) {
                 Mob mob = (Mob) mobToSpawn.create(level);
                 if (mob != null) {
@@ -62,5 +72,37 @@ public class MobSpawnerEvents {
             }
         }
         return false;
+    }
+
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide()) {
+            return;
+        }
+        if (!event.loadedFromDisk()) {
+            if (event.getEntity().getType() == EntityType.WITHER_SKELETON) {
+                ServerLevel level = (ServerLevel) event.getLevel();
+                WitherSkeleton vanillaMob = (WitherSkeleton) event.getEntity();
+                if (isInsideFortress(level, vanillaMob.blockPosition())) {
+                    if (level.getRandom().nextFloat() < 0.2f) {
+                        spawnCustomMob(level, vanillaMob);
+                        event.setCanceled(true);
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isInsideFortress(ServerLevel level, BlockPos pos) {
+        return level.structureManager().getStructureWithPieceAt(pos, BuiltinStructures.FORTRESS).isValid();
+    }
+
+    private static void spawnCustomMob(ServerLevel level, WitherSkeleton original) {
+        Mob customMob = (Mob) ModEntities.CYBER_WITHER_SKELETON.get().create(level);
+        if (customMob != null) {
+            customMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), original.getXRot());
+            customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), MobSpawnType.STRUCTURE, null, null);
+            level.addFreshEntity(customMob);
+        }
     }
 }

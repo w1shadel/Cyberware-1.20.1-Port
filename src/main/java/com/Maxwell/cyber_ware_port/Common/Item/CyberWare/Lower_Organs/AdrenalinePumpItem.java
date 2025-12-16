@@ -21,9 +21,7 @@ public class AdrenalinePumpItem extends CyberwareItem {
     public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
         if (wearer.getHealth() < wearer.getMaxHealth() * 0.3f && !wearer.hasEffect(MobEffects.DAMAGE_BOOST)) {
             wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                int cost = this.getEventConsumption(stack);
-                if (data.extractEnergy(cost, true) == cost) {
-                    data.extractEnergy(cost, false);
+                if (tryConsumeEventEnergy(data, stack)) {
                     wearer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 400, 0, false, false));
                     wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 400, 1, false, false));
                 }

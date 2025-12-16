@@ -9,7 +9,6 @@ public class CyberWitherSkeletonEntity extends CyberSkeletonEntity implements IC
 
     public CyberWitherSkeletonEntity(EntityType<? extends net.minecraft.world.entity.monster.Skeleton> type, Level level) {
         super(type, level);
-
     }
 
     @Override

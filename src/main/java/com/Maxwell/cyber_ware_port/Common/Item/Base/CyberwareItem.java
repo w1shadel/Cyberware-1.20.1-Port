@@ -155,6 +155,16 @@ public class CyberwareItem extends Item implements ICyberware {
 
     }
 
+    public boolean tryConsumeEventEnergy(net.minecraftforge.energy.IEnergyStorage energyStorage, ItemStack stack) {
+        int cost = this.getEventConsumption(stack);
+        if (cost <= 0) return true;
+        if (energyStorage.extractEnergy(cost, true) == cost) {
+            energyStorage.extractEnergy(cost, false);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public int getEnergyStorage(ItemStack stack) {
         int base = this.energyStorage;

@@ -34,6 +34,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private boolean hasCyberLeftLeg = false;
     private boolean hasCyberRightLeg = false;
     private boolean isInitialized = false;
+    private boolean isPowered = true;
     private int maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
     private int currentEnergy = 0;
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
@@ -47,10 +48,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int lastProduction = 0;
     private int lastConsumption = 0;
     private int toleranceImmunityTime = 0;
-
-    public void setMaxTolerance(int amount) {
-        this.maxTolerance = amount;
-    }
 
     public void recalculateCapacity(ServerPlayer player) {
         float oldMaxHealth = player.getMaxHealth();
@@ -70,6 +67,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                     }
                 });
             }
+
         }
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             final int slotIndex = i;
@@ -81,26 +79,30 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                     totalCapacity += singleStorage * count;
                 }
                 if (cyberware.isActive(stack)) {
-                    cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
-                        if (attributeMap.hasAttribute(attribute)) {
-                            AttributeInstance instance = attributeMap.getInstance(attribute);
-                            if (instance != null) {
-                                UUID slotUUID = generateUUID(slotIndex, originalModifier.getId());
-                                double value = originalModifier.getAmount() * count;
-                                net.minecraft.world.entity.ai.attributes.AttributeModifier newModifier = new net.minecraft.world.entity.ai.attributes.AttributeModifier(
-                                        slotUUID,
-                                        "Cyberware Slot " + slotIndex,
-                                        value,
-                                        originalModifier.getOperation()
-                                );
-                                if (!instance.hasModifier(newModifier)) {
-                                    instance.addTransientModifier(newModifier);
+                    boolean consumesEnergy = cyberware.hasEnergyProperties(stack) && cyberware.getEnergyConsumption(stack) > 0;
+                    if (!consumesEnergy || this.isPowered) {
+                        cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
+                            if (attributeMap.hasAttribute(attribute)) {
+                                AttributeInstance instance = attributeMap.getInstance(attribute);
+                                if (instance != null) {
+                                    UUID slotUUID = generateUUID(slotIndex, originalModifier.getId());
+                                    double value = originalModifier.getAmount() * count;
+                                    net.minecraft.world.entity.ai.attributes.AttributeModifier newModifier = new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                            slotUUID,
+                                            "Cyberware Slot " + slotIndex,
+                                            value,
+                                            originalModifier.getOperation()
+                                    );
+                                    if (!instance.hasModifier(newModifier)) {
+                                        instance.addTransientModifier(newModifier);
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
+
         }
         this.maxEnergy = totalCapacity;
         if (this.currentEnergy > this.maxEnergy) {
@@ -198,14 +200,19 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (totalProduction > 0) {
             receiveEnergy(totalProduction, false);
         }
-        boolean hasSufficientPower = true;
+        boolean currentlyPowered = true;
         if (totalConsumption > 0) {
             if (this.currentEnergy >= totalConsumption) {
                 extractEnergy(totalConsumption, false);
+                currentlyPowered = true;
             } else {
-                hasSufficientPower = false;
                 this.currentEnergy = 0;
+                currentlyPowered = false;
             }
+        }
+        if (this.isPowered != currentlyPowered) {
+            this.isPowered = currentlyPowered;
+            recalculateCapacity(player);
         }
         if (player.tickCount % 20 == 0) {
             syncToClient(player);

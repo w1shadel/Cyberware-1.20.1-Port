@@ -31,8 +31,7 @@ public class ThreatMatrixItem extends CyberwareItem {
         if (isLightlyArmored) {
             if (player.getRandom().nextFloat() < 0.3f) {
                 player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                    int dodgeCost = this.getEventConsumption(stack);
-                    if (data.extractEnergy(dodgeCost, false) == dodgeCost) {
+                    if (tryConsumeEventEnergy(data, stack)) {
                         event.setCanceled(true);
                         player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 2.0f);
                     }

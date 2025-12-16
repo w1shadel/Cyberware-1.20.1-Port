@@ -8,7 +8,6 @@ public class CyberwareConfig {
     public static final ForgeConfigSpec COMMON_CONFIG;
     public static final ForgeConfigSpec.BooleanValue KEEP_CYBERWARE_ON_DEATH;
 
-    // ★追加: 耐性値（Tolerance）の設定項目
     public static final ForgeConfigSpec.IntValue MAX_TOLERANCE;
 
     static {
@@ -18,7 +17,6 @@ public class CyberwareConfig {
                 .comment("True: Keep cyberware (Default).")
                 .comment("False: Lose all cyberware on death.")
                 .define("keepCyberwareOnDeath", true);
-        // ★追加: 範囲指定付きの整数値定義 (デフォルト100, 最小1, 最大1000)
         MAX_TOLERANCE = BUILDER
                 .comment("The maximum tolerance (essence) a player has.")
                 .comment("Default: 100")

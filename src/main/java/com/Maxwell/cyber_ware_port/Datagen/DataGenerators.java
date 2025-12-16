@@ -1,7 +1,6 @@
 package com.Maxwell.cyber_ware_port.Datagen;
 
 import com.Maxwell.cyber_ware_port.CyberWare;
-import com.Maxwell.cyber_ware_port.Datagen.WorldGen.ModWorldGenProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -27,6 +26,6 @@ public class DataGenerators {
         generator.addProvider(includeServer, new ModLanguageProvider(packOutput, "fr_fr"));
         generator.addProvider(includeServer, new ModLanguageProvider(packOutput, "ru_ru"));
         generator.addProvider(includeServer, new ModLanguageProvider(packOutput, "zh_cn"));
-        generator.addProvider(includeServer, new ModWorldGenProvider(packOutput, lookupProvider));
+
     }
 }

@@ -23,8 +23,7 @@ public class InternalDefibrillatorItem extends CyberwareItem {
     @Override
     public void onLivingDeath(LivingDeathEvent event, ItemStack stack, LivingEntity wearer) {
         wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            int cost = this.getEventConsumption(stack);
-            if (data.extractEnergy(cost, false) == cost) {
+            if (this.tryConsumeEventEnergy(data, stack)) {
                 event.setCanceled(true);
                 wearer.setHealth(wearer.getMaxHealth() * 0.5f);
                 wearer.level().playSound(null, wearer.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
