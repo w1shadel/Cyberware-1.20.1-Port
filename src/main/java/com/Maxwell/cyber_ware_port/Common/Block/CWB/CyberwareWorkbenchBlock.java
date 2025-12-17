@@ -69,19 +69,6 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
     }
 
     @Override
-    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
-        if (!pLevel.isClientSide) {
-            if (pLevel.hasNeighborSignal(pPos)) {
-                BlockEntity entity = pLevel.getBlockEntity(pPos);
-                if (entity instanceof CyberwareWorkbenchBlockEntity workbench) {
-                    workbench.startCrafting();
-                }
-            }
-        }
-        super.neighborChanged(pState, pLevel, pPos, pBlock, pFromPos, pIsMoving);
-    }
-
-    @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Direction direction = state.getValue(FACING);
         return switch (direction) {

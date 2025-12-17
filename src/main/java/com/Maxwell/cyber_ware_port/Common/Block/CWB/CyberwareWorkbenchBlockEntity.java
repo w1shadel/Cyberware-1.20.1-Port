@@ -199,19 +199,19 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
         }
         if (!pLevel.isClientSide) {
+            if (pLevel.hasNeighborSignal(pPos)) {
+                pBlockEntity.startCrafting();
+            }
             if (pBlockEntity.cooldown == 0) {
                 if (pBlockEntity.isCrafting) {
                     pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
                     pBlockEntity.cooldown = 3;
                     pBlockEntity.craftItem();
-
                 }
             }
-        }
-        if (pLevel.isClientSide()) return;
-        if (pBlockEntity.isCrafting && pBlockEntity.animationProgress >= 1.0F) {
-            pBlockEntity.resetCrafting();
-
+            if (pBlockEntity.isCrafting && pBlockEntity.animationProgress >= 1.0F) {
+                pBlockEntity.resetCrafting();
+            }
         }
     }
 
