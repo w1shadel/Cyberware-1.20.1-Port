@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.WitherSkeleton;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
@@ -37,10 +38,14 @@ public class MobSpawnerEvents {
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         var server = event.getServer();
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        if (overworld == null) return;
+        if (!overworld.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
+            return;
+        }
         long currentTime = server.getTickCount();
         if (currentTime < lastSpawnTime + SPAWN_COOLDOWN) return;
-        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
-        if (overworld == null || !overworld.isNight()) return;
+        if (!overworld.isNight()) return;
         if (overworld.players().isEmpty()) return;
         ServerPlayer player = overworld.players().get(RANDOM.nextInt(overworld.players().size()));
         Supplier<? extends EntityType<?>> mobSupplier = OVERWORLD_MOBS.get(RANDOM.nextInt(OVERWORLD_MOBS.size()));
@@ -77,6 +82,9 @@ public class MobSpawnerEvents {
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide()) {
+            return;
+        }
+        if (!event.getLevel().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
             return;
         }
         if (!event.loadedFromDisk()) {

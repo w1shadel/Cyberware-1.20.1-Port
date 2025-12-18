@@ -29,6 +29,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.SCANNER.get())
                 .add(ModBlocks.BLUEPRINT_CHEST.get())
                 .add(ModBlocks.RADIO_KIT_BLOCK.get())
+                .add(ModBlocks.CHARGER.get())
                 .add(ModBlocks.COMPONENT_BOX.get())
                 .add(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get())
                 .add(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get());
@@ -39,6 +40,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.SURGERY_CHAMBER.get())
                 .add(ModBlocks.CYBERWARE_WORKBENCH.get())
                 .add(ModBlocks.SCANNER.get())
+                .add(ModBlocks.CHARGER.get())
                 .add(ModBlocks.BLUEPRINT_CHEST.get())
                 .add(ModBlocks.RADIO_KIT_BLOCK.get());
     }

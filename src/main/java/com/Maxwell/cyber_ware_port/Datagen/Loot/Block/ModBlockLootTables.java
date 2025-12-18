@@ -25,6 +25,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.RADIO_TOWER_CORE.get());
         this.dropSelf(ModBlocks.CYBERWARE_WORKBENCH.get());
         this.dropSelf(ModBlocks.SCANNER.get());
+        this.dropSelf(ModBlocks.CHARGER.get());
         this.dropSelf(ModBlocks.BLUEPRINT_CHEST.get());
         this.dropSelf(ModBlocks.RADIO_KIT_BLOCK.get());
         this.dropSelf(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get());

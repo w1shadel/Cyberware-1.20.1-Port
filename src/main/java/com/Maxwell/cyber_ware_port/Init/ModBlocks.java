@@ -2,6 +2,7 @@ package com.Maxwell.cyber_ware_port.Init;
 
 import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlock;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlock;
+import com.Maxwell.cyber_ware_port.Common.Block.Charger.ChargerBlock;
 import com.Maxwell.cyber_ware_port.Common.Block.Component_Box.ComponentBoxBlock;
 import com.Maxwell.cyber_ware_port.Common.Block.CyberSkull.CyberSkullBlock;
 import com.Maxwell.cyber_ware_port.Common.Block.CyberSkull.CyberWallSkullBlock;
@@ -78,6 +79,13 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> SCANNER = registerBlock("scanner",
             () -> new ScannerBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(4.0f, 5.0f)
+                    .noOcclusion()
+                    .requiresCorrectToolForDrops()));
+
+    public static final RegistryObject<Block> CHARGER = registerBlock("charger",
+            () -> new ChargerBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .strength(4.0f, 5.0f)
                     .noOcclusion()

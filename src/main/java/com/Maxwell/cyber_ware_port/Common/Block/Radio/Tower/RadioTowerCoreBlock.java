@@ -24,9 +24,7 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
-    // ★★★ ここからが追加箇所です ★★★
 
-    // Blockbenchモデルの各要素から当たり判定を作成し、結合します
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(3.5, 8, 7.2, 12.5, 14, 8.7),
@@ -63,17 +61,15 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(5.2, 7, 2.9, 7.2, 15, 4.9)
     );
 
-    // ブロックの向きに応じて適切な当たり判定を返すメソッド
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return switch (pState.getValue(FACING)) {
             case EAST -> SHAPE_EAST;
             case SOUTH -> SHAPE_SOUTH;
             case WEST -> SHAPE_WEST;
-            default -> SHAPE_NORTH; // NORTH
+            default -> SHAPE_NORTH;
         };
     }
-    // ★★★ ここまでが追加箇所です ★★★
 
     public RadioTowerCoreBlock(Properties pProperties) {
         super(pProperties);

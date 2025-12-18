@@ -34,9 +34,11 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private boolean hasCyberLeftLeg = false;
     private boolean hasCyberRightLeg = false;
     private boolean isInitialized = false;
-    private boolean isPowered = true;
     private int maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
     private int currentEnergy = 0;
+
+    private boolean isPowered = true;
+
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -48,6 +50,10 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int lastProduction = 0;
     private int lastConsumption = 0;
     private int toleranceImmunityTime = 0;
+
+    public void setMaxTolerance(int amount) {
+        this.maxTolerance = amount;
+    }
 
     public void recalculateCapacity(ServerPlayer player) {
         float oldMaxHealth = player.getMaxHealth();
@@ -67,7 +73,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                     }
                 });
             }
-
         }
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             final int slotIndex = i;
@@ -102,7 +107,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                     }
                 }
             }
-
         }
         this.maxEnergy = totalCapacity;
         if (this.currentEnergy > this.maxEnergy) {
@@ -115,29 +119,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     public void setRespawnGracePeriod(int ticks) {
         this.respawnGracePeriod = ticks;
-    }
-
-    private void updateLimbStatus() {
-        this.hasCyberLeftArm = false;
-        this.hasCyberRightArm = false;
-        this.hasCyberLeftLeg = false;
-        this.hasCyberRightLeg = false;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            if (!(stack.getItem() instanceof ICyberware) || isHumanPart(stack)) {
-                continue;
-            }
-            if (i == RobosurgeonBlockEntity.SLOT_ARMS) {
-                this.hasCyberLeftArm = true;
-            } else if (i == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
-                this.hasCyberRightArm = true;
-            } else if (i == RobosurgeonBlockEntity.SLOT_LEGS) {
-                this.hasCyberLeftLeg = true;
-            } else if (i == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
-                this.hasCyberRightLeg = true;
-            }
-        }
     }
 
     private boolean isHumanPart(ItemStack stack) {
@@ -166,7 +147,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     private UUID generateUUID(int slot, UUID originalId) {
         return UUID.nameUUIDFromBytes((originalId.toString() + "_" + slot).getBytes());
-
     }
 
     public void tick(ServerPlayer player) {
@@ -221,47 +201,72 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     public void setInitialized() {
         this.isInitialized = true;
+    }
 
+    private void updateLimbStatus() {
+        this.hasCyberLeftArm = false;
+        this.hasCyberRightArm = false;
+        this.hasCyberLeftLeg = false;
+        this.hasCyberRightLeg = false;
+        int armCount = 0;
+        int legCount = 0;
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            if (isHumanPart(stack)) continue;
+            if (stack.getItem() instanceof ICyberware cyberware) {
+                int targetSlot = cyberware.getSlot(stack);
+                if (targetSlot == RobosurgeonBlockEntity.SLOT_ARMS || targetSlot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
+                    armCount++;
+                } else if (targetSlot == RobosurgeonBlockEntity.SLOT_LEGS || targetSlot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
+                    legCount++;
+                }
+            }
+        }
+        if (armCount >= 1) this.hasCyberLeftArm = true;
+        if (armCount >= 2) this.hasCyberRightArm = true;
+        if (legCount >= 1) this.hasCyberLeftLeg = true;
+        if (legCount >= 2) this.hasCyberRightLeg = true;
     }
 
     private void checkBodyCondition(ServerPlayer player) {
         Set<BodyPartType> presentParts = EnumSet.noneOf(BodyPartType.class);
         ItemStackHandler handler = this.installedCyberware;
-        boolean hasRightLeg = !handler.getStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS).isEmpty();
-        boolean hasLeftLeg = !handler.getStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS + 1).isEmpty();
+        int totalLegs = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+            if (stack.isEmpty()) continue;
+            if (stack.getItem() == ModItems.HUMAN_LEFT_LEG.get() || stack.getItem() == ModItems.HUMAN_RIGHT_LEG.get()) {
+                totalLegs++;
+            } else if (stack.getItem() instanceof ICyberware cyberware) {
                 BodyPartType type = cyberware.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
                     presentParts.add(type);
-
+                }
+                int slot = cyberware.getSlot(stack);
+                if (slot == RobosurgeonBlockEntity.SLOT_LEGS || slot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
+                    totalLegs++;
                 }
             }
         }
         if (!presentParts.contains(BodyPartType.BRAIN)) {
             killPlayer(player, "cyberware.brainless");
             return;
-
         }
         if (!presentParts.contains(BodyPartType.HEART)) {
             killPlayer(player, "cyberware.heartless");
             return;
-
         }
         if (!presentParts.contains(BodyPartType.MUSCLE)) {
             killPlayer(player, "cyberware.nomuscles");
             return;
-
         }
         if (!presentParts.contains(BodyPartType.BONES)) {
             killPlayer(player, "cyberware.cyberware_missing_bone");
             return;
-
         }
         if (!presentParts.contains(BodyPartType.EYES)) {
             player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
-
         }
         if (!presentParts.contains(BodyPartType.LUNGS)) {
             int air = player.getAirSupply();
@@ -269,20 +274,16 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 player.setAirSupply(air - 1);
                 if (air <= 0 && player.tickCount % 20 == 0) {
                     player.hurt(player.damageSources().drown(), 2.0F);
-
                 }
             }
         }
         if (!presentParts.contains(BodyPartType.STOMACH)) {
             player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, 1, false, false));
-
         }
-        if (!hasRightLeg && !hasLeftLeg) {
+        if (totalLegs == 0) {
             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 6, false, false));
-
-        } else if (!hasRightLeg || !hasLeftLeg) {
+        } else if (totalLegs == 1) {
             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, false));
-
         }
         if (getTolerance() <= 0) {
             if (this.respawnGracePeriod <= 0) {
@@ -326,17 +327,14 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             @Override
             public Component getLocalizedDeathMessage(LivingEntity entity) {
                 return Component.translatable("death.attack." + suffix, entity.getDisplayName());
-
             }
         };
         player.hurt(source, Float.MAX_VALUE);
-
     }
 
     public void copyFrom(CyberwareUserData other) {
         for (int i = 0; i < this.installedCyberware.getSlots(); i++) {
             this.installedCyberware.setStackInSlot(i, other.installedCyberware.getStackInSlot(i).copy());
-
         }
         this.maxTolerance = other.maxTolerance;
         this.currentEnergy = other.currentEnergy;
@@ -344,7 +342,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         this.lastProduction = other.lastProduction;
         this.lastConsumption = other.lastConsumption;
         this.isInitialized = other.isInitialized;
-
     }
 
     public int getLastProduction() {
@@ -383,7 +380,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
                 consumed += cyberware.getEssenceCost(stack) * stack.getCount();
-
             }
         }
         return maxTolerance - consumed;
@@ -391,7 +387,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     public ItemStackHandler getInstalledCyberware() {
         return installedCyberware;
-
     }
 
     public void syncToClient(ServerPlayer player) {
@@ -401,7 +396,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
                 new SyncCyberwareDataPacket(tag)
         );
-
     }
 
     @Override
@@ -416,7 +410,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         tag.putInt("LastCons", lastConsumption);
         tag.putInt("CurrentEnergy", currentEnergy);
         return tag;
-
     }
 
     public boolean isCyberwareInstalled(Item item) {
@@ -424,11 +417,9 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() == item) {
                 return true;
-
             }
         }
         return false;
-
     }
 
     public int getMaxTolerance() {
@@ -439,20 +430,16 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     public void deserializeNBT(CompoundTag nbt) {
         if (nbt.contains("InstalledCyberware")) {
             installedCyberware.deserializeNBT(nbt.getCompound("InstalledCyberware"));
-
         }
         this.maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
         if (nbt.contains("IsInitialized")) {
             isInitialized = nbt.getBoolean("IsInitialized");
-
         }
         if (nbt.contains("MaxEnergy")) {
             maxEnergy = nbt.getInt("MaxEnergy");
-
         }
         if (nbt.contains("CurrentEnergy")) {
             currentEnergy = nbt.getInt("CurrentEnergy");
-
         }
         if (nbt.contains("LastProd")) lastProduction = nbt.getInt("LastProd");
         if (nbt.contains("LastCons")) lastConsumption = nbt.getInt("LastCons");
@@ -464,7 +451,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     public boolean isInitialized() {
         return isInitialized;
-
     }
 
     @Override
@@ -473,10 +459,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         int energyReceived = Math.min(maxEnergy - currentEnergy, maxReceive);
         if (!simulate) {
             currentEnergy += energyReceived;
-
         }
         return energyReceived;
-
     }
 
     @Override
@@ -485,35 +469,27 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         int energyExtracted = Math.min(currentEnergy, maxExtract);
         if (!simulate) {
             currentEnergy -= energyExtracted;
-
         }
         return energyExtracted;
-
     }
 
     @Override
     public int getEnergyStored() {
         return currentEnergy;
-
     }
 
     @Override
     public int getMaxEnergyStored() {
         return maxEnergy;
-
     }
 
     @Override
     public boolean canExtract() {
         return maxEnergy > 0;
-
     }
 
     @Override
     public boolean canReceive() {
         return maxEnergy > 0;
-
     }
-
-
 }

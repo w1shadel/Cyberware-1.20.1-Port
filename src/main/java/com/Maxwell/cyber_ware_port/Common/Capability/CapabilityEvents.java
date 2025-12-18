@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -171,26 +170,28 @@ public class CapabilityEvents {
     }
 
     private static boolean isHandFunctional(Player player, InteractionHand hand) {
-        AtomicBoolean isFunctional = new AtomicBoolean(true);
+        AtomicBoolean isFunctional = new AtomicBoolean(false);
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             ItemStackHandler handler = data.getInstalledCyberware();
-            HumanoidArm mainArm = player.getMainArm();
-            boolean isRightHand;
-            if (hand == InteractionHand.MAIN_HAND) {
-                isRightHand = (mainArm == HumanoidArm.RIGHT);
-
-            } else {
-                isRightHand = (mainArm == HumanoidArm.LEFT);
-
+            int armCount = 0;
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                if (stack.isEmpty()) continue;
+                if (stack.getItem() == ModItems.HUMAN_LEFT_ARM.get() ||
+                        stack.getItem() == ModItems.HUMAN_RIGHT_ARM.get()) {
+                    armCount++;
+                } else if (stack.getItem() instanceof ICyberware cyberware) {
+                    int slot = cyberware.getSlot(stack);
+                    if (slot == RobosurgeonBlockEntity.SLOT_ARMS || slot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
+                        armCount++;
+                    }
+                }
             }
-            int slotIndex = isRightHand ? RobosurgeonBlockEntity.SLOT_ARMS : RobosurgeonBlockEntity.SLOT_ARMS + 1;
-            if (handler.getStackInSlot(slotIndex).isEmpty()) {
-                isFunctional.set(false);
-
+            if (armCount >= 1) {
+                isFunctional.set(true);
             }
         });
         return isFunctional.get();
-
     }
 
     @SubscribeEvent

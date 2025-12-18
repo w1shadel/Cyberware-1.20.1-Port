@@ -2,6 +2,7 @@ package com.Maxwell.cyber_ware_port.Init;
 
 import com.Maxwell.cyber_ware_port.Common.Block.BlueprintChest.BlueprintChestBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.CWB.CyberwareWorkbenchBlockEntity;
+import com.Maxwell.cyber_ware_port.Common.Block.Charger.ChargerBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.Component_Box.ComponentBoxBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.CyberSkull.CyberSkullBlockEntity;
 import com.Maxwell.cyber_ware_port.Common.Block.Radio.Tower.RadioTowerCoreBlockEntity;
@@ -61,6 +62,11 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("scanner", () ->
                     BlockEntityType.Builder.of(ScannerBlockEntity::new,
                             ModBlocks.SCANNER.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<ChargerBlockEntity>> CHARGER =
+            BLOCK_ENTITIES.register("chager", () ->
+                    BlockEntityType.Builder.of(ChargerBlockEntity::new,
+                            ModBlocks.CHARGER.get()).build(null));
     public static final RegistryObject<BlockEntityType<BlueprintChestBlockEntity>> BLUEPRINT_CHEST =
             BLOCK_ENTITIES.register("blueprint_chest", () ->
                     BlockEntityType.Builder.of(BlueprintChestBlockEntity::new,

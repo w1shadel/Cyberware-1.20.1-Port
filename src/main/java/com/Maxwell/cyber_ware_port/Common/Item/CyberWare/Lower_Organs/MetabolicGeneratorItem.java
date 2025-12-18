@@ -12,7 +12,7 @@ public class MetabolicGeneratorItem extends CyberwareItem {
     public MetabolicGeneratorItem() {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(2)
-                .energy(0, 200, 0, StackingRule.LINEAR));
+                .energy(0, 200, 200, StackingRule.LINEAR));
     }
 
     @Override
