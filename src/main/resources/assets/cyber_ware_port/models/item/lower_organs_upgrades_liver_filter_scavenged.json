@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "cyber_ware_port:item/lower_organs_upgrades_liver_filter_scavenged"
+  }
+}

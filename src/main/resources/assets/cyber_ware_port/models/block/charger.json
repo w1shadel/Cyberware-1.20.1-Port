@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "particle": "cyber_ware_port:block/charger_side",
+    "top": "cyber_ware_port:block/charger_top",
+    "bottom": "cyber_ware_port:block/charger_top",
+    "side": "cyber_ware_port:block/charger_side"
+  }
+}

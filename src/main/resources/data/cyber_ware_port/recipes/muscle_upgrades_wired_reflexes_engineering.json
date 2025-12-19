@@ -1,0 +1,19 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:muscle_upgrades_wired_reflexes"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "count": 2,
+      "item": "cyber_ware_port:component_synthnerves"
+    },
+    {
+      "chance": 1.0,
+      "count": 1,
+      "item": "cyber_ware_port:component_microelectric"
+    }
+  ]
+}

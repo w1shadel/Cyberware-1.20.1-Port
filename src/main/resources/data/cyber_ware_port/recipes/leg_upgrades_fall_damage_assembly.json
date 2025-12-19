@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_titanium"
+      }
+    },
+    {
+      "count": 1,
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "minecraft:white_wool"
+      }
+    }
+  ],
+  "output": "cyber_ware_port:leg_upgrades_fall_damage"
+}

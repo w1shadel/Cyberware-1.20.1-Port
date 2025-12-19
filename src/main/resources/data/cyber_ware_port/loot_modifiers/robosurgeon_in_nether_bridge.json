@@ -1,0 +1,14 @@
+{
+  "type": "cyber_ware_port:add_item",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/nether_bridge"
+    },
+    {
+      "chance": 0.3,
+      "condition": "minecraft:random_chance"
+    }
+  ],
+  "item": "cyber_ware_port:robo_surgeon"
+}
