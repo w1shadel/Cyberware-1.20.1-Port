@@ -65,6 +65,14 @@ public class ForgeClientEvents {
             tooltip_block.add(Component.translatable("tooltip.cyber_ware_port.radio_component3")
                     .withStyle(ChatFormatting.GRAY));
         }
+        if (item == ModBlocks.CHARGER.get().asItem()) {
+            tooltip_block.add(Component.translatable("tooltip.cyber_ware_port.charger")
+                    .withStyle(ChatFormatting.GRAY));
+            tooltip_block.add(Component.translatable("tooltip.cyber_ware_port.charger2")
+                    .withStyle(ChatFormatting.GRAY));
+            tooltip_block.add(Component.translatable("tooltip.cyber_ware_port.charger3")
+                    .withStyle(ChatFormatting.GRAY));
+        }
         if (item == ModBlocks.SURGERY_CHAMBER.get().asItem()) {
             tooltip_block.add(Component.translatable("tooltip.cyber_ware_port.surgery_chamber")
                     .withStyle(ChatFormatting.GRAY));
