@@ -22,14 +22,6 @@ public class ModLanguageProvider extends LanguageProvider {
             add("itemGroup.cyber_ware_port.items", "机械改造");
             add(ModItems.KATANA.get(), "太刀");
             add(ModItems.NEUROPOZYNE.get(), "排斥反应抑制药剂");
-            add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "赛博僵尸刷怪蛋");
-            add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "赛博骷髅刷怪蛋");
-            add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "赛博凋灵骷髅刷怪蛋");
-            add(ModItems.CYBER_CREEPER_SPAWN_EGG.get(), "赛博苦力怕刷怪蛋");
-            add(ModItems.CYBER_WITHER_SPAWN_EGG.get(), "赛博凋灵刷怪蛋");
-            add("tooltip.cyber_ware_port.charger", "站在上面即可进行充电/放电的方块");
-            add("tooltip.cyber_ware_port.charger2", "右键点击可切换充电/放电模式。");
-            add("tooltip.cyber_ware_port.charger3", "充电模式下优先吸收电力。放电模式下优先输出电力。");
             add("cyberware.item.katana.desc", "击败赛博格类生物时提高电子义体掉落率。");
             add("cyberware.item.neuropozyne.desc", "抑制电子义体排斥反应，效果持续一天。");
             add("cyberware.message.critical_condition", "警告：排斥反应加剧，即将死亡。");
@@ -332,14 +324,6 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.73", "已GOX掉10万比特币");
         }
         if (locale.equals("ru_ru")) {
-            add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "Яйцо призыва кибер-зомби");
-            add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "Яйцо призыва кибер-скелета");
-            add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "Яйцо призыва кибер-скелета-иссушителя");
-            add(ModItems.CYBER_CREEPER_SPAWN_EGG.get(), "Яйцо призыва кибер-крипера");
-            add(ModItems.CYBER_WITHER_SPAWN_EGG.get(), "Яйцо призыва кибер-иссушителя");
-            add("tooltip.cyber_ware_port.charger", "Блок, позволяющий заряжать/разряжать энергию, стоя на нём");
-            add("tooltip.cyber_ware_port.charger2", "Нажмите ПКМ, чтобы переключить режим зарядки/разрядки.");
-            add("tooltip.cyber_ware_port.charger3", "В режиме зарядки приоритет отдаётся поглощению энергии, в режиме разрядки — отдаче.");
             add("itemGroup.cyber_ware_port.items", "Cyberware");
             add("cyberware.gui.no_active", "нет кибер-устройства");
             add("cyberware.gui.active", "давать возможность");
@@ -644,14 +628,6 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.72", "Призываем сатану");
         }
         if (locale.equals("fr_fr")) {
-            add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "Œuf d'apparition de cyber-zombie");
-            add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "Œuf d'apparition de cyber-squelette");
-            add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "Œuf d'apparition de cyber-wither squelette");
-            add(ModItems.CYBER_CREEPER_SPAWN_EGG.get(), "Œuf d'apparition de cyber-creeper");
-            add(ModItems.CYBER_WITHER_SPAWN_EGG.get(), "Œuf d'apparition de cyber-wither");
-            add("tooltip.cyber_ware_port.charger", "Un bloc qui permet de charger/décharger en se tenant dessus");
-            add("tooltip.cyber_ware_port.charger2", "Clic droit pour basculer entre le mode charge et décharge.");
-            add("tooltip.cyber_ware_port.charger3", "En mode charge, il absorbe l'énergie en priorité. En mode décharge, il libère l'énergie en priorité.");
             add("itemGroup.cyber_ware_port.items", "Cyberware");
             add(ModItems.KATANA.get(), "Katana");
             add("cyberware.tooltip.eventCost", "Coût d'activation : %s");
@@ -907,14 +883,6 @@ public class ModLanguageProvider extends LanguageProvider {
         if (locale.equals("en_us")) {
             add("itemGroup.cyber_ware_port.items", "Cyberware");
             add("cyberware.gui.no_active", "No cyberware");
-            add("tooltip.cyber_ware_port.charger", "A block that allows charging/discharging by standing on it");
-            add("tooltip.cyber_ware_port.charger2", "Right-click to toggle between charge and discharge modes.");
-            add("tooltip.cyber_ware_port.charger3", "In charge mode, it prioritizes absorbing power. In discharge mode, it prioritizes releasing power.");
-            add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "Cyber Zombie Spawn Egg");
-            add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "Cyber Skeleton Spawn Egg");
-            add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "Cyber Wither Skeleton Spawn Egg");
-            add(ModItems.CYBER_CREEPER_SPAWN_EGG.get(), "Cyber Creeper Spawn Egg");
-            add(ModItems.CYBER_WITHER_SPAWN_EGG.get(), "Cyber Wither Spawn Egg");
             add("cyberware.gui.active", "Enable");
             add("cyberware.tooltip.eventCost", "Active Cost: %s");
             add("cyberware.gui.inactive", "Disable");
@@ -1220,14 +1188,6 @@ public class ModLanguageProvider extends LanguageProvider {
         if (locale.equals("ja_jp")) {
             add("itemGroup.cyber_ware_port.items", "サイバーウェア");
             add("cyberware.gui.no_active", "サイバーウェアがありません");
-            add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "サイバーゾンビのスポーンエッグ");
-            add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "サイバースケルトンのスポーンエッグ");
-            add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "サイバーウィザースケルトンのスポーンエッグ");
-            add(ModItems.CYBER_CREEPER_SPAWN_EGG.get(), "サイバークリーパーのスポーンエッグ");
-            add(ModItems.CYBER_WITHER_SPAWN_EGG.get(), "サイバーウィザーのスポーンエッグ");
-            add("tooltip.cyber_ware_port.charger", "上に乗ることで充電/放電が出来るブロック");
-            add("tooltip.cyber_ware_port.charger2", "右クリックで充電/放電モードを切り替えて使用できる。");
-            add("tooltip.cyber_ware_port.charger3", "充電モードでは電力を優先的に吸収する。放電モードでは電力を優先的に排出する。");
             add(ModBlocks.CHARGER.get(), "充電器");
             add("cyberware.gui.active", "有効化");
             add("cyberware.tooltip.eventCost", "発動コスト：%s");

@@ -14,7 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -160,20 +159,18 @@ public class EntitiesItemDropEvents {
         if (event.getExplosion().getExploder() instanceof CyberCreeperEntity creeper) {
             if (creeper.isCausingCustomExplosion()) {
                 return;
+
             }
             event.setCanceled(true);
             Level level = event.getLevel();
             if (level.isClientSide) return;
-            boolean mobGriefing = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-            Level.ExplosionInteraction interaction = mobGriefing
-                    ? Level.ExplosionInteraction.BLOCK
-                    : Level.ExplosionInteraction.NONE;
             creeper.setCausingCustomExplosion(true);
             float baseRadius = creeper.isPowered() ? 6.0F : 3.0F;
             float finalRadius = baseRadius + 1.0F;
             long time = level.getDayTime() % 24000;
             if (time >= 0 && time < 13000) {
                 finalRadius *= 1.5F;
+
             }
             level.explode(
                     creeper,
@@ -182,9 +179,10 @@ public class EntitiesItemDropEvents {
                     creeper.getZ(),
                     finalRadius,
                     true,
-                    interaction
+                    Level.ExplosionInteraction.BLOCK
             );
             creeper.discard();
+
         }
     }
 }

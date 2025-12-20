@@ -295,19 +295,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             for (int i = 0; i < TOTAL_SLOTS; i++) {
                 ItemStack bodyStack = playerBody.getStackInSlot(i);
                 ItemStack tableStack = itemHandler.getStackInSlot(i);
-                if (!tableStack.isEmpty() && tableStack.hasTag() && tableStack.getTag().getBoolean("cyberware_ghost")) {
-                    if (bodyStack.isEmpty()) {
-                        itemHandler.setStackInSlot(i, ItemStack.EMPTY);
-                        changed = true;
-                    } else {
-                        ItemStack expectedGhost = bodyStack.copy();
-                        expectedGhost.getOrCreateTag().putBoolean("cyberware_ghost", true);
-                        if (!ItemStack.matches(tableStack, expectedGhost)) {
-                            itemHandler.setStackInSlot(i, expectedGhost);
-                            changed = true;
-                        }
-                    }
-                } else if (tableStack.isEmpty() && !bodyStack.isEmpty()) {
+                if (tableStack.isEmpty() && !bodyStack.isEmpty()) {
                     ItemStack ghostStack = bodyStack.copy();
                     ghostStack.getOrCreateTag().putBoolean("cyberware_ghost", true);
                     itemHandler.setStackInSlot(i, ghostStack);
