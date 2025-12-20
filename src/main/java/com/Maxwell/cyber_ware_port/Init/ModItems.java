@@ -35,6 +35,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -70,6 +71,20 @@ public class ModItems {
                     });
                 }
             });
+    public static final RegistryObject<Item> CYBER_ZOMBIE_SPAWN_EGG = ITEMS.register("cyber_zombie_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CYBER_ZOMBIE, 0x445555, 0x00AAAA, new Item.Properties()));
+
+    public static final RegistryObject<Item> CYBER_SKELETON_SPAWN_EGG = ITEMS.register("cyber_skeleton_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CYBER_SKELETON, 0x888888, 0x4444AA, new Item.Properties()));
+
+    public static final RegistryObject<Item> CYBER_WITHER_SKELETON_SPAWN_EGG = ITEMS.register("cyber_wither_skeleton_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CYBER_WITHER_SKELETON, 0x111111, 0xFF2222, new Item.Properties()));
+
+    public static final RegistryObject<Item> CYBER_CREEPER_SPAWN_EGG = ITEMS.register("cyber_creeper_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CYBER_CREEPER, 0x0DA70B, 0xFF0000, new Item.Properties()));
+
+    public static final RegistryObject<Item> CYBER_WITHER_SPAWN_EGG = ITEMS.register("cyber_wither_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CYBER_WITHER, 0x222222, 0x55FFFF, new Item.Properties()));
     public static final RegistryObject<Item> COMPONENT_BOX = ITEMS.register("component_box", ComponentBoxItem::new);
     public static final RegistryObject<Item> KATANA = ITEMS.register("katana", KatanaItem::new);
     public static final RegistryObject<Item> COMPONENT_ACTUATOR = ITEMS.register("component_actuator",

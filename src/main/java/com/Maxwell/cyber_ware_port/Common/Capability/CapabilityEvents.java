@@ -11,16 +11,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("removal")
@@ -87,6 +91,13 @@ public class CapabilityEvents {
                         newData.ensureEssentialPartsAfterDeath();
                     } else {
                         newData.resetToHuman();
+                        ItemStackHandler handler = newData.getInstalledCyberware();
+                        for (int i = 0; i < handler.getSlots(); i++) {
+                            ItemStack stack = handler.getStackInSlot(i);
+                            if (!stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
+                                handler.setStackInSlot(i, ItemStack.EMPTY);
+                            }
+                        }
                     }
                 });
             });
@@ -99,6 +110,21 @@ public class CapabilityEvents {
                 data.recalculateCapacity(serverPlayer);
                 data.syncToClient(serverPlayer);
             });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDrops(LivingDropsEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Collection<ItemEntity> drops = event.getDrops();
+            Iterator<ItemEntity> iterator = drops.iterator();
+            while (iterator.hasNext()) {
+                ItemEntity drop = iterator.next();
+                ItemStack stack = drop.getItem();
+                if (stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
+                    iterator.remove();
+                }
+            }
         }
     }
 
