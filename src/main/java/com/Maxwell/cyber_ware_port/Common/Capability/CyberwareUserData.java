@@ -328,27 +328,17 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             }
         }
         if (!presentParts.contains(BodyPartType.BRAIN)) {
-            forceInstallPart(new ItemStack(ModItems.HUMAN_BRAIN.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
         }
         if (!presentParts.contains(BodyPartType.HEART)) {
-            forceInstallPart(new ItemStack(ModItems.HUMAN_HEART.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
         }
         if (!presentParts.contains(BodyPartType.MUSCLE)) {
-            forceInstallPart(new ItemStack(ModItems.HUMAN_MUSCLE.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
         }
         if (!presentParts.contains(BodyPartType.BONES)) {
-            forceInstallPart(new ItemStack(ModItems.HUMAN_BONE.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
         }
-    }
-
-    private void forceInstallPart(ItemStack partToInstall) {
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            if (installedCyberware.getStackInSlot(i).isEmpty()) {
-                installedCyberware.setStackInSlot(i, partToInstall);
-                return;
-            }
-        }
-        installedCyberware.setStackInSlot(0, partToInstall);
     }
 
     public void resetToHuman() {

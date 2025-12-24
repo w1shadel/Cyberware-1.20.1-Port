@@ -1,16 +1,17 @@
 package com.Maxwell.cyber_ware_port.Common.Entity;
 
+import com.Maxwell.cyber_ware_port.Config.CyberwareConfig;
 import com.Maxwell.cyber_ware_port.CyberWare;
 import com.Maxwell.cyber_ware_port.Init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraftforge.event.TickEvent;
@@ -19,15 +20,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MobSpawnerEvents {
 
-    private static final int SPAWN_COOLDOWN = 600;
     private static long lastSpawnTime = 0;
-    private static final Random RANDOM = new Random();
+    private static final RandomSource RANDOM = RandomSource.create();
     private static final List<Supplier<? extends EntityType<?>>> OVERWORLD_MOBS = List.of(
             ModEntities.CYBER_ZOMBIE,
             ModEntities.CYBER_SKELETON,
@@ -44,10 +43,19 @@ public class MobSpawnerEvents {
             return;
         }
         long currentTime = server.getTickCount();
-        if (currentTime < lastSpawnTime + SPAWN_COOLDOWN) return;
+        int cooldown = CyberwareConfig.SPAWN_INTERVAL.get();
+        if (currentTime < lastSpawnTime + cooldown) return;
         if (!overworld.isNight()) return;
         if (overworld.players().isEmpty()) return;
         ServerPlayer player = overworld.players().get(RANDOM.nextInt(overworld.players().size()));
+        int nearbyMonsters = overworld.getEntitiesOfClass(
+                Mob.class,
+                player.getBoundingBox().inflate(64),
+                e -> e.getType().getCategory() == MobCategory.MONSTER
+        ).size();
+        if (nearbyMonsters >= CyberwareConfig.MAX_NEARBY_MOBS.get()) {
+            return;
+        }
         Supplier<? extends EntityType<?>> mobSupplier = OVERWORLD_MOBS.get(RANDOM.nextInt(OVERWORLD_MOBS.size()));
         EntityType<?> mobToSpawn = mobSupplier.get();
         if (trySpawnMob(overworld, player, mobToSpawn)) {
@@ -67,7 +75,16 @@ public class MobSpawnerEvents {
             if (!level.getFluidState(spawnPos).isEmpty()) {
                 continue;
             }
+            if (level.getBrightness(LightLayer.BLOCK, spawnPos) > 0) {
+                continue;
+            }
+            if (!level.getBlockState(spawnPos.below()).isValidSpawn(level, spawnPos.below(), mobToSpawn)) {
+                continue;
+            }
             if (player.distanceToSqr(x, y, z) > 24 * 24 && level.noCollision(mobToSpawn.getAABB(x, y, z))) {
+                if (!SpawnPlacements.checkSpawnRules(mobToSpawn, level, MobSpawnType.EVENT, spawnPos, (RandomSource) RANDOM)) {
+                    continue;
+                }
                 Mob mob = (Mob) mobToSpawn.create(level);
                 if (mob != null) {
                     mob.setPos(x + 0.5, y, z + 0.5);
@@ -92,7 +109,8 @@ public class MobSpawnerEvents {
                 ServerLevel level = (ServerLevel) event.getLevel();
                 WitherSkeleton vanillaMob = (WitherSkeleton) event.getEntity();
                 if (isInsideFortress(level, vanillaMob.blockPosition())) {
-                    if (level.getRandom().nextFloat() < 0.2f) {
+                    double chance = CyberwareConfig.WITHER_CONVERSION_CHANCE.get();
+                    if (level.getRandom().nextFloat() < chance) {
                         spawnCustomMob(level, vanillaMob);
                         event.setCanceled(true);
                     }

@@ -71,37 +71,32 @@ public class CapabilityEvents {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (!event.isWasDeath()) {
-            event.getOriginal().getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(oldData -> {
-                event.getEntity().getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(newData -> {
-                    newData.copyFrom(oldData);
-                });
-            });
-            return;
-        }
         Player original = event.getOriginal();
         Player newPlayer = event.getEntity();
+        original.reviveCaps();
         try {
-            original.reviveCaps();
             original.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(oldData -> {
                 newPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(newData -> {
-                    if (CyberwareConfig.KEEP_CYBERWARE_ON_DEATH.get()) {
+                    if (!event.isWasDeath()) {
                         newData.copyFrom(oldData);
-                        newData.setRespawnGracePeriod(12000);
-                        newData.ensureEssentialPartsAfterDeath();
                     } else {
-                        newData.resetToHuman();
-                        ItemStackHandler handler = newData.getInstalledCyberware();
-                        for (int i = 0; i < handler.getSlots(); i++) {
-                            ItemStack stack = handler.getStackInSlot(i);
-                            if (!stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
-                                handler.setStackInSlot(i, ItemStack.EMPTY);
+                        if (CyberwareConfig.KEEP_CYBERWARE_ON_DEATH.get()) {
+                            newData.copyFrom(oldData);
+                            newData.setRespawnGracePeriod(12000);
+                            newData.ensureEssentialPartsAfterDeath();
+                        } else {
+                            newData.resetToHuman();
+                            ItemStackHandler handler = newData.getInstalledCyberware();
+                            for (int i = 0; i < handler.getSlots(); i++) {
+                                ItemStack stack = handler.getStackInSlot(i);
+                                if (!stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
+                                    handler.setStackInSlot(i, ItemStack.EMPTY);
+                                }
                             }
                         }
                     }
                 });
             });
-
         } finally {
             original.invalidateCaps();
         }
@@ -132,7 +127,6 @@ public class CapabilityEvents {
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             data.syncToClient(player);
         });
-
     }
 
     private static boolean isHandFunctional(Player player, InteractionHand hand) {
@@ -165,21 +159,17 @@ public class CapabilityEvents {
         if (!isHandFunctional(event.getEntity(), InteractionHand.MAIN_HAND)) {
             event.setNewSpeed(0.0f);
             event.setCanceled(true);
-
         }
     }
 
     @SubscribeEvent
     public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         net.minecraft.world.level.block.state.BlockState state = event.getLevel().getBlockState(event.getPos());
-        if (state.is(ModBlocks.ROBO_SURGEON.get()) ||
-                state.is(ModBlocks.SURGERY_CHAMBER.get())) {
+        if (state.is(ModBlocks.ROBO_SURGEON.get()) || state.is(ModBlocks.SURGERY_CHAMBER.get())) {
             return;
-
         }
         if (!isHandFunctional(event.getEntity(), InteractionHand.MAIN_HAND)) {
             event.setCanceled(true);
-
         }
     }
 
@@ -187,21 +177,17 @@ public class CapabilityEvents {
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         if (!isHandFunctional(event.getEntity(), event.getHand())) {
             event.setCanceled(true);
-
         }
     }
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         net.minecraft.world.level.block.state.BlockState state = event.getLevel().getBlockState(event.getPos());
-        if (state.is(ModBlocks.ROBO_SURGEON.get()) ||
-                state.is(ModBlocks.SURGERY_CHAMBER.get())) {
+        if (state.is(ModBlocks.ROBO_SURGEON.get()) || state.is(ModBlocks.SURGERY_CHAMBER.get())) {
             return;
-
         }
         if (!isHandFunctional(event.getEntity(), event.getHand())) {
             event.setCanceled(true);
-
         }
     }
 
@@ -209,7 +195,6 @@ public class CapabilityEvents {
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         if (!isHandFunctional(event.getEntity(), event.getHand())) {
             event.setCanceled(true);
-
         }
     }
 
@@ -217,7 +202,6 @@ public class CapabilityEvents {
     public static void onBreakBlock(PlayerEvent.BreakSpeed event) {
         if (!isHandFunctional(event.getEntity(), InteractionHand.MAIN_HAND)) {
             event.setCanceled(true);
-
         }
     }
 
@@ -227,9 +211,7 @@ public class CapabilityEvents {
             player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                 ItemStackHandler handler = data.getInstalledCyberware();
                 boolean hasSkin = false;
-                for (int i = 0;
-                     i < handler.getSlots();
-                     i++) {
+                for (int i = 0; i < handler.getSlots(); i++) {
                     ItemStack stack = handler.getStackInSlot(i);
                     if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
                         BodyPartType type = cw.getBodyPartType(stack);
@@ -240,10 +222,8 @@ public class CapabilityEvents {
                 if (!hasSkin) multiplier += 0.5f;
                 if (multiplier > 1.0f) {
                     event.setAmount(event.getAmount() * multiplier);
-
                 }
             });
-
         }
     }
 }
