@@ -147,7 +147,7 @@
   "entity.cyber_ware_port.cyber_wither_skeleton": "Cyber Wither Squelette",
   "entity.cyber_ware_port.cyber_zombie": "Cyberzombie",
   "gui.cyber_ware_port.assemble": "Assembler",
-  "gui.cyber_ware_port.blueprint_chance": "%s%% de chance d'obtenir un schéma",
+  "gui.cyber_ware_port.blueprint_chance": "[%s%% de chances d'obtenir un plan et de consommer des implants cybernétiques]",
   "gui.cyber_ware_port.button.view_installed": "Index",
   "gui.cyber_ware_port.deconstruct": "Déconstruire",
   "gui.cyber_ware_port.installed_cyberware.title": "État du Cyberware Post-Opératoire",

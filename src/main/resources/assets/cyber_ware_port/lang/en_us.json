@@ -199,7 +199,7 @@
   "entity.cyber_ware_port.cyber_wither_skeleton": "Cyber Wither Skeleton",
   "entity.cyber_ware_port.cyber_zombie": "Cyber Zombie",
   "gui.cyber_ware_port.assemble": "Assemble",
-  "gui.cyber_ware_port.blueprint_chance": "%s%% chance to get a blueprint",
+  "gui.cyber_ware_port.blueprint_chance": "[%s%% chance to obtain a blueprint and consume cyberware]",
   "gui.cyber_ware_port.button.view_installed": "Index",
   "gui.cyber_ware_port.deconstruct": "Deconstruct",
   "gui.cyber_ware_port.installed_cyberware.title": "Post-Surgery Cyberware Status",

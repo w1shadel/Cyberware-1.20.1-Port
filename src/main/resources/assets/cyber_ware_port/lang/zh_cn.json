@@ -205,7 +205,7 @@
   "gui.cyber_ware_port.installed_cyberware.title": "术后电子义体状态",
   "gui.cyber_ware_port.menu": "电子义体菜单",
   "gui.cyber_ware_port.need_paper": "需要纸张。",
-  "gui.cyber_ware_port.scanner.chance": "[%s%% 概率]",
+  "gui.cyber_ware_port.scanner.chance": "[有 %s%% 的几率获得蓝图并使用义体]",
   "item.cyber_ware_port.arm_upgrades_bow": "速射飞轮",
   "item.cyber_ware_port.blueprint": "空白蓝图",
   "item.cyber_ware_port.body_part_arm_left": "人类左臂",

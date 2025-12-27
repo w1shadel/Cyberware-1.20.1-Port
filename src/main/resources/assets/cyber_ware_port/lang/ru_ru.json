@@ -198,7 +198,7 @@
   "entity.cyber_ware_port.cyber_wither_skeleton": "Кибер-иссушитель-скелет",
   "entity.cyber_ware_port.cyber_zombie": "Кибер-зомби",
   "gui.cyber_ware_port.assemble": "Собрать",
-  "gui.cyber_ware_port.blueprint_chance": "%s%% шанс получить чертеж",
+  "gui.cyber_ware_port.blueprint_chance": "[%s%% шанс получить чертеж и использовать кибернетические имплантаты]",
   "gui.cyber_ware_port.button.view_installed": "Индекс",
   "gui.cyber_ware_port.deconstruct": "Разобрать",
   "gui.cyber_ware_port.installed_cyberware.title": "Статус кибер-устройств после операции",

@@ -199,7 +199,7 @@
   "entity.cyber_ware_port.cyber_wither_skeleton": "サイバーウィザースケルトン",
   "entity.cyber_ware_port.cyber_zombie": "サイバーゾンビ",
   "gui.cyber_ware_port.assemble": "組み立て",
-  "gui.cyber_ware_port.blueprint_chance": "%s%%の確率で設計図を獲得",
+  "gui.cyber_ware_port.blueprint_chance": "[%s%%の確率で設計図を獲得し、サイバーウェアを消費する]",
   "gui.cyber_ware_port.button.view_installed": "索引",
   "gui.cyber_ware_port.deconstruct": "分解",
   "gui.cyber_ware_port.installed_cyberware.title": "サイバーウェア手術後の状態",

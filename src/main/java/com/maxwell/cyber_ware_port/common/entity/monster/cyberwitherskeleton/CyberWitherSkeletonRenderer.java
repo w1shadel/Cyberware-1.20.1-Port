@@ -1,0 +1,32 @@
+package com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton;
+
+import com.maxwell.cyber_ware_port.CyberWare;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
+
+@SuppressWarnings("removal")
+public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity, CyberWitherSkeletonModel> {
+    private static final ResourceLocation NORMAL_TEXTURE =
+            new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+
+    public CyberWitherSkeletonRenderer(EntityRendererProvider.Context pContext) {
+        super(pContext, new CyberWitherSkeletonModel(pContext.bakeLayer(CyberWitherSkeletonModel.LAYER_LOCATION)), 0.5F);
+
+    }
+
+    @Override
+    public ResourceLocation getTextureLocation(CyberWitherSkeletonEntity cyberWitherSkeletonEntity) {
+        return NORMAL_TEXTURE;
+
+    }
+
+    @Override
+    protected void scale(CyberWitherSkeletonEntity entity, PoseStack poseStack, float partialTickTime) {
+        if (entity.isBaby()) {
+            poseStack.scale(0.7F, 0.7F, 0.7F);
+        }
+        super.scale(entity, poseStack, partialTickTime);
+    }
+}
