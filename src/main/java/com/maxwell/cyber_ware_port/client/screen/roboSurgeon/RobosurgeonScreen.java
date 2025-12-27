@@ -901,12 +901,12 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
         LEG_LEFT(5, -19, 12, 38, -50, 20, 120f, List.of(
                 new TargetMarker(Component.literal("Left Leg"), 2f, 10.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)),
-                new TargetMarker(Component.literal("Left Foot"), 2.1f, 1.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS))
+                new TargetMarker(Component.literal("Left Foot"), 2.1f, 3.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS))
         )),
 
         LEG_RIGHT(-5, -19, 12, 38, 50, 20, 120f, List.of(
                 new TargetMarker(Component.literal("Right Leg"), -2f, 10.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)),
-                new TargetMarker(Component.literal("Right Foot"), -2.1f, 1.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS))
+                new TargetMarker(Component.literal("Right Foot"), -2.1f, 3.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS))
         )),
 
         INTERNAL(0, 0, 40, 50, 48, 130, 150f, List.of(
