@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BFB",
+    "TRT",
+    "CEC"
+  ],
+  "key": {
+    "R": {
+      "item": "cyber_ware_port:radio_kit"
+    },
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "F": {
+      "item": "cyber_ware_port:component_fiberoptics"
+    },
+    "T": {
+      "item": "cyber_ware_port:component_titanium"
+    },
+    "C": {
+      "item": "cyber_ware_port:component_ssc"
+    },
+    "E": {
+      "item": "cyber_ware_port:component_reactor"
+    }
+  },
+  "result": {
+    "item": "cyber_ware_port:radio_tower_core",
+    "count": 1
+  }
+}

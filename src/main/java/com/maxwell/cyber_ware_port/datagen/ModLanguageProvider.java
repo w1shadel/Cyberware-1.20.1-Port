@@ -13,7 +13,6 @@ public class ModLanguageProvider extends LanguageProvider {
     public ModLanguageProvider(PackOutput output, String locale) {
         super(output, CyberWare.MODID, locale);
         this.locale = locale;
-
     }
 
     @Override
@@ -214,11 +213,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "空手攻击更强");
             add("cyberware.tooltip.hand_upgrades_mining", "可以用手挖掘石质方块");
             add("cyberware.tooltip.arm_upgrades_bow", "拉弓更快");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "跳得更高 Shift+跳跃发射自己 两条机械腿效果更强");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "跳得更高 Shift+跳跃发射自己 你将能够二段跳。");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "吸收微小冲击");
             add("cyberware.tooltip.foot_upgrades_spurs", "提升自身速度");
-            add("cyberware.tooltip.foot_upgrades_aqua", "游泳更快，两条机械腿效果更强");
-            add("cyberware.tooltip.foot_upgrades_wheels", "可以走上1格高的方块（请关闭自动跳跃）");
+            add("cyberware.tooltip.foot_upgrades_aqua", "游泳更快。");
+            add("cyberware.tooltip.foot_upgrades_wheels", "可以走上1格高的方块）");
             add("tooltip.cyber_ware_port.radio_tower_core", "吸引附近的赛博格类生物，但单独无法工作。");
             add("tooltip.cyber_ware_port.radio_kit", "吸引64格内的赛博格类生物。");
             add("tooltip.cyber_ware_port.component_box", "可放入零件，附近有机械工程桌时会增加标签页。");
@@ -527,11 +526,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "Атаки без оружия сильнее.");
             add("cyberware.tooltip.hand_upgrades_mining", "Может добывать блоки каменного уровня голыми руками.");
             add("cyberware.tooltip.arm_upgrades_bow", "Быстрее натягивает лук.");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "Прыгает выше. Shift+прыжок для запуска себя. Более мощный с двумя кибер-ногами.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Прыгает выше. Shift+прыжок для запуска себя. Вы сможете совершать двойной прыжок..");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "Поглощает небольшие удары.");
             add("cyberware.tooltip.foot_upgrades_spurs", "Ускоряет вас.");
-            add("cyberware.tooltip.foot_upgrades_aqua", "Плавает быстрее, более мощный с двумя кибер-ногами.");
-            add("cyberware.tooltip.foot_upgrades_wheels", "Поднимается на 1 блок (пожалуйста, отключите авто-прыжок).");
+            add("cyberware.tooltip.foot_upgrades_aqua", "Плавает быстрее,.");
+            add("cyberware.tooltip.foot_upgrades_wheels", "Поднимается на 1 блок.");
             add("tooltip.cyber_ware_port.radio_tower_core", "Привлекает ближайших кибер-мобов, но не работает само по себе.");
             add("tooltip.cyber_ware_port.radio_kit", "Привлекает кибер-мобов в радиусе 64 блоков.");
             add("tooltip.cyber_ware_port.component_box", "Может хранить компоненты, добавляет вкладку, если рядом есть кибер-верстак.");
@@ -839,11 +838,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "Les attaques à mains nues sont plus fortes.");
             add("cyberware.tooltip.hand_upgrades_mining", "Peut miner des blocs de niveau pierre à mains nues.");
             add("cyberware.tooltip.arm_upgrades_bow", "Bande les arcs plus rapidement.");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "Saute plus haut. Shift-saut pour vous propulser. Plus puissant avec deux Cyberjambes.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Saute plus haut. Shift-saut pour vous propulser. Vous pourrez effectuer un double saut.");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "Absorbe les petits impacts.");
             add("cyberware.tooltip.foot_upgrades_spurs", "Vous accélère.");
-            add("cyberware.tooltip.foot_upgrades_aqua", "Nage plus vite, plus puissant avec deux Cyberjambes.");
-            add("cyberware.tooltip.foot_upgrades_wheels", "Monte les marches d'un bloc (veuillez désactiver le saut automatique).");
+            add("cyberware.tooltip.foot_upgrades_aqua", "Nage plus vite.");
+            add("cyberware.tooltip.foot_upgrades_wheels", "Monte les marches d'un bloc.");
             add("tooltip.cyber_ware_port.radio_tower_core", "Attire les monstres de type cyber proches, mais ne fonctionne pas seul.");
             add("tooltip.cyber_ware_port.radio_kit", "Attire les monstres de type cyber dans un rayon de 64 blocs.");
             add("tooltip.cyber_ware_port.component_box", "Peut contenir des composants, ajoute un onglet si une Table d'Ingénierie Cybernétique est à proximité.");
@@ -1100,11 +1099,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "Unarmed attacks are stronger.");
             add("cyberware.tooltip.hand_upgrades_mining", "Can mine stone-level blocks with bare hands.");
             add("cyberware.tooltip.arm_upgrades_bow", "Draws bows faster.");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "Jumps higher. Shift-jump to launch yourself. More powerful with two Cyberlegs.");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "Jumps higher. Shift-jump to launch yourself. You will be able to double jump.");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "Absorbs small impacts.");
             add("cyberware.tooltip.foot_upgrades_spurs", "Speeds you up.");
-            add("cyberware.tooltip.foot_upgrades_aqua", "Swims faster, more powerful with two Cyberlegs.");
-            add("cyberware.tooltip.foot_upgrades_wheels", "Walks up 1-block steps (please turn off auto-jump).");
+            add("cyberware.tooltip.foot_upgrades_aqua", "Swims faster.");
+            add("cyberware.tooltip.foot_upgrades_wheels", "Walks up 1-block steps.");
             add("tooltip.cyber_ware_port.radio_tower_core", "Attracts nearby cyber-type mobs, but does not function on its own.");
             add("tooltip.cyber_ware_port.radio_kit", "Attracts cyber-type mobs within 64 blocks.");
             add("tooltip.cyber_ware_port.component_box", "Can hold components, adds a tab if a Cyberware Workbench is nearby.");
@@ -1216,7 +1215,6 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.71", "Insufficient gas for transaction");
             add("cyberware.gui.scanner_saying.72", "Undergoing 51% attack");
             add("cyberware.gui.scanner_saying.73", "Goxxed 100,000 Bitcoin");
-
         }
         if (locale.equals("ja_jp")) {
             add("itemGroup.cyber_ware_port.items", "サイバーウェア");
@@ -1414,11 +1412,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.tooltip.hand_upgrades_claws", "武器を持たない時の攻撃がより強くなります");
             add("cyberware.tooltip.hand_upgrades_mining", "素手で石レベルの採掘ができます");
             add("cyberware.tooltip.arm_upgrades_bow", "より速く弓を発射します");
-            add("cyberware.tooltip.leg_upgrades_jump_boost", "より高くジャンプできます、シフト＋ジャンプで自分を打ち上げます、2つのサイバーレッグでさらにパワフルに");
+            add("cyberware.tooltip.leg_upgrades_jump_boost", "より高くジャンプできます、シフト＋ジャンプで自分を打ち上げます。ダブルジャンプができるようになります。");
             add("cyberware.tooltip.leg_upgrades_fall_damage", "小さな衝撃を吸収します");
             add("cyberware.tooltip.foot_upgrades_spurs", "自分をスピードアップ");
-            add("cyberware.tooltip.foot_upgrades_aqua", "より速く泳ぎます、2つのサーバーレッグでさらにパワフルに");
-            add("cyberware.tooltip.foot_upgrades_wheels", "１ブロックの段ならまたいで歩きます(自動ジャンプをオフにしてください)");
+            add("cyberware.tooltip.foot_upgrades_aqua", "より速く泳ぎます。");
+            add("cyberware.tooltip.foot_upgrades_wheels", "１ブロックの段ならまたいで歩きます。");
             add("death.attack.cyberware.brainless", "もしも%1$sが脳無しじゃなかったら・・・");
             add("death.attack.cyberware.heartless", "%1$sは心無いが故に死にました。");
             add("death.attack.cyberware.surgery", "%1$sはオペから生還しませんでした。");
@@ -1530,7 +1528,6 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.71", "トランザクションのガス代が不足");
             add("cyberware.gui.scanner_saying.72", "51%攻撃を受けています");
             add("cyberware.gui.scanner_saying.73", "10万ビットコインをGOXしました");
-
         }
     }
 }

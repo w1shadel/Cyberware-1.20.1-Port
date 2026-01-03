@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.common.item.cyberware.Eye;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
+import net.minecraft.world.item.ItemStack;
 
 public class HudjackItem extends CyberwareItem {
     public HudjackItem() {
@@ -12,5 +13,8 @@ public class HudjackItem extends CyberwareItem {
         );
 
     }
-
+    @Override
+    public boolean canToggle(ItemStack stack) {
+        return true;
+    }
 }

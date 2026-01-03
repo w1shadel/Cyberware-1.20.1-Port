@@ -23,7 +23,6 @@ public class LowLightVisionItem extends CyberwareItem {
     @Override
     public boolean canToggle(ItemStack stack) {
         return true;
-
     }
 
     @Override

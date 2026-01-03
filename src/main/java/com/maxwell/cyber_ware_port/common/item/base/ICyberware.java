@@ -22,7 +22,8 @@ public interface ICyberware {
     int getSlot(ItemStack stack);
 
     boolean isPristine(ItemStack stack);
-
+    default void onLivingHurt(LivingHurtEvent event, ItemStack stack, LivingEntity attacker) {
+    }
     void setPristine(ItemStack stack, boolean isPristine);
 
     int getMaxInstallAmount(ItemStack stack);

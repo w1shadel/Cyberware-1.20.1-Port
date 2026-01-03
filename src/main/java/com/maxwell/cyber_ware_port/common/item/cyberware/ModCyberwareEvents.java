@@ -32,7 +32,17 @@ public class ModCyberwareEvents {
             }
         });
     }
+    @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event) {
 
+
+        if (event.getSource().getEntity() instanceof LivingEntity attacker) {
+            dispatch(attacker, (cw, stack) -> {
+
+                cw.onLivingHurt(event, stack, attacker);
+            });
+        }
+    }
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side.isClient() || event.phase != TickEvent.Phase.END) return;

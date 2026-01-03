@@ -36,13 +36,13 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private boolean isInitialized = false;
     private int maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
     private int currentEnergy = 0;
-
     private boolean isPowered = true;
-
+    private boolean needsCapacityUpdate = true;
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
             updateLimbStatus();
+            needsCapacityUpdate = true;
         }
     };
     private int maxEnergy = 0;
@@ -156,51 +156,51 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (this.respawnGracePeriod > 0) {
             this.respawnGracePeriod--;
         }
-        checkBodyCondition(player);
-        if (maxEnergy <= 0) {
-            this.lastProduction = 0;
-            this.lastConsumption = 0;
-            return;
+        if (this.needsCapacityUpdate) {
+            recalculateCapacity(player);
+            this.needsCapacityUpdate = false;
         }
-        int totalProduction = 0;
-        int totalConsumption = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
-                if (cyberware.hasEnergyProperties(stack)) {
-                    int count = stack.getCount();
-                    ICyberware.StackingRule rule = cyberware.getStackingEnergyRule(stack);
-                    totalProduction += rule.calculate(cyberware.getEnergyGeneration(stack), count);
-                    totalConsumption += rule.calculate(cyberware.getEnergyConsumption(stack), count);
+        checkBodyCondition(player);
+        if (player.tickCount % 20 == 0) {
+            if (maxEnergy <= 0) {
+                this.lastProduction = 0;
+                this.lastConsumption = 0;
+            } else {
+                int totalProduction = 0;
+                int totalConsumption = 0;
+                for (int i = 0; i < installedCyberware.getSlots(); i++) {
+                    ItemStack stack = installedCyberware.getStackInSlot(i);
+                    if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+                        if (cyberware.hasEnergyProperties(stack)) {
+                            int count = stack.getCount();
+                            ICyberware.StackingRule rule = cyberware.getStackingEnergyRule(stack);
+                            totalProduction += rule.calculate(cyberware.getEnergyGeneration(stack), count);
+                            totalConsumption += rule.calculate(cyberware.getEnergyConsumption(stack), count);
+                        }
+                    }
+                }
+                this.lastProduction = totalProduction;
+                this.lastConsumption = totalConsumption;
+                if (totalProduction > 0) {
+                    receiveEnergy(totalProduction, false);
+                }
+                boolean currentlyPowered = true;
+                if (totalConsumption > 0) {
+                    if (this.currentEnergy >= totalConsumption) {
+                        extractEnergy(totalConsumption, false);
+                        currentlyPowered = true;
+                    } else {
+                        this.currentEnergy = 0;
+                        currentlyPowered = false;
+                    }
+                }
+                if (this.isPowered != currentlyPowered) {
+                    this.isPowered = currentlyPowered;
+                    recalculateCapacity(player);
                 }
             }
-        }
-        this.lastProduction = totalProduction;
-        this.lastConsumption = totalConsumption;
-        if (totalProduction > 0) {
-            receiveEnergy(totalProduction, false);
-        }
-        boolean currentlyPowered = true;
-        if (totalConsumption > 0) {
-            if (this.currentEnergy >= totalConsumption) {
-                extractEnergy(totalConsumption, false);
-                currentlyPowered = true;
-            } else {
-                this.currentEnergy = 0;
-                currentlyPowered = false;
-            }
-        }
-        if (this.isPowered != currentlyPowered) {
-            this.isPowered = currentlyPowered;
-            recalculateCapacity(player);
-        }
-        if (player.tickCount % 20 == 0) {
             syncToClient(player);
         }
-    }
-
-    public void setInitialized() {
-        this.isInitialized = true;
     }
 
     private void updateLimbStatus() {
