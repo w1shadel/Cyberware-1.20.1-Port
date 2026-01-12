@@ -11,12 +11,10 @@ public class DistanceEnhancerItem extends CyberwareItem {
                 .maxInstall(1)
                 .requires(ModItems.CYBER_EYE)
         );
-
     }
 
     @Override
     public boolean canToggle(ItemStack stack) {
         return true;
-
     }
 }

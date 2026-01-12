@@ -7,6 +7,7 @@ public class CyberwareConfig {
     public static final ForgeConfigSpec COMMON_CONFIG;
     public static final ForgeConfigSpec.BooleanValue KEEP_CYBERWARE_ON_DEATH;
     public static final ForgeConfigSpec.IntValue MAX_TOLERANCE;
+    public static final ForgeConfigSpec.IntValue CRITICAL_ESSENCE;
     public static final ForgeConfigSpec.BooleanValue CONSUME_DEFIBRILLATOR_ON_USE;
     public static final ForgeConfigSpec.DoubleValue WITHER_CONVERSION_CHANCE;
     public static final ForgeConfigSpec.DoubleValue ZOMBIE_CONVERSION_CHANCE;
@@ -24,6 +25,10 @@ public class CyberwareConfig {
                 .comment("The maximum tolerance a player has.")
                 .comment("Default: 100")
                 .defineInRange("maxTolerance", 100, 1, 1000);
+        CRITICAL_ESSENCE = BUILDER.comment("The amount of essence remaining at which rejection effects start occurring.",
+                        "If set to 25, players will suffer rejection when they have less than 25 essence left.",
+                        "Set to 0 to disable rejection effects until hitting 0.")
+                .defineInRange("critical_essence_threshold", 25, 0, 1000);
         CONSUME_DEFIBRILLATOR_ON_USE = BUILDER
                 .comment("Whether the Internal Defibrillator is consumed after saving the player from death.")
                 .comment("True: The item is destroyed upon use (Default).")

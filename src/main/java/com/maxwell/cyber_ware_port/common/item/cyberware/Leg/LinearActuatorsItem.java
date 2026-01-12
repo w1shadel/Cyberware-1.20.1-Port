@@ -13,7 +13,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
 public class LinearActuatorsItem extends CyberwareItem {
@@ -41,7 +40,7 @@ public class LinearActuatorsItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (!(wearer instanceof Player player)) return;
         CompoundTag tag = player.getPersistentData();
         if (player.isCrouching() && player.onGround()) {
@@ -75,8 +74,6 @@ public class LinearActuatorsItem extends CyberwareItem {
                     }
                 }
             }
-
-
         } else if (player.onGround()) {
             tag.putInt(NBT_CROUCH_TIME, 0);
             tag.putBoolean(NBT_JUMP_READY, false);

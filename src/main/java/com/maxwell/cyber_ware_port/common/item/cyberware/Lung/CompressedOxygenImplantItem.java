@@ -6,7 +6,6 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
 
 public class CompressedOxygenImplantItem extends CyberwareItem {
     public CompressedOxygenImplantItem() {
@@ -17,7 +16,7 @@ public class CompressedOxygenImplantItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (wearer.getAirSupply() < wearer.getMaxAirSupply()) {
             if (wearer.tickCount % 20 == 0) {
                 wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {

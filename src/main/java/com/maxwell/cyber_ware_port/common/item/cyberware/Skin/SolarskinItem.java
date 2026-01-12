@@ -6,7 +6,6 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent;
 
 public class SolarskinItem extends CyberwareItem {
     private static final int GENERATION_AMOUNT = 2;
@@ -19,7 +18,7 @@ public class SolarskinItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         Level level = wearer.level();
         long time = level.getDayTime() % 24000;
         boolean isDaytime = time < 12500 || time > 23500;

@@ -7,7 +7,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
 
 public class AdrenalinePumpItem extends CyberwareItem {
     public AdrenalinePumpItem() {
@@ -18,7 +17,7 @@ public class AdrenalinePumpItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (wearer.getHealth() < wearer.getMaxHealth() * 0.3f && !wearer.hasEffect(MobEffects.DAMAGE_BOOST)) {
             wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                 if (tryConsumeEventEnergy(data, stack)) {

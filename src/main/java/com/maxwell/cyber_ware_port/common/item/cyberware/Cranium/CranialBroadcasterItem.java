@@ -15,7 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.TickEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,6 @@ public class CranialBroadcasterItem extends CyberwareItem {
     @Override
     public int getEnergyConsumption(ItemStack stack) {
         return isActive(stack) ? 2 : 0;
-
     }
 
     @Override
@@ -42,7 +40,7 @@ public class CranialBroadcasterItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (wearer.level().getGameTime() % 20 != 0) return;
         if (!(wearer instanceof Player player)) return;
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {

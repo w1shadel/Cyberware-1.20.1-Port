@@ -5,7 +5,6 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
 
 public class StemCellSynthesizerItem extends CyberwareItem {
     public StemCellSynthesizerItem() {
@@ -15,7 +14,7 @@ public class StemCellSynthesizerItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (wearer.getHealth() < wearer.getMaxHealth()) {
             if (wearer.tickCount % 100 == 0) {
                 wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {

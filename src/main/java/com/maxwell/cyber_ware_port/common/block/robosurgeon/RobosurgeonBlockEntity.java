@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon;
 
+import com.maxwell.cyber_ware_port.api.event.CyberwareSurgeryEvent;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlock;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -44,7 +46,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider {
-
     public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART;
     public static final int SLOT_EYES = BodyRegionEnum.EYES.getStartSlot();
     public static final int SLOT_BRAIN = BodyRegionEnum.BRAIN.getStartSlot();
@@ -360,6 +361,15 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     public void performSurgery(ServerPlayer player) {
+        CyberwareSurgeryEvent.Pre event = new CyberwareSurgeryEvent.Pre(player, this);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            if (event.getDenialReason() != null) {
+                player.sendSystemMessage(event.getDenialReason());
+            } else {
+                player.sendSystemMessage(Component.translatable("cyberware.message.surgery_prevented"));
+            }
+            return;
+        }
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
             ItemStackHandler playerBody = userData.getInstalledCyberware();
             boolean soundPlayed = false;
@@ -406,6 +416,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                     player.hurt(surgeryDeath, Float.MAX_VALUE);
                 }
                 populateGhostItems(player);
+                MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Post(player, this));
             }
         });
     }

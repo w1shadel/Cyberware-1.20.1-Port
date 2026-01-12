@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -18,28 +19,20 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CyberwareItem extends Item implements ICyberware {
-
     private static final String NBT_KEY_PRISTINE = "IsPristine";
     private final int essenceCost;
-
     private final int slotId;
-
     private final int maxInstallAmount;
-
     private final boolean hasEnergyProperties;
-
     private final int energyConsumption;
-
     private final int energyGeneration;
     private final int eventConsumption;
     private final int energyStorage;
-
     private final StackingRule stackingRule;
     private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
-
     private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;
     private final BodyPartType bodyPartType;
-    private final Multimap<Attribute, AttributeModifier> attributeModifiers;
+    private final Multimap<Attribute, AttributeModifier> baseAttributeModifiers;
 
     public CyberwareItem(Builder builder) {
         super(builder.properties);
@@ -54,33 +47,29 @@ public class CyberwareItem extends Item implements ICyberware {
         this.prerequisiteRegistryObjects = Set.copyOf(builder.prerequisites);
         this.incompatibleRegistryObjects = Set.copyOf(builder.incompatibleItems);
         this.bodyPartType = builder.bodyPartType;
-        this.attributeModifiers = builder.attributeModifiers;
+        this.baseAttributeModifiers = builder.attributeModifiers;
         this.eventConsumption = builder.eventConsumption;
     }
 
     @Override
     public int getEssenceCost(ItemStack stack) {
         return this.essenceCost;
-
     }
 
     @Override
     public BodyPartType getBodyPartType(ItemStack stack) {
         return this.bodyPartType;
-
     }
 
     @Override
     public int getSlot(ItemStack stack) {
         return this.slotId;
-
     }
 
     @Override
     public boolean isPristine(ItemStack stack) {
         CompoundTag nbt = stack.getTag();
         return nbt == null || !nbt.contains(NBT_KEY_PRISTINE) || nbt.getBoolean(NBT_KEY_PRISTINE);
-
     }
 
     @Override
@@ -90,18 +79,15 @@ public class CyberwareItem extends Item implements ICyberware {
                 CompoundTag tag = stack.getTag();
                 tag.remove(NBT_KEY_PRISTINE);
                 if (tag.isEmpty()) stack.setTag(null);
-
             }
         } else {
             stack.getOrCreateTag().putBoolean(NBT_KEY_PRISTINE, false);
-
         }
     }
 
     @Override
     public int getMaxInstallAmount(ItemStack stack) {
         return this.maxInstallAmount;
-
     }
 
     @Override
@@ -109,7 +95,6 @@ public class CyberwareItem extends Item implements ICyberware {
         return this.prerequisiteRegistryObjects.stream()
                 .map(RegistryObject::get)
                 .collect(Collectors.toSet());
-
     }
 
     @Override
@@ -117,23 +102,19 @@ public class CyberwareItem extends Item implements ICyberware {
         return this.incompatibleRegistryObjects.stream()
                 .map(RegistryObject::get)
                 .collect(Collectors.toSet());
-
     }
 
     @Override
     public boolean isIncompatible(ItemStack self, ItemStack other) {
         if (self.getItem() == other.getItem()) {
             return this.getMaxInstallAmount(self) <= 1;
-
         }
         return getIncompatibleItems(self).contains(other.getItem());
-
     }
 
     @Override
     public boolean hasEnergyProperties(ItemStack stack) {
         return this.hasEnergyProperties;
-
     }
 
     @Override
@@ -152,7 +133,6 @@ public class CyberwareItem extends Item implements ICyberware {
     public int getEnergyGeneration(ItemStack stack) {
         int base = this.energyGeneration;
         return isPristine(stack) ? base : base / 2;
-
     }
 
     public boolean tryConsumeEventEnergy(net.minecraftforge.energy.IEnergyStorage energyStorage, ItemStack stack) {
@@ -169,7 +149,6 @@ public class CyberwareItem extends Item implements ICyberware {
     public int getEnergyStorage(ItemStack stack) {
         int base = this.energyStorage;
         return isPristine(stack) ? base : base / 2;
-
     }
 
     @Override
@@ -177,31 +156,42 @@ public class CyberwareItem extends Item implements ICyberware {
         if (!isPristine(stack)) {
             return Component.translatable(this.getDescriptionId(stack))
                     .withStyle(ChatFormatting.DARK_GRAY);
-
         }
         return Component.translatable(this.getDescriptionId(stack))
                 .withStyle(ChatFormatting.AQUA);
-
     }
 
     @Override
     public StackingRule getStackingEnergyRule(ItemStack stack) {
         return this.stackingRule;
-
     }
 
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
-        return this.attributeModifiers;
+        if (isPristine(stack)) {
+            return this.baseAttributeModifiers;
+        }
+        Multimap<Attribute, AttributeModifier> modified = ArrayListMultimap.create();
+        this.baseAttributeModifiers.forEach((attr, mod) -> {
+            double newValue = mod.getAmount() * 0.5;
+            AttributeModifier newMod = new AttributeModifier(
+                    mod.getId(),
+                    mod.getName() + " (Damaged)",
+                    newValue,
+                    mod.getOperation()
+            );
+            modified.put(attr, newMod);
+        });
+        return modified;
+    }
 
+    @Override
+    public void onSystemTick(LivingEntity entity, ItemStack stack) {
     }
 
     public static class Builder {
-
         private final Properties properties;
-
         private final int essenceCost;
-
         private final int slotId;
         private final Set<RegistryObject<Item>> prerequisites = new HashSet<>();
         private final Set<RegistryObject<Item>> incompatibleItems = new HashSet<>();
@@ -219,19 +209,16 @@ public class CyberwareItem extends Item implements ICyberware {
             this.properties = new Properties();
             this.essenceCost = essenceCost;
             this.slotId = slotId;
-
         }
 
         public Builder bodyPart(BodyPartType type) {
             this.bodyPartType = type;
             return this;
-
         }
 
         public Builder maxInstall(int amount) {
             this.maxInstallAmount = amount;
             return this;
-
         }
 
         public Builder energy(int consumption, int generation, int storage, StackingRule rule) {
@@ -241,14 +228,12 @@ public class CyberwareItem extends Item implements ICyberware {
             this.energyStorage = storage;
             this.stackingRule = rule;
             return this;
-
         }
 
         @SafeVarargs
         public final Builder requires(RegistryObject<Item>... items) {
             Collections.addAll(this.prerequisites, items);
             return this;
-
         }
 
         public Builder eventCost(int cost) {
@@ -259,26 +244,22 @@ public class CyberwareItem extends Item implements ICyberware {
         public Builder properties(java.util.function.Consumer<Properties> consumer) {
             consumer.accept(this.properties);
             return this;
-
         }
 
         @SafeVarargs
         public final Builder incompatible(RegistryObject<Item>... items) {
             Collections.addAll(this.incompatibleItems, items);
             return this;
-
         }
 
         public Builder addAttribute(Attribute attribute, String uuidStr, double amount, AttributeModifier.Operation operation) {
             this.attributeModifiers.put(attribute, new AttributeModifier(UUID.fromString(uuidStr), "Cyberware modifier", amount, operation));
             return this;
-
         }
 
         public CyberwareItem build() {
             this.properties.stacksTo(Math.max(this.maxInstallAmount, 1));
             return new CyberwareItem(this);
-
         }
     }
 }

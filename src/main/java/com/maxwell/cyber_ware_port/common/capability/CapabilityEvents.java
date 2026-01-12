@@ -1,10 +1,10 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.config.CyberwareConfig;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -30,7 +31,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID)
 public class CapabilityEvents {
-
     @SubscribeEvent
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player) {
@@ -130,6 +130,9 @@ public class CapabilityEvents {
     }
 
     private static boolean isHandFunctional(Player player, InteractionHand hand) {
+        if (player instanceof FakePlayer) {
+            return true;
+        }
         AtomicBoolean isFunctional = new AtomicBoolean(false);
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             ItemStackHandler handler = data.getInstalledCyberware();
@@ -157,8 +160,7 @@ public class CapabilityEvents {
     @SubscribeEvent
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (!isHandFunctional(event.getEntity(), InteractionHand.MAIN_HAND)) {
-            event.setNewSpeed(0.0f);
-            event.setCanceled(true);
+            event.setNewSpeed(event.getOriginalSpeed() * 0.05f);
         }
     }
 
@@ -183,7 +185,12 @@ public class CapabilityEvents {
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         net.minecraft.world.level.block.state.BlockState state = event.getLevel().getBlockState(event.getPos());
-        if (state.is(ModBlocks.ROBO_SURGEON.get()) || state.is(ModBlocks.SURGERY_CHAMBER.get())) {
+        if (state.is(ModBlocks.ROBO_SURGEON.get()) ||
+                state.is(ModBlocks.SURGERY_CHAMBER.get()) ||
+                state.is(net.minecraft.tags.BlockTags.DOORS) ||
+                state.is(net.minecraft.tags.BlockTags.TRAPDOORS) ||
+                state.is(net.minecraft.tags.BlockTags.BUTTONS) ||
+                state.is(net.minecraft.tags.BlockTags.BEDS)) {
             return;
         }
         if (!isHandFunctional(event.getEntity(), event.getHand())) {

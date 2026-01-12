@@ -10,9 +10,9 @@
     }
   },
   "pattern": [
+    "  I",
     " I ",
-    " I ",
-    " S "
+    "S  "
   ],
   "result": {
     "item": "cyber_ware_port:katana"

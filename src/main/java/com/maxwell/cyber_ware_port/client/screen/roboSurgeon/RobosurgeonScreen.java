@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.client.screen.roboSurgeon;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
@@ -9,7 +10,6 @@ import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.common.network.SurgeryGhostTogglePacket;
 import com.maxwell.cyber_ware_port.common.risk.SurgeryAlert;
 import com.maxwell.cyber_ware_port.common.risk.SurgeryAnalyzer;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -38,7 +38,6 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("removal")
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
@@ -114,7 +113,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         entityrenderdispatcher.setRenderShadow(false);
         RenderSystem.runAsFancy(() -> {
             entityrenderdispatcher.render(pEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, pGuiGraphics.pose(), pGuiGraphics.bufferSource(), 15728880);
-
         });
         pGuiGraphics.flush();
         entityrenderdispatcher.setRenderShadow(true);
@@ -127,7 +125,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         pEntity.attackAnim = originalAttackAnim;
         pGuiGraphics.pose().popPose();
         Lighting.setupFor3DItems();
-
     }
 
     private static int[] slots(int start) {
@@ -136,10 +133,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
              i < 9;
              i++) {
             slots[i] = start + i;
-
         }
         return slots;
-
     }
 
     public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw, Model pModel) {
@@ -156,7 +151,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         pGuiGraphics.flush();
         pGuiGraphics.pose().popPose();
         Lighting.setupFor3DItems();
-
     }
 
     @Override
@@ -180,25 +174,21 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 if (this.isHovered()) {
                     guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);
                     guiGraphics.renderTooltip(font, Component.translatable("gui.cyber_ware_port.button.view_installed"), mouseX, mouseY);
-
                 }
             }
 
             @Override
             public void onClick(double mouseX, double mouseY) {
                 Minecraft.getInstance().setScreen(new InstalledCyberwareScreen(RobosurgeonScreen.this));
-
             }
 
             @Override
             protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
                 this.defaultButtonNarrationText(narrationElementOutput);
-
             }
         };
         this.installedListButton.visible = true;
         this.addRenderableWidget(this.installedListButton);
-
     }
 
     @Override
@@ -206,12 +196,10 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         long elapsedTime = System.currentTimeMillis() - this.startTime;
         if (elapsedTime < ANIMATION_DURATION) {
             return super.mouseClicked(pMouseX, pMouseY, pButton);
-
         }
         updateSlotPositions();
         if (!this.menu.getCarried().isEmpty()) {
             return super.mouseClicked(pMouseX, pMouseY, pButton);
-
         }
         if (pButton == 0 || pButton == 1) {
             if (this.selectedMarker != null) {
@@ -224,7 +212,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                             pMouseY >= slotTop && pMouseY < slotTop + 16) {
                         hoveredSlot = slot;
                         break;
-
                     }
                 }
                 if (hoveredSlot != null && hoveredSlot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) {
@@ -236,14 +223,12 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                             hoveredSlot.set(ItemStack.EMPTY);
                             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                             return true;
-
                         }
                     } else {
                         A_PacketHandler.INSTANCE.sendToServer(new SurgeryGhostTogglePacket(
                                 this.menu.blockEntity.getBlockPos(), hoveredSlot.index));
                         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                         return true;
-
                     }
                 }
             }
@@ -255,7 +240,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 if (this.selectedPart == BodyPart.INTERNAL) {
                     modelCenterX -= 48;
                     modelCenterY += 26;
-
                 }
                 float radRot = (float) Math.toRadians(this.viewRotation);
                 float sin = (float) Math.sin(radRot);
@@ -267,7 +251,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         modelX = marker.modelX();
                         modelY = marker.modelY();
                         modelZ = marker.modelZ();
-
                     }
                     float screenOffsetX = (modelX * cos) - (modelZ * sin);
                     float screenOffsetY = modelY;
@@ -278,10 +261,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         {
                             this.selectedMarker = marker;
                             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.2F));
-
                         }
                         return true;
-
                     }
                 }
             }
@@ -303,7 +284,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     this.hideName = true;
                     Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     return true;
-
                 }
             }
             final Slot slot = this.getSlotUnderMouse();
@@ -314,12 +294,10 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     this.potentialDrag = true;
                     this.dragStartX = pMouseX;
                     return true;
-
                 }
             }
         }
         return super.mouseClicked(pMouseX, pMouseY, pButton);
-
     }
 
     @Override
@@ -329,14 +307,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             if (!this.isDraggingModel) {
                 this.isDraggingModel = true;
                 this.rotationStart = this.viewRotation;
-
             }
             this.viewRotation = this.rotationStart + (float) (pMouseX - this.dragStartX);
             return true;
-
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-
     }
 
     @Override
@@ -344,13 +319,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         updateSlotPositions();
         if (pButton != 0) {
             return super.mouseReleased(pMouseX, pMouseY, pButton);
-
         }
         if (this.isDraggingModel) {
             this.isDraggingModel = false;
             this.potentialDrag = false;
             return true;
-
         }
         if (this.potentialDrag) {
             boolean partClicked = false;
@@ -369,7 +342,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                         partClicked = true;
                         break;
-
                     }
                 }
             }
@@ -377,14 +349,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 this.selectedPart = BodyPart.NONE;
                 this.selectedMarker = null;
                 this.hideName = false;
-
             }
             this.potentialDrag = false;
             return true;
-
         }
         return super.mouseReleased(pMouseX, pMouseY, pButton);
-
     }
 
     @Override
@@ -403,7 +372,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             RenderSystem.disableBlend();
             if (pMouseX >= iconX && pMouseX < iconX + 16 && pMouseY >= iconY && pMouseY < iconY + 16) {
                 pGuiGraphics.renderTooltip(this.font, alert.message(), pMouseX, pMouseY);
-
             }
         }
         if (this.selectedPart != BodyPart.NONE && this.selectedMarker == null) {
@@ -414,7 +382,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             if (this.selectedPart == BodyPart.INTERNAL) {
                 modelCenterX -= 48;
                 modelCenterY += 26;
-
             }
             float radRot = (float) Math.toRadians(this.viewRotation);
             float sin = (float) Math.sin(radRot);
@@ -429,7 +396,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     modelX = marker.modelX();
                     modelY = marker.modelY();
                     modelZ = marker.modelZ();
-
                 }
                 float screenOffsetX = (modelX * cos) - (modelZ * sin);
                 float screenOffsetY = modelY;
@@ -441,13 +407,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     pGuiGraphics.renderTooltip(this.font, marker.name(), pMouseX, pMouseY);
                     pGuiGraphics.fill(markerX, markerY, markerX + 16, markerY + 16, 0x50FFFFFF);
                     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.8F);
-
                 }
             }
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             pGuiGraphics.pose().popPose();
-
         }
         if (this.selectedMarker != null) {
             pGuiGraphics.pose().pushPose();
@@ -465,7 +429,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 int slotX = uiX + (i * (SLOT_SIZE + SLOT_SPACING));
                 pGuiGraphics.blit(BLUE_SLOT_TEXTURE, slotX - 1, stagingY - 1, 0, 0, 18, 18, 18, 18);
                 pGuiGraphics.blit(RED_SLOT_TEXTURE, slotX - 1, installedY - 1, 0, 0, 18, 18, 18, 18);
-
             }
             RenderSystem.disableBlend();
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -489,12 +452,10 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                                 pGuiGraphics.fill(itemX, stagingY, itemX + 16, stagingY + 16, 0x80000000);
                                 RenderSystem.disableBlend();
                                 pGuiGraphics.pose().popPose();
-
                             }
                         }
                     }
                 });
-
             }
         }
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
@@ -512,7 +473,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 int markerY = modelCenterY - (int) (screenOffsetY * scaleFactor) - 8;
                 if (pMouseX >= markerX && pMouseX < markerX + 16 && pMouseY >= markerY && pMouseY < markerY + 16) {
                     pGuiGraphics.renderTooltip(this.font, marker.name(), pMouseX, pMouseY);
-
                 }
             }
         }
@@ -533,7 +493,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         ItemStack stack = this.menu.getSlot(targetSlotId).getItem();
                         if (!stack.isEmpty()) {
                             pGuiGraphics.renderTooltip(this.font, stack, pMouseX, pMouseY);
-
                         }
                     }
                 }
@@ -545,11 +504,9 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                                 ItemStack stack = installed.getStackInSlot(targetSlotId);
                                 if (!stack.isEmpty()) {
                                     pGuiGraphics.renderTooltip(this.font, stack, pMouseX, pMouseY);
-
                                 }
                             }
                         });
-
                     }
                 }
             }
@@ -572,7 +529,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         if (this.minecraft.player != null) {
             var cap = this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
             if (cap.isPresent()) currentEssence = cap.resolve().get().getTolerance();
-
         }
         int projectedCost = 0;
         for (int i = 0;
@@ -582,7 +538,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             ItemStack stack = this.menu.getSlot(i).getItem();
             if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
                 projectedCost += cw.getEssenceCost(stack) * stack.getCount();
-
             }
         }
         int projectedEssence = maxEssence - projectedCost;
@@ -598,7 +553,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             RenderSystem.setShaderColor(1f, 1f, 1f, alpha);
             drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-
         }
         float tScale = (selectedPart == BodyPart.NONE) ? BASE_SCALE : selectedPart.zoomScale;
         float tOffX = (selectedPart == BodyPart.NONE) ? 0 : selectedPart.zoomOffsetX;
@@ -618,7 +572,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             String name = "_" + this.minecraft.player.getName().getString().toUpperCase();
             int w = this.font.width(name);
             g.drawString(this.font, name, drawX - w / 2, drawY, 0x00FFFF, true);
-
         }
         long elapsed = System.currentTimeMillis() - startTime;
         boolean isAnimating = elapsed < ANIMATION_DURATION;
@@ -628,11 +581,9 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             float r = Math.min(elapsed / ANIMATION_DURATION, 1f);
             ease = 1f - (float) Math.pow(1f - r, 3);
             currentRotation = ease * 360f;
-
         } else {
             currentRotation = this.viewRotation;
             ease = 1.0f;
-
         }
         boolean isOverview = (this.selectedPart == BodyPart.NONE);
         boolean isInternalZoomed = (this.selectedPart == BodyPart.INTERNAL);
@@ -643,12 +594,10 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 subX = drawX - 48;
                 subY = drawY;
                 subScale = drawScale;
-
             } else {
                 subX = x + 40;
                 subY = y + TOP_HEIGHT + 11;
                 subScale = 40;
-
             }
             if (isOverview) {
                 int boxWidth = 37;
@@ -673,7 +622,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 int lineEndX = drawX;
                 g.fill(lineStartX, cornerY, lineStartX + lineWidth, lineStartY, cyanColor);
                 g.fill(lineStartX, cornerY, lineEndX, cornerY + lineWidth, cyanColor);
-
             }
             this.internalPartsModel.setVisibleLayer(0);
             renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
@@ -681,7 +629,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
             this.internalPartsModel.setVisibleLayer(2);
             renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
-
         }
         int Pscale = 45 + scaleBoost;
         int Sscale = 42 + scaleBoost;
@@ -702,7 +649,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     RenderSystem.enableScissor(scX, scY, scW, scH);
                     renderEntityWithRotation(g, drawX, drawY - raiseAmount, adjustedScale, currentRotation, dummySkeleton);
                     RenderSystem.disableScissor();
-
                 }
             } else {
                 int scX = (int) ((drawX - 50) * guiScale);
@@ -714,7 +660,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         RenderSystem.enableScissor(scX, scFeet, scW, (int) (ph * guiScale));
                         renderEntityWithRotation(g, drawX, drawY - raiseAmount, Pscale, currentRotation, this.minecraft.player);
                         RenderSystem.disableScissor();
-
                     }
                 }
                 if (dummySkeleton != null && scan > 0) {
@@ -722,7 +667,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     RenderSystem.enableScissor(scX, sy, scW, (int) (scan * guiScale));
                     renderEntityWithRotation(g, drawX, drawY - raiseAmount, Sscale, currentRotation, dummySkeleton);
                     RenderSystem.disableScissor();
-
                 }
             }
         }
@@ -736,36 +680,28 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             g.pose().translate(0, 0, 60);
             g.blit(TEXTURE, drawX - 40, scanY, 176, 110, 80, 1);
             g.pose().popPose();
-
         }
         RenderSystem.disableBlend();
-
     }
 
     @Override
     protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
-        int maxTolerance = 100;
-        if (Objects.requireNonNull(this.minecraft).player != null) {
-            var cap = this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
-            if (cap.isPresent()) {
-                maxTolerance = cap.resolve().get().getMaxTolerance();
+        if (this.minecraft == null || this.minecraft.player == null) return;
+        this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
+            int maxTolerance = data.getMaxTolerance(this.minecraft.player);
+            int currentCost = 0;
+            for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
+                if (i >= this.menu.slots.size()) break;
+                ItemStack stack = this.menu.getSlot(i).getItem();
+                if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
+                    currentCost += cw.getEssenceCost(stack) * stack.getCount();
+                }
             }
-        }
-        int currentCost = 0;
-        for (int i = 0;
-             i < RobosurgeonBlockEntity.TOTAL_SLOTS;
-             i++) {
-            if (i >= this.menu.slots.size()) break;
-            ItemStack stack = this.menu.getSlot(i).getItem();
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
-                currentCost += cw.getEssenceCost(stack) * stack.getCount();
-
-            }
-        }
-        int val = maxTolerance - currentCost;
-        int color = (val < 30) ? 0xFF0000 : 0x00FFFF;
-        pGuiGraphics.drawString(this.font, val + " / " + maxTolerance, 18, 6, color, true);
-
+            int remaining = maxTolerance - currentCost;
+            int color = (remaining < 0) ? 0xAA0000 : (remaining < 25 ? 0xFF5555 : 0x00FFFF);
+            String text = remaining + " / " + maxTolerance;
+            pGuiGraphics.drawString(this.font, text, 18, 6, color, true);
+        });
     }
 
     private void updateSlotPositions() {
@@ -776,7 +712,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 Slot slot = this.menu.slots.get(i);
                 slot.x = 20000;
                 slot.y = 20000;
-
             }
         }
         if (this.selectedMarker != null) {
@@ -795,7 +730,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     Slot slot = this.menu.slots.get(slotId);
                     slot.x = relativeX + (i * (SLOT_SIZE + SLOT_SPACING));
                     slot.y = relativeY;
-
                 }
             }
         }
@@ -812,7 +746,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             var cap = this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
             if (cap.isPresent()) {
                 installedHandler = cap.resolve().get().getInstalledCyberware();
-
             }
         }
         if (installedHandler == null) return;
@@ -822,7 +755,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             if (id == hover.index) {
                 isHoveringTarget = true;
                 break;
-
             }
         }
         if (!isHoveringTarget) return;
@@ -834,7 +766,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             ItemStack otherStack = this.menu.getSlot(targetId).getItem();
             if (otherStack.isEmpty()) {
                 otherStack = installedHandler.getStackInSlot(targetId);
-
             }
             if (!otherStack.isEmpty()) {
                 if (carriedItem.isIncompatible(carriedStack, otherStack)) {
@@ -847,7 +778,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     g.renderOutline(x2 - 1, y2 - 1, 20, 20, 0xFFFF0000);
                     g.drawString(this.font, "!", x2 + 6, y2 + 4, 0xFFFF0000, true);
                     g.pose().popPose();
-
                 }
             }
         }
@@ -864,14 +794,12 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             int redDrawY = y + (h - redHeight);
             int redTextureV = 61 + (48 - redHeight);
             g.blit(TEXTURE, x, redDrawY, w, redHeight, 220, redTextureV, w, redHeight, 256, 256);
-
         }
         if (blueHeight > 0) {
             int blueDrawY = y + (h - redHeight - blueHeight);
             int totalFilledHeight = redHeight + blueHeight;
             int blueTextureV = 61 + (48 - totalFilledHeight);
             g.blit(TEXTURE, x, blueDrawY, w, blueHeight, 176, blueTextureV, w, blueHeight, 256, 256);
-
         }
     }
 
@@ -881,47 +809,37 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 new TargetMarker(Component.literal("Right Eye"), -2f, 25.5f, -3.4f, slots(RobosurgeonBlockEntity.SLOT_EYES)),
                 new TargetMarker(Component.literal("Brain"), -0.13f, 27.56f, 1.52f, slots(RobosurgeonBlockEntity.SLOT_BRAIN))
         )),
-
         TORSO(0, -54, 26, 32, 0, 120, 120f, List.of(
                 new TargetMarker(Component.literal("Heart"), 0f, 21f, -0.5f, slots(RobosurgeonBlockEntity.SLOT_HEART)),
                 new TargetMarker(Component.literal("Left Lung"), 2.3f, 20f, 0, slots(RobosurgeonBlockEntity.SLOT_LUNGS)),
                 new TargetMarker(Component.literal("Stomach"), 0.0f, 16f, -1.5f, slots(RobosurgeonBlockEntity.SLOT_STOMACH)),
                 new TargetMarker(Component.literal("Right Lung"), -2.3f, 20f, 0f, slots(RobosurgeonBlockEntity.SLOT_LUNGS))
         )),
-
         ARM_LEFT(18, -54, 12, 34, -60, 120, 120f, List.of(
                 new TargetMarker(Component.literal("Left Arm"), 4.7f, 21.0f, -0, slots(RobosurgeonBlockEntity.SLOT_ARMS)),
                 new TargetMarker(Component.literal("Left Hand"), 5.8f, 14f, 0f, slots(RobosurgeonBlockEntity.SLOT_HANDS))
         )),
-
         ARM_RIGHT(-18, -54, 12, 34, 60, 120, 120f, List.of(
                 new TargetMarker(Component.literal("Right Arm"), -4.7f, 21.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_ARMS)),
                 new TargetMarker(Component.literal("Right Hand"), -5.8f, 14f, 0f, slots(RobosurgeonBlockEntity.SLOT_HANDS))
         )),
-
         LEG_LEFT(5, -19, 12, 38, -50, 20, 120f, List.of(
                 new TargetMarker(Component.literal("Left Leg"), 2f, 10.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)),
                 new TargetMarker(Component.literal("Left Foot"), 2.1f, 3.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS))
         )),
-
         LEG_RIGHT(-5, -19, 12, 38, 50, 20, 120f, List.of(
                 new TargetMarker(Component.literal("Right Leg"), -2f, 10.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)),
                 new TargetMarker(Component.literal("Right Foot"), -2.1f, 3.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS))
         )),
-
         INTERNAL(0, 0, 40, 50, 48, 130, 150f, List.of(
                 new TargetMarker(Component.literal("Skin"), -3.0f, 24.6f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_SKIN)),
                 new TargetMarker(Component.literal("Muscle"), -0, 22.7f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_MUSCLE)),
                 new TargetMarker(Component.literal("Bone"), 3.0f, 20.8f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_BONES))
         )),
-
         NONE(0, 0, 0, 0, 0, 0, 45f, List.of());
         final int hitX, hitY, hitW, hitH;
-
         final int zoomOffsetX, zoomOffsetY;
-
         final float zoomScale;
-
         final List<TargetMarker> markers;
 
         BodyPart(int hitX, int hitY, int hitW, int hitH, int zoomOffsetX, int zoomOffsetY, float zoomScale, List<TargetMarker> markers) {
@@ -933,7 +851,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             this.zoomOffsetY = zoomOffsetY;
             this.zoomScale = zoomScale;
             this.markers = markers;
-
         }
     }
 

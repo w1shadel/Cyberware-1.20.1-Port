@@ -6,7 +6,6 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
 
 public class MetabolicGeneratorItem extends CyberwareItem {
     public MetabolicGeneratorItem() {
@@ -16,7 +15,7 @@ public class MetabolicGeneratorItem extends CyberwareItem {
     }
 
     @Override
-    public void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (!(wearer instanceof Player player)) return;
         if (player.tickCount % 20 != 0) return;
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
@@ -38,6 +37,4 @@ public class MetabolicGeneratorItem extends CyberwareItem {
             }
         });
     }
-
-
 }

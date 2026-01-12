@@ -1,5 +1,7 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
+import com.maxwell.cyber_ware_port.api.event.CyberwareRejectionEvent;
+import com.maxwell.cyber_ware_port.api.event.CyberwareToleranceEvent;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -16,10 +18,12 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.ItemStackHandler;
@@ -51,8 +55,25 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int lastConsumption = 0;
     private int toleranceImmunityTime = 0;
 
-    public void setMaxTolerance(int amount) {
-        this.maxTolerance = amount;
+    public int getMaxTolerance(LivingEntity entity) {
+        CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getNewTolerance();
+    }
+
+    public int getMaxTolerance() {
+        return this.maxTolerance;
+    }
+
+    public int getTolerance(LivingEntity entity) {
+        int consumed = 0;
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+                consumed += cyberware.getEssenceCost(stack) * stack.getCount();
+            }
+        }
+        return getMaxTolerance(entity) - consumed;
     }
 
     public void recalculateCapacity(ServerPlayer player) {
@@ -161,6 +182,12 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             this.needsCapacityUpdate = false;
         }
         checkBodyCondition(player);
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+                cyberware.onSystemTick(player, stack);
+            }
+        }
         if (player.tickCount % 20 == 0) {
             if (maxEnergy <= 0) {
                 this.lastProduction = 0;
@@ -281,11 +308,12 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, 1, false, false));
         }
         if (totalLegs == 0) {
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 6, false, false));
-        } else if (totalLegs == 1) {
+            player.setForcedPose(Pose.SWIMMING);
             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, false));
+        } else {
+            player.setForcedPose(null);
         }
-        if (getTolerance() <= 0) {
+        if (getTolerance(player) <= 0) {
             if (this.respawnGracePeriod <= 0) {
                 killPlayer(player, "cyberware.noessence");
             } else {
@@ -299,8 +327,13 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (this.toleranceImmunityTime > 0) {
             return;
         }
-        int rejectionThreshold = (int) (this.maxTolerance * 0.25f);
-        int currentTolerance = getTolerance();
+        int effectiveMax = getMaxTolerance(player);
+        int rejectionThreshold = CyberwareConfig.CRITICAL_ESSENCE.get();
+        int currentTolerance = getTolerance(player);
+        CyberwareRejectionEvent event = new CyberwareRejectionEvent(player, currentTolerance);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            return;
+        }
         if (currentTolerance < rejectionThreshold) {
             if (player.tickCount % 100 == 0) {
                 player.setHealth(player.getHealth() - 2.0f);
@@ -314,6 +347,16 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 }
             }
         }
+    }
+
+    public void syncToClient(ServerPlayer player) {
+        if (player == null) return;
+        CompoundTag tag = this.serializeNBT();
+        tag.putInt("MaxTolerance", getMaxTolerance(player));
+        A_PacketHandler.INSTANCE.send(
+                net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
+                new SyncCyberwareDataPacket(tag)
+        );
     }
 
     public void ensureEssentialPartsAfterDeath() {
@@ -426,15 +469,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return installedCyberware;
     }
 
-    public void syncToClient(ServerPlayer player) {
-        if (player == null) return;
-        CompoundTag tag = this.serializeNBT();
-        A_PacketHandler.INSTANCE.send(
-                net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
-                new SyncCyberwareDataPacket(tag)
-        );
-    }
-
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
@@ -457,10 +491,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             }
         }
         return false;
-    }
-
-    public int getMaxTolerance() {
-        return this.maxTolerance;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.block.charger;
 
+import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -22,11 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ChargerBlockEntity extends BlockEntity {
-
     private boolean isDrainMode = false;
-
     private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(1000000, 10000);
-
     private final LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> energyStorage);
 
     public ChargerBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -45,6 +44,10 @@ public class ChargerBlockEntity extends BlockEntity {
         AABB area = new AABB(pos).move(0, 0, 0).expandTowards(0, 0.5, 0);
         List<Player> players = level.getEntitiesOfClass(Player.class, area);
         for (Player player : players) {
+            CyberwareEvents.Recharge event = new CyberwareEvents.Recharge(player, this, isDrainMode);
+            if (MinecraftForge.EVENT_BUS.post(event)) {
+                continue;
+            }
             player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
                 int maxTransfer = 10000;
                 if (isDrainMode) {
@@ -55,7 +58,6 @@ public class ChargerBlockEntity extends BlockEntity {
                         userData.extractEnergy(toReceive, false);
                         modifyEnergy(toReceive);
                     }
-
                 } else {
                     int available = energyStorage.getEnergyStored();
                     int received = userData.receiveEnergy(Math.min(available, maxTransfer), true);

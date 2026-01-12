@@ -16,14 +16,15 @@ import java.util.Collections;
 import java.util.Set;
 
 public interface ICyberware {
-
     int getEssenceCost(ItemStack stack);
 
     int getSlot(ItemStack stack);
 
     boolean isPristine(ItemStack stack);
+
     default void onLivingHurt(LivingHurtEvent event, ItemStack stack, LivingEntity attacker) {
     }
+
     void setPristine(ItemStack stack, boolean isPristine);
 
     int getMaxInstallAmount(ItemStack stack);
@@ -107,6 +108,15 @@ public interface ICyberware {
     }
 
     default void onLivingJump(LivingEvent.LivingJumpEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onSystemTick(LivingEntity entity, ItemStack stack) {
+    }
+
+    default void onInstalled(LivingEntity entity, ItemStack stack) {
+    }
+
+    default void onRemoved(LivingEntity entity, ItemStack stack) {
     }
 
     enum StackingRule {

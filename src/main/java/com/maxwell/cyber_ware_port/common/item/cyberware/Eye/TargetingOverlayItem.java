@@ -12,18 +12,15 @@ public class TargetingOverlayItem extends CyberwareItem {
                 .energy(1, 0, 0, StackingRule.STATIC)
                 .requires(ModItems.CYBER_EYE)
         );
-
     }
 
     @Override
     public boolean canToggle(ItemStack stack) {
         return true;
-
     }
 
     @Override
     public int getEnergyConsumption(ItemStack stack) {
         return isActive(stack) ? super.getEnergyConsumption(stack) : 0;
-
     }
 }
