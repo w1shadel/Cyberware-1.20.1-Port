@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.common.block.radio.tower;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -20,11 +21,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
-
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(3.5, 8, 7.2, 12.5, 14, 8.7),
@@ -33,7 +35,6 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(3.1, 7, 5.2, 5.1, 15, 7.2),
             Block.box(11.1, 7, 5.2, 13.1, 15, 7.2)
     );
-
     private static final VoxelShape SHAPE_EAST = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(7.3, 8, 3.5, 8.8, 14, 12.5),
@@ -42,7 +43,6 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(8.8, 7, 3.1, 10.8, 15, 5.1),
             Block.box(8.8, 7, 11.1, 10.8, 15, 13.1)
     );
-
     private static final VoxelShape SHAPE_SOUTH = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(3.5, 8, 7.3, 12.5, 14, 8.8),
@@ -51,7 +51,6 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(10.9, 7, 8.8, 12.9, 15, 10.8),
             Block.box(2.9, 7, 8.8, 4.9, 15, 10.8)
     );
-
     private static final VoxelShape SHAPE_WEST = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(7.2, 8, 3.5, 8.7, 14, 12.5),
@@ -60,6 +59,7 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(5.2, 7, 10.9, 7.2, 15, 12.9),
             Block.box(5.2, 7, 2.9, 7.2, 15, 4.9)
     );
+    public static final Map<ResourceKey<Level>, Long> LAST_TOWER_ACTIVE_TIME = new ConcurrentHashMap<>();
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
@@ -138,7 +138,12 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
         if (pLevel.isClientSide) return null;
         if (pBlockEntityType == ModBlockEntities.RADIO_TOWER_CORE.get()) {
-            return (lvl, pos, st, be) -> RadioTowerCoreBlockEntity.serverTick(lvl, pos, st, (RadioTowerCoreBlockEntity) be);
+            return (lvl, pos, st, be) -> {
+                RadioTowerCoreBlockEntity.serverTick(lvl, pos, st, (RadioTowerCoreBlockEntity) be);
+                if (st.getValue(FORMED) && lvl.getGameTime() % 20 == 0) {
+                    LAST_TOWER_ACTIVE_TIME.put(lvl.dimension(), lvl.getGameTime());
+                }
+            };
         }
         return null;
     }

@@ -20,18 +20,36 @@ import java.util.stream.Collectors;
 
 public class CyberwareItem extends Item implements ICyberware {
     private static final String NBT_KEY_PRISTINE = "IsPristine";
+    // =====================================================================================
+    //  DOCUMENTATION CONSTANTS (Protected from regex deletion)
+    // =====================================================================================
+    private static final String DOC_essenceCost = "Essence cost to install this cyberware.";
     private final int essenceCost;
+    private static final String DOC_slotId = "The internal inventory slot ID (0-based) where this item belongs.";
     private final int slotId;
+    private static final String DOC_maxInstallAmount = "Maximum number of this item that can be installed in the same slot.";
     private final int maxInstallAmount;
+    private static final String DOC_hasEnergyProperties = "Whether this cyberware uses or generates energy (Forge Energy).";
     private final boolean hasEnergyProperties;
+    private static final String DOC_energyConsumption = "Amount of energy consumed per tick or operation.";
     private final int energyConsumption;
+    private static final String DOC_energyGeneration = "Amount of energy generated per tick.";
     private final int energyGeneration;
+    private static final String DOC_quality = "Priority level for installation exclusivity. 0=Human parts (Lowest), 1=Standard Cyberware, 2+=High-tier (Overrides lower).";
+    private final int quality;
+    private static final String DOC_eventConsumption = "Energy cost for special events or active abilities.";
     private final int eventConsumption;
+    private static final String DOC_energyStorage = "Internal energy storage capacity of this item.";
     private final int energyStorage;
+    private static final String DOC_stackingRule = "Logic for how energy properties stack when multiple items are installed.";
     private final StackingRule stackingRule;
+    private static final String DOC_incompatible = "List of items that cannot be installed alongside this one.";
     private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
+    private static final String DOC_prerequisite = "List of items required before this one can be installed.";
     private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;
+    private static final String DOC_bodyPartType = "Specific body part type (e.g., ARM_LEFT, LEG_RIGHT) for precise exclusivity checks.";
     private final BodyPartType bodyPartType;
+    private static final String DOC_modifiers = "Attribute modifiers (e.g., strength boost) applied when installed.";
     private final Multimap<Attribute, AttributeModifier> baseAttributeModifiers;
 
     public CyberwareItem(Builder builder) {
@@ -49,11 +67,17 @@ public class CyberwareItem extends Item implements ICyberware {
         this.bodyPartType = builder.bodyPartType;
         this.baseAttributeModifiers = builder.attributeModifiers;
         this.eventConsumption = builder.eventConsumption;
+        this.quality = builder.quality;
     }
 
     @Override
     public int getEssenceCost(ItemStack stack) {
         return this.essenceCost;
+    }
+
+    @Override
+    public int getQuality(ItemStack stack) {
+        return this.quality;
     }
 
     @Override
@@ -202,7 +226,11 @@ public class CyberwareItem extends Item implements ICyberware {
         private int energyGeneration = 0;
         private int energyStorage = 0;
         private int eventConsumption = 0;
+        // protected documentation strings
+        private static final String DOC_quality = "Default quality is 1 (Standard Cyberware). Set to 0 for Human parts.";
+        private int quality = 1;
         private StackingRule stackingRule = StackingRule.LINEAR;
+        private static final String DOC_bodyPartType = "Default is NONE. Needs to be set for Limbs (ARM_LEFT, etc.).";
         private BodyPartType bodyPartType = BodyPartType.NONE;
 
         public Builder(int essenceCost, int slotId) {
@@ -210,6 +238,15 @@ public class CyberwareItem extends Item implements ICyberware {
             this.essenceCost = essenceCost;
             this.slotId = slotId;
         }
+
+        private static final String DOC_method_quality = "Sets the priority quality. Higher quality items replace lower quality items in the same body slot.";
+
+        public Builder quality(int quality) {
+            this.quality = quality;
+            return this;
+        }
+
+        private static final String DOC_method_bodyPart = "Defines the specific body part type (e.g., ARM_LEFT, LEG_RIGHT). Essential for exclusivity.";
 
         public Builder bodyPart(BodyPartType type) {
             this.bodyPartType = type;

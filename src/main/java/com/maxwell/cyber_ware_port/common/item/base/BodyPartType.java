@@ -10,8 +10,10 @@ public enum BodyPartType {
     SKIN,
     MUSCLE,
     BONES,
-    ARM,
+    ARM_LEFT,
+    ARM_RIGHT,
     HAND,
-    LEG,
+    LEG_LEFT,
+    LEG_RIGHT,
     FOOT
 }

@@ -68,6 +68,10 @@ public interface ICyberware {
         return !stack.hasTag() || !stack.getTag().contains("active") || stack.getTag().getBoolean("active");
     }
 
+    default int getQuality(ItemStack stack) {
+        return 1;
+    }
+
     default void toggle(ItemStack stack) {
         boolean currentState = isActive(stack);
         stack.getOrCreateTag().putBoolean("active", !currentState);

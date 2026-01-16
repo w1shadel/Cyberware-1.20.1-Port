@@ -34,14 +34,11 @@ public class ModCyberwareEvents {
             ItemStackHandler handler = data.getInstalledCyberware();
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
-                // アイテムチェック && 有効化チェック
                 if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw && cw.isActive(stack)) {
-                    // ★EVENT HOOK: 能力発動の可否を問う
                     CyberwareAbilityEvent event = new CyberwareAbilityEvent(entity, stack, cw);
                     if (MinecraftForge.EVENT_BUS.post(event)) {
-                        continue; // キャンセルされたらこのパーツの処理をスキップ
+                        continue;
                     }
-                    // 処理実行
                     action.accept(cw, stack);
                 }
             }
@@ -50,16 +47,12 @@ public class ModCyberwareEvents {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
-        // 1. 攻撃側の処理 (Attacker)
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             dispatch(attacker, (cw, stack) -> {
                 cw.onLivingHurt(event, stack, attacker);
             });
         }
-        // 2. 防御側の処理 (Target/Victim) - 装甲やダメージ軽減など
         dispatch(event.getEntity(), (cw, stack) -> {
-            // ICyberware側で自分が攻撃者か被害者か判断する必要がありますが、
-            // 引数としては被害者（イベント主体）を渡します。
             cw.onLivingHurt(event, stack, event.getEntity());
         });
     }
@@ -70,8 +63,6 @@ public class ModCyberwareEvents {
         Player player = event.player;
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             if (player instanceof ServerPlayer sp) {
-                // CyberwareUserData.tick() 内で全パーツの onSystemTick() が呼ばれるため、
-                // ここの dispatch は削除して一本化しました。
                 data.tick(sp);
             }
         });
@@ -118,7 +109,6 @@ public class ModCyberwareEvents {
     @SubscribeEvent
     public static void onPotionApplicable(MobEffectEvent.Applicable event) {
         dispatch(event.getEntity(), (cw, stack) -> {
-            // 誰かがDENYしたらそれ以降は処理しない（上書き防止）
             if (event.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY) {
                 cw.onPotionApplicable(event, stack, event.getEntity());
             }

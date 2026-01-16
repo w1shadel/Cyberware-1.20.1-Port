@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class CyberwareCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("cyberware")
-                .requires(source -> source.hasPermission(2)) // OP権限レベル2以上
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("clear")
                         .then(Commands.argument("target", EntityArgument.player())
                                 .executes(ctx -> clearCyberware(ctx, EntityArgument.getPlayer(ctx, "target")))))

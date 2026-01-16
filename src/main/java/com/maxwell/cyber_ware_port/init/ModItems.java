@@ -1,11 +1,15 @@
 package com.maxwell.cyber_ware_port.init;
 
+import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.CyberwareTabState;
 import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullItemRenderer;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
-import com.maxwell.cyber_ware_port.common.CyberwareTabState;
+import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
+import com.maxwell.cyber_ware_port.common.item.ExpCapsuleItem;
+import com.maxwell.cyber_ware_port.common.item.KatanaItem;
+import com.maxwell.cyber_ware_port.common.item.NeuropozyneItem;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
-import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.componentbox.ComponentBoxItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.Arm.*;
 import com.maxwell.cyber_ware_port.common.item.cyberware.Bone.BonelacingItem;
@@ -24,10 +28,6 @@ import com.maxwell.cyber_ware_port.common.item.cyberware.Skin.SolarskinItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.Skin.SubdermalSpikesItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.Skin.SyntheticSkinItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.Skin.TargetedImmunosuppressantItem;
-import com.maxwell.cyber_ware_port.common.item.ExpCapsuleItem;
-import com.maxwell.cyber_ware_port.common.item.KatanaItem;
-import com.maxwell.cyber_ware_port.common.item.NeuropozyneItem;
-import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.Direction;
@@ -52,7 +52,6 @@ public class ModItems {
                     new Item.Properties().rarity(Rarity.RARE),
                     Direction.DOWN
             ) {
-
                 @Override
                 public void initializeClient(Consumer<IClientItemExtensions> consumer) {
                     consumer.accept(new IClientItemExtensions() {
@@ -73,16 +72,12 @@ public class ModItems {
             });
     public static final RegistryObject<Item> CYBER_ZOMBIE_SPAWN_EGG = ITEMS.register("cyber_zombie_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CYBER_ZOMBIE, 0x445555, 0x00AAAA, new Item.Properties()));
-
     public static final RegistryObject<Item> CYBER_SKELETON_SPAWN_EGG = ITEMS.register("cyber_skeleton_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CYBER_SKELETON, 0x888888, 0x4444AA, new Item.Properties()));
-
     public static final RegistryObject<Item> CYBER_WITHER_SKELETON_SPAWN_EGG = ITEMS.register("cyber_wither_skeleton_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CYBER_WITHER_SKELETON, 0x111111, 0xFF2222, new Item.Properties()));
-
     public static final RegistryObject<Item> CYBER_CREEPER_SPAWN_EGG = ITEMS.register("cyber_creeper_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CYBER_CREEPER, 0x0DA70B, 0xFF0000, new Item.Properties()));
-
     public static final RegistryObject<Item> CYBER_WITHER_SPAWN_EGG = ITEMS.register("cyber_wither_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CYBER_WITHER, 0x222222, 0x55FFFF, new Item.Properties()));
     public static final RegistryObject<Item> COMPONENT_BOX = ITEMS.register("component_box", ComponentBoxItem::new);
@@ -159,17 +154,17 @@ public class ModItems {
     public static final RegistryObject<Item> DISTANCE_ENHANCER = ITEMS.register("cybereye_upgrades_zoom", DistanceEnhancerItem::new);
     public static final RegistryObject<Item> HUMAN_LUNGS = registerHumanPart("body_part_lungs", RobosurgeonBlockEntity.SLOT_LUNGS, 1, BodyPartType.LUNGS);
     public static final RegistryObject<Item> COMPRESSED_OXYGEN = ITEMS.register("lungs_upgrades_oxygen", CompressedOxygenImplantItem::new);
-    public static final RegistryObject<Item> HUMAN_LEFT_ARM = registerHumanPart("body_part_arm_left", RobosurgeonBlockEntity.SLOT_ARMS, 1, BodyPartType.ARM);
+    public static final RegistryObject<Item> HUMAN_LEFT_ARM = registerHumanPart("body_part_arm_left", RobosurgeonBlockEntity.SLOT_ARMS, 1, BodyPartType.ARM_LEFT);
     public static final RegistryObject<Item> CYBER_ARM_LEFT = ITEMS.register("cyberlimbs_cyberarm_left", () -> new CyberArmItem(RobosurgeonBlockEntity.SLOT_ARMS, ModItems.HUMAN_LEFT_ARM));
-    public static final RegistryObject<Item> HUMAN_RIGHT_ARM = registerHumanPart("body_part_arm_right", RobosurgeonBlockEntity.SLOT_ARMS, 1, BodyPartType.ARM);
+    public static final RegistryObject<Item> HUMAN_RIGHT_ARM = registerHumanPart("body_part_arm_right", RobosurgeonBlockEntity.SLOT_ARMS, 1, BodyPartType.ARM_RIGHT);
     public static final RegistryObject<Item> CYBER_ARM_RIGHT = ITEMS.register("cyberlimbs_cyberarm_right", () -> new CyberArmItem(RobosurgeonBlockEntity.SLOT_ARMS, ModItems.HUMAN_RIGHT_ARM));
     public static final RegistryObject<Item> RETRACTABLE_CLAWS = ITEMS.register("hand_upgrades_claws", RetractableClawsItem::new);
     public static final RegistryObject<Item> REINFORCED_FIST = ITEMS.register("hand_upgrades_mining", ReinforcedFistItem::new);
     public static final RegistryObject<Item> HUMAN_LEFT_HAND = registerHumanPart("body_part_hand_left", RobosurgeonBlockEntity.SLOT_HANDS, 1, BodyPartType.HAND);
     public static final RegistryObject<Item> HUMAN_RIGHT_HAND = registerHumanPart("body_part_hand_right", RobosurgeonBlockEntity.SLOT_HANDS, 1, BodyPartType.HAND);
-    public static final RegistryObject<Item> HUMAN_LEFT_LEG = registerHumanPart("body_part_leg_left", RobosurgeonBlockEntity.SLOT_LEGS, 1, BodyPartType.LEG);
+    public static final RegistryObject<Item> HUMAN_LEFT_LEG = registerHumanPart("body_part_leg_left", RobosurgeonBlockEntity.SLOT_LEGS, 1, BodyPartType.LEG_LEFT);
     public static final RegistryObject<Item> CYBER_LEG_LEFT = ITEMS.register("cyberlimbs_cyberleg_left", () -> new CyberLegItem(RobosurgeonBlockEntity.SLOT_LEGS, ModItems.HUMAN_LEFT_LEG));
-    public static final RegistryObject<Item> HUMAN_RIGHT_LEG = registerHumanPart("body_part_leg_right", RobosurgeonBlockEntity.SLOT_LEGS, 1, BodyPartType.LEG);
+    public static final RegistryObject<Item> HUMAN_RIGHT_LEG = registerHumanPart("body_part_leg_right", RobosurgeonBlockEntity.SLOT_LEGS, 1, BodyPartType.LEG_RIGHT);
     public static final RegistryObject<Item> CYBER_LEG_RIGHT = ITEMS.register("cyberlimbs_cyberleg_right", () -> new CyberLegItem(RobosurgeonBlockEntity.SLOT_LEGS, ModItems.HUMAN_RIGHT_LEG));
     public static final RegistryObject<Item> LINEAR_ACTUATORS = ITEMS.register("leg_upgrades_jump_boost", LinearActuatorsItem::new);
     public static final RegistryObject<Item> FALL_BRACERS = ITEMS.register("leg_upgrades_fall_damage", FallBracersItem::new);
@@ -187,17 +182,14 @@ public class ModItems {
                     if (item instanceof CyberwareItem cw) {
                         if (page == 0) {
                             entries.accept(new ItemStack(item));
-
                         } else if (page == 1) {
                             ItemStack scavenged = new ItemStack(item);
                             cw.setPristine(scavenged, false);
                             entries.accept(scavenged);
-
                         }
                     } else {
                         if (page == 0) {
                             entries.accept(new ItemStack(item));
-
                         }
                     }
                 }
@@ -207,15 +199,12 @@ public class ModItems {
         return ITEMS.register(name, () -> new CyberwareItem.Builder(0, slotId)
                 .maxInstall(maxInstall)
                 .bodyPart(bodyPartType)
+                .quality(0)
                 .build());
-
     }
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
         TABS.register(eventBus);
-
     }
-
-
 }

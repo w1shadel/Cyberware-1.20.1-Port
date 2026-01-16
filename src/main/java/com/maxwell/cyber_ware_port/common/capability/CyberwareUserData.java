@@ -42,9 +42,15 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int currentEnergy = 0;
     private boolean isPowered = true;
     private boolean needsCapacityUpdate = true;
+    private boolean isValidating = false;
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
+            if (!isValidating) {
+                isValidating = true;
+                enforceLimbExclusivity();
+                isValidating = false;
+            }
             updateLimbStatus();
             needsCapacityUpdate = true;
         }
@@ -54,6 +60,34 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int lastProduction = 0;
     private int lastConsumption = 0;
     private int toleranceImmunityTime = 0;
+
+    private void enforceLimbExclusivity() {
+        java.util.Map<BodyPartType, Integer> bestSlotMap = new java.util.HashMap<>();
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+            if (!(stack.getItem() instanceof ICyberware cw)) continue;
+            BodyPartType type = cw.getBodyPartType(stack);
+            if (type == BodyPartType.NONE) continue;
+            int currentQuality = cw.getQuality(stack);
+            if (bestSlotMap.containsKey(type)) {
+                int existingSlot = bestSlotMap.get(type);
+                ItemStack existingStack = installedCyberware.getStackInSlot(existingSlot);
+                int existingQuality = 0;
+                if (existingStack.getItem() instanceof ICyberware existingCw) {
+                    existingQuality = existingCw.getQuality(existingStack);
+                }
+                if (currentQuality > existingQuality) {
+                    installedCyberware.setStackInSlot(existingSlot, ItemStack.EMPTY);
+                    bestSlotMap.put(type, i);
+                } else {
+                    installedCyberware.setStackInSlot(i, ItemStack.EMPTY);
+                }
+            } else {
+                bestSlotMap.put(type, i);
+            }
+        }
+    }
 
     public int getMaxTolerance(LivingEntity entity) {
         CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
