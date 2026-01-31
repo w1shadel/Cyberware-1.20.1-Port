@@ -6,6 +6,7 @@ import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
 import com.maxwell.cyber_ware_port.common.container.CyberwareWorkbenchMenu;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.core.BlockPos;
@@ -33,8 +34,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RangedWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +75,12 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             };
         }
     };
-    private final IItemHandler automationInputHandler = new IItemHandler() {
+    private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
+        @Override
+        public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+            itemHandler.setStackInSlot(slot, stack);
+        }
+
         @Override
         public int getSlots() {
             return INVENTORY_SIZE;
@@ -88,36 +94,37 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             if (stack.isEmpty()) return stack;
-            if (stack.is(Items.PAPER)) {
+            if (slot == PAPER_SLOT && stack.is(Items.PAPER)) {
                 return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
             }
-            if (stack.getItem() instanceof BlueprintItem) {
+            if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem) {
                 return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
             }
-            if (stack.getItem() instanceof ICyberware) {
+            if (slot == INPUT_SLOT && stack.getItem() instanceof ICyberware) {
                 return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
             }
-            AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-            if (activeRecipe != null) {
-                if (!isItemNeededForRecipe(activeRecipe, stack)) {
-                    return stack;
+            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
+                AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
+                if (activeRecipe != null && isItemNeededForRecipe(activeRecipe, stack)) {
+                    return itemHandler.insertItem(slot, stack, simulate);
                 }
+                return stack;
             }
-            ItemStack remaining = stack.copy();
-            for (int i = OUTPUT_SLOT_START;
-                 i < SPECIAL_OUTPUT_SLOT;
-                 i++) {
-                remaining = itemHandler.insertItem(i, remaining, simulate);
-                if (remaining.isEmpty()) {
-                    return ItemStack.EMPTY;
-                }
+            if (slot == SPECIAL_OUTPUT_SLOT) {
+                return stack;
             }
-            return remaining;
+            return stack;
         }
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
+            if (slot == SPECIAL_OUTPUT_SLOT) {
+                return itemHandler.extractItem(slot, amount, simulate);
+            }
+            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
+                return itemHandler.extractItem(slot, amount, simulate);
+            }
+            return itemHandler.extractItem(slot, amount, simulate);
         }
 
         @Override
@@ -127,34 +134,10 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return true;
+            return itemHandler.isItemValid(slot, stack);
         }
     };
-    private final IItemHandler automationOutputHandler = new RangedWrapper(itemHandler, OUTPUT_SLOT_START, INVENTORY_SIZE) {
-        @Override
-        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            return stack;
-        }
-
-        @Override
-        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            int absoluteSlot = slot + OUTPUT_SLOT_START;
-            if (absoluteSlot == SPECIAL_OUTPUT_SLOT) {
-                return super.extractItem(slot, amount, simulate);
-            }
-            AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-            if (activeRecipe != null) {
-                ItemStack stackInSlot = itemHandler.getStackInSlot(absoluteSlot);
-                if (!stackInSlot.isEmpty() && isItemNeededForRecipe(activeRecipe, stackInSlot)) {
-                    return ItemStack.EMPTY;
-                }
-            }
-            return super.extractItem(slot, amount, simulate);
-        }
-    };
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private LazyOptional<IItemHandler> lazyInputHandler = LazyOptional.empty();
-    private LazyOptional<IItemHandler> lazyOutputHandler = LazyOptional.empty();
+    private LazyOptional<IItemHandler> lazyExposedHandler = LazyOptional.empty();
     private int progress = 0;
     private boolean isCrafting = false;
     private int cooldown = 0;
@@ -260,10 +243,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         }
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
         if (inputStack.isEmpty()) return false;
-        ItemStack paperStack = this.itemHandler.getStackInSlot(PAPER_SLOT);
-        if (paperStack.isEmpty() || !paperStack.is(Items.PAPER)) {
-            return false;
-        }
         SimpleContainer tempContainer = new SimpleContainer(1);
         tempContainer.setItem(0, inputStack);
         var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
@@ -300,7 +279,9 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                     cyberware.setPristine(result, true);
                 }
                 this.itemHandler.insertItem(SPECIAL_OUTPUT_SLOT, result, false);
-                this.itemHandler.extractItem(BLUEPRINT_SLOT, 1, false);
+                if (CyberwareConfig.CONSUME_BLUEPRINT.get()) {
+                    this.itemHandler.extractItem(BLUEPRINT_SLOT, 1, false);
+                }
             }
             return;
         }
@@ -390,13 +371,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (side == null) {
-                return lazyItemHandler.cast();
-            }
-            if (side == Direction.DOWN) {
-                return lazyOutputHandler.cast();
-            }
-            return lazyInputHandler.cast();
+            return lazyExposedHandler.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -404,17 +379,13 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     @Override
     public void onLoad() {
         super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyInputHandler = LazyOptional.of(() -> automationInputHandler);
-        lazyOutputHandler = LazyOptional.of(() -> automationOutputHandler);
+        lazyExposedHandler = LazyOptional.of(() -> exposedHandler);
     }
 
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyInputHandler.invalidate();
-        lazyOutputHandler.invalidate();
+        lazyExposedHandler.invalidate();
     }
 
     @Override

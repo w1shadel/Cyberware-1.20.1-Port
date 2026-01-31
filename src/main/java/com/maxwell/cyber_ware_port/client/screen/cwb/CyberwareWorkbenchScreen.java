@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.client.screen.cwb;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
@@ -9,7 +10,6 @@ import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.common.network.ComponentChangePagePacket;
 import com.maxwell.cyber_ware_port.common.network.ComponentToggleExtendTabPacket;
 import com.maxwell.cyber_ware_port.common.network.StartWorkbenchCraftingPacket;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
@@ -26,6 +26,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,11 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                 ItemStack inputStack = menu.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();
                 ItemStack blueprintStack = menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
+
+                // 紙スロットの状態を確認
+                ItemStack paperStack = menu.getSlot(CyberwareWorkbenchBlockEntity.PAPER_SLOT).getItem();
+                boolean hasPaper = !paperStack.isEmpty() && paperStack.is(Items.PAPER);
+
                 boolean hasInput = !inputStack.isEmpty();
                 if (this.isHovered() && hasInput) {
                     guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);
@@ -100,7 +106,7 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
                             SimpleContainer tempInv = new SimpleContainer(inputStack);
                             Optional<EngineeringRecipe> recipeOpt = minecraft.level.getRecipeManager().getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempInv, minecraft.level);
                             if (recipeOpt.isPresent()) {
-                                float chance = recipeOpt.get().getBlueprintChance();
+                                float chance = hasPaper ? recipeOpt.get().getBlueprintChance() : 0.0f;
                                 String chanceStr = String.format("%.0f", chance * 100);
                                 tooltip.add(Component.translatable("gui.cyber_ware_port.blueprint_chance", chanceStr).withStyle(ChatFormatting.GRAY));
                             }

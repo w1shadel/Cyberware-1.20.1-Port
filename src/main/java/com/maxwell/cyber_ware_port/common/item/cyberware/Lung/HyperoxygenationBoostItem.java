@@ -19,10 +19,11 @@ public class HyperoxygenationBoostItem extends CyberwareItem {
     public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (wearer.isSprinting()) {
             wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                int cost = this.getEnergyConsumption(stack);
+                int count = stack.getCount();
+                int cost = this.getEnergyConsumption(stack) * count;
                 if (data.extractEnergy(cost, true) == cost) {
                     data.extractEnergy(cost, false);
-                    wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 5, 0, false, false, false));
+                    wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, count - 1, false, false, false));
                 }
             });
         }

@@ -22,7 +22,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,8 +29,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RangedWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +41,8 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     public static final int MAX_PROGRESS = 2400;
     private static final int SLOT_COUNT = 3;
     protected final ContainerData data;
+
+    // 内部インベントリの定義 (変更なし)
     private final ItemStackHandler itemHandler = new ItemStackHandler(SLOT_COUNT) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -58,35 +59,73 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             };
         }
     };
-    private final IItemHandler paperInputHandler = new RangedWrapper(itemHandler, SLOT_PAPER, SLOT_PAPER + 1) {
+
+    // 【修正】外部アクセス用の統合ハンドラーを定義
+    // 全スロットへのアクセスを許容しつつ、搬入・搬出のルールを適用する
+    private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
         @Override
-        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
+        public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+            itemHandler.setStackInSlot(slot, stack);
         }
-    };
-    private final IItemHandler componentInputHandler = new RangedWrapper(itemHandler, SLOT_INPUT, SLOT_INPUT + 1) {
+
         @Override
-        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
+        public int getSlots() {
+            return SLOT_COUNT;
         }
-    };
-    private final IItemHandler outputHandler = new RangedWrapper(itemHandler, SLOT_OUTPUT, SLOT_OUTPUT + 1) {
+
+        @Override
+        public @NotNull ItemStack getStackInSlot(int slot) {
+            return itemHandler.getStackInSlot(slot);
+        }
+
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            if (stack.isEmpty()) return stack;
+
+            // 1. 紙スロットへの搬入
+            if (slot == SLOT_PAPER && stack.is(Items.PAPER)) {
+                return itemHandler.insertItem(SLOT_PAPER, stack, simulate);
+            }
+
+            // 2. スキャン対象スロットへの搬入
+            if (slot == SLOT_INPUT && stack.getItem() instanceof ICyberware) {
+                return itemHandler.insertItem(SLOT_INPUT, stack, simulate);
+            }
+
+            // 出力スロットへの搬入は拒否
+            // また、上記条件に合致しないアイテムも拒否
             return stack;
         }
-    };
-    private final IItemHandler genericInputHandler = new RangedWrapper(itemHandler, 0, 2) {
+
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            // 1. 出力スロットからの搬出は常に許可
+            if (slot == SLOT_OUTPUT) {
+                return itemHandler.extractItem(slot, amount, simulate);
+            }
+
+            // 入力スロット(紙、部品)からの搬出は許可しない
+            // (必要であれば許可しても良いですが、通常は加工機械からは成果物のみ取り出します)
             return ItemStack.EMPTY;
         }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return itemHandler.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return itemHandler.isItemValid(slot, stack);
+        }
     };
-    private LazyOptional<IItemHandler> lazyPaperHandler = LazyOptional.empty();
-    private LazyOptional<IItemHandler> lazyComponentHandler = LazyOptional.empty();
-    private LazyOptional<IItemHandler> lazyOutputHandler = LazyOptional.empty();
-    private LazyOptional<IItemHandler> lazyGenericInputHandler = LazyOptional.empty();
+
+    // LazyOptionalの管理
+    private LazyOptional<IItemHandler> lazyExposedHandler = LazyOptional.empty();
+
+    // ※元の分割されたハンドラー変数は削除または未使用とします
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+
     private int progress = 0;
     private boolean isWorking = false;
 
@@ -114,6 +153,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         };
     }
 
+    // tickメソッドなどは変更なし...
     public static void tick(Level pLevel, BlockPos pPos, BlockState pState, ScannerBlockEntity pEntity) {
         if (pLevel.isClientSide()) {
             if (pEntity.isWorking) {
@@ -154,45 +194,33 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyPaperHandler = LazyOptional.of(() -> paperInputHandler);
-        lazyComponentHandler = LazyOptional.of(() -> componentInputHandler);
-        lazyOutputHandler = LazyOptional.of(() -> outputHandler);
-        lazyGenericInputHandler = LazyOptional.of(() -> genericInputHandler);
+        // 【修正】統合ハンドラーを登録
+        lazyExposedHandler = LazyOptional.of(() -> exposedHandler);
     }
 
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
-        lazyPaperHandler.invalidate();
-        lazyComponentHandler.invalidate();
-        lazyOutputHandler.invalidate();
-        lazyGenericInputHandler.invalidate();
+        // 【修正】統合ハンドラーを無効化
+        lazyExposedHandler.invalidate();
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
+            // 【修正】方向に関係なく統合ハンドラーを返す
+            // 内部GUI用(side==null)はそのまま itemHandler を返しても良いが、
+            // 外部アクセス用(side!=null)は全て exposedHandler を返す
             if (side == null) {
                 return lazyItemHandler.cast();
             }
-            Direction facing = this.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
-            Direction right = facing.getCounterClockWise();
-            Direction left = facing.getClockWise();
-            Direction back = facing.getOpposite();
-            if (side == right) {
-                return lazyOutputHandler.cast();
-            }
-            if (side == left) {
-                return lazyComponentHandler.cast();
-            }
-            if (side == back) {
-                return lazyPaperHandler.cast();
-            }
-            return lazyGenericInputHandler.cast();
+            return lazyExposedHandler.cast();
         }
         return super.getCapability(cap, side);
     }
+
+    // ... (以下のメソッドは変更なし) ...
 
     private void syncToClient() {
         if (this.level != null) {

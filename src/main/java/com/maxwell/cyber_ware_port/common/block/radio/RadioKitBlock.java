@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RadioKitBlock extends HorizontalDirectionalBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final Map<ResourceKey<Level>, Long> LAST_ACTIVE_TIME = new ConcurrentHashMap<>();
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(3, 0, 6, 15, 4, 14),
             Block.box(2, 0, 1, 4, 15, 3)
@@ -68,8 +69,6 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
     public BlockState mirror(BlockState pState, Mirror pMirror) {
         return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
-
-    public static final Map<ResourceKey<Level>, Long> LAST_ACTIVE_TIME = new ConcurrentHashMap<>();
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

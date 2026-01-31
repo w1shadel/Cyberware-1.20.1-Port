@@ -38,23 +38,19 @@ public class CyberwarePlayerLayer extends RenderLayer<AbstractClientPlayer, Play
             }
             PlayerModel<AbstractClientPlayer> parentModel = this.getParentModel();
             VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(CYBER_SKIN_TEXTURE));
-            // 右腕
-            if (data.hasCyberRightArm() && !player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)) {
+            if (data.hasCyberRightArm() && player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)) {
                 this.cyberLimbModel.rightArm.copyFrom(parentModel.rightArm);
                 this.cyberLimbModel.rightArm.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
             }
-            // 左腕
-            if (data.hasCyberLeftArm() && !player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE)) {
+            if (data.hasCyberLeftArm() && player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE)) {
                 this.cyberLimbModel.leftArm.copyFrom(parentModel.leftArm);
                 this.cyberLimbModel.leftArm.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
             }
-            // 右脚
-            if (data.hasCyberRightLeg() && !player.isModelPartShown(PlayerModelPart.RIGHT_PANTS_LEG)) {
+            if (data.hasCyberRightLeg() && player.isModelPartShown(PlayerModelPart.RIGHT_PANTS_LEG)) {
                 this.cyberLimbModel.rightLeg.copyFrom(parentModel.rightLeg);
                 this.cyberLimbModel.rightLeg.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
             }
-            // 左脚
-            if (data.hasCyberLeftLeg() && !player.isModelPartShown(PlayerModelPart.LEFT_PANTS_LEG)) {
+            if (data.hasCyberLeftLeg() && player.isModelPartShown(PlayerModelPart.LEFT_PANTS_LEG)) {
                 this.cyberLimbModel.leftLeg.copyFrom(parentModel.leftLeg);
                 this.cyberLimbModel.leftLeg.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
             }

@@ -16,7 +16,7 @@ public class DeployableWheelsItem extends CyberwareItem {
                 .addAttribute(
                         ForgeMod.STEP_HEIGHT_ADDITION.get(),
                         "d6c3e8a0-1234-4a5b-8c9d-123456789abc",
-                        0.65,
+                        1.0, // 0.65から1.0に増加
                         AttributeModifier.Operation.ADDITION
                 )
         );

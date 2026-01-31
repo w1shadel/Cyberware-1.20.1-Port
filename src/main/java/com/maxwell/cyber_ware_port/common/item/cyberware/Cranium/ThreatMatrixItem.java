@@ -27,13 +27,21 @@ public class ThreatMatrixItem extends CyberwareItem {
     @Override
     public void onLivingAttack(LivingAttackEvent event, ItemStack stack, LivingEntity wearer) {
         if (!(wearer instanceof Player player)) return;
-        boolean isLightlyArmored = player.getItemBySlot(EquipmentSlot.HEAD).isEmpty() && player.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
+        // 回避すべきでないダメージタイプを除外
+        if (event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) || // 毒や窒息など
+                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) ||        // 火炎
+                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {       // 落下
+            return;
+        }
+        boolean isLightlyArmored = player.getItemBySlot(EquipmentSlot.HEAD).isEmpty() &&
+                player.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
         if (isLightlyArmored) {
             if (player.getRandom().nextFloat() < 0.3f) {
                 player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                     if (tryConsumeEventEnergy(data, stack)) {
                         event.setCanceled(true);
-                        player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 2.0f);
+                        player.level().playSound(null, player.blockPosition(),
+                                SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 2.0f);
                     }
                 });
             }

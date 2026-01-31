@@ -45,7 +45,7 @@ public class CyberwareHudOverlay {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.isEmpty()) continue;
-            if (stack.getItem() == ModItems.HUDJACK.get() || stack.getItem() == ModItems.CYBER_EYE.get()) {
+            if (stack.getItem() == ModItems.HUDJACK.get()) {
                 if (stack.getItem() instanceof ICyberware cw) {
                     if (cw.isActive(stack)) {
                         return true;

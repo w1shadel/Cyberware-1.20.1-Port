@@ -19,8 +19,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,9 +28,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergyStorage {
     private boolean hasCyberLeftArm = false;
@@ -68,7 +66,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             if (stack.isEmpty()) continue;
             if (!(stack.getItem() instanceof ICyberware cw)) continue;
             BodyPartType type = cw.getBodyPartType(stack);
-            if (type == BodyPartType.NONE) continue;
+            if (type == BodyPartType.NONE || cw.getMaxInstallAmount(stack) > 1) continue;
             int currentQuality = cw.getQuality(stack);
             if (bestSlotMap.containsKey(type)) {
                 int existingSlot = bestSlotMap.get(type);
@@ -111,51 +109,55 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     }
 
     public void recalculateCapacity(ServerPlayer player) {
-        float oldMaxHealth = player.getMaxHealth();
-        float oldHealth = player.getHealth();
-        float healthRatio = (oldMaxHealth > 0) ? oldHealth / oldMaxHealth : 1.0F;
-        int totalCapacity = 0;
+        float oldMaxHealth = player.getHealth();
+        float oldMaxHealthVal = player.getMaxHealth();
+        float healthRatio = (oldMaxHealthVal > 0) ? oldMaxHealth / oldMaxHealthVal : 1.0F;
         AttributeMap attributeMap = player.getAttributes();
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            final int slotIndex = i;
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
-                cw.getAttributeModifiers(stack).forEach((attribute, modifier) -> {
-                    AttributeInstance instance = attributeMap.getInstance(attribute);
-                    if (instance != null) {
-                        UUID slotUUID = generateUUID(slotIndex, modifier.getId());
-                        instance.removeModifier(slotUUID);
-                    }
-                });
+        // 1. 古いモディファイアを完全に消去する
+        // getSyncableAttributes で取得できるものに対して、Cyberwareが生成したUUIDを全消去
+        for (var instance : attributeMap.getSyncableAttributes()) {
+            List<UUID> toRemove = new ArrayList<>();
+            for (var mod : instance.getModifiers()) {
+                if (mod.getName().startsWith("Cyberware Slot ")) {
+                    toRemove.add(mod.getId());
+                }
             }
+            toRemove.forEach(instance::removeModifier);
         }
+        int totalCapacity = 0;
+        // 2. 現在インストールされているパーツに基づいて再計算
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             final int slotIndex = i;
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
                 int count = stack.getCount();
+                // エネルギー容量
                 if (cyberware.hasEnergyProperties(stack)) {
-                    int singleStorage = cyberware.getEnergyStorage(stack);
-                    totalCapacity += singleStorage * count;
+                    totalCapacity += cyberware.getEnergyStorage(stack) * count;
                 }
+                // 属性の適用
                 if (cyberware.isActive(stack)) {
                     boolean consumesEnergy = cyberware.hasEnergyProperties(stack) && cyberware.getEnergyConsumption(stack) > 0;
                     if (!consumesEnergy || this.isPowered) {
                         cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
-                            if (attributeMap.hasAttribute(attribute)) {
-                                AttributeInstance instance = attributeMap.getInstance(attribute);
-                                if (instance != null) {
-                                    UUID slotUUID = generateUUID(slotIndex, originalModifier.getId());
-                                    double value = originalModifier.getAmount() * count;
-                                    net.minecraft.world.entity.ai.attributes.AttributeModifier newModifier = new net.minecraft.world.entity.ai.attributes.AttributeModifier(
-                                            slotUUID,
-                                            "Cyberware Slot " + slotIndex,
-                                            value,
-                                            originalModifier.getOperation()
-                                    );
-                                    if (!instance.hasModifier(newModifier)) {
-                                        instance.addTransientModifier(newModifier);
-                                    }
+                            var instance = attributeMap.getInstance(attribute);
+                            if (instance != null) {
+                                // スロットと元のIDから一意のUUIDを生成
+                                UUID slotUUID = generateUUID(slotIndex, originalModifier.getId());
+                                AttributeModifier newModifier = new AttributeModifier(
+                                        slotUUID,
+                                        "Cyberware Slot " + slotIndex,
+                                        originalModifier.getAmount() * count,
+                                        originalModifier.getOperation()
+                                );
+                                // 【最重要】クラッシュ防止：既に存在するかチェックしてから追加
+                                // getModifier(UUID) が null を返さない場合は既に追加されている
+                                if (instance.getModifier(slotUUID) == null) {
+                                    instance.addTransientModifier(newModifier);
+                                } else {
+                                    // 万が一残っていたら、一度消してから追加（上書き）
+                                    instance.removeModifier(slotUUID);
+                                    instance.addTransientModifier(newModifier);
                                 }
                             }
                         });
@@ -167,9 +169,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (this.currentEnergy > this.maxEnergy) {
             this.currentEnergy = this.maxEnergy;
         }
-        float newMaxHealth = player.getMaxHealth();
-        if (healthRatio > 1.0F) healthRatio = 1.0F;
-        player.setHealth(newMaxHealth * healthRatio);
+        // 体力の再設定（新しい最大体力に基づいて比率を維持）
+        player.setHealth(player.getMaxHealth() * Math.min(healthRatio, 1.0F));
     }
 
     public void setRespawnGracePeriod(int ticks) {

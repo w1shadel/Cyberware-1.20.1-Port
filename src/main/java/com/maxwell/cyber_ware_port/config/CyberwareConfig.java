@@ -13,6 +13,7 @@ public class CyberwareConfig {
     public static final ForgeConfigSpec.DoubleValue ZOMBIE_CONVERSION_CHANCE;
     public static final ForgeConfigSpec.DoubleValue SKELETON_CONVERSION_CHANCE;
     public static final ForgeConfigSpec.DoubleValue CREEPER_CONVERSION_CHANCE;
+    public static final ForgeConfigSpec.BooleanValue CONSUME_BLUEPRINT; // 追加
 
     static {
         BUILDER.push("Behavior");
@@ -34,6 +35,9 @@ public class CyberwareConfig {
                 .comment("True: The item is destroyed upon use (Default).")
                 .comment("False: The item can be used indefinitely, only consuming energy.")
                 .define("consumeDefibrillatorOnUse", true);
+        CONSUME_BLUEPRINT = BUILDER
+                .comment("Whether blueprints are consumed when crafting in the Cyberware Workbench.")
+                .define("consumeBlueprint", false); // デフォルトは消費しない(false)に設定
         BUILDER.pop();
         BUILDER.push("Spawning");
         WITHER_CONVERSION_CHANCE = BUILDER

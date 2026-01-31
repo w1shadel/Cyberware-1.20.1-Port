@@ -76,6 +76,7 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
         this.registerDefaultState(this.stateDefinition.any().setValue(FORMED, false).setValue(FACING, Direction.NORTH));
     }
 
+    // ... (getStateForPlacement, rotate, mirror, createBlockStateDefinition, onPlace, onRemove, getRenderShape, newBlockEntity は変更なし) ...
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
@@ -139,9 +140,10 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
         if (pLevel.isClientSide) return null;
         if (pBlockEntityType == ModBlockEntities.RADIO_TOWER_CORE.get()) {
             return (lvl, pos, st, be) -> {
-                RadioTowerCoreBlockEntity.serverTick(lvl, pos, st, (RadioTowerCoreBlockEntity) be);
-                if (st.getValue(FORMED) && lvl.getGameTime() % 20 == 0) {
-                    LAST_TOWER_ACTIVE_TIME.put(lvl.dimension(), lvl.getGameTime());
+                if (st.getValue(FORMED)) {
+                    if (lvl.getGameTime() % 20 == 0) {
+                        LAST_TOWER_ACTIVE_TIME.put(lvl.dimension(), lvl.getGameTime());
+                    }
                 }
             };
         }
