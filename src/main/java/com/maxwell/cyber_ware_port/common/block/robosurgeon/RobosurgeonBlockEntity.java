@@ -330,7 +330,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         var cap = player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
         if (!cap.isPresent()) return false;
         ItemStackHandler playerBody = cap.resolve().get().getInstalledCyberware();
-        // 1. 手術後の「未来の体」をシミュレートしてカウントする
         java.util.Map<net.minecraft.world.item.Item, Integer> futureCounts = new java.util.HashMap<>();
         java.util.List<ItemStack> futureBody = new java.util.ArrayList<>();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
@@ -338,13 +337,10 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             ItemStack bodyStack = playerBody.getStackInSlot(i);
             ItemStack finalStack;
             if (tableStack.isEmpty()) {
-                // スロットが空 ＝ その部位は除去される
                 finalStack = ItemStack.EMPTY;
             } else if (tableStack.hasTag() && tableStack.getTag().getBoolean("cyberware_ghost")) {
-                // ゴースト ＝ 現在のパーツが維持される
                 finalStack = bodyStack;
             } else {
-                // 実体アイテム ＝ 新しいパーツがインストールされる
                 finalStack = tableStack;
             }
             if (!finalStack.isEmpty()) {
@@ -352,16 +348,13 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                 futureCounts.put(finalStack.getItem(), futureCounts.getOrDefault(finalStack.getItem(), 0) + finalStack.getCount());
             }
         }
-        // 2. インストール上限（maxInstall）のチェック
         for (ItemStack stack : futureBody) {
             if (stack.getItem() instanceof ICyberware cw) {
                 int maxAllowed = cw.getMaxInstallAmount(stack);
                 int projectedTotal = futureCounts.getOrDefault(stack.getItem(), 0);
                 if (projectedTotal > maxAllowed) {
-                    // エクスプロイト防止：合計数が上限を超えている場合は手術不可
                     return false;
                 }
-                // 3. 前提条件（Prerequisites）のチェック（既存のロジック）
                 java.util.Set<net.minecraft.world.item.Item> reqs = cw.getPrerequisites(stack);
                 for (net.minecraft.world.item.Item reqItem : reqs) {
                     boolean found = false;

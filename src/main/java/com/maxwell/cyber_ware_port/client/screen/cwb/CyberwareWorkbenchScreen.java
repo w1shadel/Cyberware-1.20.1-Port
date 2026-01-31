@@ -34,11 +34,9 @@ import java.util.Optional;
 
 @SuppressWarnings("removal")
 public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareWorkbenchMenu> {
-
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png");
     private static final ResourceLocation COMPONENT_BOX_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/component_box.png");
     private static final ResourceLocation BLUEPRINT_PANEL_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/blueprint_chest.png");
-
     private ItemStack cachedBlueprint = ItemStack.EMPTY;
     private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;
     private float slideProgress = 1.0f;
@@ -87,11 +85,8 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                 ItemStack inputStack = menu.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();
                 ItemStack blueprintStack = menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
-
-                // 紙スロットの状態を確認
                 ItemStack paperStack = menu.getSlot(CyberwareWorkbenchBlockEntity.PAPER_SLOT).getItem();
                 boolean hasPaper = !paperStack.isEmpty() && paperStack.is(Items.PAPER);
-
                 boolean hasInput = !inputStack.isEmpty();
                 if (this.isHovered() && hasInput) {
                     guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);

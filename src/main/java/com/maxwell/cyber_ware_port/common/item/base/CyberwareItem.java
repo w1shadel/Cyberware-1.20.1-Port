@@ -20,9 +20,6 @@ import java.util.stream.Collectors;
 
 public class CyberwareItem extends Item implements ICyberware {
     private static final String NBT_KEY_PRISTINE = "IsPristine";
-    // =====================================================================================
-    //  DOCUMENTATION CONSTANTS (Protected from regex deletion)
-    // =====================================================================================
     private static final String DOC_essenceCost = "Essence cost to install this cyberware.";
     private final int essenceCost;
     private static final String DOC_slotId = "The internal inventory slot ID (0-based) where this item belongs.";
@@ -226,7 +223,6 @@ public class CyberwareItem extends Item implements ICyberware {
         private int energyGeneration = 0;
         private int energyStorage = 0;
         private int eventConsumption = 0;
-        // protected documentation strings
         private static final String DOC_quality = "Default quality is 1 (Standard Cyberware). Set to 0 for Human parts.";
         private int quality = 1;
         private StackingRule stackingRule = StackingRule.LINEAR;

@@ -19,7 +19,6 @@ public class RetractableClawsItem extends CyberwareItem {
     @Override
     public void onLivingHurt(LivingHurtEvent event, ItemStack stack, LivingEntity attacker) {
         if (attacker.getMainHandItem().isEmpty()) {
-            // 1個につき1.0ダメージ加算（4個スタックで+4.0）
             float bonusDamage = 1.0f * stack.getCount();
             event.setAmount(event.getAmount() + bonusDamage);
         }

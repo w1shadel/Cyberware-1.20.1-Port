@@ -113,8 +113,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         float oldMaxHealthVal = player.getMaxHealth();
         float healthRatio = (oldMaxHealthVal > 0) ? oldMaxHealth / oldMaxHealthVal : 1.0F;
         AttributeMap attributeMap = player.getAttributes();
-        // 1. 古いモディファイアを完全に消去する
-        // getSyncableAttributes で取得できるものに対して、Cyberwareが生成したUUIDを全消去
         for (var instance : attributeMap.getSyncableAttributes()) {
             List<UUID> toRemove = new ArrayList<>();
             for (var mod : instance.getModifiers()) {
@@ -125,24 +123,20 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             toRemove.forEach(instance::removeModifier);
         }
         int totalCapacity = 0;
-        // 2. 現在インストールされているパーツに基づいて再計算
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             final int slotIndex = i;
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
                 int count = stack.getCount();
-                // エネルギー容量
                 if (cyberware.hasEnergyProperties(stack)) {
                     totalCapacity += cyberware.getEnergyStorage(stack) * count;
                 }
-                // 属性の適用
                 if (cyberware.isActive(stack)) {
                     boolean consumesEnergy = cyberware.hasEnergyProperties(stack) && cyberware.getEnergyConsumption(stack) > 0;
                     if (!consumesEnergy || this.isPowered) {
                         cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
                             var instance = attributeMap.getInstance(attribute);
                             if (instance != null) {
-                                // スロットと元のIDから一意のUUIDを生成
                                 UUID slotUUID = generateUUID(slotIndex, originalModifier.getId());
                                 AttributeModifier newModifier = new AttributeModifier(
                                         slotUUID,
@@ -150,12 +144,9 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                                         originalModifier.getAmount() * count,
                                         originalModifier.getOperation()
                                 );
-                                // 【最重要】クラッシュ防止：既に存在するかチェックしてから追加
-                                // getModifier(UUID) が null を返さない場合は既に追加されている
                                 if (instance.getModifier(slotUUID) == null) {
                                     instance.addTransientModifier(newModifier);
                                 } else {
-                                    // 万が一残っていたら、一度消してから追加（上書き）
                                     instance.removeModifier(slotUUID);
                                     instance.addTransientModifier(newModifier);
                                 }
@@ -169,7 +160,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (this.currentEnergy > this.maxEnergy) {
             this.currentEnergy = this.maxEnergy;
         }
-        // 体力の再設定（新しい最大体力に基づいて比率を維持）
         player.setHealth(player.getMaxHealth() * Math.min(healthRatio, 1.0F));
     }
 

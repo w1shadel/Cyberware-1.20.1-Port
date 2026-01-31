@@ -20,11 +20,10 @@ public class CompressedOxygenImplantItem extends CyberwareItem {
         if (wearer.getAirSupply() < wearer.getMaxAirSupply()) {
             if (wearer.tickCount % 20 == 0) {
                 wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                    int count = stack.getCount(); // スタック数を取得
-                    int cost = this.getEnergyConsumption(stack) * count; // 消費電力もスタック分計算
+                    int count = stack.getCount();
+                    int cost = this.getEnergyConsumption(stack) * count;
                     if (data.extractEnergy(cost, true) == cost) {
                         data.extractEnergy(cost, false);
-                        // 1個につき15回復（1秒の消費20に対し、1個なら-5、2個なら+10で無限）
                         int refillAmount = 15 * count;
                         int newAir = Math.min(wearer.getAirSupply() + refillAmount, wearer.getMaxAirSupply());
                         wearer.setAirSupply(newAir);

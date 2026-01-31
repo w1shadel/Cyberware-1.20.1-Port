@@ -27,10 +27,9 @@ public class ThreatMatrixItem extends CyberwareItem {
     @Override
     public void onLivingAttack(LivingAttackEvent event, ItemStack stack, LivingEntity wearer) {
         if (!(wearer instanceof Player player)) return;
-        // 回避すべきでないダメージタイプを除外
-        if (event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) || // 毒や窒息など
-                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) ||        // 火炎
-                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {       // 落下
+        if (event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) ||
+                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) ||
+                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {
             return;
         }
         boolean isLightlyArmored = player.getItemBySlot(EquipmentSlot.HEAD).isEmpty() &&

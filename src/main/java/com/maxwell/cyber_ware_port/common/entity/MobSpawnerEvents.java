@@ -60,23 +60,20 @@ public class MobSpawnerEvents {
         }
     }
 
-    private static final double PLAYER_BEACON_BOOST = 0.25; // インプラントによるボーナス
+    private static final double PLAYER_BEACON_BOOST = 0.25;
 
     private static double calculateBonusChance(ServerLevel level, BlockPos spawnPos) {
         double bonus = 0.0;
         ResourceKey<Level> dimKey = level.dimension();
         long currentTime = level.getGameTime();
-        // 1. 固定設置型（電波塔など）のチェック
         if (isActive(RadioKitBlock.LAST_ACTIVE_TIME, dimKey, currentTime)) bonus += RADIO_KIT_BOOST;
         if (isActive(RadioTowerCoreBlock.LAST_TOWER_ACTIVE_TIME, dimKey, currentTime)) bonus += RADIO_TOWER_BOOST;
-        // 2. 周囲のプレイヤー（インプラント）のチェック
-        // スポーン地点から一定範囲（例: 48ブロック）に起動中のブロードキャスターを持つプレイヤーがいるか
         List<? extends Player> players = level.players();
         for (Player player : players) {
             if (player.distanceToSqr(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ()) < 48 * 48) {
                 if (isCranialBroadcasterActive(player)) {
                     bonus += PLAYER_BEACON_BOOST;
-                    break; // 一人いれば十分
+                    break;
                 }
             }
         }

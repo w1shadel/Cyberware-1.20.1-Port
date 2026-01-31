@@ -76,7 +76,6 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
         this.registerDefaultState(this.stateDefinition.any().setValue(FORMED, false).setValue(FACING, Direction.NORTH));
     }
 
-    // ... (getStateForPlacement, rotate, mirror, createBlockStateDefinition, onPlace, onRemove, getRenderShape, newBlockEntity は変更なし) ...
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {

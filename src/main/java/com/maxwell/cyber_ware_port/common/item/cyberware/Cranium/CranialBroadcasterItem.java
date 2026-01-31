@@ -9,7 +9,7 @@ public class CranialBroadcasterItem extends CyberwareItem {
     public CranialBroadcasterItem() {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
-                .energy(2, 0, 0, StackingRule.STATIC)); // 毎秒ではなく毎チック微量を消費
+                .energy(2, 0, 0, StackingRule.STATIC));
     }
 
     @Override
