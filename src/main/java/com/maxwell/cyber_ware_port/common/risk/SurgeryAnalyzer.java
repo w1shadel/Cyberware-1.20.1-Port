@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.risk;
 
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 public class SurgeryAnalyzer {
-
     public static SurgeryAlert check(List<Slot> slots, int maxTolerance) {
         Set<BodyPartType> futureParts = EnumSet.noneOf(BodyPartType.class);
         List<ItemStack> futureItems = new java.util.ArrayList<>();
@@ -23,14 +23,15 @@ public class SurgeryAnalyzer {
             if (i >= slots.size()) break;
             ItemStack stack = slots.get(i).getItem();
             if (stack.isEmpty()) continue;
-            if (stack.getItem() instanceof ICyberware cyberware) {
-                projectedCost += cyberware.getEssenceCost(stack) * stack.getCount();
-                BodyPartType type = cyberware.getBodyPartType(stack);
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null) {
+                projectedCost += cw.getEssenceCost(stack) * stack.getCount();
+                BodyPartType type = cw.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
                     futureParts.add(type);
                 }
                 futureItems.add(stack);
-                int targetSlot = cyberware.getSlot(stack);
+                int targetSlot = cw.getSlot(stack);
                 if (targetSlot == RobosurgeonBlockEntity.SLOT_ARMS || targetSlot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
                     armCount++;
                 } else if (targetSlot == RobosurgeonBlockEntity.SLOT_LEGS || targetSlot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
@@ -39,7 +40,8 @@ public class SurgeryAnalyzer {
             }
         }
         for (ItemStack stack : futureItems) {
-            if (stack.getItem() instanceof ICyberware cw) {
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null) {
                 for (net.minecraft.world.item.Item req : cw.getPrerequisites(stack)) {
                     boolean found = false;
                     for (ItemStack other : futureItems) {

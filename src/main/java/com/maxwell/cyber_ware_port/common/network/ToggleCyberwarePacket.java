@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.network;
 
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,9 +35,10 @@ public class ToggleCyberwarePacket {
             if (player != null) {
                 player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                     ItemStack stack = data.getInstalledCyberware().getStackInSlot(slotId);
-                    if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
-                        if (cyberware.canToggle(stack)) {
-                            cyberware.toggle(stack);
+                    ICyberware cw = CyberwareAPI.getCyberware(stack);
+                    if (!stack.isEmpty() && cw != null) {
+                        if (cw.canToggle(stack)) {
+                            cw.toggle(stack);
                             data.recalculateCapacity(player);
                             data.syncToClient(player);
 

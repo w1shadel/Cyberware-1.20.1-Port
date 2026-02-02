@@ -12,7 +12,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @SuppressWarnings("removal")
 @Mod(CyberWare.MODID)
 public class CyberWare {
-
     public static final String MODID = "cyber_ware_port";
 
     public CyberWare(FMLJavaModLoadingContext context) {
@@ -28,4 +27,5 @@ public class CyberWare {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CyberwareConfig.COMMON_CONFIG, "cyberware-common.toml");
 
     }
+
 }

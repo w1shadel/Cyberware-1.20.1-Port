@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -139,12 +140,13 @@ public class CapabilityEvents {
             int armCount = 0;
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (stack.isEmpty()) continue;
                 if (stack.getItem() == ModItems.HUMAN_LEFT_ARM.get() ||
                         stack.getItem() == ModItems.HUMAN_RIGHT_ARM.get()) {
                     armCount++;
-                } else if (stack.getItem() instanceof ICyberware cyberware) {
-                    int slot = cyberware.getSlot(stack);
+                } else if (cw != null) {
+                    int slot = cw.getSlot(stack);
                     if (slot == RobosurgeonBlockEntity.SLOT_ARMS || slot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
                         armCount++;
                     }
@@ -220,7 +222,8 @@ public class CapabilityEvents {
                 boolean hasSkin = false;
                 for (int i = 0; i < handler.getSlots(); i++) {
                     ItemStack stack = handler.getStackInSlot(i);
-                    if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
+                    ICyberware cw = CyberwareAPI.getCyberware(stack);
+                    if (cw != null) {
                         BodyPartType type = cw.getBodyPartType(stack);
                         if (type == BodyPartType.SKIN) hasSkin = true;
                     }

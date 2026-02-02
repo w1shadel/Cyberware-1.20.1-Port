@@ -1,15 +1,17 @@
 package com.maxwell.cyber_ware_port.common.item.cyberware;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.maxwell.cyber_ware_port.api.event.CyberwareAbilityEvent;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
+import com.maxwell.cyber_ware_port.api.json.CyberwareDataManager;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.command.CyberwareCommands;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
@@ -19,27 +21,29 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.BiConsumer;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID)
 public class ModCyberwareEvents {
-    /**
-     * インストールされたサイバーウェアを走査し、アクションを実行するヘルパーメソッド。
-     * キャンセル可能な CyberwareAbilityEvent を発火させます。
-     */
+    @SubscribeEvent
+    public static void onAddReloadListener(AddReloadListenerEvent event) {
+        event.addListener(new CyberwareDataManager());
+    }
+
     private static void dispatch(LivingEntity entity, BiConsumer<ICyberware, ItemStack> action) {
         if (entity == null) return;
         entity.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             ItemStackHandler handler = data.getInstalledCyberware();
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
-                if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw && cw.isActive(stack)) {
-                    CyberwareAbilityEvent event = new CyberwareAbilityEvent(entity, stack, cw);
-                    if (MinecraftForge.EVENT_BUS.post(event)) {
-                        continue;
-                    }
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (!stack.isEmpty() && cw != null && cw.isActive(stack)) {
                     action.accept(cw, stack);
+                    ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                    if (id != null) {
+                    }
                 }
             }
         });

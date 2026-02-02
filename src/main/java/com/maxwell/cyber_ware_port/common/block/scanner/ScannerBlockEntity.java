@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.block.scanner;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.container.ScannerMenu;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -51,11 +52,12 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case SLOT_PAPER -> stack.is(Items.PAPER);
-                case SLOT_INPUT -> stack.getItem() instanceof ICyberware;
+                case SLOT_INPUT -> CyberwareAPI.isCyberware(stack);
                 case SLOT_OUTPUT -> false;
                 default -> super.isItemValid(slot, stack);
             };
         }
+
     };
     private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
         @Override

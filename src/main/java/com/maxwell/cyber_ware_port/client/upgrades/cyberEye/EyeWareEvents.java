@@ -1,8 +1,9 @@
 package com.maxwell.cyber_ware_port.client.upgrades.cyberEye;
 
+import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -26,7 +27,6 @@ import net.minecraftforge.items.ItemStackHandler;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class EyeWareEvents {
-
     private static boolean isFeatureActive(Player player, net.minecraft.world.item.Item item) {
         return player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY)
                 .map(data -> {
@@ -36,7 +36,8 @@ public class EyeWareEvents {
                          i++) {
                         ItemStack stack = handler.getStackInSlot(i);
                         if (stack.getItem() == item) {
-                            if (item instanceof ICyberware cw && !cw.isActive(stack)) return false;
+                            ICyberware cw = CyberwareAPI.getCyberware(stack);
+                            if (cw != null && !cw.isActive(stack)) return false;
                             return data.getEnergyStored() > 0;
                         }
                     }

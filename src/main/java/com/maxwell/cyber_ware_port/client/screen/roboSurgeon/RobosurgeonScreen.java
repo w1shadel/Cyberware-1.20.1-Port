@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.client.screen.roboSurgeon;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
@@ -536,7 +537,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
              i++) {
             if (i >= this.menu.slots.size()) break;
             ItemStack stack = this.menu.getSlot(i).getItem();
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null) {
                 projectedCost += cw.getEssenceCost(stack) * stack.getCount();
             }
         }
@@ -693,7 +695,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
                 if (i >= this.menu.slots.size()) break;
                 ItemStack stack = this.menu.getSlot(i).getItem();
-                if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cw) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw != null) {
                     currentCost += cw.getEssenceCost(stack) * stack.getCount();
                 }
             }
@@ -738,7 +741,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private void renderGhostConflict(GuiGraphics g, int slotCount, int uiX, int stagingY, int installedY) {
         ItemStack carriedStack = this.menu.getCarried();
         if (carriedStack.isEmpty()) return;
-        if (!(carriedStack.getItem() instanceof ICyberware carriedItem)) return;
+        ICyberware carriedItem = CyberwareAPI.getCyberware(carriedStack);
+        if (carriedItem != null) return;
         Slot hover = this.hoveredSlot;
         if (hover == null || hover.index >= RobosurgeonBlockEntity.TOTAL_SLOTS) return;
         ItemStackHandler installedHandler = null;

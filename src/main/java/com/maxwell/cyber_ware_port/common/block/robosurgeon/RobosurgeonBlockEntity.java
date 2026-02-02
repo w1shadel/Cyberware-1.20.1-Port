@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareSurgeryEvent;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlock;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
@@ -73,8 +74,9 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             if (!isItemValid(slot, stack)) {
                 return stack;
             }
-            if (stack.getItem() instanceof ICyberware incomingItem) {
-                int maxInstall = incomingItem.getMaxInstallAmount(stack);
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null) {
+                int maxInstall = cw.getMaxInstallAmount(stack);
                 if (maxInstall <= 0) maxInstall = 1;
                 int currentlyInstalledTotal = 0;
                 for (int i = 0; i < getSlots(); i++) {
@@ -106,15 +108,16 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             if (!currentStack.isEmpty() && currentStack.hasTag() && currentStack.getTag().getBoolean("cyberware_ghost")) {
                 return false;
             }
-            if (!(stack.getItem() instanceof ICyberware incomingItem)) {
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw == null) {
                 return false;
             }
-            CyberwareSlotType itemType = CyberwareSlotType.fromId(incomingItem.getSlot(stack));
+            CyberwareSlotType itemType = CyberwareSlotType.fromId(cw.getSlot(stack));
             CyberwareSlotType targetType = CyberwareSlotType.fromId(slot);
             if (itemType != targetType || itemType == CyberwareSlotType.UNKNOWN) {
                 return false;
             }
-            int maxInstall = incomingItem.getMaxInstallAmount(stack);
+            int maxInstall = cw.getMaxInstallAmount(stack);
             if (maxInstall <= 0) maxInstall = 1;
             int installedCount = 0;
             for (int j = 0; j < this.getSlots(); j++) {
@@ -124,17 +127,18 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                     installedCount += tableStack.getCount();
                 }
             }
-            if (installedCount + stack.getCount() > maxInstall) {
+            if (installedCount >= maxInstall) {
                 return false;
             }
             for (int j = 0; j < this.getSlots(); j++) {
                 if (j == slot) continue;
                 ItemStack otherStack = this.getStackInSlot(j);
                 if (!otherStack.isEmpty()) {
-                    if (incomingItem.isIncompatible(stack, otherStack)) {
+                    if (cw.isIncompatible(stack, otherStack)) {
                         return false;
                     }
-                    if (otherStack.getItem() instanceof ICyberware otherCW) {
+                    ICyberware otherCW = CyberwareAPI.getCyberware(stack);
+                    if (otherCW != null) {
                         if (otherCW.isIncompatible(otherStack, stack)) {
                             return false;
                         }
@@ -349,7 +353,8 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             }
         }
         for (ItemStack stack : futureBody) {
-            if (stack.getItem() instanceof ICyberware cw) {
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null) {
                 int maxAllowed = cw.getMaxInstallAmount(stack);
                 int projectedTotal = futureCounts.getOrDefault(stack.getItem(), 0);
                 if (projectedTotal > maxAllowed) {

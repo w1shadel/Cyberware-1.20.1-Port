@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.client.upgrades.cyberEye;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.client.ClientCyberwareSettings;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
@@ -45,11 +46,10 @@ public class CyberwareHudOverlay {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.isEmpty()) continue;
-            if (stack.getItem() == ModItems.HUDJACK.get()) {
-                if (stack.getItem() instanceof ICyberware cw) {
-                    if (cw.isActive(stack)) {
-                        return true;
-                    }
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null && stack.is(ModItems.HUDJACK.get())) {
+                if (cw.isActive(stack)) {
+                    return true;
                 }
             }
         }

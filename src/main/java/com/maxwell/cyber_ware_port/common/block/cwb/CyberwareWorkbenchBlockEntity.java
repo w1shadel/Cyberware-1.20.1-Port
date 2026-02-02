@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.block.cwb;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
 import com.maxwell.cyber_ware_port.common.container.CyberwareWorkbenchMenu;
@@ -68,9 +69,9 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                 return true;
             }
             return switch (slot) {
-                case INPUT_SLOT -> stack.getItem() instanceof ICyberware;
+                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack); // ★ここに CyberwareAPI を使用
                 case PAPER_SLOT -> stack.is(Items.PAPER);
-                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
+                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem; // BlueprintItem が直接実装していればOK
                 default -> false;
             };
         }
@@ -100,7 +101,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem) {
                 return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
             }
-            if (slot == INPUT_SLOT && stack.getItem() instanceof ICyberware) {
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (slot == INPUT_SLOT && cw != null) {
                 return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
             }
             if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
@@ -275,8 +277,9 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         if (recipe != null) {
             if (checkOrConsumeIngredients(recipe, true)) {
                 ItemStack result = recipe.getResultItem(Objects.requireNonNull(this.level).registryAccess()).copy();
-                if (result.getItem() instanceof ICyberware cyberware) {
-                    cyberware.setPristine(result, true);
+                ICyberware cw = CyberwareAPI.getCyberware(result);
+                if (cw != null) {
+                    cw.setPristine(result, true);
                 }
                 this.itemHandler.insertItem(SPECIAL_OUTPUT_SLOT, result, false);
                 if (CyberwareConfig.CONSUME_BLUEPRINT.get()) {

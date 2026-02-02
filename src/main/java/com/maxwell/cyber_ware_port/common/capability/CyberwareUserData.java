@@ -2,6 +2,7 @@ package com.maxwell.cyber_ware_port.common.capability;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareRejectionEvent;
 import com.maxwell.cyber_ware_port.api.event.CyberwareToleranceEvent;
+import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -64,7 +65,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (stack.isEmpty()) continue;
-            if (!(stack.getItem() instanceof ICyberware cw)) continue;
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw == null) continue;
             BodyPartType type = cw.getBodyPartType(stack);
             if (type == BodyPartType.NONE || cw.getMaxInstallAmount(stack) > 1) continue;
             int currentQuality = cw.getQuality(stack);
@@ -72,7 +74,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 int existingSlot = bestSlotMap.get(type);
                 ItemStack existingStack = installedCyberware.getStackInSlot(existingSlot);
                 int existingQuality = 0;
-                if (existingStack.getItem() instanceof ICyberware existingCw) {
+                ICyberware existingCw = CyberwareAPI.getCyberware(stack);
+                if (existingCw != null) {
                     existingQuality = existingCw.getQuality(existingStack);
                 }
                 if (currentQuality > existingQuality) {
@@ -101,7 +104,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         int consumed = 0;
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+            ICyberware cyberware = CyberwareAPI.getCyberware(stack);
+            if (cyberware != null) {
                 consumed += cyberware.getEssenceCost(stack) * stack.getCount();
             }
         }
@@ -126,7 +130,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             final int slotIndex = i;
             ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+            ICyberware cyberware = CyberwareAPI.getCyberware(stack);
+            if (cyberware != null) {
                 int count = stack.getCount();
                 if (cyberware.hasEnergyProperties(stack)) {
                     totalCapacity += cyberware.getEnergyStorage(stack) * count;
@@ -209,7 +214,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         checkBodyCondition(player);
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
+            ICyberware cyberware = CyberwareAPI.getCyberware(stack);
+            if (cyberware != null) {
                 cyberware.onSystemTick(player, stack);
             }
         }
@@ -222,12 +228,13 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 int totalConsumption = 0;
                 for (int i = 0; i < installedCyberware.getSlots(); i++) {
                     ItemStack stack = installedCyberware.getStackInSlot(i);
-                    if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
-                        if (cyberware.hasEnergyProperties(stack)) {
+                    ICyberware cw = CyberwareAPI.getCyberware(stack);
+                    if (cw != null) {
+                        if (cw.hasEnergyProperties(stack)) {
                             int count = stack.getCount();
-                            ICyberware.StackingRule rule = cyberware.getStackingEnergyRule(stack);
-                            totalProduction += rule.calculate(cyberware.getEnergyGeneration(stack), count);
-                            totalConsumption += rule.calculate(cyberware.getEnergyConsumption(stack), count);
+                            ICyberware.StackingRule rule = cw.getStackingEnergyRule(stack);
+                            totalProduction += rule.calculate(cw.getEnergyGeneration(stack), count);
+                            totalConsumption += rule.calculate(cw.getEnergyConsumption(stack), count);
                         }
                     }
                 }
@@ -266,8 +273,9 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             ItemStack stack = installedCyberware.getStackInSlot(i);
             if (stack.isEmpty()) continue;
             if (isHumanPart(stack)) continue;
-            if (stack.getItem() instanceof ICyberware cyberware) {
-                int targetSlot = cyberware.getSlot(stack);
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null) {
+                int targetSlot = cw.getSlot(stack);
                 if (targetSlot == RobosurgeonBlockEntity.SLOT_ARMS || targetSlot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
                     armCount++;
                 } else if (targetSlot == RobosurgeonBlockEntity.SLOT_LEGS || targetSlot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
@@ -287,15 +295,16 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         int totalLegs = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
             if (stack.isEmpty()) continue;
             if (stack.getItem() == ModItems.HUMAN_LEFT_LEG.get() || stack.getItem() == ModItems.HUMAN_RIGHT_LEG.get()) {
                 totalLegs++;
-            } else if (stack.getItem() instanceof ICyberware cyberware) {
-                BodyPartType type = cyberware.getBodyPartType(stack);
+            } else if (cw != null) {
+                BodyPartType type = cw.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
                     presentParts.add(type);
                 }
-                int slot = cyberware.getSlot(stack);
+                int slot = cw.getSlot(stack);
                 if (slot == RobosurgeonBlockEntity.SLOT_LEGS || slot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
                     totalLegs++;
                 }
@@ -388,8 +397,9 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         Set<BodyPartType> presentParts = EnumSet.noneOf(BodyPartType.class);
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
-                BodyPartType type = cyberware.getBodyPartType(stack);
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (!stack.isEmpty() && cw != null) {
+                BodyPartType type = cw.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
                     presentParts.add(type);
                 }
@@ -483,8 +493,9 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         int consumed = 0;
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof ICyberware cyberware) {
-                consumed += cyberware.getEssenceCost(stack) * stack.getCount();
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (!stack.isEmpty() && cw != null) {
+                consumed += cw.getEssenceCost(stack) * stack.getCount();
             }
         }
         return maxTolerance - consumed;

@@ -1,9 +1,10 @@
 package com.maxwell.cyber_ware_port.common.container;
 
 import com.maxwell.cyber_ware_port.common.block.blueprintChest.BlueprintChestBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
+import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
+import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
 import net.minecraft.core.BlockPos;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
-
     private static final int WORKBENCH_SLOTS = 10;
     private static final int PANEL_X = -61;
     private static final int PANEL_Y = 12;
@@ -311,7 +311,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
                         moved = true;
                     }
                 }
-            } else if (sourceStack.getItem() instanceof com.maxwell.cyber_ware_port.common.item.base.ICyberware) {
+            } else if (sourceStack.getItem() instanceof ICyberware) {
                 if (moveItemStackTo(sourceStack, CyberwareWorkbenchBlockEntity.INPUT_SLOT, CyberwareWorkbenchBlockEntity.INPUT_SLOT + 1, false)) {
                     moved = true;
                 } else if (isExtendedOpen && leftCount > 0) {
