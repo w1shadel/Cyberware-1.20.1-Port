@@ -1,61 +1,44 @@
-🛠️ Data Pack Guide: Creating Custom Cyberware
-This guide explains how to add new Cyberware to the mod using only Data Packs (JSON). This system allows you to turn any existing item (from Vanilla or other mods) into functional Cyberware with custom stats and attributes without writing any Java code.
+# 🛠️ Data Pack Guide: Creating Custom Cyberware
 
-📂 1. Directory Structure
+This guide provides the complete specification for adding Cyberware to the mod via **Data Packs (JSON)**. This system allows you to turn any item into a functional implant with full support for attributes, energy management, and surgery rules.
+
+---
+
+## 📂 1. Directory Structure
 Files must be placed in your data pack using the following structure:
 
-code
-Text
+```file
 your_data_pack/
  ┗ data/
     ┗ [your_namespace]/
        ┗ cyberware/
           ┗ [item_name].json
-Example: data/my_addon/cyberware/titanium_bones.json
+```
+# 📝 2. Full Cyberware Template
+Here is a comprehensive JSON template containing all supported properties.
 
-📝 2. Basic Cyberware Template
-Create a JSON file to define the properties of the item.
 
-code
-JSON
+```JSON
 {
-  "item": "minecraft:iron_ingot",
+  "item": "minecraft:netherite_ingot",
   "slot": "BONES",
-  "essence": 20,
+  "essence": 40,
   "max_install": 1,
+  "quality": 1,
+  "body_part": "NONE",
   "attributes": [
     {
       "attribute": "minecraft:generic.max_health",
       "amount": 4.0,
       "operation": "ADDITION"
     }
-  ]
-}
-Parameter Reference
-Key	Type	Description
-item	String	The Registry ID of the item to be converted.
-slot	String	Body slot: EYES, BRAIN, HEART, LUNGS, STOMACH, SKIN, MUSCLE, BONES, ARMS, HANDS, LEGS, BOOTS.
-essence	Integer	Cost to install (Human max is 100).
-max_install	Integer	Max count allowed in that specific slot (e.g., 2 for eyes).
-attributes	Array	List of attribute modifiers applied while installed.
-⚙️ 3. Attribute Modifiers
-You can modify various player stats using the attributes list.
-
-Attribute: The ID of the attribute (e.g., minecraft:generic.movement_speed, minecraft:generic.attack_damage).
-Amount: The value to change.
-Operation:
-ADDITION: Adds the amount to the base value.
-MULTIPLY_BASE: Multiplies the base value.
-MULTIPLY_TOTAL: Multiplies the final value including other modifiers.
-🔗 4. Requirements & Compatibility
-You can set installation rules to prevent certain items from being used together or to require "base" parts.
-
-code
-JSON
-{
-  "item": "minecraft:netherite_ingot",
-  "slot": "SKIN",
-  "essence": 40,
+  ],
+  "energy": {
+    "consumption": 10,
+    "generation": 0,
+    "storage": 1000,
+    "stacking": "LINEAR"
+  },
   "prerequisites": [
     "minecraft:iron_ingot"
   ],
@@ -63,19 +46,46 @@ JSON
     "minecraft:leather"
   ]
 }
-Rule Details
-prerequisites: A list of Item IDs that must be installed in the body before this part can be added.
-incompatible: A list of Item IDs that cannot be installed at the same time as this part.
-💬 5. Tooltips (Localisation)
-The mod automatically generates tooltips based on the item ID. To add a custom description, add a line to your resource pack's lang file (e.g., en_us.json):
+```
+# ⚙️ 3. Core Properties
+Key	Type	Default	Description
+item	String	(Required)	Registry ID of the item (e.g., minecraft:iron_ingot).
+slot	String	(Required)	EYES, BRAIN, HEART, LUNGS, STOMACH, SKIN, MUSCLE, BONES, ARMS, HANDS, LEGS, BOOTS.
+essence	Integer	20	Cost to install (Human max: 100).
+max_install	Integer	1	Max count allowed in that specific slot.
+quality	Integer	1	0 = Human part, 1 = Standard, 2+ = High-tier.
+body_part	String	NONE	Used for limbs: ARM_LEFT, ARM_RIGHT, LEG_LEFT, LEG_RIGHT.
+# ⚡ 4. Energy Management
+The energy object defines how the part interacts with the internal power grid (FE).
 
-code
-JSON
+consumption: FE consumed per tick.
+generation: FE generated per tick.
+storage: Internal battery capacity provided by this part.
+stacking: How costs combine when multiple are installed.
+LINEAR: Cost * Count.
+DIMINISHING: Reduced cost for duplicates.
+STATIC: Fixed cost regardless of count.
+# 🛡️ 5. Attribute Modifiers
+Apply standard Minecraft attributes while the part is installed.
+
+attribute: The ID (e.g., minecraft:generic.movement_speed).
+amount: The numerical value.
+operation:
+ADDITION: Adds to base.
+MULTIPLY_BASE: Multiplies base value.
+MULTIPLY_TOTAL: Multiplies final value.
+# 🔗 6. Installation Rules
+Manage dependencies and conflicts.
+
+prerequisites: A list of Item IDs that must be installed before this part.
+incompatible: A list of Item IDs that cannot be installed alongside this part.
+# 💬 7. Localisation (Tooltips)
+Custom items automatically search for a tooltip key in your resource pack's lang/en_us.json:
+
+
+```JSON
 {
-  "cyberware.tooltip.iron_ingot": "Subdermal iron plating that increases the user's durability."
+  "cyberware.tooltip.[item_path]": "Your custom description here."
 }
-Note: The key format must be cyberware.tooltip.[item_path].
-
-🚀 6. Implementation Tips
-Live Reload: Use the /reload command in-game to apply changes to your JSON files instantly.
-Exclusivity: Parts in the same slot with max_install: 1 will effectively replace each other during surgery.
+```
+Example: cyberware.tooltip.netherite_ingot
