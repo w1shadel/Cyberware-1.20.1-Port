@@ -7,18 +7,20 @@ This guide provides the complete specification for adding Cyberware to the mod v
 ## 📂 1. Directory Structure
 Files must be placed in your data pack using the following structure:
 
-```file
+```text
 your_data_pack/
  ┗ data/
     ┗ [your_namespace]/
        ┗ cyberware/
           ┗ [item_name].json
 ```
-# 📝 2. Full Cyberware Template
+
+---
+
+## 📝 2. Full Cyberware Template
 Here is a comprehensive JSON template containing all supported properties.
 
-
-```JSON
+```json
 {
   "item": "minecraft:netherite_ingot",
   "slot": "BONES",
@@ -47,45 +49,90 @@ Here is a comprehensive JSON template containing all supported properties.
   ]
 }
 ```
-# ⚙️ 3. Core Properties
-Key	Type	Default	Description
-item	String	(Required)	Registry ID of the item (e.g., minecraft:iron_ingot).
-slot	String	(Required)	EYES, BRAIN, HEART, LUNGS, STOMACH, SKIN, MUSCLE, BONES, ARMS, HANDS, LEGS, BOOTS.
-essence	Integer	20	Cost to install (Human max: 100).
-max_install	Integer	1	Max count allowed in that specific slot.
-quality	Integer	1	0 = Human part, 1 = Standard, 2+ = High-tier.
-body_part	String	NONE	Used for limbs: ARM_LEFT, ARM_RIGHT, LEG_LEFT, LEG_RIGHT.
-# ⚡ 4. Energy Management
-The energy object defines how the part interacts with the internal power grid (FE).
 
-consumption: FE consumed per tick.
-generation: FE generated per tick.
-storage: Internal battery capacity provided by this part.
-stacking: How costs combine when multiple are installed.
-LINEAR: Cost * Count.
-DIMINISHING: Reduced cost for duplicates.
-STATIC: Fixed cost regardless of count.
-# 🛡️ 5. Attribute Modifiers
+---
+
+## ⚙️ 3. Core Properties
+
+| Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `item` | String | (Required) | Registry ID of the item (e.g., `minecraft:iron_ingot`). |
+| `slot` | String | (Required) | The slot category: `EYES`, `BRAIN`, `HEART`, `LUNGS`, `STOMACH`, `SKIN`, `MUSCLE`, `BONES`, `ARMS`, `HANDS`, `LEGS`, `BOOTS`. |
+| `essence` | Integer | `20` | Cost to install (Human max: 100). |
+| `max_install`| Integer | `1` | Maximum number of this specific item allowed in the target slot. |
+| `quality` | Integer | `1` | Installation priority. `0` = Organic, `1` = Standard, `2+` = High-tier. |
+| `body_part` | String | `NONE` | Physical limb assignment (e.g., `ARM_LEFT`). See Section 4 for details. |
+
+---
+
+## 🧠 4. Advanced Logic: Quality & Body Part
+These two fields control how the Robosurgeon manages conflicts during surgery.
+
+### The Quality System (`quality`)
+Quality determines which part "wins" if they occupy the same space.
+- **Priority Override:** If you try to install a part into a slot already occupied by a different item with the same `body_part`, the Robosurgeon compares their quality.
+- **Upgrading:** If the new part has a **higher** quality, the old part is automatically marked for uninstallation. If it's lower or equal, the installation is rejected.
+
+### Body Part Specificity (`body_part`)
+While `slot` defines the general area (e.g., `ARMS`), `body_part` defines the **physical limb**.
+- **Limb Exclusivity:** Setting a part to `ARM_LEFT` ensures it only replaces the left arm. You cannot install two different items that both claim to be the `ARM_LEFT`.
+- **Valid Values:** `NONE`, `EYES`, `BRAIN`, `HEART`, `LUNGS`, `STOMACH`, `SKIN`, `MUSCLE`, `BONES`, `ARM_LEFT`, `ARM_RIGHT`, `HAND`, `LEG_LEFT`, `LEG_RIGHT`, `FOOT`.
+
+---
+
+## ⚡ 5. Energy Management
+The `energy` object defines how the part interacts with the internal power grid (FE).
+
+- **`consumption`**: FE consumed per tick.
+- **`generation`**: FE generated per tick (e.g., a generator).
+- **`storage`**: Internal battery capacity provided by this part.
+- **`stacking`**: Logic for combining costs of multiple identical items:
+  - `LINEAR`: Cost is multiplied by the number of items.
+  - `DIMINISHING`: Cost increases less with each additional item.
+  - `STATIC`: Cost remains the same regardless of how many are installed.
+
+---
+
+## 🛡️ 6. Attribute Modifiers
 Apply standard Minecraft attributes while the part is installed.
 
-attribute: The ID (e.g., minecraft:generic.movement_speed).
-amount: The numerical value.
-operation:
-ADDITION: Adds to base.
-MULTIPLY_BASE: Multiplies base value.
-MULTIPLY_TOTAL: Multiplies final value.
-# 🔗 6. Installation Rules
-Manage dependencies and conflicts.
+- **`attribute`**: The ID of the attribute (e.g., `minecraft:generic.movement_speed`).
+- **`amount`**: The numerical value to apply.
+- **`operation`**:
+  - `ADDITION`: Adds the amount to the base value.
+  - `MULTIPLY_BASE`: Multiplies the base value by (1 + amount).
+  - `MULTIPLY_TOTAL`: Multiplies the final value by (1 + amount).
 
-prerequisites: A list of Item IDs that must be installed before this part.
-incompatible: A list of Item IDs that cannot be installed alongside this part.
-# 💬 7. Localisation (Tooltips)
-Custom items automatically search for a tooltip key in your resource pack's lang/en_us.json:
+---
 
+## 🔗 7. Installation Rules
+Manage dependencies and conflicts between different items.
 
-```JSON
+- **`prerequisites`**: A list of Item IDs that **must already be installed** in the body before this part can be added.
+- **`incompatible`**: A list of Item IDs that **cannot coexist** with this part. If one is present, the other cannot be installed.
+
+---
+
+## 💬 8. Localisation (Tooltips)
+Custom items automatically search for a tooltip key in your resource pack's `lang/en_us.json`. The mod uses the item's registry path to form the key.
+
+**Format:**
+```json
 {
   "cyberware.tooltip.[item_path]": "Your custom description here."
 }
 ```
-Example: cyberware.tooltip.netherite_ingot
+
+**Example for `minecraft:netherite_ingot`:**
+```json
+{
+  "cyberware.tooltip.netherite_ingot": "A reinforced bone plating made of ancient debris."
+}
+```
+
+---
+
+## 🚀 9. Implementation Tips
+- **Surgery Simulation:** Use the Robosurgeon GUI to see how "Ghost Items" (current implants) interact with your new JSON-defined parts.
+- **Pristine State:** By default, all Cyberware added via Data Packs is considered "Pristine" (Manufactured). If an item is "Scavenged" (Damaged), its energy costs are doubled and attribute bonuses are halved.
+- **Live Reload:** You can use the `/reload` command in-game to apply changes to your JSON files without restarting the game.
