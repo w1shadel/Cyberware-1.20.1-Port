@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "cyber_ware_port:block/robo_surgeon"
-  }
-}
