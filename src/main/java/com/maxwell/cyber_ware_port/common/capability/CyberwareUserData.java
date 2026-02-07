@@ -41,15 +41,9 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int currentEnergy = 0;
     private boolean isPowered = true;
     private boolean needsCapacityUpdate = true;
-    private boolean isValidating = false;
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
-            if (!isValidating) {
-                isValidating = true;
-                enforceLimbExclusivity();
-                isValidating = false;
-            }
             updateLimbStatus();
             needsCapacityUpdate = true;
         }

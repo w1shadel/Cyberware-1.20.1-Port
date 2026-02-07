@@ -35,12 +35,12 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                 Item item = ForgeRegistries.ITEMS.getValue(itemId);
                 if (item != null) {
                     CyberwareData data = new CyberwareData();
-                    // スロットの読み込み (EYES, HEART などの文字列をIDに変換)
+
                     String slotStr = json.get("slot").getAsString().toUpperCase();
                     data.slotId = BodyRegionEnum.valueOf(slotStr).getStartSlot();
                     data.essence = json.has("essence") ? json.get("essence").getAsInt() : 20;
                     data.maxInstall = json.has("max_install") ? json.get("max_install").getAsInt() : 1;
-                    // 属性(Attributes)の解析
+
                     if (json.has("attributes")) {
                         JsonArray attrs = json.getAsJsonArray("attributes");
                         for (JsonElement attrElement : attrs) {
@@ -53,7 +53,7 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                             }
                         }
                     }
-                    // 競合アイテム
+
                     if (json.has("incompatible")) {
                         for (JsonElement e : json.getAsJsonArray("incompatible")) {
                             data.incompatibleItems.add(ForgeRegistries.ITEMS.getValue(new ResourceLocation(e.getAsString())));

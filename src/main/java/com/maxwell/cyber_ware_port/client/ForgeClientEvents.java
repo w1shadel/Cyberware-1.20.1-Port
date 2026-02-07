@@ -44,7 +44,7 @@ public class ForgeClientEvents {
         ItemStack stack = event.getItemStack();
         Item item = stack.getItem();
         List<Component> tooltip = event.getToolTip();
-        // 1. ブロック類のツールチップ（既存のまま）
+
         if (item == ModBlocks.RADIO_KIT_BLOCK.get().asItem()) {
             tooltip.add(Component.translatable("tooltip.cyber_ware_port.radio_kit").withStyle(ChatFormatting.GRAY));
         } else if (item == ModBlocks.COMPONENT_BOX.get().asItem()) {
@@ -72,7 +72,7 @@ public class ForgeClientEvents {
             tooltip.add(Component.translatable("tooltip.cyber_ware_port.robo_surgeon").withStyle(ChatFormatting.GRAY));
             tooltip.add(Component.translatable("tooltip.cyber_ware_port.robo_surgeon2").withStyle(ChatFormatting.GRAY));
         }
-        // 2. ゴーストアイテムの表示（最優先）
+
         if (stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
             Component name = tooltip.isEmpty() ? stack.getHoverName() : tooltip.get(0);
             tooltip.clear();
@@ -80,15 +80,15 @@ public class ForgeClientEvents {
             tooltip.add(Component.translatable("cyberware.tooltip.ghost.remove").withStyle(ChatFormatting.RED));
             return;
         }
-        // 3. サイバーウェア共通ツールチップ（Java実装 & JSON実装 両対応）
+
         ICyberware cyberware = CyberwareAPI.getCyberware(stack);
         if (cyberware != null) {
             ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(item);
-            // "body_part"（部位アイテム）は詳細を表示しない
+
             if (registryName != null && registryName.getPath().contains("body_part")) {
                 return;
             }
-            // Shiftキーによる折りたたみ
+
             boolean isShiftDown = Screen.hasShiftDown();
             if (!isShiftDown) {
                 tooltip.add(Component.empty());
@@ -97,21 +97,21 @@ public class ForgeClientEvents {
                         .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
                 return;
             }
-            // アイテムの解説文を表示
+
             if (registryName != null) {
                 String key = "cyberware.tooltip." + registryName.getPath();
                 tooltip.add(Component.empty());
                 tooltip.add(Component.translatable(key).withStyle(ChatFormatting.GRAY));
             }
             tooltip.add(Component.empty());
-            // 有効・無効（トグル）設定
+
             if (cyberware.canToggle(stack)) {
                 boolean isActive = cyberware.isActive(stack);
                 Component statusText = Component.translatable(isActive ? "cyberware.gui.active.enable" : "cyberware.gui.active.disable")
                         .withStyle(isActive ? ChatFormatting.GREEN : ChatFormatting.RED);
                 tooltip.add(Component.translatable("cyberware.tooltip.status", statusText).withStyle(ChatFormatting.WHITE));
             }
-            // エネルギー関連
+
             if (cyberware.hasEnergyProperties(stack)) {
                 int consumption = cyberware.getEnergyConsumption(stack);
                 if (consumption > 0) {
@@ -130,13 +130,13 @@ public class ForgeClientEvents {
                     tooltip.add(Component.translatable("cyberware.tooltip.eventCost", eventCost).withStyle(ChatFormatting.RED));
                 }
             }
-            // インストール制限
+
             if (cyberware.getMaxInstallAmount(stack) > 1) {
                 tooltip.add(Component.translatable("cyberware.tooltip.maxInstall", cyberware.getMaxInstallAmount(stack)).withStyle(ChatFormatting.BLUE));
             }
-            // エッセンスコスト
+
             tooltip.add(Component.translatable("cyberware.tooltip.essence", cyberware.getEssenceCost(stack)).withStyle(ChatFormatting.DARK_PURPLE));
-            // 必要条件アイテム
+
             Set<Item> reqs = cyberware.getPrerequisites(stack);
             if (!reqs.isEmpty()) {
                 tooltip.add(Component.empty());
@@ -145,7 +145,7 @@ public class ForgeClientEvents {
                     tooltip.add(Component.literal(" - ").append(req.getName(new ItemStack(req))).withStyle(ChatFormatting.GRAY));
                 }
             }
-            // 競合アイテム
+
             Set<Item> incompatibles = cyberware.getIncompatibleItems(stack);
             if (!incompatibles.isEmpty()) {
                 tooltip.add(Component.empty());
@@ -154,12 +154,12 @@ public class ForgeClientEvents {
                     tooltip.add(Component.literal(" - ").append(incompatible.getName(new ItemStack(incompatible))).withStyle(ChatFormatting.GRAY));
                 }
             }
-            // スロット表示
+
             CyberwareSlotType slotType = CyberwareSlotType.fromId(cyberware.getSlot(stack));
             if (slotType != null) {
                 tooltip.add(Component.translatable("cyberware.tooltip.slot", slotType.getDisplayName()).withStyle(ChatFormatting.GRAY));
             }
-            // 品質表示（Pristine/Scavenged）
+
             if (cyberware.isPristine(stack)) {
                 tooltip.add(Component.translatable("cyberware.quality.manufactured").withStyle(ChatFormatting.AQUA));
             } else {
@@ -173,7 +173,7 @@ public class ForgeClientEvents {
         Minecraft mc = Minecraft.getInstance();
         var player = mc.player;
         if (player == null) return;
-        // メニュー画面の起動
+
         if (KeyInit.MENU_KEY.consumeClick()) {
             player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
                 if (userData.isCyberwareInstalled(ModItems.CYBER_EYE.get())) {
@@ -185,7 +185,7 @@ public class ForgeClientEvents {
                 }
             });
         }
-        // 2段ジャンプの処理
+
         if (event.getKey() == mc.options.keyJump.getKey().getValue() && event.getAction() == GLFW.GLFW_PRESS) {
             if (!player.onGround() && !player.isCreative() && !player.isSpectator()) {
                 player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
@@ -203,15 +203,15 @@ public class ForgeClientEvents {
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
         PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
-        // 一旦すべて表示
+
         model.leftArm.visible = model.leftSleeve.visible = true;
         model.rightArm.visible = model.rightSleeve.visible = true;
         model.leftLeg.visible = model.leftPants.visible = true;
         model.rightLeg.visible = model.rightPants.visible = true;
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            // 肌のアップグレードがあれば透明化をスキップ
+
             if (hasSkinUpgrade(data)) return;
-            // 各部位のインストール状況に合わせて腕・脚を非表示にする
+
             if (data.hasCyberLeftArm()) model.leftArm.visible = model.leftSleeve.visible = false;
             if (data.hasCyberRightArm()) model.rightArm.visible = model.rightSleeve.visible = false;
             if (data.hasCyberLeftLeg()) model.leftLeg.visible = model.leftPants.visible = false;

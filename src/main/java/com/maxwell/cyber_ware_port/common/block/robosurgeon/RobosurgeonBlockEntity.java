@@ -2,10 +2,14 @@ package com.maxwell.cyber_ware_port.common.block.robosurgeon;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareSurgeryEvent;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
+import com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon.SurgeryManager;
+import com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon.SurgerySyncHelper;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlock;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
+import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareSlotType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
@@ -40,468 +44,234 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider {
-    public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART;
-    public static final int SLOT_EYES = BodyRegionEnum.EYES.getStartSlot();
-    public static final int SLOT_BRAIN = BodyRegionEnum.BRAIN.getStartSlot();
-    public static final int SLOT_HEART = BodyRegionEnum.HEART.getStartSlot();
-    public static final int SLOT_LUNGS = BodyRegionEnum.LUNGS.getStartSlot();
-    public static final int SLOT_STOMACH = BodyRegionEnum.STOMACH.getStartSlot();
-    public static final int SLOT_SKIN = BodyRegionEnum.SKIN.getStartSlot();
-    public static final int SLOT_MUSCLE = BodyRegionEnum.MUSCLE.getStartSlot();
-    public static final int SLOT_BONES = BodyRegionEnum.BONES.getStartSlot();
-    public static final int SLOT_ARMS = BodyRegionEnum.ARMS.getStartSlot();
-    public static final int SLOT_HANDS = BodyRegionEnum.HANDS.getStartSlot();
-    public static final int SLOT_LEGS = BodyRegionEnum.LEGS.getStartSlot();
-    public static final int SLOT_BOOTS = BodyRegionEnum.BOOTS.getStartSlot();
     public static final int TOTAL_SLOTS = BodyRegionEnum.getTotalSlots();
-    protected final ContainerData data;
-    private final ItemStackHandler itemHandler = new ItemStackHandler(TOTAL_SLOTS) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            setChanged();
-        }
 
-        @Override
-        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty()) return stack;
-            if (!isItemValid(slot, stack)) {
-                return stack;
-            }
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) {
-                int maxInstall = cw.getMaxInstallAmount(stack);
-                if (maxInstall <= 0) maxInstall = 1;
-                int currentlyInstalledTotal = 0;
-                for (int i = 0; i < getSlots(); i++) {
-                    ItemStack inSlot = getStackInSlot(i);
-                    if (!inSlot.isEmpty() && inSlot.getItem() == stack.getItem()) {
-                        currentlyInstalledTotal += inSlot.getCount();
-                    }
-                }
-                int globalRemaining = maxInstall - currentlyInstalledTotal;
-                if (globalRemaining <= 0) {
-                    return stack;
-                }
-                if (stack.getCount() > globalRemaining) {
-                    ItemStack toInsert = stack.copy();
-                    toInsert.setCount(globalRemaining);
-                    ItemStack remainderFromInsert = super.insertItem(slot, toInsert, simulate);
-                    int accepted = toInsert.getCount() - remainderFromInsert.getCount();
-                    ItemStack result = stack.copy();
-                    result.setCount(stack.getCount() - accepted);
-                    return result;
-                }
-            }
-            return super.insertItem(slot, stack, simulate);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            ItemStack currentStack = this.getStackInSlot(slot);
-            if (!currentStack.isEmpty() && currentStack.hasTag() && currentStack.getTag().getBoolean("cyberware_ghost")) {
-                return false;
-            }
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw == null) {
-                return false;
-            }
-            CyberwareSlotType itemType = CyberwareSlotType.fromId(cw.getSlot(stack));
-            CyberwareSlotType targetType = CyberwareSlotType.fromId(slot);
-            if (itemType != targetType || itemType == CyberwareSlotType.UNKNOWN) {
-                return false;
-            }
-            int maxInstall = cw.getMaxInstallAmount(stack);
-            if (maxInstall <= 0) maxInstall = 1;
-            int installedCount = 0;
-            for (int j = 0; j < this.getSlots(); j++) {
-                if (j == slot) continue;
-                ItemStack tableStack = this.getStackInSlot(j);
-                if (!tableStack.isEmpty() && tableStack.getItem() == stack.getItem()) {
-                    installedCount += tableStack.getCount();
-                }
-            }
-            if (installedCount >= maxInstall) {
-                return false;
-            }
-            for (int j = 0; j < this.getSlots(); j++) {
-                if (j == slot) continue;
-                ItemStack otherStack = this.getStackInSlot(j);
-                if (!otherStack.isEmpty()) {
-                    if (cw.isIncompatible(stack, otherStack)) {
-                        return false;
-                    }
-                    ICyberware otherCW = CyberwareAPI.getCyberware(stack);
-                    if (otherCW != null) {
-                        if (otherCW.isIncompatible(otherStack, stack)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-    };
+    private final ItemStackHandler itemHandler = createItemHandler();
+    private final ContainerData data;
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private int progress = 0;
     private int maxProgress = 100;
+    public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART; // 9
 
+    public static final int SLOT_EYES    = BodyRegionEnum.EYES.getStartSlot();
+    public static final int SLOT_BRAIN   = BodyRegionEnum.BRAIN.getStartSlot();
+    public static final int SLOT_HEART   = BodyRegionEnum.HEART.getStartSlot();
+    public static final int SLOT_LUNGS   = BodyRegionEnum.LUNGS.getStartSlot();
+    public static final int SLOT_STOMACH = BodyRegionEnum.STOMACH.getStartSlot();
+    public static final int SLOT_SKIN    = BodyRegionEnum.SKIN.getStartSlot();
+    public static final int SLOT_MUSCLE  = BodyRegionEnum.MUSCLE.getStartSlot();
+    public static final int SLOT_BONES   = BodyRegionEnum.BONES.getStartSlot();
+    public static final int SLOT_ARMS    = BodyRegionEnum.ARMS.getStartSlot();
+    public static final int SLOT_HANDS   = BodyRegionEnum.HANDS.getStartSlot();
+    public static final int SLOT_LEGS    = BodyRegionEnum.LEGS.getStartSlot();
+    public static final int SLOT_BOOTS   = BodyRegionEnum.BOOTS.getStartSlot();
     public RobosurgeonBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ROBO_SURGEON.get(), pPos, pBlockState);
-        this.data = new ContainerData() {
-            @Override
-            public int get(int pIndex) {
-                return switch (pIndex) {
-                    case 0 -> RobosurgeonBlockEntity.this.progress;
-                    case 1 -> RobosurgeonBlockEntity.this.maxProgress;
-                    default -> 0;
-                };
-            }
-
-            @Override
-            public void set(int pIndex, int pValue) {
-                switch (pIndex) {
-                    case 0 -> RobosurgeonBlockEntity.this.progress = pValue;
-                    case 1 -> RobosurgeonBlockEntity.this.maxProgress = pValue;
-                }
-            }
-
-            @Override
-            public int getCount() {
-                return 2;
-            }
-        };
+        this.data = createContainerData();
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, RobosurgeonBlockEntity entity) {
-        if (level.isClientSide) return;
-        BlockPos chamberPos = entity.findChamberPos();
-        if (chamberPos == null) {
-            entity.resetProgress();
-            return;
-        }
-        BlockEntity be = level.getBlockEntity(chamberPos);
-        if (!(be instanceof SurgeryChamberBlockEntity chamber)) {
-            entity.resetProgress();
-            return;
-        }
-        if (chamber.isOpen()) {
-            if (entity.progress > 0) {
-                entity.resetProgress();
-                A_PacketHandler.INSTANCE.send(
-                        net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity.findPatient(chamberPos)),
-                        new SyncSurgeryProgressPacket(0, entity.maxProgress)
-                );
-            }
-            return;
-        }
-        LivingEntity patient = entity.findPatient(chamberPos);
-        if (patient == null || !(patient instanceof ServerPlayer serverPlayer)) {
-            if (entity.progress > 0) {
-                entity.resetProgress();
-                chamber.setDoorState(true);
-            }
-            return;
-        }
-        boolean needs = entity.needsSurgery(serverPlayer);
-        boolean requirementsMet = entity.checkRequirements(serverPlayer);
-        if (needs && requirementsMet) {
-            entity.progress++;
-            setChanged(level, pos, state);
-            A_PacketHandler.INSTANCE.send(
-                    net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
-                    new SyncSurgeryProgressPacket(entity.progress, entity.maxProgress)
-            );
-            if (entity.progress % 20 == 0) {
-                serverPlayer.hurt(level.damageSources().magic(), 1.0f);
-                level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
-            }
-            if (entity.progress >= entity.maxProgress) {
-                entity.performSurgery(serverPlayer);
-                entity.resetProgress();
-                A_PacketHandler.INSTANCE.send(
-                        net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new SyncSurgeryProgressPacket(0, entity.maxProgress)
-                );
-                chamber.setDoorState(true);
-            }
-        } else {
-            if (entity.progress > 0) {
-                entity.resetProgress();
-                A_PacketHandler.INSTANCE.send(
-                        net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new SyncSurgeryProgressPacket(0, entity.maxProgress)
-                );
-                chamber.setDoorState(true);
-            }
-        }
+    // --- ユーティリティメソッド ---
+
+    private boolean isGhost(ItemStack stack) {
+        return !stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost");
     }
 
-    private boolean needsSurgery(ServerPlayer player) {
-        var cap = player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
-        if (!cap.isPresent()) return false;
-        ItemStackHandler playerBody = cap.resolve().get().getInstalledCyberware();
-        for (int i = 0; i < TOTAL_SLOTS; i++) {
-            ItemStack tableItem = itemHandler.getStackInSlot(i);
-            ItemStack bodyItem = playerBody.getStackInSlot(i);
-            if (!tableItem.isEmpty()) {
-                if (tableItem.hasTag() && tableItem.getTag().getBoolean("cyberware_ghost")) {
-                    continue;
-                }
-                if (!ItemStack.matches(tableItem, bodyItem)) {
-                    return true;
-                }
-            } else {
-                if (!bodyItem.isEmpty()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private ICyberware getCyber(ItemStack stack) {
+        return CyberwareAPI.getCyberware(stack);
     }
 
-    private BlockPos findChamberPos() {
-        BlockPos below = this.worldPosition.below();
-        BlockState state = level.getBlockState(below);
-        if (state.getBlock() instanceof SurgeryChamberBlock) {
-            if (state.getValue(SurgeryChamberBlock.HALF) == DoubleBlockHalf.UPPER) {
-                return below.below();
-            }
-            return below;
-        }
-        return null;
-    }
+    // --- ロジックの核: 手術実行 ---
+    public void performSurgery(ServerPlayer player) {
+        if (!checkRequirements(player)) return;
+        if (MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Pre(player, this))) return;
 
-    private LivingEntity findPatient(BlockPos chamberPos) {
-        double x = chamberPos.getX();
-        double y = chamberPos.getY();
-        double z = chamberPos.getZ();
-        AABB box = new AABB(
-                x + 0.3, y + 0.1, z + 0.3,
-                x + 0.7, y + 1.9, z + 0.7
-        );
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box);
-        if (!entities.isEmpty()) {
-            return entities.get(0);
-        }
-        return null;
+        player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
+            // 1. 手術マネージャーにすべてを委譲 (アイテム移動・競合解決・返却)
+            SurgeryManager.execute(player, this.itemHandler, userData.getInstalledCyberware());
+
+            // 2. データの確定と同期
+            userData.recalculateCapacity(player);
+            userData.syncToClient(player);
+
+            // 3. 表示の更新
+            this.populateGhostItems(player);
+
+            // 4. 手術演出
+            player.level().playSound(null, player.blockPosition(), SoundEvents.IRON_GOLEM_HURT, SoundSource.PLAYERS, 1.0f, 1.0f);
+            MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Post(player, this));
+        });
     }
 
     public void populateGhostItems(ServerPlayer player) {
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
-            ItemStackHandler playerBody = userData.getInstalledCyberware();
-            boolean changed = false;
-            for (int i = 0; i < TOTAL_SLOTS; i++) {
-                ItemStack bodyStack = playerBody.getStackInSlot(i);
-                ItemStack tableStack = itemHandler.getStackInSlot(i);
-                if (!tableStack.isEmpty() && tableStack.hasTag() && tableStack.getTag().getBoolean("cyberware_ghost")) {
-                    if (bodyStack.isEmpty()) {
-                        itemHandler.setStackInSlot(i, ItemStack.EMPTY);
-                        changed = true;
-                    } else {
-                        ItemStack expectedGhost = bodyStack.copy();
-                        expectedGhost.getOrCreateTag().putBoolean("cyberware_ghost", true);
-                        if (!ItemStack.matches(tableStack, expectedGhost)) {
-                            itemHandler.setStackInSlot(i, expectedGhost);
-                            changed = true;
-                        }
-                    }
-                } else if (tableStack.isEmpty() && !bodyStack.isEmpty()) {
-                    ItemStack ghostStack = bodyStack.copy();
-                    ghostStack.getOrCreateTag().putBoolean("cyberware_ghost", true);
-                    itemHandler.setStackInSlot(i, ghostStack);
-                    changed = true;
-                }
-            }
-            if (changed) {
-                setChanged();
-                if (level != null) level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+            if (SurgerySyncHelper.updateGhosts(userData.getInstalledCyberware(), this.itemHandler)) {
+                this.setChanged();
+                this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
             }
         });
     }
 
-    public ItemStackHandler getItemHandler() {
-        return this.itemHandler;
-    }
 
     private boolean checkRequirements(ServerPlayer player) {
         var cap = player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
         if (!cap.isPresent()) return false;
+
         ItemStackHandler playerBody = cap.resolve().get().getInstalledCyberware();
         java.util.Map<net.minecraft.world.item.Item, Integer> futureCounts = new java.util.HashMap<>();
-        java.util.List<ItemStack> futureBody = new java.util.ArrayList<>();
+        List<ItemStack> futureBody = new ArrayList<>();
+
         for (int i = 0; i < TOTAL_SLOTS; i++) {
-            ItemStack tableStack = itemHandler.getStackInSlot(i);
-            ItemStack bodyStack = playerBody.getStackInSlot(i);
-            ItemStack finalStack;
-            if (tableStack.isEmpty()) {
-                finalStack = ItemStack.EMPTY;
-            } else if (tableStack.hasTag() && tableStack.getTag().getBoolean("cyberware_ghost")) {
-                finalStack = bodyStack;
-            } else {
-                finalStack = tableStack;
-            }
+            ItemStack table = itemHandler.getStackInSlot(i);
+            ItemStack finalStack = isGhost(table) ? playerBody.getStackInSlot(i) : table;
+
             if (!finalStack.isEmpty()) {
                 futureBody.add(finalStack);
                 futureCounts.put(finalStack.getItem(), futureCounts.getOrDefault(finalStack.getItem(), 0) + finalStack.getCount());
             }
         }
+
         for (ItemStack stack : futureBody) {
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) {
-                int maxAllowed = cw.getMaxInstallAmount(stack);
-                int projectedTotal = futureCounts.getOrDefault(stack.getItem(), 0);
-                if (projectedTotal > maxAllowed) {
-                    return false;
-                }
-                java.util.Set<net.minecraft.world.item.Item> reqs = cw.getPrerequisites(stack);
-                for (net.minecraft.world.item.Item reqItem : reqs) {
-                    boolean found = false;
-                    for (ItemStack checkStack : futureBody) {
-                        if (!checkStack.isEmpty() && checkStack.getItem() == reqItem) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) return false;
-                }
+            ICyberware cw = getCyber(stack);
+            if (cw == null) continue;
+
+            if (futureCounts.get(stack.getItem()) > cw.getMaxInstallAmount(stack)) return false;
+
+            for (net.minecraft.world.item.Item req : cw.getPrerequisites(stack)) {
+                if (futureBody.stream().noneMatch(s -> s.is(req))) return false;
             }
         }
         return true;
     }
+    private ItemStackHandler createItemHandler() {
+        return new ItemStackHandler(TOTAL_SLOTS) {
+            @Override
+            public boolean isItemValid(int slot, ItemStack stack) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw == null || isGhost(getStackInSlot(slot))) return false;
+                // スロットタイプが合っているか
+                return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(slot);
+            }
+        };
+    }
+    public static void tick(Level level, BlockPos pos, BlockState state, RobosurgeonBlockEntity entity) {
+        if (level.isClientSide) return;
+        BlockPos chamberPos = entity.findChamberPos();
+        if (chamberPos == null) { entity.resetProgress(); return; }
 
-    public void performSurgery(ServerPlayer player) {
-        if (!checkRequirements(player)) {
-            player.sendSystemMessage(Component.translatable("cyberware.message.invalid_installation").withStyle(net.minecraft.ChatFormatting.RED));
-            return;
-        }
-        CyberwareSurgeryEvent.Pre event = new CyberwareSurgeryEvent.Pre(player, this);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
-            if (event.getDenialReason() != null) {
-                player.sendSystemMessage(event.getDenialReason());
-            } else {
-                player.sendSystemMessage(Component.translatable("cyberware.message.surgery_prevented"));
+        BlockEntity be = level.getBlockEntity(chamberPos);
+        if (!(be instanceof SurgeryChamberBlockEntity chamber)) { entity.resetProgress(); return; }
+
+        LivingEntity patient = entity.findPatient(chamberPos);
+        if (chamber.isOpen() || !(patient instanceof ServerPlayer serverPlayer)) {
+            if (entity.progress > 0) {
+                entity.resetProgress();
+                syncProgress(entity, null);
             }
             return;
         }
-        player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
-            ItemStackHandler playerBody = userData.getInstalledCyberware();
-            boolean soundPlayed = false;
+
+        if (entity.needsSurgery(serverPlayer) && entity.checkRequirements(serverPlayer)) {
+            entity.progress++;
+            setChanged(level, pos, state);
+            syncProgress(entity, serverPlayer);
+
+            if (entity.progress % 20 == 0) {
+                serverPlayer.hurt(level.damageSources().magic(), 1.0f);
+                level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
+            }
+
+            if (entity.progress >= entity.maxProgress) {
+                entity.performSurgery(serverPlayer);
+                entity.resetProgress();
+                syncProgress(entity, serverPlayer);
+                chamber.setDoorState(true);
+            }
+        } else if (entity.progress > 0) {
+            entity.resetProgress();
+            syncProgress(entity, serverPlayer);
+            chamber.setDoorState(true);
+        }
+    }
+
+    private static void syncProgress(RobosurgeonBlockEntity entity, @Nullable ServerPlayer player) {
+        if (player != null) {
+            A_PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SyncSurgeryProgressPacket(entity.progress, entity.maxProgress));
+        }
+    }
+
+    private boolean needsSurgery(ServerPlayer player) {
+        return player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).map(data -> {
+            ItemStackHandler playerBody = data.getInstalledCyberware();
             for (int i = 0; i < TOTAL_SLOTS; i++) {
-                ItemStack tableStack = this.itemHandler.getStackInSlot(i);
-                ItemStack bodyStack = playerBody.getStackInSlot(i);
-                if (!tableStack.isEmpty() && tableStack.hasTag() && tableStack.getTag().getBoolean("cyberware_ghost")) {
-                    continue;
-                }
-                if (tableStack.isEmpty()) {
-                    if (!bodyStack.isEmpty()) {
-                        ItemStack removed = bodyStack.copy();
-                        playerBody.setStackInSlot(i, ItemStack.EMPTY);
-                        if (!player.getInventory().add(removed)) {
-                            player.drop(removed, false);
-                        }
-                        soundPlayed = true;
-                    }
-                } else {
-                    ItemStack extractedNew = this.itemHandler.extractItem(i, 64, false);
-                    ItemStack oldBodyItem = bodyStack.copy();
-                    playerBody.setStackInSlot(i, extractedNew);
-                    if (!oldBodyItem.isEmpty()) {
-                        if (!player.getInventory().add(oldBodyItem)) {
-                            player.drop(oldBodyItem, false);
-                        }
-                    }
-                    soundPlayed = true;
-                }
+                ItemStack table = itemHandler.getStackInSlot(i);
+                if (isGhost(table)) continue;
+                if (!ItemStack.matches(table, playerBody.getStackInSlot(i))) return true;
             }
-            if (soundPlayed) {
-                userData.recalculateCapacity(player);
-                userData.syncToClient(player);
-                player.level().playSound(null, player.blockPosition(), SoundEvents.IRON_GOLEM_HURT, SoundSource.PLAYERS, 1.0f, 1.0f);
-                if (userData.getTolerance() <= 0) {
-                    DamageSource surgeryDeath = new DamageSource(
-                            player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD)
-                    ) {
-                        @Override
-                        public Component getLocalizedDeathMessage(LivingEntity entity) {
-                            return Component.translatable("death.attack.cyberware.surgery", entity.getDisplayName());
-                        }
-                    };
-                    player.hurt(surgeryDeath, Float.MAX_VALUE);
-                }
-                populateGhostItems(player);
-                MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Post(player, this));
-            }
-        });
+            return false;
+        }).orElse(false);
     }
 
-    private void resetProgress() {
-        this.progress = 0;
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable("container.cyber_ware_port.robosurgeon");
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        if (pPlayer instanceof ServerPlayer serverPlayer) {
-            this.populateGhostItems(serverPlayer);
-            level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+    private BlockPos findChamberPos() {
+        BlockPos below = worldPosition.below();
+        BlockState state = level.getBlockState(below);
+        if (state.getBlock() instanceof SurgeryChamberBlock) {
+            return state.getValue(SurgeryChamberBlock.HALF) == DoubleBlockHalf.UPPER ? below.below() : below;
         }
-        return new RobosurgeonMenu(pContainerId, pPlayerInventory, this, this.data);
+        return null;
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
-        }
-        return super.getCapability(cap, side);
+    private LivingEntity findPatient(BlockPos chamberPos) {
+        AABB box = new AABB(chamberPos).deflate(0.3, 0.1, 0.3).inflate(0, 0.9, 0);
+        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box);
+        return entities.isEmpty() ? null : entities.get(0);
     }
 
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    private void resetProgress() { this.progress = 0; }
+
+    @Override public Component getDisplayName() { return Component.translatable("container.cyber_ware_port.robosurgeon"); }
+
+    @Nullable @Override public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
+        if (p instanceof ServerPlayer sp) populateGhostItems(sp);
+        return new RobosurgeonMenu(id, inv, this, data);
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
+    @Override public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : super.getCapability(cap, side);
     }
 
-    @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
-        pTag.put("inventory", itemHandler.serializeNBT());
-        pTag.putInt("robosurgeon.progress", progress);
-    }
-
-    @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
-        progress = pTag.getInt("robosurgeon.progress");
-    }
+    @Override public void onLoad() { super.onLoad(); lazyItemHandler = LazyOptional.of(() -> itemHandler); }
+    @Override public void invalidateCaps() { super.invalidateCaps(); lazyItemHandler.invalidate(); }
+    @Override protected void saveAdditional(CompoundTag tag) { super.saveAdditional(tag); tag.put("inventory", itemHandler.serializeNBT()); tag.putInt("progress", progress); }
+    @Override public void load(CompoundTag tag) { super.load(tag); itemHandler.deserializeNBT(tag.getCompound("inventory")); progress = tag.getInt("progress"); }
 
     public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
+        SimpleContainer inv = new SimpleContainer(TOTAL_SLOTS);
+        for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack stack = itemHandler.getStackInSlot(i);
-            if (!stack.isEmpty() && (!stack.hasTag() || !stack.getTag().getBoolean("cyberware_ghost"))) {
-                inventory.setItem(i, stack);
-            }
+            if (!stack.isEmpty() && !isGhost(stack)) inv.setItem(i, stack);
         }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
+        Containers.dropContents(level, worldPosition, inv);
+    }
+
+    private ContainerData createContainerData() {
+        return new ContainerData() {
+            @Override public int get(int i) { return i == 0 ? progress : maxProgress; }
+            @Override public void set(int i, int v) { if (i == 0) progress = v; else maxProgress = v; }
+            @Override public int getCount() { return 2; }
+        };
+    }
+
+    public IItemHandlerModifiable getItemHandler() {
+        return itemHandler;
     }
 }
