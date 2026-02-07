@@ -6,9 +6,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class SurgerySyncHelper {
-    /**
-     * 現在の体内の状態を、手術台の空きスロットに「影」として投影する
-     */
+    
     public static boolean updateGhosts(ItemStackHandler body, IItemHandlerModifiable table) {
         boolean changed = false;
         for (int i = 0; i < table.getSlots(); i++) {

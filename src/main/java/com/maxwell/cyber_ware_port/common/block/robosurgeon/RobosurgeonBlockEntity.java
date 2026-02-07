@@ -61,7 +61,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private int progress = 0;
     private int maxProgress = 100;
-    public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART; // 9
+    public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART; 
 
     public static final int SLOT_EYES    = BodyRegionEnum.EYES.getStartSlot();
     public static final int SLOT_BRAIN   = BodyRegionEnum.BRAIN.getStartSlot();
@@ -80,7 +80,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         this.data = createContainerData();
     }
 
-    // --- ユーティリティメソッド ---
 
     private boolean isGhost(ItemStack stack) {
         return !stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost");
@@ -90,23 +89,19 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         return CyberwareAPI.getCyberware(stack);
     }
 
-    // --- ロジックの核: 手術実行 ---
     public void performSurgery(ServerPlayer player) {
         if (!checkRequirements(player)) return;
         if (MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Pre(player, this))) return;
 
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
-            // 1. 手術マネージャーにすべてを委譲 (アイテム移動・競合解決・返却)
+
             SurgeryManager.execute(player, this.itemHandler, userData.getInstalledCyberware());
 
-            // 2. データの確定と同期
             userData.recalculateCapacity(player);
             userData.syncToClient(player);
 
-            // 3. 表示の更新
             this.populateGhostItems(player);
 
-            // 4. 手術演出
             player.level().playSound(null, player.blockPosition(), SoundEvents.IRON_GOLEM_HURT, SoundSource.PLAYERS, 1.0f, 1.0f);
             MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Post(player, this));
         });
@@ -158,7 +153,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             public boolean isItemValid(int slot, ItemStack stack) {
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (cw == null || isGhost(getStackInSlot(slot))) return false;
-                // スロットタイプが合っているか
+
                 return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(slot);
             }
         };

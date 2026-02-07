@@ -23,10 +23,7 @@ public class CyberwareSurgeryEvent extends Event {
         return blockEntity;
     }
 
-    /**
-     * 手術開始前に発火するイベント。
-     * キャンセルすると手術は実行されません。
-     */
+    
     @Cancelable
     public static class Pre extends CyberwareSurgeryEvent {
         private Component denialReason;
@@ -35,9 +32,7 @@ public class CyberwareSurgeryEvent extends Event {
             super(patient, blockEntity);
         }
 
-        /**
-         * 手術を拒否する理由を設定します（プレイヤーへのチャット通知などに使用可能）
-         */
+        
         public void setDenialReason(Component reason) {
             this.denialReason = reason;
         }
@@ -47,10 +42,7 @@ public class CyberwareSurgeryEvent extends Event {
         }
     }
 
-    /**
-     * 手術完了後に発火するイベント。
-     * キャンセル不可。実績解除や追加効果の付与などに使用。
-     */
+    
     public static class Post extends CyberwareSurgeryEvent {
         public Post(LivingEntity patient, RobosurgeonBlockEntity blockEntity) {
             super(patient, blockEntity);

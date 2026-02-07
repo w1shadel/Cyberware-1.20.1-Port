@@ -11,9 +11,7 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.List;
 
 public class CyberwareEvents {
-    /**
-     * 充電器がエンティティに作用しようとする時に発火
-     */
+    
     @Cancelable
     public static class Recharge extends Event {
         private final LivingEntity entity;
@@ -39,9 +37,7 @@ public class CyberwareEvents {
         }
     }
 
-    /**
-     * 工作台でエンジニアリング（分解）を行う際のイベント
-     */
+    
     public static class Salvage extends Event {
         private final CyberwareWorkbenchBlockEntity tile;
         private final ItemStack inputStack;
@@ -59,9 +55,7 @@ public class CyberwareEvents {
             return inputStack;
         }
 
-        /**
-         * 分解開始前。キャンセル可能。設計図取得確率を変更可能。
-         */
+        
         @Cancelable
         public static class Pre extends Salvage {
             private float blueprintChance;
@@ -80,9 +74,7 @@ public class CyberwareEvents {
             }
         }
 
-        /**
-         * 分解結果確定後。出力アイテムリストを変更可能。
-         */
+        
         public static class Post extends Salvage {
             private final List<ItemStack> outputs;
 
@@ -97,9 +89,7 @@ public class CyberwareEvents {
         }
     }
 
-    /**
-     * スキャナーの処理イベント
-     */
+    
     public static class Scan extends Event {
         private final ScannerBlockEntity tile;
         private final ItemStack inputStack;
@@ -109,9 +99,7 @@ public class CyberwareEvents {
             this.inputStack = inputStack;
         }
 
-        /**
-         * スキャン完了直前。キャンセル可能。成功確率や消費設定を変更可能。
-         */
+        
         @Cancelable
         public static class Complete extends Scan {
             private float chance;

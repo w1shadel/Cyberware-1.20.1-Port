@@ -42,14 +42,13 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                         if (!super.mayPlace(stack))
                             return false;
 
-                        // 競合チェック: 他のスロットにあるアイテム(Ghost含む)と競合する場合は置かせない
                         ICyberware myCw = com.maxwell.cyber_ware_port.api.json.CyberwareAPI.getCyberware(stack);
                         if (myCw == null)
                             return true;
 
                         for (int otherSlotIndex = 0; otherSlotIndex < RobosurgeonBlockEntity.TOTAL_SLOTS; otherSlotIndex++) {
                             if (otherSlotIndex == this.getSlotIndex())
-                                continue; // 自分自身はスキップ
+                                continue; 
 
                             ItemStack otherStack = handler.getStackInSlot(otherSlotIndex);
                             if (otherStack.isEmpty())
@@ -60,14 +59,12 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                             if (otherCw == null)
                                 continue;
 
-                            // 1. 物理的競合 (BodyPartType)
                             if (myCw.getBodyPartType(
                                     stack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE
                                     && myCw.getBodyPartType(stack) == otherCw.getBodyPartType(otherStack)) {
                                 return false;
                             }
 
-                            // 2. 明示的な非互換 (isIncompatible)
                             if (myCw.isIncompatible(stack, otherStack) || otherCw.isIncompatible(otherStack, stack)) {
                                 return false;
                             }

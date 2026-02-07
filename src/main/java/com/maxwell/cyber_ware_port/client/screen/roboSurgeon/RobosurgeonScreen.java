@@ -757,7 +757,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         if (carriedItem == null)
             return;
 
-        // Slotへのホバーは関係なく、現在持っているアイテムと競合する全てのスロットをマークする
         ItemStackHandler installedHandler = null;
         if (this.minecraft.player != null) {
             var cap = this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
@@ -766,20 +765,16 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             }
         }
 
-        // ターゲットスロット（今開いている部位に関連するスロット）をループしてチェック
         int[] related = this.selectedMarker.relatedSlots();
         for (int j = 0; j < slotCount; j++) {
             int targetId = related[j];
 
-            // 比較対象のアイテムを取得（テーブル上のアイテム優先、無ければインストール済み）
-            // ただし renderGhostConflict は「赤いビックリマーク」を描画するためにある
-            // 競合相手がテーブルにある場合も、インストール済みにある場合もマークしたい
 
-            // まずスロットにあるアイテム（ゴースト含む）
+
+
             ItemStack otherStack = this.menu.getSlot(targetId).getItem();
             boolean isBlue = !otherStack.isEmpty();
 
-            // スロットが空なら、インストール済みのアイテムを確認
             if (otherStack.isEmpty() && installedHandler != null && targetId < installedHandler.getSlots()) {
                 otherStack = installedHandler.getStackInSlot(targetId);
             }
@@ -788,14 +783,13 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 boolean conflict = false;
                 ICyberware otherCw = CyberwareAPI.getCyberware(otherStack);
                 if (otherCw != null) {
-                    // 1. 物理的競合 (BodyPartType)
+
                     if (carriedItem.getBodyPartType(
                             carriedStack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE
                             && carriedItem.getBodyPartType(carriedStack) == otherCw.getBodyPartType(otherStack)) {
                         conflict = true;
                     }
 
-                    // 2. 明示的な非互換 (isIncompatible)
                     if (!conflict) {
                         if (carriedItem.isIncompatible(carriedStack, otherStack)
                                 || otherCw.isIncompatible(otherStack, carriedStack)) {
@@ -806,20 +800,20 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
                 if (conflict) {
                     int x2 = uiX + (j * (SLOT_SIZE + SLOT_SPACING));
-                    // isBlue (テーブル上のアイテム) なら stagingY (上段), そうでなければ installedY (下段)
-                    // ただし、RobosurgeonScreenの描画ロジックでは
-                    // 上段(Staging)は青スロット、下段(Installed)は赤スロット背景
-                    // ゴーストは上段に表示されるため、otherStackがmenuから取得できたなら上段
+
+
+
+
 
                     int y2 = isBlue ? stagingY : installedY;
 
                     g.pose().pushPose();
                     g.pose().translate(0, 0, 400);
-                    // 背景を少し赤く
+
                     g.fill(x2, y2, x2 + 18, y2 + 18, 0x80FF0000);
-                    // 枠線
+
                     g.renderOutline(x2 - 1, y2 - 1, 20, 20, 0xFFFF0000);
-                    // ビックリマーク
+
                     g.drawString(this.font, "!", x2 + 6, y2 + 4, 0xFFFF0000, true);
                     g.pose().popPose();
                 }

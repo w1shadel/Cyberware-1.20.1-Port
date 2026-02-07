@@ -18,24 +18,17 @@ public class CyberwareToleranceEvent extends Event {
         return entity;
     }
 
-    /**
-     * Config設定または保存された本来の許容値を取得します。
-     */
+    
     public int getOriginalTolerance() {
         return originalTolerance;
     }
 
-    /**
-     * イベント処理後の最終的な許容値を取得します。
-     */
+    
     public int getNewTolerance() {
         return newTolerance;
     }
 
-    /**
-     * 新しい許容値を設定します。
-     * アドオンやPotion効果などで許容値を変更する場合に使用します。
-     */
+    
     public void setNewTolerance(int newTolerance) {
         this.newTolerance = newTolerance;
     }
