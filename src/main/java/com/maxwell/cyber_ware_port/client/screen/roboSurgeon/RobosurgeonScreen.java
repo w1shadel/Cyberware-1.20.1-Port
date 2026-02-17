@@ -2,10 +2,11 @@ package com.maxwell.cyber_ware_port.client.screen.roboSurgeon;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
+import com.maxwell.cyber_ware_port.client.model.PlayerInternalPartsModel;
+import com.maxwell.cyber_ware_port.client.model.SkeletonDisplayModel;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
-import com.maxwell.cyber_ware_port.common.entity.playerpartsmodel.PlayerInternalPartsModel;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.common.network.SurgeryGhostTogglePacket;
@@ -28,9 +29,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +43,8 @@ import java.util.List;
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
     private static final ResourceLocation INTERNAL_PARTS_TEXTURE = new ResourceLocation(CyberWare.MODID,
             "textures/gui/player_internal_part.png");
+    private static final ResourceLocation SKELETON_TEXTURE = new ResourceLocation(
+            "textures/entity/skeleton/skeleton.png");
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/surgery.png");
     private static final ResourceLocation MARKER_TEXTURE = new ResourceLocation(CyberWare.MODID,
             "textures/gui/marker.png");
@@ -64,7 +65,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private PlayerInternalPartsModel internalPartsModel;
     private BodyPart selectedPart = BodyPart.NONE;
     private TargetMarker selectedMarker = null;
-    private Skeleton dummySkeleton;
+    private SkeletonDisplayModel skeletonModel;
     private boolean isDraggingModel = false;
     private float viewRotation = 0f;
     private double dragStartX = 0;
@@ -86,7 +87,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public static void renderEntityWithRotation(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw,
-            LivingEntity pEntity) {
+                                                LivingEntity pEntity) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
@@ -140,7 +141,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw,
-            Model pModel) {
+                                         Model pModel, ResourceLocation texture) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
@@ -150,7 +151,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         pGuiGraphics.pose().mulPose(quaternionf);
         Lighting.setupForEntityInInventory();
         VertexConsumer vertexConsumer = pGuiGraphics.bufferSource()
-                .getBuffer(pModel.renderType(INTERNAL_PARTS_TEXTURE));
+                .getBuffer(pModel.renderType(texture));
         pModel.renderToBuffer(pGuiGraphics.pose(), vertexConsumer, 15728880, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F,
                 1.0F, 1.0F);
         pGuiGraphics.flush();
@@ -162,7 +163,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     protected void init() {
         super.init();
         if (this.minecraft != null && this.minecraft.level != null) {
-            this.dummySkeleton = new Skeleton(EntityType.SKELETON, this.minecraft.level);
+            this.skeletonModel = new SkeletonDisplayModel(
+                    this.minecraft.getEntityModels().bakeLayer(SkeletonDisplayModel.LAYER_LOCATION));
             this.internalPartsModel = new PlayerInternalPartsModel(
                     this.minecraft.getEntityModels().bakeLayer(PlayerInternalPartsModel.LAYER_LOCATION));
         }
@@ -637,11 +639,14 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 g.fill(lineStartX, cornerY, lineEndX, cornerY + lineWidth, cyanColor);
             }
             this.internalPartsModel.setVisibleLayer(0);
-            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
+            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel,
+                    INTERNAL_PARTS_TEXTURE);
             this.internalPartsModel.setVisibleLayer(1);
-            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
+            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel,
+                    INTERNAL_PARTS_TEXTURE);
             this.internalPartsModel.setVisibleLayer(2);
-            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel);
+            renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel,
+                    INTERNAL_PARTS_TEXTURE);
         }
         int Pscale = 45 + scaleBoost;
         int Sscale = 42 + scaleBoost;
@@ -650,18 +655,18 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         if (!isInternalZoomed) {
             double guiScale = this.minecraft.getWindow().getGuiScale();
             if (!isAnimating) {
-                if (dummySkeleton != null) {
-                    int scX = (int) ((x + 5) * guiScale);
-                    int scY = (int) ((this.height - (y + TOP_HEIGHT)) * guiScale);
-                    int scW = (int) ((GUI_WIDTH - 10) * guiScale);
-                    int scH = (int) ((TOP_HEIGHT - 10) * guiScale);
+                if (skeletonModel != null) {
                     float skeletonBaseSize = 42f;
                     float playerBaseSize = 45f;
                     float ratio = skeletonBaseSize / playerBaseSize;
                     int adjustedScale = (int) (currentScale * ratio) + scaleBoost;
+                    int scX = (int) ((x + 5) * guiScale);
+                    int scY = (int) ((this.height - (y + TOP_HEIGHT)) * guiScale);
+                    int scW = (int) ((GUI_WIDTH - 10) * guiScale);
+                    int scH = (int) ((TOP_HEIGHT - 10) * guiScale);
                     RenderSystem.enableScissor(scX, scY, scW, scH);
-                    renderEntityWithRotation(g, drawX, drawY - raiseAmount, adjustedScale, currentRotation,
-                            dummySkeleton);
+                    renderCustomModel(g, drawX, drawY - raiseAmount, adjustedScale, currentRotation, skeletonModel,
+                            SKELETON_TEXTURE);
                     RenderSystem.disableScissor();
                 }
             } else {
@@ -677,10 +682,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         RenderSystem.disableScissor();
                     }
                 }
-                if (dummySkeleton != null && scan > 0) {
+                if (skeletonModel != null && scan > 0) {
                     int sy = scFeet + (int) ((modelH - scan) * guiScale);
                     RenderSystem.enableScissor(scX, sy, scW, (int) (scan * guiScale));
-                    renderEntityWithRotation(g, drawX, drawY - raiseAmount, Sscale, currentRotation, dummySkeleton);
+                    renderCustomModel(g, drawX, drawY - raiseAmount, Sscale, currentRotation, skeletonModel,
+                            SKELETON_TEXTURE);
                     RenderSystem.disableScissor();
                 }
             }
@@ -756,7 +762,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         ICyberware carriedItem = CyberwareAPI.getCyberware(carriedStack);
         if (carriedItem == null)
             return;
-
         ItemStackHandler installedHandler = null;
         if (this.minecraft.player != null) {
             var cap = this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
@@ -764,32 +769,23 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 installedHandler = cap.resolve().get().getInstalledCyberware();
             }
         }
-
         int[] related = this.selectedMarker.relatedSlots();
         for (int j = 0; j < slotCount; j++) {
             int targetId = related[j];
-
-
-
-
             ItemStack otherStack = this.menu.getSlot(targetId).getItem();
             boolean isBlue = !otherStack.isEmpty();
-
             if (otherStack.isEmpty() && installedHandler != null && targetId < installedHandler.getSlots()) {
                 otherStack = installedHandler.getStackInSlot(targetId);
             }
-
             if (!otherStack.isEmpty()) {
                 boolean conflict = false;
                 ICyberware otherCw = CyberwareAPI.getCyberware(otherStack);
                 if (otherCw != null) {
-
                     if (carriedItem.getBodyPartType(
                             carriedStack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE
                             && carriedItem.getBodyPartType(carriedStack) == otherCw.getBodyPartType(otherStack)) {
                         conflict = true;
                     }
-
                     if (!conflict) {
                         if (carriedItem.isIncompatible(carriedStack, otherStack)
                                 || otherCw.isIncompatible(otherStack, carriedStack)) {
@@ -797,23 +793,13 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                         }
                     }
                 }
-
                 if (conflict) {
                     int x2 = uiX + (j * (SLOT_SIZE + SLOT_SPACING));
-
-
-
-
-
                     int y2 = isBlue ? stagingY : installedY;
-
                     g.pose().pushPose();
                     g.pose().translate(0, 0, 400);
-
                     g.fill(x2, y2, x2 + 18, y2 + 18, 0x80FF0000);
-
                     g.renderOutline(x2 - 1, y2 - 1, 20, 20, 0xFFFF0000);
-
                     g.drawString(this.font, "!", x2 + 6, y2 + 4, 0xFFFF0000, true);
                     g.pose().popPose();
                 }
@@ -885,14 +871,13 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 new TargetMarker(Component.literal("Bone"), 3.0f, 20.8f, -5.5f,
                         slots(RobosurgeonBlockEntity.SLOT_BONES)))),
         NONE(0, 0, 0, 0, 0, 0, 45f, List.of());
-
         final int hitX, hitY, hitW, hitH;
         final int zoomOffsetX, zoomOffsetY;
         final float zoomScale;
         final List<TargetMarker> markers;
 
         BodyPart(int hitX, int hitY, int hitW, int hitH, int zoomOffsetX, int zoomOffsetY, float zoomScale,
-                List<TargetMarker> markers) {
+                 List<TargetMarker> markers) {
             this.hitX = hitX;
             this.hitY = hitY;
             this.hitW = hitW;

@@ -12,11 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class CyberWareWorkBenchModel extends Model {
-
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "cyberwareworkbenchmodel"), "main");
-
     private final ModelPart root;
-
     private final ModelPart hammer;
 
     public CyberWareWorkBenchModel(ModelPart root) {

@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 public class SyncSurgeryProgressPacket {
     private final int progress;
-
     private final int maxProgress;
 
     public SyncSurgeryProgressPacket(int progress, int maxProgress) {

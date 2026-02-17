@@ -1,10 +1,10 @@
 package com.maxwell.cyber_ware_port.common.entity;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper.CyberCreeperEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -28,9 +28,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID)
 public class EntitiesItemDropEvents {
-
     private static List<Item> CACHED_COMMON_POOL = null;
-
     private static List<Item> CACHED_HIGH_TIER_POOL = null;
 
     @SubscribeEvent

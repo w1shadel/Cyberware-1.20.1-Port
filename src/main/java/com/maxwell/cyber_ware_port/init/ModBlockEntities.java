@@ -1,15 +1,15 @@
 package com.maxwell.cyber_ware_port.init;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.blueprintChest.BlueprintChestBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.charger.ChargerBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
+import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.radio.tower.RadioTowerCoreBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlockEntity;
-import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -36,7 +36,6 @@ public class ModBlockEntities {
                             SurgeryChamberBlockEntity::new,
                             ModBlocks.SURGERY_CHAMBER.get()
                     ).build(null));
-
     public static final RegistryObject<BlockEntityType<RobosurgeonBlockEntity>> ROBO_SURGEON =
             BLOCK_ENTITIES.register("robo_surgeon",
                     () -> BlockEntityType.Builder.of(
@@ -57,12 +56,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("component_box", () ->
                     BlockEntityType.Builder.of(ComponentBoxBlockEntity::new,
                             ModBlocks.COMPONENT_BOX.get()).build(null));
-
     public static final RegistryObject<BlockEntityType<ScannerBlockEntity>> SCANNER =
             BLOCK_ENTITIES.register("scanner", () ->
                     BlockEntityType.Builder.of(ScannerBlockEntity::new,
                             ModBlocks.SCANNER.get()).build(null));
-
     public static final RegistryObject<BlockEntityType<ChargerBlockEntity>> CHARGER =
             BLOCK_ENTITIES.register("chager", () ->
                     BlockEntityType.Builder.of(ChargerBlockEntity::new,
@@ -71,6 +68,5 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("blueprint_chest", () ->
                     BlockEntityType.Builder.of(BlueprintChestBlockEntity::new,
                             ModBlocks.BLUEPRINT_CHEST.get()).build(null));
-
 
 }

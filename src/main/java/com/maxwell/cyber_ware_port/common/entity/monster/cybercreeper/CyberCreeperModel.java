@@ -13,13 +13,10 @@ import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
-
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_creeper"), "main");
-
     public static final ModelLayerLocation ARMOR_LOCATION =
             new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_creeper"), "armor");
-
     private final ModelPart body;
     private final ModelPart head;
     private final ModelPart leg0;

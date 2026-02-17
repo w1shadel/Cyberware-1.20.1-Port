@@ -1,8 +1,11 @@
 package com.maxwell.cyber_ware_port.client;
 
+import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.client.model.PlayerInternalPartsModel;
+import com.maxwell.cyber_ware_port.client.model.SkeletonDisplayModel;
 import com.maxwell.cyber_ware_port.client.screen.BlueprintChestScreen;
-import com.maxwell.cyber_ware_port.client.screen.cwb.CyberwareWorkbenchScreen;
 import com.maxwell.cyber_ware_port.client.screen.ComponentBoxScreen;
+import com.maxwell.cyber_ware_port.client.screen.cwb.CyberwareWorkbenchScreen;
 import com.maxwell.cyber_ware_port.client.screen.roboSurgeon.RobosurgeonScreen;
 import com.maxwell.cyber_ware_port.client.screen.scanner.ScannerScreen;
 import com.maxwell.cyber_ware_port.client.upgrades.CyberLimbModel;
@@ -26,11 +29,9 @@ import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.Cyb
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonRenderer;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie.CyberZombieModel;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie.CyberZombieRenderer;
-import com.maxwell.cyber_ware_port.common.entity.playerpartsmodel.PlayerInternalPartsModel;
-import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.CyberSkullType;
-import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.maxwell.cyber_ware_port.init.ModEntities;
 import com.maxwell.cyber_ware_port.init.ModItems;
@@ -53,10 +54,10 @@ import net.minecraftforge.registries.RegistryObject;
 @SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
-    public static final ModelLayerLocation CYBER_SKULL_LAYER =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_wither_skeleton_skull"), "main");
-    private static final ResourceLocation CYBER_WITHER_SKELETON_TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+    public static final ModelLayerLocation CYBER_SKULL_LAYER = new ModelLayerLocation(
+            new ResourceLocation(CyberWare.MODID, "cyber_wither_skeleton_skull"), "main");
+    private static final ResourceLocation CYBER_WITHER_SKELETON_TEXTURE = new ResourceLocation(CyberWare.MODID,
+            "textures/entity/cyber_wither_skeleton.png");
 
     @SubscribeEvent
     public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
@@ -76,12 +77,15 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SurgeryChamberModel.LAYER_LOCATION, SurgeryChamberModel::createBodyLayer);
-        event.registerLayerDefinition(PlayerInternalPartsModel.LAYER_LOCATION, PlayerInternalPartsModel::createBodyLayer);
+        event.registerLayerDefinition(PlayerInternalPartsModel.LAYER_LOCATION,
+                PlayerInternalPartsModel::createBodyLayer);
         event.registerLayerDefinition(CyberWareWorkBenchModel.LAYER_LOCATION, CyberWareWorkBenchModel::createBodyLayer);
         event.registerLayerDefinition(ScannerBlockModel.LAYER_LOCATION, ScannerBlockModel::createBodyLayer);
         event.registerLayerDefinition(RadioTowerModel.LAYER_LOCATION, RadioTowerModel::createBodyLayer);
-        event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION, CyberWitherSkeletonModel::createBodyLayer);
+        event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION,
+                CyberWitherSkeletonModel::createBodyLayer);
         event.registerLayerDefinition(CyberSkeletonModel.LAYER_LOCATION, CyberSkeletonModel::createBodyLayer);
+        event.registerLayerDefinition(SkeletonDisplayModel.LAYER_LOCATION, SkeletonDisplayModel::createBodyLayer);
         event.registerLayerDefinition(CyberZombieModel.LAYER_LOCATION, CyberZombieModel::createBodyLayer);
         event.registerLayerDefinition(CyberCreeperModel.LAYER_LOCATION, CyberCreeperModel::createBodyLayer);
         event.registerLayerDefinition(CyberWitherModel.LAYER_LOCATION, CyberWitherModel::createBodyLayer);
@@ -109,9 +113,9 @@ public class ModClientEvents {
             ResourceLocation scavengedProperty = new ResourceLocation(CyberWare.MODID, "is_scavenged");
             for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
                 if (entry.get() instanceof CyberwareItem) {
-                    ItemProperties.register(entry.get(), scavengedProperty, (stack, level, entity, seed) ->
-                            (stack.getItem() instanceof CyberwareItem cw && !cw.isPristine(stack)) ? 1.0F : 0.0F
-                    );
+                    ItemProperties.register(entry.get(), scavengedProperty, (stack, level, entity,
+                                                                             seed) -> (stack.getItem() instanceof CyberwareItem cw && !cw.isPristine(stack)) ? 1.0F
+                            : 0.0F);
                 }
             }
             SkullBlockRenderer.SKIN_BY_TYPE.put(CyberSkullType.CYBER_WITHER_SKELETON, CYBER_WITHER_SKELETON_TEXTURE);

@@ -11,7 +11,6 @@ import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 
 public class ModStructurePools {
-
     public static final ResourceKey<StructureTemplatePool> START = createKey("cyber_lab/start_pool");
 
     public static void bootstrap(BootstapContext<StructureTemplatePool> context) {

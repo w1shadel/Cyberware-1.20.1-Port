@@ -10,7 +10,6 @@ import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberWitherArmorLayer extends EnergySwirlLayer<CyberWitherBoss, CyberWitherModel> {
-
     private static final ResourceLocation WITHER_ARMOR_LOCATION =
             new ResourceLocation("textures/entity/wither/wither_armor.png");
     private final CyberWitherModel model;

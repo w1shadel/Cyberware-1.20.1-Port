@@ -22,7 +22,6 @@ import java.util.List;
 
 @SuppressWarnings("removal")
 public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
-
     private static final int MELEE_TRIGGER_DIST_SQR = 5 * 5;
     private static final int MELEE_COOLDOWN_TICKS = 100;
     private static final int MAX_MELEE_ATTACKS = 5;
@@ -96,7 +95,6 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
     }
 
     static class CyberBowAttackGoal extends RangedBowAttackGoal<CyberSkeletonEntity> {
-
         private final CyberSkeletonEntity skeleton;
 
         public CyberBowAttackGoal(CyberSkeletonEntity mob, double speedModifier, int attackIntervalMin, float attackRadius) {
@@ -118,7 +116,6 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
     }
 
     static class CyberMeleeGoal extends MeleeAttackGoal {
-
         private final CyberSkeletonEntity skeleton;
 
         public CyberMeleeGoal(CyberSkeletonEntity mob, double speedModifier, boolean followingTargetEvenIfNotSeen) {

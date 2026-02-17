@@ -9,7 +9,6 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public record SyncCyberwareDataPacket(CompoundTag data) {
-
     public static SyncCyberwareDataPacket fromBytes(FriendlyByteBuf buf) {
         return new SyncCyberwareDataPacket(buf.readNbt());
 

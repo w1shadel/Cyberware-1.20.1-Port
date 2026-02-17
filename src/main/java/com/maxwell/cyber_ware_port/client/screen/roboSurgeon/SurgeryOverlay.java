@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.client.screen.roboSurgeon;
 
-import com.maxwell.cyber_ware_port.common.network.ClientPacketHandler;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.network.ClientPacketHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +13,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class SurgeryOverlay {
-
     @SubscribeEvent
     public static void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
         if (event.getOverlay() != VanillaGuiOverlay.HELMET.type()) return;

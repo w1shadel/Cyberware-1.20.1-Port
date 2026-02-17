@@ -23,7 +23,6 @@ public class CyberwareSurgeryEvent extends Event {
         return blockEntity;
     }
 
-    
     @Cancelable
     public static class Pre extends CyberwareSurgeryEvent {
         private Component denialReason;
@@ -32,7 +31,6 @@ public class CyberwareSurgeryEvent extends Event {
             super(patient, blockEntity);
         }
 
-        
         public void setDenialReason(Component reason) {
             this.denialReason = reason;
         }
@@ -42,7 +40,6 @@ public class CyberwareSurgeryEvent extends Event {
         }
     }
 
-    
     public static class Post extends CyberwareSurgeryEvent {
         public Post(LivingEntity patient, RobosurgeonBlockEntity blockEntity) {
             super(patient, blockEntity);

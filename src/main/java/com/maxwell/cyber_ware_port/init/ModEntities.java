@@ -1,11 +1,11 @@
 package com.maxwell.cyber_ware_port.init;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper.CyberCreeperEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberskeleton.CyberSkeletonEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie.CyberZombieEntity;
-import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;

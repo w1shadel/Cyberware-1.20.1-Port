@@ -8,10 +8,8 @@ import net.minecraft.client.renderer.entity.layers.EnergySwirlLayer;
 import net.minecraft.resources.ResourceLocation;
 
 public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperEntity, CyberCreeperModel> {
-
     private static final ResourceLocation POWER_LOCATION =
             new ResourceLocation("textures/entity/creeper/creeper_armor.png");
-
     private final CyberCreeperModel model;
 
     public CyberCreeperPowerLayer(RenderLayerParent<CyberCreeperEntity, CyberCreeperModel> pRenderer, EntityModelSet pModelSet) {

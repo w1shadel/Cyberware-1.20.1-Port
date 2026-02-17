@@ -9,11 +9,9 @@ public class CyberwareAPI {
     @Nullable
     public static ICyberware getCyberware(ItemStack stack) {
         if (stack.isEmpty()) return null;
-
         if (stack.getItem() instanceof ICyberware cyber) {
             return cyber;
         }
-
         return CyberwareDataManager.DYNAMIC_CYBERWARE.get(stack.getItem());
     }
 

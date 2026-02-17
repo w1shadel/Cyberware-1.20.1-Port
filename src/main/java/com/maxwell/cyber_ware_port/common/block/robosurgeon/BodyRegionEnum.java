@@ -6,14 +6,11 @@ public enum BodyRegionEnum {
     HEART,
     LUNGS,
     STOMACH,
-
     SKIN,
     MUSCLE,
     BONES,
-
     ARMS,
     HANDS,
-
     LEGS,
     BOOTS;
     public static final int SLOTS_PER_PART = 9;

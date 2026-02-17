@@ -22,7 +22,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import javax.annotation.Nullable;
 
 public class RobosurgeonBlock extends HorizontalDirectionalBlock implements EntityBlock {
-
     public RobosurgeonBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));

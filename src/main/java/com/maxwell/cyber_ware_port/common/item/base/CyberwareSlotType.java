@@ -7,7 +7,6 @@ import net.minecraft.network.chat.MutableComponent;
 import static com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity.*;
 
 public enum CyberwareSlotType {
-
     EYES("cyberware_slot.cyber_ware_port.eyes"),
     BRAIN("cyberware_slot.cyber_ware_port.brain"),
     HEART("cyberware_slot.cyber_ware_port.heart"),
@@ -16,13 +15,10 @@ public enum CyberwareSlotType {
     SKIN("cyberware_slot.cyber_ware_port.skin"),
     MUSCLE("cyberware_slot.cyber_ware_port.muscle"),
     BONES("cyberware_slot.cyber_ware_port.bones"),
-
     ARMS("cyberware_slot.cyber_ware_port.arms"),
     HANDS("cyberware_slot.cyber_ware_port.hands"),
-
     LEGS("cyberware_slot.cyber_ware_port.legs"),
     BOOTS("cyberware_slot.cyber_ware_port.boots"),
-
     UNKNOWN("cyberware_slot.cyber_ware_port.unknown");
     private final String translationKey;
 

@@ -15,9 +15,7 @@ public class AquaticPropulsionSystemItem extends CyberwareItem {
                 .addAttribute(
                         ForgeMod.SWIM_SPEED.get(),
                         "a1b2c3d4-5555-6666-7777-888899990000",
-                        1,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL
-                )
-        );
+                        0.5,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 }

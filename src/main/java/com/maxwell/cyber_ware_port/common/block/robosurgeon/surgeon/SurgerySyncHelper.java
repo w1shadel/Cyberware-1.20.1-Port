@@ -1,18 +1,15 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon;
 
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class SurgerySyncHelper {
-    
     public static boolean updateGhosts(ItemStackHandler body, IItemHandlerModifiable table) {
         boolean changed = false;
         for (int i = 0; i < table.getSlots(); i++) {
             ItemStack b = body.getStackInSlot(i);
             ItemStack t = table.getStackInSlot(i);
-
             if (SurgeryManager.isGhost(t)) {
                 if (b.isEmpty()) {
                     table.setStackInSlot(i, ItemStack.EMPTY);

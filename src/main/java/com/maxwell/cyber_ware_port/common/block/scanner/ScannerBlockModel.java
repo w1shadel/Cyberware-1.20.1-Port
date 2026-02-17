@@ -13,13 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class ScannerBlockModel extends Model {
-
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "scanner_block"), "main");
-
     private final ModelPart root;
-
     private final ModelPart scanner;
-
     private final ModelPart scanner_part;
 
     public ScannerBlockModel(ModelPart root) {

@@ -13,13 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class SurgeryChamberModel extends Model {
-
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "surgery_chamber"), "main");
-
     private final ModelPart root;
-
     private final ModelPart door_left;
-
     private final ModelPart door_right;
 
     public SurgeryChamberModel(ModelPart root) {

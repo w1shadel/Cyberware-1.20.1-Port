@@ -12,9 +12,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class RadioTowerFenceBlock extends FenceBlock {
-
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
-
     private static final int MAX_SEARCH_HEIGHT = 10;
 
     public RadioTowerFenceBlock(Properties pProperties) {

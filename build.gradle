@@ -78,6 +78,10 @@ repositories {
             includeGroup("cc.tweaked")
         }
     }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
 }
 
 dependencies {
@@ -87,11 +91,14 @@ dependencies {
     runtimeOnly(fg.deobf("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cctVersion"))
     implementation fg.deobf("curse.maven:mekanism-268560:6552911")
     implementation fg.deobf("curse.maven:pipez-443900:4916633")
+    implementation fg.deobf("curse.maven:epic-fight-mod-405076:7617763")
     runtimeOnly (fg.deobf("curse.maven:dglib-1452161:7566434"))
     runtimeOnly (fg.deobf("curse.maven:cyberware-visible-modifications-1450029:7584018"))
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
+    runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}")
     runtimeOnly fg.deobf("curse.maven:jade-324717:5672013")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -103,7 +110,8 @@ tasks.named('processResources', ProcessResources).configure {
             forge_version       : forge_version, forge_version_range: forge_version_range,
             loader_version_range: loader_version_range,
             mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors         : mod_authors, mod_description: mod_description,
+            mod_authors         : mod_authors, mod_description: mod_description, emi_version_range: emi_version_range,
+            jei_version         : jei_version,
     ]
     inputs.properties replaceProperties
 

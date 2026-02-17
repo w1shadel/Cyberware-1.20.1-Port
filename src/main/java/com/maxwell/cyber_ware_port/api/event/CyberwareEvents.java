@@ -11,7 +11,6 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.List;
 
 public class CyberwareEvents {
-    
     @Cancelable
     public static class Recharge extends Event {
         private final LivingEntity entity;
@@ -37,7 +36,6 @@ public class CyberwareEvents {
         }
     }
 
-    
     public static class Salvage extends Event {
         private final CyberwareWorkbenchBlockEntity tile;
         private final ItemStack inputStack;
@@ -55,7 +53,6 @@ public class CyberwareEvents {
             return inputStack;
         }
 
-        
         @Cancelable
         public static class Pre extends Salvage {
             private float blueprintChance;
@@ -74,7 +71,6 @@ public class CyberwareEvents {
             }
         }
 
-        
         public static class Post extends Salvage {
             private final List<ItemStack> outputs;
 
@@ -89,7 +85,6 @@ public class CyberwareEvents {
         }
     }
 
-    
     public static class Scan extends Event {
         private final ScannerBlockEntity tile;
         private final ItemStack inputStack;
@@ -99,7 +94,6 @@ public class CyberwareEvents {
             this.inputStack = inputStack;
         }
 
-        
         @Cancelable
         public static class Complete extends Scan {
             private float chance;

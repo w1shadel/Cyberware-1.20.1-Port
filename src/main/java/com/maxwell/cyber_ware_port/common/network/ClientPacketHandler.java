@@ -9,7 +9,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ClientPacketHandler {
     public static int currentProgress = 0;
-
     public static int maxProgress = 100;
 
     public static void update(int progress, int max) {

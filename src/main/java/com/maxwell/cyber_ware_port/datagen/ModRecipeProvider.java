@@ -1,12 +1,12 @@
 package com.maxwell.cyber_ware_port.datagen;
 
-import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;

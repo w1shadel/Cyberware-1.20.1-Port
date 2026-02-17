@@ -14,7 +14,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class InternalDefibrillatorItem extends CyberwareItem {
-
     public InternalDefibrillatorItem() {
         super(new Builder(10, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)

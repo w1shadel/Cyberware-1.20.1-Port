@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CyberCreeperEntity extends Creeper implements ICyberwareMob {
-
     private boolean isCausingCustomExplosion = false;
 
     public CyberCreeperEntity(EntityType<? extends Creeper> type, Level level) {

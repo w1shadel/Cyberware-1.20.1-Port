@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.common.entity;
 
-import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
 import com.maxwell.cyber_ware_port.init.ModEntities;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.AbstractSkeleton;

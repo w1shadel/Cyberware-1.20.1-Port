@@ -15,9 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
 public class ScannerBlockRenderer implements BlockEntityRenderer<ScannerBlockEntity> {
-
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/scanner.png");
-
     private final ScannerBlockModel model;
 
     public ScannerBlockRenderer(BlockEntityRendererProvider.Context context) {

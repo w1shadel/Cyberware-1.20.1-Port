@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.container;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
+import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,12 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
-import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 
 public class RobosurgeonMenu extends AbstractContainerMenu {
-
     public final RobosurgeonBlockEntity blockEntity;
-
     private final ContainerLevelAccess levelAccess;
     private final ContainerData data;
     private final int invheight = 140;
@@ -41,35 +39,28 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     public boolean mayPlace(ItemStack stack) {
                         if (!super.mayPlace(stack))
                             return false;
-
                         ICyberware myCw = com.maxwell.cyber_ware_port.api.json.CyberwareAPI.getCyberware(stack);
                         if (myCw == null)
                             return true;
-
                         for (int otherSlotIndex = 0; otherSlotIndex < RobosurgeonBlockEntity.TOTAL_SLOTS; otherSlotIndex++) {
                             if (otherSlotIndex == this.getSlotIndex())
-                                continue; 
-
+                                continue;
                             ItemStack otherStack = handler.getStackInSlot(otherSlotIndex);
                             if (otherStack.isEmpty())
                                 continue;
-
                             ICyberware otherCw = com.maxwell.cyber_ware_port.api.json.CyberwareAPI
                                     .getCyberware(otherStack);
                             if (otherCw == null)
                                 continue;
-
                             if (myCw.getBodyPartType(
                                     stack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE
                                     && myCw.getBodyPartType(stack) == otherCw.getBodyPartType(otherStack)) {
                                 return false;
                             }
-
                             if (myCw.isIncompatible(stack, otherStack) || otherCw.isIncompatible(otherStack, stack)) {
                                 return false;
                             }
                         }
-
                         return true;
                     }
                 });

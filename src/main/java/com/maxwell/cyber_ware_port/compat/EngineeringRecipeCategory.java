@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.compat;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -23,7 +23,6 @@ import java.util.List;
 @SuppressWarnings("removal")
 public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRecipe> {
     private final IDrawable background;
-
     private final IDrawable icon;
 
     public EngineeringRecipeCategory(IGuiHelper helper) {

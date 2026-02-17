@@ -21,12 +21,10 @@ import org.joml.Matrix4f;
 
 @SuppressWarnings("removal")
 public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberWitherModel> {
-
     private static final ResourceLocation WITHER_LOCATION =
             new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
     private static final ResourceLocation WITHER_INVULNERABLE_LOCATION =
             new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
-
     private static final ResourceLocation BEAM_LOCATION =
             new ResourceLocation("textures/entity/guardian_beam.png");
 

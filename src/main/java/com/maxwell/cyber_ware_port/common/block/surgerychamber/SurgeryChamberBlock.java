@@ -32,15 +32,11 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements EntityBlock {
-
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
     private static final Map<Direction, VoxelShape> LOWER_SHAPES_OPEN = new EnumMap<>(Direction.class);
-
     private static final Map<Direction, VoxelShape> UPPER_SHAPES_OPEN = new EnumMap<>(Direction.class);
-
     private static final Map<Direction, VoxelShape> LOWER_SHAPES_CLOSED = new EnumMap<>(Direction.class);
-
     private static final Map<Direction, VoxelShape> UPPER_SHAPES_CLOSED = new EnumMap<>(Direction.class);
 
     static {

@@ -13,29 +13,17 @@ import net.minecraft.util.Mth;
 public class CyberWitherModel extends HierarchicalModel<CyberWitherBoss> {
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_wither"), "main");
-
     private static final String RIBCAGE = "ribcage";
-
     private static final String CENTER_HEAD = "center_head";
-
     private static final String RIGHT_HEAD = "right_head";
-
     private static final String LEFT_HEAD = "left_head";
-
     private static final float RIBCAGE_X_ROT_OFFSET = 0.065F;
-
     private static final float TAIL_X_ROT_OFFSET = 0.265F;
-
     private final ModelPart root;
-
     private final ModelPart centerHead;
-
     private final ModelPart rightHead;
-
     private final ModelPart leftHead;
-
     private final ModelPart ribcage;
-
     private final ModelPart tail;
 
     public CyberWitherModel(ModelPart pRoot) {

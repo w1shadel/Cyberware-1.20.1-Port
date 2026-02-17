@@ -1,9 +1,10 @@
 package com.maxwell.cyber_ware_port.init;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.blueprintChest.BlueprintChestBlock;
-import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlock;
 import com.maxwell.cyber_ware_port.common.block.charger.ChargerBlock;
 import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlock;
+import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlock;
 import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullBlock;
 import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberWallSkullBlock;
 import com.maxwell.cyber_ware_port.common.block.radio.RadioKitBlock;
@@ -13,7 +14,6 @@ import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlock;
 import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlock;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlock;
 import com.maxwell.cyber_ware_port.common.item.CyberSkullType;
-import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -83,7 +83,6 @@ public class ModBlocks {
                     .strength(4.0f, 5.0f)
                     .noOcclusion()
                     .requiresCorrectToolForDrops()));
-
     public static final RegistryObject<Block> CHARGER = registerBlock("charger",
             () -> new ChargerBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)

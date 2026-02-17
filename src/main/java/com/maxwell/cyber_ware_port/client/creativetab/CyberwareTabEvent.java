@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.client.creativetab;
 
-import com.maxwell.cyber_ware_port.common.CyberwareTabState;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.CyberwareTabState;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,6 @@ import java.util.List;
 @SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class CyberwareTabEvent {
-
     private static final ResourceLocation TAB_TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/gui/extended_tabs.png");
     private static final List<CyberwareSideTabButton> customTabs = new ArrayList<>();

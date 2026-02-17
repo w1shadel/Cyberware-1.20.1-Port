@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.common.block.cyberskull;
 
-import com.maxwell.cyber_ware_port.client.ModClientEvents;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.client.ModClientEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
 public class CyberSkullRenderer implements BlockEntityRenderer<SkullBlockEntity> {
-
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
     private final SkullModel model;

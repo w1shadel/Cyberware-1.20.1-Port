@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentBoxBlockEntity extends BlockEntity implements MenuProvider {
-
     public final ItemStackHandler itemHandler = new ItemStackHandler(18) {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {

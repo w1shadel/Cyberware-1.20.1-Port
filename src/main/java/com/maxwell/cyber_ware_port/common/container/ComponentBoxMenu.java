@@ -16,9 +16,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ComponentBoxMenu extends AbstractContainerMenu {
-
     private final ItemStack lockedStack;
-
     private final int lockedSlotIndex;
 
     public ComponentBoxMenu(int id, Inventory playerInv, FriendlyByteBuf extraData) {

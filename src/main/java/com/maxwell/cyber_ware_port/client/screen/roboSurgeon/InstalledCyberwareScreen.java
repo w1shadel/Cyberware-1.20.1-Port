@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InstalledCyberwareScreen extends Screen {
-
     private static final int ITEM_HEIGHT = 20;
     private static final int SCROLL_BAR_WIDTH = 6;
     private final Screen previousScreen;

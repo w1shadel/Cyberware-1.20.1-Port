@@ -14,21 +14,14 @@ import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberZombieModel extends HierarchicalModel<CyberZombieEntity> {
-
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_zombie"), "main");
     private final ModelPart waist;
-
     private final ModelPart body;
-
     private final ModelPart head;
-
     private final ModelPart rightArm;
-
     private final ModelPart leftArm;
-
     private final ModelPart rightLeg;
-
     private final ModelPart leftLeg;
 
     public CyberZombieModel(ModelPart root) {

@@ -13,6 +13,7 @@ public class HudjackItem extends CyberwareItem {
         );
 
     }
+
     @Override
     public boolean canToggle(ItemStack stack) {
         return true;

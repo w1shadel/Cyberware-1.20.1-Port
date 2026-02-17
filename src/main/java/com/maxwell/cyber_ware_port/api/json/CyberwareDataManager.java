@@ -35,12 +35,10 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                 Item item = ForgeRegistries.ITEMS.getValue(itemId);
                 if (item != null) {
                     CyberwareData data = new CyberwareData();
-
                     String slotStr = json.get("slot").getAsString().toUpperCase();
                     data.slotId = BodyRegionEnum.valueOf(slotStr).getStartSlot();
                     data.essence = json.has("essence") ? json.get("essence").getAsInt() : 20;
                     data.maxInstall = json.has("max_install") ? json.get("max_install").getAsInt() : 1;
-
                     if (json.has("attributes")) {
                         JsonArray attrs = json.getAsJsonArray("attributes");
                         for (JsonElement attrElement : attrs) {
@@ -53,7 +51,6 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                             }
                         }
                     }
-
                     if (json.has("incompatible")) {
                         for (JsonElement e : json.getAsJsonArray("incompatible")) {
                             data.incompatibleItems.add(ForgeRegistries.ITEMS.getValue(new ResourceLocation(e.getAsString())));

@@ -17,7 +17,6 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class BlueprintChestMenu extends AbstractContainerMenu {
-
     private static final int CONTAINER_SLOTS = 18;
     public final BlueprintChestBlockEntity blockEntity;
 

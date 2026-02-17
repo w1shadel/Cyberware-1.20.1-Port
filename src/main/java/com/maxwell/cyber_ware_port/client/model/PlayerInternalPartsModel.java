@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.entity.playerpartsmodel;
+package com.maxwell.cyber_ware_port.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -12,15 +12,10 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class PlayerInternalPartsModel extends Model {
-
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "playerinternalpartsmodel"), "main");
-
     private final ModelPart root;
-
     private final ModelPart bone;
-
     private final ModelPart muscal;
-
     private final ModelPart skin;
 
     public PlayerInternalPartsModel(ModelPart root) {

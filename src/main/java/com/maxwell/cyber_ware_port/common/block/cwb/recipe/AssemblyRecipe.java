@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.common.block.cwb.recipe;
 
-import com.maxwell.cyber_ware_port.init.ModRecipes;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +24,6 @@ import java.util.List;
 public class AssemblyRecipe implements Recipe<SimpleContainer> {
     private final ResourceLocation id;
     private final List<SizedIngredient> inputs;
-
     private final ItemStack output;
 
     public AssemblyRecipe(ResourceLocation id, List<SizedIngredient> inputs, ItemStack output) {

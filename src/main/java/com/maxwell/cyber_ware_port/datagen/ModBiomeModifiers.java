@@ -15,13 +15,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Collections;
 
 public class ModBiomeModifiers {
-
     public static final ResourceKey<BiomeModifier> CYBER_ZOMBIE_SPAWN = registerKey("cyber_zombie_spawn");
-
     public static final ResourceKey<BiomeModifier> CYBER_SKELETON_SPAWN = registerKey("cyber_skeleton_spawn");
-
     public static final ResourceKey<BiomeModifier> CYBER_CREEPER_SPAWN = registerKey("cyber_creeper_spawn");
-
     public static final ResourceKey<BiomeModifier> CYBER_WITHER_SKELETON_SPAWN = registerKey("cyber_wither_skeleton_spawn");
 
     public static void bootstrap(BootstapContext<BiomeModifier> context) {

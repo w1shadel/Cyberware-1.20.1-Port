@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 @SuppressWarnings("removal")
 public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChamberBlockEntity> {
-
     public static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/surgery_chamber.png");
     private final SurgeryChamberModel model;
 

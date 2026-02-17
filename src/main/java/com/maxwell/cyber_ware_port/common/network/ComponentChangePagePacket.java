@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 public class ComponentChangePagePacket {
     private final int direction;
-
     private final int targetPanel;
 
     public ComponentChangePagePacket(int direction, int targetPanel) {

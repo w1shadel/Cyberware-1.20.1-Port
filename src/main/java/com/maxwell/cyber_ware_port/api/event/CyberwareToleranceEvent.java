@@ -18,17 +18,14 @@ public class CyberwareToleranceEvent extends Event {
         return entity;
     }
 
-    
     public int getOriginalTolerance() {
         return originalTolerance;
     }
 
-    
     public int getNewTolerance() {
         return newTolerance;
     }
 
-    
     public void setNewTolerance(int newTolerance) {
         this.newTolerance = newTolerance;
     }

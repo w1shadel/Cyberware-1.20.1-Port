@@ -20,7 +20,6 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 public class ComponentBoxItem extends BlockItem {
-
     public ComponentBoxItem() {
         super(ModBlocks.COMPONENT_BOX.get(), new Properties().stacksTo(1));
 

@@ -7,7 +7,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class PortableCraftingButton extends Button {
-
     private final ItemStack craftingTableStack;
 
     public PortableCraftingButton(int x, int y, OnPress onPress) {

@@ -14,9 +14,7 @@ import net.minecraft.world.phys.AABB;
 import javax.annotation.Nullable;
 
 public class SurgeryChamberBlockEntity extends BlockEntity {
-
     public float animationProgress = 0;
-
     public float prevAnimationProgress = 0;
 
     public SurgeryChamberBlockEntity(BlockPos pPos, BlockState pBlockState) {

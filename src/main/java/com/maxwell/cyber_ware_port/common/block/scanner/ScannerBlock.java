@@ -24,7 +24,6 @@ import net.minecraftforge.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 public class ScannerBlock extends HorizontalDirectionalBlock implements EntityBlock {
-
     public ScannerBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));

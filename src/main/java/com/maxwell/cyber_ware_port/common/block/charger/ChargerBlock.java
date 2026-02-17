@@ -19,7 +19,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class ChargerBlock extends Block implements EntityBlock {
-
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 
     public ChargerBlock(Properties pProperties) {

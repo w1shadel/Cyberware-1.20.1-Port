@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.compat;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import mezz.jei.api.IModPlugin;
@@ -21,11 +21,22 @@ import java.util.List;
 @SuppressWarnings("removal")
 @JeiPlugin
 public class CyberwareJeiPlugin implements IModPlugin {
-
     public static final RecipeType<AssemblyRecipe> ASSEMBLY_TYPE =
             RecipeType.create(CyberWare.MODID, "assembly", AssemblyRecipe.class);
     public static final RecipeType<EngineeringRecipe> ENGINEERING_TYPE =
             RecipeType.create(CyberWare.MODID, "engineering", EngineeringRecipe.class);
+    private static mezz.jei.api.runtime.IJeiRuntime jeiRuntime;
+
+    @Override
+    public void onRuntimeAvailable(mezz.jei.api.runtime.IJeiRuntime runtime) {
+        jeiRuntime = runtime;
+    }
+
+    public static void showRecipeCategory(RecipeType<?> type) {
+        if (jeiRuntime != null) {
+            jeiRuntime.getRecipesGui().showTypes(List.of(type));
+        }
+    }
 
     @Override
     public ResourceLocation getPluginUid() {

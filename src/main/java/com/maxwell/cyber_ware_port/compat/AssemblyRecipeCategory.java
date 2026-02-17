@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.compat;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -18,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 @SuppressWarnings("removal")
 public class AssemblyRecipeCategory implements IRecipeCategory<AssemblyRecipe> {
     private final IDrawable background;
-
     private final IDrawable icon;
 
     public AssemblyRecipeCategory(IGuiHelper helper) {

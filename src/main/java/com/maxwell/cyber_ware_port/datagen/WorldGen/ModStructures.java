@@ -19,7 +19,6 @@ import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import java.util.Map;
 
 public class ModStructures {
-
     public static final ResourceKey<Structure> CYBER_LAB = createKey("cyber_lab");
 
     public static void bootstrap(BootstapContext<Structure> context) {

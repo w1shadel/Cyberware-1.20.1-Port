@@ -69,9 +69,9 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                 return true;
             }
             return switch (slot) {
-                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack); 
+                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack);
                 case PAPER_SLOT -> stack.is(Items.PAPER);
-                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem; 
+                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
                 default -> false;
             };
         }

@@ -17,7 +17,6 @@ public class CyberwareData {
     public boolean isPristine = true;
     public ICyberware.StackingRule stackingRule = ICyberware.StackingRule.STATIC;
     public Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
-
     public Set<Item> incompatibleItems = new HashSet<>();
     public Set<Item> prerequisites = new HashSet<>();
 

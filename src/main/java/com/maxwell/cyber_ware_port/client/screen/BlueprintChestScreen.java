@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.client.screen;
 
-import com.maxwell.cyber_ware_port.common.container.BlueprintChestMenu;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.container.BlueprintChestMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class BlueprintChestScreen extends AbstractContainerScreen<BlueprintChestMenu> {
-
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/gui/blueprint_chest_inv.png");
 

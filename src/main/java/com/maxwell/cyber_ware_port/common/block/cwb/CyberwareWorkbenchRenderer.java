@@ -15,9 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
 public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<CyberwareWorkbenchBlockEntity> {
-
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/cyberware_workbench_model.png");
-
     private final CyberWareWorkBenchModel model;
 
     public CyberwareWorkbenchRenderer(BlockEntityRendererProvider.Context context) {

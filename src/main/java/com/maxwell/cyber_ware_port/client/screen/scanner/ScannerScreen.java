@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.client.screen.scanner;
 
-import com.maxwell.cyber_ware_port.common.container.ScannerMenu;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.container.ScannerMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -53,25 +53,17 @@ public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
             logLines.remove(0);
         }
     }
+
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int pMouseX, int pMouseY) {
         int color = 0x55FFFF;
-
         guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, color, false);
-
-
         Component warnText = Component.literal("Destroys Cyberware").withStyle(ChatFormatting.RED);
         int warnWidth = this.font.width(warnText);
-
         guiGraphics.drawString(this.font, warnText, this.imageWidth - warnWidth - 9, this.titleLabelY, 0xFFFFFF, false);
-
-
         Component chanceText = Component.literal("50% Chance").withStyle(ChatFormatting.YELLOW);
         int chanceWidth = this.font.width(chanceText);
-
         guiGraphics.drawString(this.font, chanceText, this.imageWidth - chanceWidth - 8, this.titleLabelY + 10, 0xFFFFFF, false);
-
-
         guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, color, false);
     }
 

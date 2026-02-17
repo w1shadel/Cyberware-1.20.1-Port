@@ -7,9 +7,7 @@ import com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon.SurgerySyncH
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlock;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
-import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
-import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareSlotType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
@@ -17,7 +15,6 @@ import com.maxwell.cyber_ware_port.common.network.SyncSurgeryProgressPacket;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,8 +23,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -55,31 +50,29 @@ import java.util.List;
 
 public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider {
     public static final int TOTAL_SLOTS = BodyRegionEnum.getTotalSlots();
-
     private final ItemStackHandler itemHandler = createItemHandler();
     private final ContainerData data;
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private int progress = 0;
     private int maxProgress = 100;
-    public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART; 
-
-    public static final int SLOT_EYES    = BodyRegionEnum.EYES.getStartSlot();
-    public static final int SLOT_BRAIN   = BodyRegionEnum.BRAIN.getStartSlot();
-    public static final int SLOT_HEART   = BodyRegionEnum.HEART.getStartSlot();
-    public static final int SLOT_LUNGS   = BodyRegionEnum.LUNGS.getStartSlot();
+    public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART;
+    public static final int SLOT_EYES = BodyRegionEnum.EYES.getStartSlot();
+    public static final int SLOT_BRAIN = BodyRegionEnum.BRAIN.getStartSlot();
+    public static final int SLOT_HEART = BodyRegionEnum.HEART.getStartSlot();
+    public static final int SLOT_LUNGS = BodyRegionEnum.LUNGS.getStartSlot();
     public static final int SLOT_STOMACH = BodyRegionEnum.STOMACH.getStartSlot();
-    public static final int SLOT_SKIN    = BodyRegionEnum.SKIN.getStartSlot();
-    public static final int SLOT_MUSCLE  = BodyRegionEnum.MUSCLE.getStartSlot();
-    public static final int SLOT_BONES   = BodyRegionEnum.BONES.getStartSlot();
-    public static final int SLOT_ARMS    = BodyRegionEnum.ARMS.getStartSlot();
-    public static final int SLOT_HANDS   = BodyRegionEnum.HANDS.getStartSlot();
-    public static final int SLOT_LEGS    = BodyRegionEnum.LEGS.getStartSlot();
-    public static final int SLOT_BOOTS   = BodyRegionEnum.BOOTS.getStartSlot();
+    public static final int SLOT_SKIN = BodyRegionEnum.SKIN.getStartSlot();
+    public static final int SLOT_MUSCLE = BodyRegionEnum.MUSCLE.getStartSlot();
+    public static final int SLOT_BONES = BodyRegionEnum.BONES.getStartSlot();
+    public static final int SLOT_ARMS = BodyRegionEnum.ARMS.getStartSlot();
+    public static final int SLOT_HANDS = BodyRegionEnum.HANDS.getStartSlot();
+    public static final int SLOT_LEGS = BodyRegionEnum.LEGS.getStartSlot();
+    public static final int SLOT_BOOTS = BodyRegionEnum.BOOTS.getStartSlot();
+
     public RobosurgeonBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ROBO_SURGEON.get(), pPos, pBlockState);
         this.data = createContainerData();
     }
-
 
     private boolean isGhost(ItemStack stack) {
         return !stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost");
@@ -92,16 +85,11 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     public void performSurgery(ServerPlayer player) {
         if (!checkRequirements(player)) return;
         if (MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Pre(player, this))) return;
-
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
-
             SurgeryManager.execute(player, this.itemHandler, userData.getInstalledCyberware());
-
             userData.recalculateCapacity(player);
             userData.syncToClient(player);
-
             this.populateGhostItems(player);
-
             player.level().playSound(null, player.blockPosition(), SoundEvents.IRON_GOLEM_HURT, SoundSource.PLAYERS, 1.0f, 1.0f);
             MinecraftForge.EVENT_BUS.post(new CyberwareSurgeryEvent.Post(player, this));
         });
@@ -116,56 +104,54 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         });
     }
 
-
     private boolean checkRequirements(ServerPlayer player) {
         var cap = player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY);
         if (!cap.isPresent()) return false;
-
         ItemStackHandler playerBody = cap.resolve().get().getInstalledCyberware();
         java.util.Map<net.minecraft.world.item.Item, Integer> futureCounts = new java.util.HashMap<>();
         List<ItemStack> futureBody = new ArrayList<>();
-
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = itemHandler.getStackInSlot(i);
             ItemStack finalStack = isGhost(table) ? playerBody.getStackInSlot(i) : table;
-
             if (!finalStack.isEmpty()) {
                 futureBody.add(finalStack);
                 futureCounts.put(finalStack.getItem(), futureCounts.getOrDefault(finalStack.getItem(), 0) + finalStack.getCount());
             }
         }
-
         for (ItemStack stack : futureBody) {
             ICyberware cw = getCyber(stack);
             if (cw == null) continue;
-
             if (futureCounts.get(stack.getItem()) > cw.getMaxInstallAmount(stack)) return false;
-
             for (net.minecraft.world.item.Item req : cw.getPrerequisites(stack)) {
                 if (futureBody.stream().noneMatch(s -> s.is(req))) return false;
             }
         }
         return true;
     }
+
     private ItemStackHandler createItemHandler() {
         return new ItemStackHandler(TOTAL_SLOTS) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (cw == null || isGhost(getStackInSlot(slot))) return false;
-
                 return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(slot);
             }
         };
     }
+
     public static void tick(Level level, BlockPos pos, BlockState state, RobosurgeonBlockEntity entity) {
         if (level.isClientSide) return;
         BlockPos chamberPos = entity.findChamberPos();
-        if (chamberPos == null) { entity.resetProgress(); return; }
-
+        if (chamberPos == null) {
+            entity.resetProgress();
+            return;
+        }
         BlockEntity be = level.getBlockEntity(chamberPos);
-        if (!(be instanceof SurgeryChamberBlockEntity chamber)) { entity.resetProgress(); return; }
-
+        if (!(be instanceof SurgeryChamberBlockEntity chamber)) {
+            entity.resetProgress();
+            return;
+        }
         LivingEntity patient = entity.findPatient(chamberPos);
         if (chamber.isOpen() || !(patient instanceof ServerPlayer serverPlayer)) {
             if (entity.progress > 0) {
@@ -174,17 +160,14 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             }
             return;
         }
-
         if (entity.needsSurgery(serverPlayer) && entity.checkRequirements(serverPlayer)) {
             entity.progress++;
             setChanged(level, pos, state);
             syncProgress(entity, serverPlayer);
-
             if (entity.progress % 20 == 0) {
                 serverPlayer.hurt(level.damageSources().magic(), 1.0f);
                 level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
             }
-
             if (entity.progress >= entity.maxProgress) {
                 entity.performSurgery(serverPlayer);
                 entity.resetProgress();
@@ -231,23 +214,52 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         return entities.isEmpty() ? null : entities.get(0);
     }
 
-    private void resetProgress() { this.progress = 0; }
+    private void resetProgress() {
+        this.progress = 0;
+    }
 
-    @Override public Component getDisplayName() { return Component.translatable("container.cyber_ware_port.robosurgeon"); }
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.cyber_ware_port.robosurgeon");
+    }
 
-    @Nullable @Override public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory inv, Player p) {
         if (p instanceof ServerPlayer sp) populateGhostItems(sp);
         return new RobosurgeonMenu(id, inv, this, data);
     }
 
-    @Override public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : super.getCapability(cap, side);
     }
 
-    @Override public void onLoad() { super.onLoad(); lazyItemHandler = LazyOptional.of(() -> itemHandler); }
-    @Override public void invalidateCaps() { super.invalidateCaps(); lazyItemHandler.invalidate(); }
-    @Override protected void saveAdditional(CompoundTag tag) { super.saveAdditional(tag); tag.put("inventory", itemHandler.serializeNBT()); tag.putInt("progress", progress); }
-    @Override public void load(CompoundTag tag) { super.load(tag); itemHandler.deserializeNBT(tag.getCompound("inventory")); progress = tag.getInt("progress"); }
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        lazyItemHandler.invalidate();
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.put("inventory", itemHandler.serializeNBT());
+        tag.putInt("progress", progress);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+        progress = tag.getInt("progress");
+    }
 
     public void drops() {
         SimpleContainer inv = new SimpleContainer(TOTAL_SLOTS);
@@ -260,9 +272,21 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
 
     private ContainerData createContainerData() {
         return new ContainerData() {
-            @Override public int get(int i) { return i == 0 ? progress : maxProgress; }
-            @Override public void set(int i, int v) { if (i == 0) progress = v; else maxProgress = v; }
-            @Override public int getCount() { return 2; }
+            @Override
+            public int get(int i) {
+                return i == 0 ? progress : maxProgress;
+            }
+
+            @Override
+            public void set(int i, int v) {
+                if (i == 0) progress = v;
+                else maxProgress = v;
+            }
+
+            @Override
+            public int getCount() {
+                return 2;
+            }
         };
     }
 

@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.client.screen;
 
-import com.maxwell.cyber_ware_port.common.container.ComponentBoxMenu;
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.container.ComponentBoxMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class ComponentBoxScreen extends AbstractContainerScreen<ComponentBoxMenu> {
-
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(CyberWare.MODID, "textures/gui/component_box_normal.png");
 

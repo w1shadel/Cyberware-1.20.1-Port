@@ -17,9 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentBoxCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
-
     private final ItemStack stack;
-
     private final ItemStackHandler inventory = new ItemStackHandler(18) {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {

@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 
 public class SurgeryGhostTogglePacket {
     private final BlockPos pos;
-
     private final int slotId;
 
     public SurgeryGhostTogglePacket(BlockPos pos, int slotId) {

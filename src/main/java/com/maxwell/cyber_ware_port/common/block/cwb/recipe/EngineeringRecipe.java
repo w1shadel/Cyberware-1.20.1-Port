@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.common.block.cwb.recipe;
 
-import com.maxwell.cyber_ware_port.init.ModRecipes;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -24,9 +24,7 @@ import java.util.List;
 
 public class EngineeringRecipe implements Recipe<SimpleContainer> {
     private final ResourceLocation id;
-
     private final Ingredient input;
-
     private final List<OutputEntry> outputs;
     private final float blueprintChance;
 
@@ -37,12 +35,14 @@ public class EngineeringRecipe implements Recipe<SimpleContainer> {
         this.blueprintChance = blueprintChance;
 
     }
+
     @Override
     public NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> nonNullList = NonNullList.create();
         nonNullList.add(this.input);
         return nonNullList;
     }
+
     public float getBlueprintChance() {
         return blueprintChance;
 

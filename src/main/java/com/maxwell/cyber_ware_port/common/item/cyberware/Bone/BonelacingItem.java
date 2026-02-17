@@ -6,7 +6,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class BonelacingItem extends CyberwareItem {
-
     public BonelacingItem() {
         super(new Builder(10, RobosurgeonBlockEntity.SLOT_BONES)
                 .maxInstall(8)

@@ -12,9 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 public class CyberLimbModel<T extends LivingEntity> extends EntityModel<T> {
-
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_limbs"), "main");
-
     public final ModelPart leftArm;
     public final ModelPart rightArm;
     public final ModelPart leftLeg;

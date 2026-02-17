@@ -11,8 +11,7 @@ public class ImplantedSpursItem extends CyberwareItem {
                 .maxInstall(4)
                 .addAttribute(Attributes.MOVEMENT_SPEED,
                         "c0a9b8e0-1234-4567-89ab-cdef01234567",
-                        0.1,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL)
-        );
+                        0.05,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 }

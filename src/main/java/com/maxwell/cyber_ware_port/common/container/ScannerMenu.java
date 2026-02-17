@@ -13,7 +13,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ScannerMenu extends AbstractContainerMenu {
-
     public final ScannerBlockEntity blockEntity;
     private final ContainerData data;
 

@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class NeuropozyneItem extends Item {
-
     private static final int DURATION = 24000;
 
     public NeuropozyneItem() {
