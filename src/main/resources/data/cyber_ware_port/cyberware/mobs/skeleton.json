@@ -1,0 +1,8 @@
+{
+    "mob": "minecraft:skeleton",
+    "replace_with": "cyber_ware_port:cyber_skeleton",
+    "chance": 0.15,
+    "is_high_tier": false,
+    "special_drops": [],
+    "forbidden_drops": []
+}

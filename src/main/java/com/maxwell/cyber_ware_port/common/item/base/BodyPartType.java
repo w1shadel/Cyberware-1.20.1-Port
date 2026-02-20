@@ -12,8 +12,10 @@ public enum BodyPartType {
     BONES,
     ARM_LEFT,
     ARM_RIGHT,
-    HAND,
+    HAND_LEFT,
+    HAND_RIGHT,
     LEG_LEFT,
     LEG_RIGHT,
-    FOOT
+    FOOT_LEFT,
+    FOOT_RIGHT
 }

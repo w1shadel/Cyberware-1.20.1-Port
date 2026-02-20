@@ -38,10 +38,37 @@ public class ToggleCyberwarePacket {
                     ICyberware cw = CyberwareAPI.getCyberware(stack);
                     if (!stack.isEmpty() && cw != null) {
                         if (cw.canToggle(stack)) {
+                            // Exclusive activation check
+                            if (!cw.isActive(stack)) { // If we are trying to turn it ON
+                                for (int i = 0; i < data.getInstalledCyberware().getSlots(); i++) {
+                                    if (i == slotId)
+                                        continue;
+                                    ItemStack other = data.getInstalledCyberware().getStackInSlot(i);
+                                    ICyberware otherCw = CyberwareAPI.getCyberware(other);
+                                    if (!other.isEmpty() && otherCw != null && otherCw.isActive(other)) {
+                                        boolean conflict = false;
+                                        if (cw.getBodyPartType(
+                                                stack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE
+                                                && cw.getBodyPartType(stack) == otherCw.getBodyPartType(other)) {
+                                            conflict = true;
+                                        }
+                                        if (!conflict && (cw.isIncompatible(stack, other)
+                                                || otherCw.isIncompatible(other, stack))) {
+                                            conflict = true;
+                                        }
+                                        if (conflict) {
+                                            // Sending message to player about conflict
+                                            player.sendSystemMessage(net.minecraft.network.chat.Component
+                                                    .translatable("cyberware.message.conflict_active")
+                                                    .withStyle(net.minecraft.ChatFormatting.RED));
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
                             cw.toggle(stack);
                             data.recalculateCapacity(player);
                             data.syncToClient(player);
-
                         }
                     }
                 });

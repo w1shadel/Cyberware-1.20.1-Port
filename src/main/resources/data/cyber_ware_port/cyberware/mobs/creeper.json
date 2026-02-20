@@ -1,0 +1,8 @@
+{
+    "mob": "minecraft:creeper",
+    "replace_with": "cyber_ware_port:cyber_creeper",
+    "chance": 0.1,
+    "is_high_tier": false,
+    "special_drops": [],
+    "forbidden_drops": []
+}

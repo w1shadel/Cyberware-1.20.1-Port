@@ -48,16 +48,15 @@ public class EntitiesItemDropEvents {
             attacker = livingAttacker;
 
         }
-        int looting = (attacker != null) ? EnchantmentHelper.getEnchantmentLevel(Enchantments.MOB_LOOTING, attacker) : 0;
+        int looting = (attacker != null) ? EnchantmentHelper.getEnchantmentLevel(Enchantments.MOB_LOOTING, attacker)
+                : 0;
         if (entity instanceof CyberWitherBoss) {
             addScavengedDrop(event, ModItems.INTERNAL_DEFIBRILLATOR.get());
             List<Item> witherPool = generateMobDropPool(cyberMob);
             witherPool.remove(ModItems.INTERNAL_DEFIBRILLATOR.get());
             if (!witherPool.isEmpty()) {
                 int dropCount = 5 + random.nextInt(4);
-                for (int i = 0;
-                     i < dropCount;
-                     i++) {
+                for (int i = 0; i < dropCount; i++) {
                     Item randomItem = witherPool.get(random.nextInt(witherPool.size()));
                     addScavengedDrop(event, randomItem);
 
@@ -67,7 +66,8 @@ public class EntitiesItemDropEvents {
 
         }
         List<Item> pool = generateMobDropPool(cyberMob);
-        if (pool.isEmpty()) return;
+        if (pool.isEmpty())
+            return;
         float dropChance = 0.25f + (looting * 0.05f);
         if (random.nextFloat() < dropChance) {
             Item selectedItem = pool.get(random.nextInt(pool.size()));
@@ -93,23 +93,35 @@ public class EntitiesItemDropEvents {
     private static List<Item> generateMobDropPool(ICyberwareMob cyberMob) {
         List<Item> pool = new ArrayList<>();
         pool.addAll(CACHED_COMMON_POOL);
-        if (cyberMob.isHighTierMob()) {
+
+        net.minecraft.world.entity.LivingEntity entity = (net.minecraft.world.entity.LivingEntity) cyberMob;
+        var mobData = com.maxwell.cyber_ware_port.api.json.MobDataManager.MOB_DATA.get(entity.getType());
+
+        boolean isHighTier = cyberMob.isHighTierMob();
+        List<Item> specialDrops = new ArrayList<>(cyberMob.getSpecialDrops());
+        List<Item> forbiddenDrops = new ArrayList<>(cyberMob.getForbiddenDrops());
+
+        if (mobData != null) {
+            isHighTier |= mobData.isHighTier;
+            if (mobData.specialDrops != null)
+                pool.addAll(mobData.specialDrops);
+            if (mobData.forbiddenDrops != null)
+                forbiddenDrops.addAll(mobData.forbiddenDrops);
+        }
+
+        if (isHighTier) {
             pool.addAll(CACHED_HIGH_TIER_POOL);
-
         }
-        List<Item> specialDrops = cyberMob.getSpecialDrops();
-        if (specialDrops != null && !specialDrops.isEmpty()) {
+
+        if (!specialDrops.isEmpty()) {
             pool.addAll(specialDrops);
             pool.addAll(specialDrops);
-
         }
-        List<Item> forbiddenDrops = cyberMob.getForbiddenDrops();
-        if (forbiddenDrops != null && !forbiddenDrops.isEmpty()) {
+
+        if (!forbiddenDrops.isEmpty()) {
             pool.removeAll(forbiddenDrops);
-
         }
         return pool;
-
     }
 
     private static void addScavengedDrop(LivingDropsEvent event, Item item) {
@@ -140,8 +152,10 @@ public class EntitiesItemDropEvents {
             Item item = entry.get();
             if (item instanceof CyberwareItem) {
                 ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
-                if (id != null && id.getPath().contains("body_part")) continue;
-                if (item == ModItems.CREATIVE_BATTERY.get()) continue;
+                if (id != null && id.getPath().contains("body_part"))
+                    continue;
+                if (item == ModItems.CREATIVE_BATTERY.get())
+                    continue;
                 if (highTierItems.contains(item)) {
                     CACHED_HIGH_TIER_POOL.add(item);
 
@@ -161,7 +175,8 @@ public class EntitiesItemDropEvents {
             }
             event.setCanceled(true);
             Level level = event.getLevel();
-            if (level.isClientSide) return;
+            if (level.isClientSide)
+                return;
             boolean mobGriefing = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
             Level.ExplosionInteraction interaction = mobGriefing
                     ? Level.ExplosionInteraction.BLOCK
@@ -180,8 +195,7 @@ public class EntitiesItemDropEvents {
                     creeper.getZ(),
                     finalRadius,
                     true,
-                    interaction
-            );
+                    interaction);
             creeper.discard();
         }
     }

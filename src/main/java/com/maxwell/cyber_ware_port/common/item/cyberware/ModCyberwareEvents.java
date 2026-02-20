@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.common.item.cyberware;
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.api.json.CyberwareDataManager;
+import com.maxwell.cyber_ware_port.api.json.MobDataManager;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.command.CyberwareCommands;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -25,15 +26,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.BiConsumer;
 
-@Mod.EventBusSubscriber(modid = CyberWare.MODID)
+@Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModCyberwareEvents {
     @SubscribeEvent
-    public static void onAddReloadListener(AddReloadListenerEvent event) {
+    public static void onRegisterReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new CyberwareDataManager());
+        event.addListener(new MobDataManager());
     }
 
     private static void dispatch(LivingEntity entity, BiConsumer<ICyberware, ItemStack> action) {
-        if (entity == null) return;
+        if (entity == null)
+            return;
         entity.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             ItemStackHandler handler = data.getInstalledCyberware();
             for (int i = 0; i < handler.getSlots(); i++) {
@@ -63,7 +66,8 @@ public class ModCyberwareEvents {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.side.isClient() || event.phase != TickEvent.Phase.END) return;
+        if (event.side.isClient() || event.phase != TickEvent.Phase.END)
+            return;
         Player player = event.player;
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             if (player instanceof ServerPlayer sp) {
@@ -80,14 +84,14 @@ public class ModCyberwareEvents {
         double range = 16.0;
         net.minecraft.world.phys.AABB searchArea = new net.minecraft.world.phys.AABB(
                 targetX - range, targetY - range, targetZ - range,
-                targetX + range, targetY + range, targetZ + range
-        );
+                targetX + range, targetY + range, targetZ + range);
         java.util.List<Player> players = event.getEntity().level().getEntitiesOfClass(Player.class, searchArea);
         for (Player player : players) {
             dispatch(player, (cw, stack) -> {
                 cw.onEntityTeleport(event, stack, player);
             });
-            if (event.isCanceled()) return;
+            if (event.isCanceled())
+                return;
         }
     }
 
@@ -100,7 +104,8 @@ public class ModCyberwareEvents {
     public static void onLivingAttack(LivingAttackEvent event) {
         if (event.getEntity() instanceof Player player) {
             dispatch(player, (cw, stack) -> {
-                if (!event.isCanceled()) cw.onLivingAttack(event, stack, player);
+                if (!event.isCanceled())
+                    cw.onLivingAttack(event, stack, player);
             });
         }
     }
@@ -122,7 +127,8 @@ public class ModCyberwareEvents {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         dispatch(event.getEntity(), (cw, stack) -> {
-            if (!event.isCanceled()) cw.onLivingDeath(event, stack, event.getEntity());
+            if (!event.isCanceled())
+                cw.onLivingDeath(event, stack, event.getEntity());
         });
     }
 

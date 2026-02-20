@@ -1,0 +1,11 @@
+{
+    "mob": "minecraft:zombie",
+    "replace_with": "cyber_ware_port:cyber_zombie",
+    "chance": 0.15,
+    "is_high_tier": false,
+    "special_drops": [
+        "cyber_ware_port:cyber_arm_left",
+        "cyber_ware_port:cyber_arm_right"
+    ],
+    "forbidden_drops": []
+}

@@ -13,6 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -77,7 +79,8 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty()) return stack;
+            if (stack.isEmpty())
+                return stack;
             if (slot == SLOT_PAPER && stack.is(Items.PAPER)) {
                 return itemHandler.insertItem(SLOT_PAPER, stack, simulate);
             }
@@ -124,7 +127,8 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
             @Override
             public void set(int pIndex, int pValue) {
-                if (pIndex == 0) ScannerBlockEntity.this.progress = pValue;
+                if (pIndex == 0)
+                    ScannerBlockEntity.this.progress = pValue;
             }
 
             @Override
@@ -152,9 +156,16 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
                 pEntity.isWorking = true;
                 pEntity.syncToClient();
             }
+            if (pLevel.getGameTime() % 20 == 0) {
+                pLevel.playSound(null, pPos, net.minecraft.sounds.SoundEvents.CONDUIT_AMBIENT,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 1.2F);
+                pLevel.playSound(null, pPos, net.minecraft.sounds.SoundEvents.BEACON_AMBIENT,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.5F);
+            }
             setChanged(pLevel, pPos, pState);
             if (pEntity.progress >= MAX_PROGRESS) {
                 pEntity.craftItem();
+                pLevel.playSound(null, pPos, SoundEvents.NOTE_BLOCK_CHIME.get(), SoundSource.BLOCKS, 1.0F, 1.2F);
                 pEntity.progress = 0;
                 if (!pEntity.hasRecipe()) {
                     pEntity.isWorking = false;
@@ -214,7 +225,8 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         ItemStack inputStack = itemHandler.getStackInSlot(SLOT_INPUT);
         ItemStack outputStack = itemHandler.getStackInSlot(SLOT_OUTPUT);
         boolean hasInput = paperStack.is(Items.PAPER) && inputStack.getItem() instanceof ICyberware;
-        if (!hasInput) return false;
+        if (!hasInput)
+            return false;
         return outputStack.isEmpty();
     }
 
@@ -223,7 +235,8 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void craftItem() {
-        if (!hasRecipe()) return;
+        if (!hasRecipe())
+            return;
         ItemStack inputStack = itemHandler.getStackInSlot(SLOT_INPUT);
         CyberwareEvents.Scan.Complete event = new CyberwareEvents.Scan.Complete(this, inputStack, 0.5f);
         if (MinecraftForge.EVENT_BUS.post(event)) {
@@ -268,9 +281,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0;
-             i < itemHandler.getSlots();
-             i++) {
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
         Containers.dropContents(this.level, this.worldPosition, inventory);

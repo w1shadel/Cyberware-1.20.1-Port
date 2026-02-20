@@ -10,6 +10,7 @@ import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.common.network.SyncCyberwareDataPacket;
 import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModItems;
+import com.maxwell.cyber_ware_port.common.util.CyberwareBodyStatus;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,43 +33,55 @@ import net.minecraftforge.items.ItemStackHandler;
 import java.util.*;
 
 public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergyStorage {
+    // Basic State
+    private boolean isInitialized = false;
+    private boolean isPowered = true;
+    private boolean needsCapacityUpdate = true;
+    private int respawnGracePeriod = 0;
+
+    // Body Status (Managed by CyberwareBodyStatus)
     private boolean hasCyberLeftArm = false;
     private boolean hasCyberRightArm = false;
     private boolean hasCyberLeftLeg = false;
     private boolean hasCyberRightLeg = false;
-    private boolean isInitialized = false;
+
+    // Essence / Tolerance
     private int maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
+    private int toleranceImmunityTime = 0;
+
+    // Energy
     private int currentEnergy = 0;
-    private boolean isPowered = true;
-    private boolean needsCapacityUpdate = true;
+    private int maxEnergy = 0;
+    private int lastProduction = 0;
+    private int lastConsumption = 0;
+
+    // Inventory
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
-            updateLimbStatus();
+            updateBodyStatus();
             needsCapacityUpdate = true;
         }
     };
-    private int maxEnergy = 0;
-    private int respawnGracePeriod = 0;
-    private int lastProduction = 0;
-    private int lastConsumption = 0;
-    private int toleranceImmunityTime = 0;
 
     private void enforceLimbExclusivity() {
         java.util.Map<BodyPartType, Integer> bestSlotMap = new java.util.HashMap<>();
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
+            if (stack.isEmpty())
+                continue;
             ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw == null) continue;
+            if (cw == null)
+                continue;
             BodyPartType type = cw.getBodyPartType(stack);
-            if (type == BodyPartType.NONE || cw.getMaxInstallAmount(stack) > 1) continue;
+            if (type == BodyPartType.NONE || cw.getMaxInstallAmount(stack) > 1)
+                continue;
             int currentQuality = cw.getQuality(stack);
             if (bestSlotMap.containsKey(type)) {
                 int existingSlot = bestSlotMap.get(type);
                 ItemStack existingStack = installedCyberware.getStackInSlot(existingSlot);
                 int existingQuality = 0;
-                ICyberware existingCw = CyberwareAPI.getCyberware(stack);
+                ICyberware existingCw = CyberwareAPI.getCyberware(existingStack);
                 if (existingCw != null) {
                     existingQuality = existingCw.getQuality(existingStack);
                 }
@@ -82,28 +95,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 bestSlotMap.put(type, i);
             }
         }
-    }
-
-    public int getMaxTolerance(LivingEntity entity) {
-        CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
-        MinecraftForge.EVENT_BUS.post(event);
-        return event.getNewTolerance();
-    }
-
-    public int getMaxTolerance() {
-        return this.maxTolerance;
-    }
-
-    public int getTolerance(LivingEntity entity) {
-        int consumed = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            ICyberware cyberware = CyberwareAPI.getCyberware(stack);
-            if (cyberware != null) {
-                consumed += cyberware.getEssenceCost(stack) * stack.getCount();
-            }
-        }
-        return getMaxTolerance(entity) - consumed;
     }
 
     public void recalculateCapacity(ServerPlayer player) {
@@ -131,7 +122,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                     totalCapacity += cyberware.getEnergyStorage(stack) * count;
                 }
                 if (cyberware.isActive(stack)) {
-                    boolean consumesEnergy = cyberware.hasEnergyProperties(stack) && cyberware.getEnergyConsumption(stack) > 0;
+                    boolean consumesEnergy = cyberware.hasEnergyProperties(stack)
+                            && cyberware.getEnergyConsumption(stack) > 0;
                     if (!consumesEnergy || this.isPowered) {
                         cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
                             var instance = attributeMap.getInstance(attribute);
@@ -141,8 +133,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                                         slotUUID,
                                         "Cyberware Slot " + slotIndex,
                                         originalModifier.getAmount() * count,
-                                        originalModifier.getOperation()
-                                );
+                                        originalModifier.getOperation());
                                 if (instance.getModifier(slotUUID) == null) {
                                     instance.addTransientModifier(newModifier);
                                 } else {
@@ -160,18 +151,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             this.currentEnergy = this.maxEnergy;
         }
         player.setHealth(player.getMaxHealth() * Math.min(healthRatio, 1.0F));
-    }
-
-    public void setRespawnGracePeriod(int ticks) {
-        this.respawnGracePeriod = ticks;
-    }
-
-    private boolean isHumanPart(ItemStack stack) {
-        Item item = stack.getItem();
-        return item == ModItems.HUMAN_LEFT_ARM.get() ||
-                item == ModItems.HUMAN_RIGHT_ARM.get() ||
-                item == ModItems.HUMAN_LEFT_LEG.get() ||
-                item == ModItems.HUMAN_RIGHT_LEG.get();
     }
 
     public boolean hasCyberLeftArm() {
@@ -194,6 +173,80 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return UUID.nameUUIDFromBytes((originalId.toString() + "_" + slot).getBytes());
     }
 
+    public void setRespawnGracePeriod(int ticks) {
+        this.respawnGracePeriod = ticks;
+    }
+
+    public int getMaxTolerance() {
+        return this.maxTolerance;
+    }
+
+    // --- Energy Management ---
+
+    @Override
+    public int receiveEnergy(int maxReceive, boolean simulate) {
+        if (!canReceive())
+            return 0;
+        int energyReceived = Math.min(maxEnergy - currentEnergy, maxReceive);
+        if (!simulate) {
+            currentEnergy += energyReceived;
+        }
+        return energyReceived;
+    }
+
+    @Override
+    public int extractEnergy(int maxExtract, boolean simulate) {
+        if (!canExtract())
+            return 0;
+        int energyExtracted = Math.min(currentEnergy, maxExtract);
+        if (!simulate) {
+            currentEnergy -= energyExtracted;
+        }
+        return energyExtracted;
+    }
+
+    @Override
+    public int getEnergyStored() {
+        return currentEnergy;
+    }
+
+    @Override
+    public int getMaxEnergyStored() {
+        return maxEnergy;
+    }
+
+    @Override
+    public boolean canExtract() {
+        return maxEnergy > 0;
+    }
+
+    @Override
+    public boolean canReceive() {
+        return maxEnergy > 0;
+    }
+
+    // --- Tolerance & Essence Management ---
+
+    public int getMaxTolerance(LivingEntity entity) {
+        CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getNewTolerance();
+    }
+
+    public int getTolerance(LivingEntity entity) {
+        int consumed = 0;
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            ICyberware cyberware = CyberwareAPI.getCyberware(stack);
+            if (cyberware != null) {
+                consumed += cyberware.getEssenceCost(stack) * stack.getCount();
+            }
+        }
+        return getMaxTolerance(entity) - consumed;
+    }
+
+    // --- Survival & Condition Checks ---
+
     public void tick(ServerPlayer player) {
         if (this.toleranceImmunityTime > 0) {
             this.toleranceImmunityTime--;
@@ -205,7 +258,11 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             recalculateCapacity(player);
             this.needsCapacityUpdate = false;
         }
-        checkBodyCondition(player);
+
+        CyberwareBodyStatus status = new CyberwareBodyStatus(installedCyberware);
+        checkSurvival(player, status);
+        checkRejection(player);
+
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
             ICyberware cyberware = CyberwareAPI.getCyberware(stack);
@@ -213,117 +270,35 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 cyberware.onSystemTick(player, stack);
             }
         }
+
         if (player.tickCount % 20 == 0) {
-            if (maxEnergy <= 0) {
-                this.lastProduction = 0;
-                this.lastConsumption = 0;
-            } else {
-                int totalProduction = 0;
-                int totalConsumption = 0;
-                for (int i = 0; i < installedCyberware.getSlots(); i++) {
-                    ItemStack stack = installedCyberware.getStackInSlot(i);
-                    ICyberware cw = CyberwareAPI.getCyberware(stack);
-                    if (cw != null) {
-                        if (cw.hasEnergyProperties(stack)) {
-                            int count = stack.getCount();
-                            ICyberware.StackingRule rule = cw.getStackingEnergyRule(stack);
-                            totalProduction += rule.calculate(cw.getEnergyGeneration(stack), count);
-                            totalConsumption += rule.calculate(cw.getEnergyConsumption(stack), count);
-                        }
-                    }
-                }
-                this.lastProduction = totalProduction;
-                this.lastConsumption = totalConsumption;
-                if (totalProduction > 0) {
-                    receiveEnergy(totalProduction, false);
-                }
-                boolean currentlyPowered = true;
-                if (totalConsumption > 0) {
-                    if (this.currentEnergy >= totalConsumption) {
-                        extractEnergy(totalConsumption, false);
-                        currentlyPowered = true;
-                    } else {
-                        this.currentEnergy = 0;
-                        currentlyPowered = false;
-                    }
-                }
-                if (this.isPowered != currentlyPowered) {
-                    this.isPowered = currentlyPowered;
-                    recalculateCapacity(player);
-                }
-            }
-            syncToClient(player);
+            processPowerTick(player);
         }
     }
 
-    private void updateLimbStatus() {
-        this.hasCyberLeftArm = false;
-        this.hasCyberRightArm = false;
-        this.hasCyberLeftLeg = false;
-        this.hasCyberRightLeg = false;
-        int armCount = 0;
-        int legCount = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            if (stack.isEmpty()) continue;
-            if (isHumanPart(stack)) continue;
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) {
-                int targetSlot = cw.getSlot(stack);
-                if (targetSlot == RobosurgeonBlockEntity.SLOT_ARMS || targetSlot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
-                    armCount++;
-                } else if (targetSlot == RobosurgeonBlockEntity.SLOT_LEGS || targetSlot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
-                    legCount++;
-                }
-            }
-        }
-        if (armCount >= 1) this.hasCyberLeftArm = true;
-        if (armCount >= 2) this.hasCyberRightArm = true;
-        if (legCount >= 1) this.hasCyberLeftLeg = true;
-        if (legCount >= 2) this.hasCyberRightLeg = true;
-    }
-
-    private void checkBodyCondition(ServerPlayer player) {
-        Set<BodyPartType> presentParts = EnumSet.noneOf(BodyPartType.class);
-        ItemStackHandler handler = this.installedCyberware;
-        int totalLegs = 0;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (stack.isEmpty()) continue;
-            if (stack.getItem() == ModItems.HUMAN_LEFT_LEG.get() || stack.getItem() == ModItems.HUMAN_RIGHT_LEG.get()) {
-                totalLegs++;
-            } else if (cw != null) {
-                BodyPartType type = cw.getBodyPartType(stack);
-                if (type != BodyPartType.NONE) {
-                    presentParts.add(type);
-                }
-                int slot = cw.getSlot(stack);
-                if (slot == RobosurgeonBlockEntity.SLOT_LEGS || slot == RobosurgeonBlockEntity.SLOT_LEGS + 1) {
-                    totalLegs++;
-                }
-            }
-        }
-        if (!presentParts.contains(BodyPartType.BRAIN)) {
+    private void checkSurvival(ServerPlayer player, CyberwareBodyStatus status) {
+        if (!status.hasPart(BodyPartType.BRAIN)) {
             killPlayer(player, "cyberware.brainless");
             return;
         }
-        if (!presentParts.contains(BodyPartType.HEART)) {
+        if (!status.hasPart(BodyPartType.HEART)) {
             killPlayer(player, "cyberware.heartless");
             return;
         }
-        if (!presentParts.contains(BodyPartType.MUSCLE)) {
+        if (!status.hasPart(BodyPartType.MUSCLE)) {
             killPlayer(player, "cyberware.nomuscles");
             return;
         }
-        if (!presentParts.contains(BodyPartType.BONES)) {
+        if (!status.hasPart(BodyPartType.BONES)) {
             killPlayer(player, "cyberware.cyberware_missing_bone");
             return;
         }
-        if (!presentParts.contains(BodyPartType.EYES)) {
+
+        // Non-lethal conditions
+        if (!status.hasPart(BodyPartType.EYES)) {
             player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
         }
-        if (!presentParts.contains(BodyPartType.LUNGS)) {
+        if (!status.hasPart(BodyPartType.LUNGS)) {
             int air = player.getAirSupply();
             if (air > -20) {
                 player.setAirSupply(air - 1);
@@ -332,59 +307,104 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 }
             }
         }
-        if (!presentParts.contains(BodyPartType.STOMACH)) {
+        if (!status.hasPart(BodyPartType.STOMACH)) {
             player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, 1, false, false));
         }
-        if (totalLegs == 0) {
+        if (status.getLegCount() == 0) {
             player.setForcedPose(Pose.SWIMMING);
             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, false));
         } else {
             player.setForcedPose(null);
         }
-        if (getTolerance(player) <= 0) {
+    }
+
+    private void checkRejection(ServerPlayer player) {
+        int currentTolerance = getTolerance(player);
+        if (currentTolerance <= 0) {
             if (this.respawnGracePeriod <= 0) {
                 killPlayer(player, "cyberware.noessence");
-            } else {
-                if (player.tickCount % 400 == 0) {
-                    if (player.level().isClientSide) return;
-                    player.sendSystemMessage(Component.translatable("cyberware.message.critical_condition").withStyle(net.minecraft.ChatFormatting.RED));
-                }
+            } else if (player.tickCount % 400 == 0) {
+                player.sendSystemMessage(Component.translatable("cyberware.message.critical_condition")
+                        .withStyle(net.minecraft.ChatFormatting.RED));
             }
             return;
         }
-        if (this.toleranceImmunityTime > 0) {
+
+        if (this.toleranceImmunityTime > 0)
             return;
-        }
-        int effectiveMax = getMaxTolerance(player);
+
         int rejectionThreshold = CyberwareConfig.CRITICAL_ESSENCE.get();
-        int currentTolerance = getTolerance(player);
-        CyberwareRejectionEvent event = new CyberwareRejectionEvent(player, currentTolerance);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
+        if (MinecraftForge.EVENT_BUS.post(new CyberwareRejectionEvent(player, currentTolerance)))
             return;
-        }
+
         if (currentTolerance < rejectionThreshold) {
-            if (player.tickCount % 100 == 0) {
+            if (player.tickCount % 100 == 0)
                 player.setHealth(player.getHealth() - 2.0f);
-            }
             player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0, false, false));
             player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 60, 1, false, false));
             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false));
-            if (player.getRandom().nextFloat() < 0.01f) {
-                if (!player.getMainHandItem().isEmpty()) {
-                    player.drop(player.getMainHandItem(), true);
-                }
+            if (player.getRandom().nextFloat() < 0.01f && !player.getMainHandItem().isEmpty()) {
+                ItemStack stackToDrop = player.getMainHandItem().copy();
+                player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                player.drop(stackToDrop, false, false);
             }
         }
     }
 
+    private void processPowerTick(ServerPlayer player) {
+        if (maxEnergy <= 0) {
+            lastProduction = lastConsumption = 0;
+            return;
+        }
+
+        int totalProduction = 0;
+        int totalConsumption = 0;
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            ICyberware cw = CyberwareAPI.getCyberware(stack);
+            if (cw != null && cw.hasEnergyProperties(stack)) {
+                int count = stack.getCount();
+                ICyberware.StackingRule rule = cw.getStackingEnergyRule(stack);
+                totalProduction += rule.calculate(cw.getEnergyGeneration(stack), count);
+                totalConsumption += rule.calculate(cw.getEnergyConsumption(stack), count);
+            }
+        }
+
+        lastProduction = totalProduction;
+        lastConsumption = totalConsumption;
+        receiveEnergy(totalProduction, false);
+
+        boolean currentlyPowered = currentEnergy >= totalConsumption;
+        if (totalConsumption > 0) {
+            if (currentlyPowered)
+                extractEnergy(totalConsumption, false);
+            else
+                currentEnergy = 0;
+        }
+
+        if (isPowered != currentlyPowered) {
+            isPowered = currentlyPowered;
+            recalculateCapacity(player);
+        }
+        syncToClient(player);
+    }
+
+    private void updateBodyStatus() {
+        CyberwareBodyStatus status = new CyberwareBodyStatus(installedCyberware);
+        this.hasCyberLeftArm = status.getArmCount() >= 1;
+        this.hasCyberRightArm = status.getArmCount() >= 2;
+        this.hasCyberLeftLeg = status.getLegCount() >= 1;
+        this.hasCyberRightLeg = status.getLegCount() >= 2;
+    }
+
     public void syncToClient(ServerPlayer player) {
-        if (player == null) return;
+        if (player == null)
+            return;
         CompoundTag tag = this.serializeNBT();
         tag.putInt("MaxTolerance", getMaxTolerance(player));
         A_PacketHandler.INSTANCE.send(
                 net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
-                new SyncCyberwareDataPacket(tag)
-        );
+                new SyncCyberwareDataPacket(tag));
     }
 
     public void ensureEssentialPartsAfterDeath() {
@@ -400,16 +420,20 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             }
         }
         if (!presentParts.contains(BodyPartType.BRAIN)) {
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN,
+                    new ItemStack(ModItems.HUMAN_BRAIN.get()));
         }
         if (!presentParts.contains(BodyPartType.HEART)) {
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HEART,
+                    new ItemStack(ModItems.HUMAN_HEART.get()));
         }
         if (!presentParts.contains(BodyPartType.MUSCLE)) {
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE,
+                    new ItemStack(ModItems.HUMAN_MUSCLE.get()));
         }
         if (!presentParts.contains(BodyPartType.BONES)) {
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
+            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BONES,
+                    new ItemStack(ModItems.HUMAN_BONE.get()));
         }
     }
 
@@ -431,8 +455,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     private void killPlayer(ServerPlayer player, String suffix) {
         DamageSource source = new DamageSource(
-                player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD)
-        ) {
+                player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                        .getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD)) {
             @Override
             public Component getLocalizedDeathMessage(LivingEntity entity) {
                 return Component.translatable("death.attack." + suffix, entity.getDisplayName());
@@ -462,37 +486,36 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     }
 
     public void fillWithHumanParts() {
-        if (isInitialized) return;
+        if (isInitialized)
+            return;
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_STOMACH, new ItemStack(ModItems.HUMAN_STOMACH.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_STOMACH,
+                new ItemStack(ModItems.HUMAN_STOMACH.get()));
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_SKIN, new ItemStack(ModItems.HUMAN_SKIN.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE,
+                new ItemStack(ModItems.HUMAN_MUSCLE.get()));
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_EYES, new ItemStack(ModItems.HUMAN_EYES.get()));
         installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LUNGS, new ItemStack(ModItems.HUMAN_LUNGS.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_ARMS, new ItemStack(ModItems.HUMAN_LEFT_ARM.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_ARMS + 1, new ItemStack(ModItems.HUMAN_RIGHT_ARM.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HANDS + 1, new ItemStack(ModItems.HUMAN_LEFT_HAND.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HANDS, new ItemStack(ModItems.HUMAN_RIGHT_HAND.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS, new ItemStack(ModItems.HUMAN_LEFT_LEG.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS + 1, new ItemStack(ModItems.HUMAN_RIGHT_LEG.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS + 1, new ItemStack(ModItems.HUMAN_LEFT_FOOT.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS, new ItemStack(ModItems.HUMAN_RIGHT_FOOT.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_ARMS,
+                new ItemStack(ModItems.HUMAN_LEFT_ARM.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_ARMS + 1,
+                new ItemStack(ModItems.HUMAN_RIGHT_ARM.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HANDS + 1,
+                new ItemStack(ModItems.HUMAN_LEFT_HAND.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HANDS,
+                new ItemStack(ModItems.HUMAN_RIGHT_HAND.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS,
+                new ItemStack(ModItems.HUMAN_LEFT_LEG.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS + 1,
+                new ItemStack(ModItems.HUMAN_RIGHT_LEG.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS + 1,
+                new ItemStack(ModItems.HUMAN_LEFT_FOOT.get()));
+        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS,
+                new ItemStack(ModItems.HUMAN_RIGHT_FOOT.get()));
         this.isInitialized = true;
-        updateLimbStatus();
-    }
-
-    public int getTolerance() {
-        int consumed = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (!stack.isEmpty() && cw != null) {
-                consumed += cw.getEssenceCost(stack) * stack.getCount();
-            }
-        }
-        return maxTolerance - consumed;
+        updateBodyStatus();
     }
 
     public ItemStackHandler getInstalledCyberware() {
@@ -529,64 +552,23 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             installedCyberware.deserializeNBT(nbt.getCompound("InstalledCyberware"));
         }
         this.maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
-        if (nbt.contains("IsInitialized")) {
+        if (nbt.contains("IsInitialized"))
             isInitialized = nbt.getBoolean("IsInitialized");
-        }
-        if (nbt.contains("MaxEnergy")) {
+        if (nbt.contains("MaxEnergy"))
             maxEnergy = nbt.getInt("MaxEnergy");
-        }
-        if (nbt.contains("CurrentEnergy")) {
+        if (nbt.contains("CurrentEnergy"))
             currentEnergy = nbt.getInt("CurrentEnergy");
-        }
-        if (nbt.contains("LastProd")) lastProduction = nbt.getInt("LastProd");
-        if (nbt.contains("LastCons")) lastConsumption = nbt.getInt("LastCons");
-        if (nbt.contains("ImmunityTime")) {
+        if (nbt.contains("LastProd"))
+            lastProduction = nbt.getInt("LastProd");
+        if (nbt.contains("LastCons"))
+            lastConsumption = nbt.getInt("LastCons");
+        if (nbt.contains("ImmunityTime"))
             this.toleranceImmunityTime = nbt.getInt("ImmunityTime");
-        }
-        updateLimbStatus();
+        updateBodyStatus();
     }
 
     public boolean isInitialized() {
         return isInitialized;
     }
 
-    @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
-        if (!canReceive()) return 0;
-        int energyReceived = Math.min(maxEnergy - currentEnergy, maxReceive);
-        if (!simulate) {
-            currentEnergy += energyReceived;
-        }
-        return energyReceived;
-    }
-
-    @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        if (!canExtract()) return 0;
-        int energyExtracted = Math.min(currentEnergy, maxExtract);
-        if (!simulate) {
-            currentEnergy -= energyExtracted;
-        }
-        return energyExtracted;
-    }
-
-    @Override
-    public int getEnergyStored() {
-        return currentEnergy;
-    }
-
-    @Override
-    public int getMaxEnergyStored() {
-        return maxEnergy;
-    }
-
-    @Override
-    public boolean canExtract() {
-        return maxEnergy > 0;
-    }
-
-    @Override
-    public boolean canReceive() {
-        return maxEnergy > 0;
-    }
 }

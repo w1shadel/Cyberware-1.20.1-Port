@@ -94,7 +94,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty()) return stack;
+            if (stack.isEmpty())
+                return stack;
             if (slot == PAPER_SLOT && stack.is(Items.PAPER)) {
                 return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
             }
@@ -148,9 +149,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         super(ModBlockEntities.CYBERWARE_WORKBENCH.get(), pPos, pBlockState);
     }
 
-    public static void tick(Level pLevel, BlockPos pPos, BlockState pState, CyberwareWorkbenchBlockEntity pBlockEntity) {
+    public static void tick(Level pLevel, BlockPos pPos, BlockState pState,
+            CyberwareWorkbenchBlockEntity pBlockEntity) {
         pBlockEntity.prevAnimationProgress = pBlockEntity.animationProgress;
-        if (pBlockEntity.cooldown > 0) pBlockEntity.cooldown--;
+        if (pBlockEntity.cooldown > 0)
+            pBlockEntity.cooldown--;
         float target = pBlockEntity.isCrafting ? 1.0F : 0.0F;
         float speed = 0.5F;
         if (pBlockEntity.animationProgress < target) {
@@ -164,12 +167,23 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             }
             if (pBlockEntity.cooldown == 0) {
                 if (pBlockEntity.isCrafting) {
-                    pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
+                    pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, net.minecraft.sounds.SoundSource.BLOCKS, 0.5F,
+                            1.2F);
                     pBlockEntity.cooldown = 3;
                     pBlockEntity.craftItem();
                 }
             }
+            if (pBlockEntity.isCrafting) {
+                if (pLevel.getGameTime() % 40 == 0) {
+                    pLevel.playSound(null, pPos, SoundEvents.BEACON_AMBIENT, net.minecraft.sounds.SoundSource.BLOCKS,
+                            0.2F, 1.2F);
+                    pLevel.playSound(null, pPos, SoundEvents.GRINDSTONE_USE, net.minecraft.sounds.SoundSource.BLOCKS,
+                            0.3F, 1.5F);
+                }
+            }
             if (pBlockEntity.isCrafting && pBlockEntity.animationProgress >= 1.0F) {
+                pLevel.playSound(null, pPos, SoundEvents.IRON_TRAPDOOR_CLOSE, net.minecraft.sounds.SoundSource.BLOCKS,
+                        0.5F, 1.2F);
                 pBlockEntity.resetCrafting();
             }
         }
@@ -177,9 +191,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0;
-             i < itemHandler.getSlots();
-             i++) {
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
         Containers.dropContents(this.level, this.worldPosition, inventory);
@@ -213,9 +225,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         for (AssemblyRecipe.SizedIngredient req : recipe.getInputs()) {
             int needed = req.count();
             int found = 0;
-            for (int i = OUTPUT_SLOT_START;
-                 i < SPECIAL_OUTPUT_SLOT;
-                 i++) {
+            for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) {
                 ItemStack stack = this.itemHandler.getStackInSlot(i);
                 if (req.ingredient().test(stack)) {
                     int take = Math.min(stack.getCount(), needed - found);
@@ -223,10 +233,12 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                         this.itemHandler.extractItem(i, take, false);
                     }
                     found += take;
-                    if (found >= needed) break;
+                    if (found >= needed)
+                        break;
                 }
             }
-            if (found < needed) return false;
+            if (found < needed)
+                return false;
         }
         return true;
     }
@@ -237,23 +249,24 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             if (checkOrConsumeIngredients(recipe, false)) {
                 ItemStack result = recipe.getResultItem(Objects.requireNonNull(this.level).registryAccess());
                 ItemStack currentOutput = this.itemHandler.getStackInSlot(SPECIAL_OUTPUT_SLOT);
-                if (currentOutput.isEmpty()) return true;
+                if (currentOutput.isEmpty())
+                    return true;
                 return ItemStack.isSameItemSameTags(currentOutput, result) &&
                         currentOutput.getCount() + result.getCount() <= currentOutput.getMaxStackSize();
             }
             return false;
         }
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
-        if (inputStack.isEmpty()) return false;
+        if (inputStack.isEmpty())
+            return false;
         SimpleContainer tempContainer = new SimpleContainer(1);
         tempContainer.setItem(0, inputStack);
         var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
                 .getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempContainer, this.level);
         if (recipeOpt.isPresent()) {
-            for (int i = OUTPUT_SLOT_START;
-                 i < SPECIAL_OUTPUT_SLOT;
-                 i++) {
-                if (this.itemHandler.getStackInSlot(i).isEmpty()) return true;
+            for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) {
+                if (this.itemHandler.getStackInSlot(i).isEmpty())
+                    return true;
             }
         }
         return false;
@@ -261,9 +274,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
     private ItemStack mergeIntoOutput(ItemStack stack) {
         ItemStack remainder = stack.copy();
-        for (int i = OUTPUT_SLOT_START;
-             i < SPECIAL_OUTPUT_SLOT;
-             i++) {
+        for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) {
             remainder = this.itemHandler.insertItem(i, remainder, false);
             if (remainder.isEmpty()) {
                 return ItemStack.EMPTY;
@@ -289,7 +300,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             return;
         }
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
-        if (inputStack.isEmpty()) return;
+        if (inputStack.isEmpty())
+            return;
         SimpleContainer tempContainer = new SimpleContainer(1);
         tempContainer.setItem(0, inputStack);
         var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
@@ -308,7 +320,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             for (ItemStack result : postEvent.getOutputs()) {
                 ItemStack remainder = mergeIntoOutput(result);
                 if (!remainder.isEmpty()) {
-                    net.minecraft.world.level.block.Block.popResource(this.level, this.worldPosition.above(), remainder);
+                    net.minecraft.world.level.block.Block.popResource(this.level, this.worldPosition.above(),
+                            remainder);
                 }
             }
             ItemStack paperStack = this.itemHandler.getStackInSlot(PAPER_SLOT);
@@ -329,13 +342,15 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         if (this.cachedRecipe != null) {
             return this.cachedRecipe;
         }
-        if (this.level == null) return null;
+        if (this.level == null)
+            return null;
         ItemStack blueprintStack = this.itemHandler.getStackInSlot(BLUEPRINT_SLOT);
         if (blueprintStack.isEmpty() || !(blueprintStack.getItem() instanceof BlueprintItem)) {
             return null;
         }
         Item targetItem = BlueprintItem.getTargetItem(blueprintStack);
-        if (targetItem == null) return null;
+        if (targetItem == null)
+            return null;
         var recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
         for (AssemblyRecipe recipe : recipes) {
             if (recipe.getResultItem(this.level.registryAccess()).getItem() == targetItem) {
@@ -347,7 +362,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     }
 
     private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
-        if (stack.isEmpty()) return false;
+        if (stack.isEmpty())
+            return false;
         for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
             if (input.ingredient().test(stack)) {
                 return true;

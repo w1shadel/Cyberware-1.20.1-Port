@@ -32,25 +32,20 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
     public static final Map<ResourceKey<Level>, Long> LAST_ACTIVE_TIME = new ConcurrentHashMap<>();
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(3, 0, 6, 15, 4, 14),
-            Block.box(2, 0, 1, 4, 15, 3)
-    );
+            Block.box(2, 0, 1, 4, 15, 3));
     private static final VoxelShape SHAPE_SOUTH = Shapes.or(
             Block.box(1, 0, 2, 13, 4, 10),
-            Block.box(12, 0, 13, 14, 15, 15)
-    );
+            Block.box(12, 0, 13, 14, 15, 15));
     private static final VoxelShape SHAPE_WEST = Shapes.or(
             Block.box(6, 0, 1, 14, 4, 13),
-            Block.box(1, 0, 12, 3, 15, 14)
-    );
+            Block.box(1, 0, 12, 3, 15, 14));
     private static final VoxelShape SHAPE_EAST = Shapes.or(
             Block.box(2, 0, 3, 10, 4, 15),
-            Block.box(13, 0, 2, 15, 15, 4)
-    );
+            Block.box(13, 0, 2, 15, 15, 4));
 
     public RadioKitBlock(Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().
-                setValue(POWERED, Boolean.valueOf(false))
+        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.valueOf(false))
                 .setValue(FACING, Direction.NORTH));
     }
 
@@ -103,7 +98,8 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
+    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos,
+            boolean pIsMoving) {
         if (!pLevel.isClientSide) {
             boolean isPoweredNow = pLevel.hasNeighborSignal(pPos);
             boolean wasPowered = pState.getValue(POWERED);
@@ -138,8 +134,15 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
                 pLevel.playSound(null, pPos,
                         SoundEvents.BEACON_AMBIENT,
                         SoundSource.BLOCKS,
-                        0.2F,
+                        0.1F,
                         1.5F);
+            }
+            if (pRandom.nextInt(200) == 0) {
+                pLevel.playSound(null, pPos,
+                        SoundEvents.GUARDIAN_ATTACK,
+                        SoundSource.BLOCKS,
+                        0.05F,
+                        2.0F);
             }
         }
     }

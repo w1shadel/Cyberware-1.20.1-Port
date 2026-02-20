@@ -24,6 +24,8 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModLanguageProvider(packOutput, "fr_fr"));
         generator.addProvider(event.includeServer(), new ModLanguageProvider(packOutput, "en_us"));
         generator.addProvider(event.includeServer(), new ModLanguageProvider(packOutput, "ja_jp"));
+        generator.addProvider(event.includeServer(),
+                new ModBiomeTagProvider(packOutput, lookupProvider, existingFileHelper));
 
     }
 }

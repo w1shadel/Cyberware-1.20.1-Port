@@ -48,16 +48,29 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
     }
 
     public boolean isOpen() {
-        if (this.level == null) return true;
+        if (this.level == null)
+            return true;
         return this.getBlockState().getValue(SurgeryChamberBlock.OPEN);
 
     }
 
     public void setDoorState(boolean open) {
-        if (this.level == null || this.level.isClientSide) return;
+        if (this.level == null || this.level.isClientSide)
+            return;
         BlockState currentState = this.getBlockState();
         if (currentState.getValue(SurgeryChamberBlock.OPEN) != open) {
             this.level.setBlock(this.worldPosition, currentState.setValue(SurgeryChamberBlock.OPEN, open), 3);
+            if (open) {
+                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.IRON_DOOR_OPEN,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
+                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.PISTON_EXTEND,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
+            } else {
+                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.IRON_DOOR_CLOSE,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
+                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.PISTON_CONTRACT,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
+            }
             BlockPos abovePos = this.worldPosition.above();
             BlockState aboveState = this.level.getBlockState(abovePos);
             if (aboveState.getBlock() instanceof SurgeryChamberBlock) {

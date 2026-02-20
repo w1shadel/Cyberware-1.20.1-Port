@@ -16,7 +16,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,24 +38,14 @@ public class MobSpawnerEvents {
             return;
         }
         Entity entity = event.getEntity();
-        if (!(entity instanceof Mob vanillaMob)) return;
+        if (!(entity instanceof Mob vanillaMob))
+            return;
         ServerLevel level = (ServerLevel) event.getLevel();
         double bonusChance = calculateBonusChance(level, vanillaMob.blockPosition());
         EntityType<?> type = entity.getType();
-        if (type == EntityType.ZOMBIE) {
-            double chance = CyberwareConfig.ZOMBIE_CONVERSION_CHANCE.get();
-            tryReplaceMob(event, level, vanillaMob, ModEntities.CYBER_ZOMBIE.get(), chance + bonusChance);
-        } else if (type == EntityType.SKELETON) {
-            double chance = CyberwareConfig.SKELETON_CONVERSION_CHANCE.get();
-            tryReplaceMob(event, level, vanillaMob, ModEntities.CYBER_SKELETON.get(), chance + bonusChance);
-        } else if (type == EntityType.CREEPER) {
-            double chance = CyberwareConfig.CREEPER_CONVERSION_CHANCE.get();
-            tryReplaceMob(event, level, vanillaMob, ModEntities.CYBER_CREEPER.get(), chance + bonusChance);
-        } else if (type == EntityType.WITHER_SKELETON) {
-            if (isInsideFortress(level, vanillaMob.blockPosition())) {
-                double chance = CyberwareConfig.WITHER_CONVERSION_CHANCE.get();
-                tryReplaceMob(event, level, vanillaMob, ModEntities.CYBER_WITHER_SKELETON.get(), chance + bonusChance);
-            }
+        var mobData = com.maxwell.cyber_ware_port.api.json.MobDataManager.MOB_DATA.get(type);
+        if (mobData != null && mobData.replaceWith != null) {
+            tryReplaceMob(event, level, vanillaMob, mobData.replaceWith, mobData.chance + bonusChance);
         }
     }
 
@@ -66,8 +55,10 @@ public class MobSpawnerEvents {
         double bonus = 0.0;
         ResourceKey<Level> dimKey = level.dimension();
         long currentTime = level.getGameTime();
-        if (isActive(RadioKitBlock.LAST_ACTIVE_TIME, dimKey, currentTime)) bonus += RADIO_KIT_BOOST;
-        if (isActive(RadioTowerCoreBlock.LAST_TOWER_ACTIVE_TIME, dimKey, currentTime)) bonus += RADIO_TOWER_BOOST;
+        if (isActive(RadioKitBlock.LAST_ACTIVE_TIME, dimKey, currentTime))
+            bonus += RADIO_KIT_BOOST;
+        if (isActive(RadioTowerCoreBlock.LAST_TOWER_ACTIVE_TIME, dimKey, currentTime))
+            bonus += RADIO_TOWER_BOOST;
         List<? extends Player> players = level.players();
         for (Player player : players) {
             if (player.distanceToSqr(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ()) < 48 * 48) {
@@ -86,27 +77,28 @@ public class MobSpawnerEvents {
         }).orElse(false);
     }
 
-    private static boolean isActive(Map<ResourceKey<Level>, Long> timeMap, ResourceKey<Level> dimKey, long currentTime) {
+    private static boolean isActive(Map<ResourceKey<Level>, Long> timeMap, ResourceKey<Level> dimKey,
+            long currentTime) {
         Long lastActive = timeMap.get(dimKey);
-        if (lastActive == null) return false;
+        if (lastActive == null)
+            return false;
         return Math.abs(currentTime - lastActive) < ACTIVE_TIMEOUT;
     }
 
-    private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType, double chance) {
+    private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original,
+            EntityType<?> newType, double chance) {
         if (level.getRandom().nextFloat() < chance) {
             Mob customMob = (Mob) newType.create(level);
             if (customMob != null) {
-                customMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), original.getXRot());
+                customMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(),
+                        original.getXRot());
                 customMob.yBodyRot = original.yBodyRot;
                 customMob.yHeadRot = original.yHeadRot;
-                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), MobSpawnType.CONVERSION, null, null);
+                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()),
+                        MobSpawnType.CONVERSION, null, null);
                 level.addFreshEntity(customMob);
                 event.setCanceled(true);
             }
         }
-    }
-
-    private static boolean isInsideFortress(ServerLevel level, BlockPos pos) {
-        return level.structureManager().getStructureWithPieceAt(pos, BuiltinStructures.FORTRESS).isValid();
     }
 }

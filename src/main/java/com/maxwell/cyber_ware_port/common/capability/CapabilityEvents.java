@@ -1,13 +1,10 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
-import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
-import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import com.maxwell.cyber_ware_port.common.util.CyberwareBodyStatus;
 import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
-import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -36,7 +33,8 @@ public class CapabilityEvents {
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player) {
             if (!event.getObject().getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).isPresent()) {
-                event.addCapability(new ResourceLocation(CyberWare.MODID, "cyberware_data"), new CyberwareCapabilityProvider());
+                event.addCapability(new ResourceLocation(CyberWare.MODID, "cyberware_data"),
+                        new CyberwareCapabilityProvider());
             }
         }
     }
@@ -90,7 +88,8 @@ public class CapabilityEvents {
                             ItemStackHandler handler = newData.getInstalledCyberware();
                             for (int i = 0; i < handler.getSlots(); i++) {
                                 ItemStack stack = handler.getStackInSlot(i);
-                                if (!stack.isEmpty() && stack.hasTag() && stack.getTag().getBoolean("cyberware_ghost")) {
+                                if (!stack.isEmpty() && stack.hasTag()
+                                        && stack.getTag().getBoolean("cyberware_ghost")) {
                                     handler.setStackInSlot(i, ItemStack.EMPTY);
                                 }
                             }
@@ -131,30 +130,12 @@ public class CapabilityEvents {
     }
 
     private static boolean isHandFunctional(Player player, InteractionHand hand) {
-        if (player instanceof FakePlayer) {
+        if (player instanceof FakePlayer)
             return true;
-        }
         AtomicBoolean isFunctional = new AtomicBoolean(false);
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            ItemStackHandler handler = data.getInstalledCyberware();
-            int armCount = 0;
-            for (int i = 0; i < handler.getSlots(); i++) {
-                ItemStack stack = handler.getStackInSlot(i);
-                ICyberware cw = CyberwareAPI.getCyberware(stack);
-                if (stack.isEmpty()) continue;
-                if (stack.getItem() == ModItems.HUMAN_LEFT_ARM.get() ||
-                        stack.getItem() == ModItems.HUMAN_RIGHT_ARM.get()) {
-                    armCount++;
-                } else if (cw != null) {
-                    int slot = cw.getSlot(stack);
-                    if (slot == RobosurgeonBlockEntity.SLOT_ARMS || slot == RobosurgeonBlockEntity.SLOT_ARMS + 1) {
-                        armCount++;
-                    }
-                }
-            }
-            if (armCount >= 1) {
-                isFunctional.set(true);
-            }
+            CyberwareBodyStatus status = new CyberwareBodyStatus(data.getInstalledCyberware());
+            isFunctional.set(status.isHandFunctional());
         });
         return isFunctional.get();
     }
@@ -218,20 +199,9 @@ public class CapabilityEvents {
     public static void onLivingDamage(LivingDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
             player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                ItemStackHandler handler = data.getInstalledCyberware();
-                boolean hasSkin = false;
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    ItemStack stack = handler.getStackInSlot(i);
-                    ICyberware cw = CyberwareAPI.getCyberware(stack);
-                    if (cw != null) {
-                        BodyPartType type = cw.getBodyPartType(stack);
-                        if (type == BodyPartType.SKIN) hasSkin = true;
-                    }
-                }
-                float multiplier = 1.0f;
-                if (!hasSkin) multiplier += 0.5f;
-                if (multiplier > 1.0f) {
-                    event.setAmount(event.getAmount() * multiplier);
+                CyberwareBodyStatus status = new CyberwareBodyStatus(data.getInstalledCyberware());
+                if (!status.hasPart(BodyPartType.SKIN)) {
+                    event.setAmount(event.getAmount() * 1.5f);
                 }
             });
         }

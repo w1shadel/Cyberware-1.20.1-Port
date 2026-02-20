@@ -14,7 +14,11 @@ public class ClientPacketHandler {
     public static void update(int progress, int max) {
         currentProgress = progress;
         maxProgress = max;
+    }
 
+    public static void reset() {
+        currentProgress = 0;
+        maxProgress = 100;
     }
 
     public static void handleSyncPacket(SyncCyberwareDataPacket msg) {

@@ -33,32 +33,28 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(3.1, 7, 8.7, 5.1, 15, 10.7),
             Block.box(11.1, 7, 8.7, 13.1, 15, 10.7),
             Block.box(3.1, 7, 5.2, 5.1, 15, 7.2),
-            Block.box(11.1, 7, 5.2, 13.1, 15, 7.2)
-    );
+            Block.box(11.1, 7, 5.2, 13.1, 15, 7.2));
     private static final VoxelShape SHAPE_EAST = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(7.3, 8, 3.5, 8.8, 14, 12.5),
             Block.box(5.3, 7, 3.1, 7.3, 15, 5.1),
             Block.box(5.3, 7, 11.1, 7.3, 15, 13.1),
             Block.box(8.8, 7, 3.1, 10.8, 15, 5.1),
-            Block.box(8.8, 7, 11.1, 10.8, 15, 13.1)
-    );
+            Block.box(8.8, 7, 11.1, 10.8, 15, 13.1));
     private static final VoxelShape SHAPE_SOUTH = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(3.5, 8, 7.3, 12.5, 14, 8.8),
             Block.box(10.9, 7, 5.3, 12.9, 15, 7.3),
             Block.box(2.9, 7, 5.3, 4.9, 15, 7.3),
             Block.box(10.9, 7, 8.8, 12.9, 15, 10.8),
-            Block.box(2.9, 7, 8.8, 4.9, 15, 10.8)
-    );
+            Block.box(2.9, 7, 8.8, 4.9, 15, 10.8));
     private static final VoxelShape SHAPE_WEST = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(7.2, 8, 3.5, 8.7, 14, 12.5),
             Block.box(8.7, 7, 10.9, 10.7, 15, 12.9),
             Block.box(8.7, 7, 2.9, 10.7, 15, 4.9),
             Block.box(5.2, 7, 10.9, 7.2, 15, 12.9),
-            Block.box(5.2, 7, 2.9, 7.2, 15, 4.9)
-    );
+            Block.box(5.2, 7, 2.9, 7.2, 15, 4.9));
     public static final Map<ResourceKey<Level>, Long> LAST_TOWER_ACTIVE_TIME = new ConcurrentHashMap<>();
 
     @Override
@@ -69,6 +65,12 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             case WEST -> SHAPE_WEST;
             default -> SHAPE_NORTH;
         };
+    }
+
+    @Override
+    public boolean isLadder(BlockState state, net.minecraft.world.level.LevelReader level, BlockPos pos,
+            net.minecraft.world.entity.LivingEntity entity) {
+        return true;
     }
 
     public RadioTowerCoreBlock(Properties pProperties) {
@@ -135,8 +137,10 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
 
     @javax.annotation.Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (pLevel.isClientSide) return null;
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
+            BlockEntityType<T> pBlockEntityType) {
+        if (pLevel.isClientSide)
+            return null;
         if (pBlockEntityType == ModBlockEntities.RADIO_TOWER_CORE.get()) {
             return (lvl, pos, st, be) -> {
                 if (st.getValue(FORMED)) {
@@ -147,5 +151,19 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             };
         }
         return null;
+    }
+
+    @Override
+    public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, net.minecraft.util.RandomSource pRandom) {
+        if (pState.getValue(FORMED)) {
+            if (pRandom.nextInt(40) == 0) {
+                pLevel.playSound(null, pPos, net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.1F, 0.5F);
+            }
+            if (pRandom.nextInt(20) == 0) {
+                pLevel.playSound(null, pPos, net.minecraft.sounds.SoundEvents.CONDUIT_AMBIENT,
+                        net.minecraft.sounds.SoundSource.BLOCKS, 0.1F, 1.0F);
+            }
+        }
     }
 }

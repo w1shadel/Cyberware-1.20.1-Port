@@ -86,14 +86,6 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-core-api:$cctVersion")
-    compileOnly(fg.deobf("cc.tweaked:cc-tweaked-$minecraft_version-forge-api:$cctVersion"))
-    runtimeOnly(fg.deobf("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cctVersion"))
-    implementation fg.deobf("curse.maven:mekanism-268560:6552911")
-    implementation fg.deobf("curse.maven:pipez-443900:4916633")
-    implementation fg.deobf("curse.maven:epic-fight-mod-405076:7617763")
-    runtimeOnly (fg.deobf("curse.maven:dglib-1452161:7566434"))
-    runtimeOnly (fg.deobf("curse.maven:cyberware-visible-modifications-1450029:7584018"))
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
