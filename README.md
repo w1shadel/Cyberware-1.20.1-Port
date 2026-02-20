@@ -1,4 +1,4 @@
-# 🛠️ Data Pack Guide: Creating Custom Cyberware
+# 🛠️ Data Pack Guide: Creating Custom Cyberware & Cybermob spawning
 
 This guide provides the complete specification for adding Cyberware to the mod via **Data Packs (JSON)**. This system allows you to turn any item into a functional implant with full support for attributes, energy management, and surgery rules.
 
@@ -136,3 +136,43 @@ Custom items automatically search for a tooltip key in your resource pack's `lan
 - **Surgery Simulation:** Use the Robosurgeon GUI to see how "Ghost Items" (current implants) interact with your new JSON-defined parts.
 - **Pristine State:** By default, all Cyberware added via Data Packs is considered "Pristine" (Manufactured). If an item is "Scavenged" (Damaged), its energy costs are doubled and attribute bonuses are halved.
 - **Live Reload:** You can use the `/reload` command in-game to apply changes to your JSON files without restarting the game.
+
+## 10. Modifying Mobs with Json
+Files must be placed in your data pack using the following structure:
+
+```text
+your_data_pack/
+ ┗ data/
+    ┗ [your_namespace]/
+       ┗ cyberware/
+          ┗ mobs
+　　　　　　　┗ [mob_name].json
+          
+```
+This is the json that converts a wither skeleton to a cyberwither skeleton.
+**Format:**
+```json
+{
+    "mob": "minecraft:wither_skeleton",
+    "replace_with": "cyber_ware_port:cyber_wither_skeleton",
+    "chance": 0.2,
+    "is_high_tier": true,
+    "special_drops": [
+        "cyber_ware_port:internal_defibrillator",
+        "cyber_ware_port:rapid_fire_flywheel"
+    ],
+    "forbidden_drops": [
+        "minecraft:stone_sword"
+    ]
+}
+```
+The function of each array is as follows:
+| Key              | Type            | Default   | Description                                                                                        |
+| :--------------- | :-------------- | :-------- | :--------------------------------------------------------------------------------------------------|
+| `mob`            | String          | (Required)| Registry ID of the vanilla mob to be replaced (e.g., `minecraft:zombie`)                           |
+| `replace_with`   | String          | (Required)| The registry ID of the target Cybermob (e.g., `cyber_ware_port:cyber_wither_skeleton`)             |
+| `chance`         | Double (0.0~1.0)| `0.0`     | Basic probability of substitution occurring (0.15 = 15%)                                           |
+| `is_high_tier`   | Boolean         | `false`   | Treat them as high-tier mobs (adding powerful cyberware to the drop pool)                          |
+| `special_drops`  | Array of String | `[]`      | Unique drop item registry ID list (duplicates are added to the pool, making it easier to get them) |
+| `forbidden_drops`| Array of String | `[]`      | Registry ID list of no-drop items (to be excluded from the pool)                                   |
+
