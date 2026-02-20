@@ -138,6 +138,8 @@ Custom items automatically search for a tooltip key in your resource pack's `lan
 - **Live Reload:** You can use the `/reload` command in-game to apply changes to your JSON files without restarting the game.
 
 ## 10. Modifying Mobs with Json
+Starting with version 1.6.1, you can identify specific mobs as cybermobs using the following method.
+
 Files must be placed in your data pack using the following structure:
 
 ```text
