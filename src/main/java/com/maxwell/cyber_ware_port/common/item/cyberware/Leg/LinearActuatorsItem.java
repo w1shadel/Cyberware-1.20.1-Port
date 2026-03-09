@@ -39,6 +39,7 @@ public class LinearActuatorsItem extends CyberwareItem {
         player.getPersistentData().putBoolean(NBT_DOUBLE_JUMPED, true);
     }
 
+
     @Override
     public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (!(wearer instanceof Player player)) return;

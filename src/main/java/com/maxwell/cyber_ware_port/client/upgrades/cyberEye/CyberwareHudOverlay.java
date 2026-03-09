@@ -23,7 +23,7 @@ import net.minecraftforge.items.ItemStackHandler;
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
     private static final ResourceLocation BATTERY_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/battery_hud.png");
+            new ResourceLocation(CyberWare.MODID, "textures/gui/battery_hud.png");
 
     @SubscribeEvent
     public static void onRenderGui(RenderGuiOverlayEvent.Post event) {

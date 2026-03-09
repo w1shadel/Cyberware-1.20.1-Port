@@ -30,11 +30,11 @@ import java.util.List;
 
 public class CyberwareMenuScreen extends Screen {
     private static final ResourceLocation HUD_COLOR_ICON =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_color.png");
+            new ResourceLocation(CyberWare.MODID, "textures/gui/hud_color.png");
     private static final ResourceLocation HUD_POS_ICON =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_pos.png");
+            new ResourceLocation(CyberWare.MODID, "textures/gui/hud_pos.png");
     private static final ResourceLocation HUD_RESET_ICON =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_reset.png");
+            new ResourceLocation(CyberWare.MODID, "textures/gui/hud_reset.png");
     private static final float INNER_RADIUS = 40.0f;
     private static final float OUTER_RADIUS = 100.0f;
     private static final float ITEM_RADIUS = (INNER_RADIUS + OUTER_RADIUS) / 2.0f;
