@@ -65,6 +65,30 @@ public class PacketSurgeryGhostToggle {
                     ghost.getOrCreateTag().putBoolean("cyberware_ghost", true);
                     tile.getItemHandler().setStackInSlot(slotId, ghost);
                     changed = true;
+
+                    com.maxwell.cyber_ware_port.common.item.base.ICyberware newCw = com.maxwell.cyber_ware_port.api.json.CyberwareAPI
+                            .getCyberware(ghost);
+                    if (newCw != null) {
+                        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
+                            if (i == slotId)
+                                continue;
+                            ItemStack other = tile.getItemHandler().getStackInSlot(i);
+                            if (!other.isEmpty()) {
+                                com.maxwell.cyber_ware_port.common.item.base.ICyberware otherCw = com.maxwell.cyber_ware_port.api.json.CyberwareAPI
+                                        .getCyberware(other);
+                                if (otherCw != null) {
+                                    if (newCw.isIncompatible(ghost, other) || otherCw.isIncompatible(other, ghost)) {
+                                        if (!(other.hasTag() && other.getTag().getBoolean("cyberware_ghost"))) {
+                                            if (!player.getInventory().add(other.copy())) {
+                                                player.drop(other.copy(), false);
+                                            }
+                                        }
+                                        tile.getItemHandler().setStackInSlot(i, ItemStack.EMPTY);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
