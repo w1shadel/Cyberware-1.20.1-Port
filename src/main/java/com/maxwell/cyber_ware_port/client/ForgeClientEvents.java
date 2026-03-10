@@ -200,7 +200,7 @@ public class ForgeClientEvents {
         if (event.getKey() == mc.options.keyJump.getKey().getValue() && event.getAction() == GLFW.GLFW_PRESS) {
             if (!player.onGround() && !player.isCreative() && !player.isSpectator()) {
                 player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                    if (data.isCyberwareInstalled(ModItems.LINEAR_ACTUATORS.get())) {
+                    if (data.isCyberwareActive(ModItems.LINEAR_ACTUATORS.get())) {
                         if (!player.getPersistentData().getBoolean(NBT_DOUBLE_JUMPED)) {
                             A_PacketHandler.INSTANCE.sendToServer(new DoubleJumpPacket());
                         }

@@ -536,6 +536,17 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return tag;
     }
 
+    public boolean isCyberwareActive(Item item) {
+        for (int i = 0; i < installedCyberware.getSlots(); i++) {
+            ItemStack stack = installedCyberware.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getItem() == item) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                return cw != null && cw.isActive(stack);
+            }
+        }
+        return false;
+    }
+
     public boolean isCyberwareInstalled(Item item) {
         for (int i = 0; i < installedCyberware.getSlots(); i++) {
             ItemStack stack = installedCyberware.getStackInSlot(i);
