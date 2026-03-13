@@ -1,47 +1,36 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.NotNull;
+import com.maxwell.cyber_ware_port.CyberWare;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import javax.annotation.Nullable;
+@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.MOD)
+public class CyberwareCapabilityProvider {
+    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
+            DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, CyberWare.MODID);
 
-public class CyberwareCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
-    public static final Capability<CyberwareUserData> CYBERWARE_CAPABILITY =
-            CapabilityManager.get(new CapabilityToken<>() {
-            });
-    private CyberwareUserData backend = null;
-    private final LazyOptional<CyberwareUserData> optional = LazyOptional.of(this::createBackend);
-    private final LazyOptional<IEnergyStorage> energyOptional = optional.cast();
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<CyberwareUserData>> CYBERWARE_DATA =
+            ATTACHMENT_TYPES.register("cyberware_data", () -> AttachmentType.serializable(CyberwareUserData::new)
+                    .copyOnDeath()
+                    .build());
 
-    private CyberwareUserData createBackend() {
-        if (this.backend == null) {
-            this.backend = new CyberwareUserData();
-        }
-        return this.backend;
+    public static void register(IEventBus eventBus) {
+        ATTACHMENT_TYPES.register(eventBus);
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CYBERWARE_CAPABILITY) {
-            return optional.cast();
-        }
-        if (cap == ForgeCapabilities.ENERGY) {
-            return energyOptional.cast();
-        }
-        return LazyOptional.empty();
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return createBackend().serializeNBT();
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        createBackend().deserializeNBT(nbt);
+    @SubscribeEvent
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerEntity(
+                Capabilities.EnergyStorage.ENTITY,
+                net.minecraft.world.entity.EntityType.PLAYER,
+                (player, side) -> player.getData(CYBERWARE_DATA.get())
+        );
     }
 }

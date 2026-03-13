@@ -22,11 +22,11 @@ import org.joml.Matrix4f;
 @SuppressWarnings("removal")
 public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberWitherModel> {
     private static final ResourceLocation WITHER_LOCATION =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
     private static final ResourceLocation WITHER_INVULNERABLE_LOCATION =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
     private static final ResourceLocation BEAM_LOCATION =
-            new ResourceLocation("textures/entity/guardian_beam.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID,"textures/entity/guardian_beam.png");
 
     public CyberWitherBossRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberWitherModel(context.bakeLayer(CyberWitherModel.LAYER_LOCATION)), 1.0F);
@@ -91,10 +91,10 @@ public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberW
     }
 
     private void drawVertex(VertexConsumer consumer, Matrix4f pose, Matrix3f normal, float length, float width, float r, float g, float b, float alpha, float vOffset, float vScale) {
-        consumer.vertex(pose, -width, 0, 0).color(r, g, b, alpha).uv(0, vOffset).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normal, 0, 1, 0).endVertex();
-        consumer.vertex(pose, width, 0, 0).color(r, g, b, alpha).uv(1, vOffset).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normal, 0, 1, 0).endVertex();
-        consumer.vertex(pose, width, 0, length).color(r, g, b, alpha).uv(1, vOffset + vScale).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normal, 0, 1, 0).endVertex();
-        consumer.vertex(pose, -width, 0, length).color(r, g, b, alpha).uv(0, vOffset + vScale).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normal, 0, 1, 0).endVertex();
+        consumer.addVertex(pose, -width, 0, 0).setColor(r, g, b, alpha).setUv(0, vOffset).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880,0).setNormal( 0, 1, 0);
+        consumer.addVertex(pose, width, 0, 0).setColor(r, g, b, alpha).setUv(1, vOffset).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880,0).setNormal( 0, 1, 0);
+        consumer.addVertex(pose, width, 0, length).setColor(r, g, b, alpha).setUv(1, vOffset + vScale).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880,0).setNormal( 0, 1, 0);
+        consumer.addVertex(pose, -width, 0, length).setColor(r, g, b, alpha).setUv(0, vOffset + vScale).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880,0).setNormal( 0, 1, 0);
 
     }
 

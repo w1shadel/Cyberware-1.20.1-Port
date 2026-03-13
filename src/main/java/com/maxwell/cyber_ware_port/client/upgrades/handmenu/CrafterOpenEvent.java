@@ -5,10 +5,10 @@ import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.common.network.OpenPortableCraftingPacket;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 @SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)

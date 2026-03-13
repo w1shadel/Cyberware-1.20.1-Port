@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Lower_Organs;
+package com.maxwell.cyber_ware_port.common.item.cyberware.lower_organs;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
@@ -11,6 +11,5 @@ public class CreativeBatteryItem extends CyberwareItem {
                 .energy(0, 1_000_000, 2_000_000_000, StackingRule.STATIC)
                 .properties(p -> p.rarity(Rarity.EPIC))
         );
-
     }
 }

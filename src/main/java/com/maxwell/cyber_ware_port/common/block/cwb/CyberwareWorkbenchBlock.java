@@ -1,15 +1,16 @@
 package com.maxwell.cyber_ware_port.common.block.cwb;
 
+import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -23,11 +24,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implements EntityBlock {
+    public static final MapCodec<CyberwareWorkbenchBlock> CODEC = simpleCodec(CyberwareWorkbenchBlock::new);
     private static final VoxelShape BASE = Block.box(0, 0, 0, 16, 16, 16);
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             BASE,
@@ -53,19 +53,21 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
     public CyberwareWorkbenchBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.SOUTH));
+    }
 
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
     }
 
     @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
-
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(FACING);
-
     }
 
     @Override
@@ -76,62 +78,47 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
             case WEST -> SHAPE_WEST;
             case EAST -> SHAPE_EAST;
             default -> SHAPE_NORTH;
-
         };
-
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
-
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new CyberwareWorkbenchBlockEntity(pPos, pState);
-
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (entity instanceof CyberwareWorkbenchBlockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, (CyberwareWorkbenchBlockEntity) entity, pPos);
-
+            if (entity instanceof CyberwareWorkbenchBlockEntity workbench) {
+                pPlayer.openMenu(workbench, pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
-
             }
         }
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
-
     }
-
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (pBlockEntityType == ModBlockEntities.CYBERWARE_WORKBENCH.get()) {
-            return (lvl, pos, st, be) -> CyberwareWorkbenchBlockEntity.tick(lvl, pos, st, (CyberwareWorkbenchBlockEntity) be);
-
-        }
-        return null;
-
+        if (pLevel.isClientSide) return null;
+        return pBlockEntityType == ModBlockEntities.CYBERWARE_WORKBENCH.get() ? (lvl, pos, st, be) -> CyberwareWorkbenchBlockEntity.tick(lvl, pos, st, (CyberwareWorkbenchBlockEntity) be) : null;
     }
-
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.getBlock() != pNewState.getBlock()) {
+        if (!pState.is(pNewState.getBlock())) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof CyberwareWorkbenchBlockEntity) {
-                ((CyberwareWorkbenchBlockEntity) blockEntity).drops();
-
+            if (blockEntity instanceof CyberwareWorkbenchBlockEntity workbench) {
+                workbench.drops();
             }
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-
     }
 }

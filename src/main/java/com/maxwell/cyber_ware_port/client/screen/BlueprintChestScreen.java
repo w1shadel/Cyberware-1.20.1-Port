@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class BlueprintChestScreen extends AbstractContainerScreen<BlueprintChestMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/blueprint_chest_inv.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest_inv.png");
 
     public BlueprintChestScreen(BlueprintChestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);

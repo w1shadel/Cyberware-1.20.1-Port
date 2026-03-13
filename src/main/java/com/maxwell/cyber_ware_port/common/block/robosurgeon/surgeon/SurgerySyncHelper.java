@@ -1,8 +1,9 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class SurgerySyncHelper {
     public static boolean updateGhosts(ItemStackHandler body, IItemHandlerModifiable table) {
@@ -14,9 +15,12 @@ public class SurgerySyncHelper {
                 if (b.isEmpty()) {
                     table.setStackInSlot(i, ItemStack.EMPTY);
                     changed = true;
-                } else if (!ItemStack.matches(t, createGhost(b))) {
-                    table.setStackInSlot(i, createGhost(b));
-                    changed = true;
+                } else {
+                    ItemStack ghost = createGhost(b);
+                    if (!ItemStack.matches(t, ghost)) {
+                        table.setStackInSlot(i, ghost);
+                        changed = true;
+                    }
                 }
             } else if (t.isEmpty() && !b.isEmpty()) {
                 table.setStackInSlot(i, createGhost(b));
@@ -28,7 +32,7 @@ public class SurgerySyncHelper {
 
     private static ItemStack createGhost(ItemStack stack) {
         ItemStack ghost = stack.copy();
-        ghost.getOrCreateTag().putBoolean("cyberware_ghost", true);
+        ghost.set(CyberWare.GHOST_COMPONENT.get(), true);
         return ghost;
     }
 }

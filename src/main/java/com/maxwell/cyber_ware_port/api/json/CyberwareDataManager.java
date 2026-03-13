@@ -10,15 +10,15 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Map<Item, ICyberware> DYNAMIC_CYBERWARE = new HashMap<>();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public String abilityId = "";
 
     public CyberwareDataManager() {
@@ -31,7 +31,7 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
         pObject.forEach((location, element) -> {
             try {
                 JsonObject json = element.getAsJsonObject();
-                ResourceLocation itemId = new ResourceLocation(json.get("item").getAsString());
+                ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(json.get("item").getAsString());
                 Item item = ForgeRegistries.ITEMS.getValue(itemId);
                 if (item != null) {
                     CyberwareData data = new CyberwareData();
@@ -43,7 +43,7 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                         JsonArray attrs = json.getAsJsonArray("attributes");
                         for (JsonElement attrElement : attrs) {
                             JsonObject attrObj = attrElement.getAsJsonObject();
-                            Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(attrObj.get("attribute").getAsString()));
+                            Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attrObj.get("attribute").getAsString()));
                             if (attr != null) {
                                 double amount = attrObj.get("amount").getAsDouble();
                                 AttributeModifier.Operation op = AttributeModifier.Operation.valueOf(attrObj.get("operation").getAsString().toUpperCase());
@@ -53,7 +53,7 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                     }
                     if (json.has("incompatible")) {
                         for (JsonElement e : json.getAsJsonArray("incompatible")) {
-                            data.incompatibleItems.add(ForgeRegistries.ITEMS.getValue(new ResourceLocation(e.getAsString())));
+                            data.incompatibleItems.add(ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath(e.getAsString())));
                         }
                     }
                     if (json.has("stacking")) {

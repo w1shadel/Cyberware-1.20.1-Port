@@ -14,7 +14,7 @@ import net.minecraft.world.item.Items;
 
 public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_skeleton"), "main");
+            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_skeleton"), "main");
     private final ModelPart waist;
     private final ModelPart body;
     private final ModelPart head;
@@ -100,12 +100,6 @@ public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
             this.leftArm.xRot -= Mth.sin(ageInTicks * 0.067F) * 0.05F;
 
         }
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        waist.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-
     }
 
     @Override

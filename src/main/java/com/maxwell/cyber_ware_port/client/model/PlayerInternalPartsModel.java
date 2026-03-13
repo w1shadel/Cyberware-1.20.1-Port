@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class PlayerInternalPartsModel extends Model {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "playerinternalpartsmodel"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("modid", "playerinternalpartsmodel"), "main");
     private final ModelPart root;
     private final ModelPart bone;
     private final ModelPart muscal;
@@ -38,12 +38,6 @@ public class PlayerInternalPartsModel extends Model {
 
     }
 
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-
-    }
-
     public void setVisibleLayer(int type) {
         this.skin.visible = false;
         this.muscal.visible = false;
@@ -54,5 +48,11 @@ public class PlayerInternalPartsModel extends Model {
             case 2 -> this.bone.visible = true;
 
         }
+    }
+
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
+        root.render(poseStack, vertexConsumer, i, i1, i2);
+
     }
 }

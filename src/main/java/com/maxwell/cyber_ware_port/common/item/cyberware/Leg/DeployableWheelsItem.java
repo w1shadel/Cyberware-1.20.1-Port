@@ -1,11 +1,11 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Leg;
+package com.maxwell.cyber_ware_port.common.item.cyberware.leg;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeMod;
 
 public class DeployableWheelsItem extends CyberwareItem {
     public DeployableWheelsItem() {
@@ -14,10 +14,10 @@ public class DeployableWheelsItem extends CyberwareItem {
                 .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT)
                 .energy(2, 0, 0, StackingRule.LINEAR)
                 .addAttribute(
-                        ForgeMod.STEP_HEIGHT_ADDITION.get(),
-                        "d6c3e8a0-1234-4a5b-8c9d-123456789abc",
+                        Attributes.STEP_HEIGHT,
+                        "deployable_wheels_step_height",
                         1.0,
-                        AttributeModifier.Operation.ADDITION
+                        AttributeModifier.Operation.ADD_VALUE
                 )
         );
     }

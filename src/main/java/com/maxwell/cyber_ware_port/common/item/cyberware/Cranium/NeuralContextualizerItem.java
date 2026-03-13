@@ -1,4 +1,5 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Cranium;
+package com.maxwell.cyber_ware_port.common.item.cyberware.cranium;
+
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
@@ -6,7 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class NeuralContextualizerItem extends CyberwareItem {
     public NeuralContextualizerItem() {

@@ -1,7 +1,8 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Leg;
+package com.maxwell.cyber_ware_port.common.item.cyberware.leg;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
@@ -13,7 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 public class LinearActuatorsItem extends CyberwareItem {
     private static final String NBT_CROUCH_TIME = "cyberware_crouch_time";
@@ -38,7 +39,6 @@ public class LinearActuatorsItem extends CyberwareItem {
         player.fallDistance = 0;
         player.getPersistentData().putBoolean(NBT_DOUBLE_JUMPED, true);
     }
-
 
     @Override
     public void onSystemTick(LivingEntity wearer, ItemStack stack) {
@@ -65,7 +65,7 @@ public class LinearActuatorsItem extends CyberwareItem {
                     }
                 } else if (time > 0 && time < 60 && time % 20 == 0) {
                     float pitch = 1.0f + (time / 60.0f) * 0.5f;
-                    player.level().playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.PLAYERS, 0.5f, pitch);
+                    player.level().playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.PLAYERS, 0.5f, pitch);
                     for (int i = 0; i < 3; i++) {
                         player.level().addParticle(ParticleTypes.CRIT,
                                 player.getX() + (player.getRandom().nextDouble() - 0.5) * 0.5,
@@ -97,17 +97,17 @@ public class LinearActuatorsItem extends CyberwareItem {
         if (!(wearer instanceof ServerPlayer player)) return;
         CompoundTag tag = player.getPersistentData();
         if (tag.getBoolean(NBT_JUMP_READY)) {
-            player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                if (tryConsumeEventEnergy(data, stack)) {
-                    Vec3 look = wearer.getLookAngle();
-                    double forwardSpeed = 1.5;
-                    double upSpeed = 1.25;
-                    wearer.setDeltaMovement(look.x * forwardSpeed, upSpeed, look.z * forwardSpeed);
-                    player.hurtMarked = true;
-                    tag.putInt(NBT_CROUCH_TIME, 0);
-                    tag.putBoolean(NBT_JUMP_READY, false);
-                }
-            });
+            CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            if (tryConsumeEventEnergy(data, stack)) {
+                Vec3 look = wearer.getLookAngle();
+                double forwardSpeed = 1.5;
+                double upSpeed = 1.25;
+                wearer.setDeltaMovement(look.x * forwardSpeed, upSpeed, look.z * forwardSpeed);
+                player.hurtMarked = true;
+                tag.putInt(NBT_CROUCH_TIME, 0);
+                tag.putBoolean(NBT_JUMP_READY, false);
+            }
         }
     }
+
 }

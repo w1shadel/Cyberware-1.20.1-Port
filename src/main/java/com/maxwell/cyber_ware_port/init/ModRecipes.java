@@ -3,35 +3,34 @@ package com.maxwell.cyber_ware_port.init;
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
-            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, CyberWare.MODID);
+            DeferredRegister.create(Registries.RECIPE_SERIALIZER, CyberWare.MODID);
     public static final DeferredRegister<RecipeType<?>> TYPES =
-            DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, CyberWare.MODID);
-    public static final RegistryObject<RecipeSerializer<EngineeringRecipe>> ENGINEERING_SERIALIZER =
+            DeferredRegister.create(Registries.RECIPE_TYPE, CyberWare.MODID);
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EngineeringRecipe>> ENGINEERING_SERIALIZER =
             SERIALIZERS.register("engineering", () -> EngineeringRecipe.Serializer.INSTANCE);
-    public static final RegistryObject<RecipeType<EngineeringRecipe>> ENGINEERING_TYPE =
+    public static final DeferredHolder<RecipeType<?>, RecipeType<EngineeringRecipe>> ENGINEERING_TYPE =
             TYPES.register("engineering", () -> new RecipeType<EngineeringRecipe>() {
                 @Override
                 public String toString() {
-                    return "engineering";
+                    return CyberWare.MODID + ":engineering";
                 }
             });
-    public static final RegistryObject<RecipeSerializer<AssemblyRecipe>> ASSEMBLY_SERIALIZER =
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AssemblyRecipe>> ASSEMBLY_SERIALIZER =
             SERIALIZERS.register("assembly", () -> AssemblyRecipe.Serializer.INSTANCE);
-    public static final RegistryObject<RecipeType<AssemblyRecipe>> ASSEMBLY_TYPE =
+    public static final DeferredHolder<RecipeType<?>, RecipeType<AssemblyRecipe>> ASSEMBLY_TYPE =
             TYPES.register("assembly", () -> new RecipeType<AssemblyRecipe>() {
                 @Override
                 public String toString() {
-                    return "assembly";
-
+                    return CyberWare.MODID + ":assembly";
                 }
             });
 

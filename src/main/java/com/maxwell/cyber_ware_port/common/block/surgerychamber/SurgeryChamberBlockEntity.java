@@ -2,16 +2,19 @@ package com.maxwell.cyber_ware_port.common.block.surgerychamber;
 
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SurgeryChamberBlockEntity extends BlockEntity {
     public float animationProgress = 0;
@@ -19,20 +22,16 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
 
     public SurgeryChamberBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.SURGERY_CHAMBER.get(), pPos, pBlockState);
-
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SurgeryChamberBlockEntity entity) {
         entity.prevAnimationProgress = entity.animationProgress;
         boolean isOpen = state.getValue(SurgeryChamberBlock.OPEN);
         float target = isOpen ? 1.0F : 0.0F;
-        float speed = 0.1F;
         if (entity.animationProgress < target) {
-            entity.animationProgress = Math.min(entity.animationProgress + speed, target);
-
+            entity.animationProgress = Math.min(entity.animationProgress + 0.1F, target);
         } else if (entity.animationProgress > target) {
-            entity.animationProgress = Math.max(entity.animationProgress - speed, target);
-
+            entity.animationProgress = Math.max(entity.animationProgress - 0.1F, target);
         }
     }
 
@@ -43,83 +42,57 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
             boolean isOpen = this.getBlockState().getValue(SurgeryChamberBlock.OPEN);
             this.animationProgress = isOpen ? 1.0F : 0.0F;
             this.prevAnimationProgress = this.animationProgress;
-
         }
     }
 
     public boolean isOpen() {
-        if (this.level == null)
-            return true;
-        return this.getBlockState().getValue(SurgeryChamberBlock.OPEN);
-
+        return this.level != null && this.getBlockState().getValue(SurgeryChamberBlock.OPEN);
     }
 
     public void setDoorState(boolean open) {
-        if (this.level == null || this.level.isClientSide)
-            return;
+        if (this.level == null || this.level.isClientSide) return;
         BlockState currentState = this.getBlockState();
         if (currentState.getValue(SurgeryChamberBlock.OPEN) != open) {
             this.level.setBlock(this.worldPosition, currentState.setValue(SurgeryChamberBlock.OPEN, open), 3);
-            if (open) {
-                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.IRON_DOOR_OPEN,
-                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
-                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.PISTON_EXTEND,
-                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
-            } else {
-                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.IRON_DOOR_CLOSE,
-                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
-                this.level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.PISTON_CONTRACT,
-                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.2F);
-            }
+            this.level.playSound(null, this.worldPosition, open ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, 0.5F, 1.2F);
+            this.level.playSound(null, this.worldPosition, open ? SoundEvents.PISTON_EXTEND : SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, 1.2F);
+
             BlockPos abovePos = this.worldPosition.above();
             BlockState aboveState = this.level.getBlockState(abovePos);
-            if (aboveState.getBlock() instanceof SurgeryChamberBlock) {
+            if (aboveState.is(currentState.getBlock())) {
                 this.level.setBlock(abovePos, aboveState.setValue(SurgeryChamberBlock.OPEN, open), 3);
-
             }
             setChanged();
-
         }
     }
 
     public void toggleDoor() {
         setDoorState(!isOpen());
-
     }
 
     @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition).expandTowards(0, 2.0, 0);
-
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.saveAdditional(pTag, pRegistries);
         pTag.putFloat("AnimationProgress", this.animationProgress);
-
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(pTag, pRegistries);
         if (pTag.contains("AnimationProgress")) {
             this.animationProgress = pTag.getFloat("AnimationProgress");
             this.prevAnimationProgress = this.animationProgress;
-
         }
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return saveWithoutMetadata(pRegistries);
     }
 
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
-
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveWithoutMetadata();
-
     }
 }

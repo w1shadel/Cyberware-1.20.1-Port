@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class CyberSkeletonRenderer extends MobRenderer<CyberSkeletonEntity, CyberSkeletonModel> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_skeleton.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_skeleton.png");
 
     public CyberSkeletonRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberSkeletonModel(context.bakeLayer(CyberSkeletonModel.LAYER_LOCATION)), 0.5F);

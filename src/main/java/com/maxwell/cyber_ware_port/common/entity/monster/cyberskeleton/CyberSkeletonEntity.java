@@ -13,6 +13,7 @@ import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -20,13 +21,10 @@ import net.minecraft.world.level.Level;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("removal")
 public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
     private static final int MELEE_TRIGGER_DIST_SQR = 5 * 5;
     private static final int MELEE_COOLDOWN_TICKS = 100;
-    private static final int MAX_MELEE_ATTACKS = 5;
     public int meleeCooldown = 0;
-    public int attackCounter = 0;
 
     public CyberSkeletonEntity(EntityType<? extends Skeleton> type, Level level) {
         super(type, level);
@@ -83,8 +81,9 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack arrowStack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem)));
-        AbstractArrow arrow = ProjectileUtil.getMobArrow(this, arrowStack, distanceFactor);
+        ItemStack weaponStack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
+        ItemStack arrowStack = this.getProjectile(weaponStack);
+        AbstractArrow arrow = ProjectileUtil.getMobArrow(this, arrowStack, distanceFactor, weaponStack);
         double d0 = target.getX() - this.getX();
         double d1 = target.getY(0.3333333333333333D) - arrow.getY();
         double d2 = target.getZ() - this.getZ();
@@ -104,14 +103,9 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
         @Override
         public boolean canUse() {
-            if (!super.canUse()) {
-                return false;
-            }
-            if (this.skeleton.getTarget() == null || this.skeleton.meleeCooldown > 0) {
-                return false;
-            }
-            double distSqr = this.skeleton.distanceToSqr(this.skeleton.getTarget());
-            return distSqr > MELEE_TRIGGER_DIST_SQR;
+            if (!super.canUse()) return false;
+            if (this.skeleton.getTarget() == null || this.skeleton.meleeCooldown > 0) return false;
+            return this.skeleton.distanceToSqr(this.skeleton.getTarget()) > MELEE_TRIGGER_DIST_SQR;
         }
     }
 
@@ -125,14 +119,9 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
         @Override
         public boolean canUse() {
-            if (!super.canUse()) {
-                return false;
-            }
-            if (this.skeleton.getTarget() == null || this.skeleton.meleeCooldown > 0) {
-                return false;
-            }
-            double distSqr = this.skeleton.distanceToSqr(this.skeleton.getTarget());
-            return distSqr <= MELEE_TRIGGER_DIST_SQR;
+            if (!super.canUse()) return false;
+            if (this.skeleton.getTarget() == null || this.skeleton.meleeCooldown > 0) return false;
+            return this.skeleton.distanceToSqr(this.skeleton.getTarget()) <= MELEE_TRIGGER_DIST_SQR;
         }
 
         @Override

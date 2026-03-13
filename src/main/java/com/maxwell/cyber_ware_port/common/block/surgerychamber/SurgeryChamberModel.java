@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class SurgeryChamberModel extends Model {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "surgery_chamber"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "surgery_chamber"), "main");
     private final ModelPart root;
     private final ModelPart door_left;
     private final ModelPart door_right;
@@ -50,8 +50,7 @@ public class SurgeryChamberModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
+        root.render(poseStack, vertexConsumer, i, i1, i2);
     }
 }

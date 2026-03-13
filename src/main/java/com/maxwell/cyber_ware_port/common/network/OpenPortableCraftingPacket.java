@@ -1,57 +1,35 @@
 package com.maxwell.cyber_ware_port.common.network;
 
-import net.minecraft.core.BlockPos;
+import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
+public record OpenPortableCraftingPacket() implements CustomPacketPayload {
+    public static final Type<OpenPortableCraftingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "open_portable_crafting"));
 
-public class OpenPortableCraftingPacket {
-    public OpenPortableCraftingPacket() {
+    public static final StreamCodec<FriendlyByteBuf, OpenPortableCraftingPacket> STREAM_CODEC = StreamCodec.unit(new OpenPortableCraftingPacket());
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static OpenPortableCraftingPacket fromBytes(FriendlyByteBuf buf) {
-        return new OpenPortableCraftingPacket();
-
-    }
-
-    public static void handle(OpenPortableCraftingPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null) {
-                ContainerLevelAccess portableAccess = new ContainerLevelAccess() {
-                    @Override
-                    public <T> Optional<T> evaluate(BiFunction<Level, BlockPos, T> function) {
-                        return Optional.empty();
-
-                    }
-
-                    @Override
-                    public void execute(BiConsumer<Level, BlockPos> consumer) {
-                        consumer.accept(player.level(), player.blockPosition());
-
-                    }
-                };
+    public void handle(IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (ctx.player() instanceof ServerPlayer player) {
                 player.openMenu(new SimpleMenuProvider(
-                        (id, inv, p) -> new CraftingMenu(id, inv, portableAccess),
+                        (id, inv, p) -> new CraftingMenu(id, inv, ContainerLevelAccess.create(player.level(), player.blockPosition())),
                         Component.translatable("container.crafting")
                 ));
-
             }
         });
-        ctx.get().setPacketHandled(true);
-
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
     }
 }

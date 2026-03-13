@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Leg;
+package com.maxwell.cyber_ware_port.common.item.cyberware.leg;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
@@ -12,6 +12,6 @@ public class ImplantedSpursItem extends CyberwareItem {
                 .addAttribute(Attributes.MOVEMENT_SPEED,
                         "c0a9b8e0-1234-4567-89ab-cdef01234567",
                         0.05,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
     }
 }

@@ -1,0 +1,93 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Client",
+      "presentation": {
+        "group": "Mod Development - Cyberware-1.20.1-Port",
+        "order": 0
+      },
+      "projectName": "Cyberware-1.20.1-Port",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dcyber_ware_port%%C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Data",
+      "presentation": {
+        "group": "Mod Development - Cyberware-1.20.1-Port",
+        "order": 1
+      },
+      "projectName": "Cyberware-1.20.1-Port",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\dataRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dcyber_ware_port%%C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "GameTestServer",
+      "presentation": {
+        "group": "Mod Development - Cyberware-1.20.1-Port",
+        "order": 2
+      },
+      "projectName": "Cyberware-1.20.1-Port",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\gameTestServerRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\gameTestServerRunVmArgs.txt",
+        "-Dfml.modFolders\u003dcyber_ware_port%%C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Server",
+      "presentation": {
+        "group": "Mod Development - Cyberware-1.20.1-Port",
+        "order": 3
+      },
+      "projectName": "Cyberware-1.20.1-Port",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dcyber_ware_port%%C:\\Users\\stard_i5grhqf\\Documents\\GitHub\\Cyberware-1.20.1-Port\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

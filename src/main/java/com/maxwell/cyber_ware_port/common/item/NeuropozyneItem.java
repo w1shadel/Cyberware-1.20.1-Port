@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.item;
 
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -8,10 +9,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,10 +25,9 @@ public class NeuropozyneItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entityLiving) {
         if (!level.isClientSide && entityLiving instanceof Player player) {
-            player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                data.applyImmunity(DURATION);
-                player.sendSystemMessage(Component.translatable("cyberware.message.suppressant_applied").withStyle(net.minecraft.ChatFormatting.GREEN));
-            });
+            CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            data.applyImmunity(DURATION);
+            player.sendSystemMessage(Component.translatable("cyberware.message.suppressant_applied").withStyle(ChatFormatting.GREEN));
             player.removeEffect(MobEffects.CONFUSION);
             player.removeEffect(MobEffects.DIG_SLOWDOWN);
             player.removeEffect(MobEffects.WEAKNESS);
@@ -40,7 +37,7 @@ public class NeuropozyneItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        return net.minecraft.world.item.ItemUtils.startUsingInstantly(level, player, hand);
+        return ItemUtils.startUsingInstantly(level, player, hand);
     }
 
     @Override
@@ -49,13 +46,13 @@ public class NeuropozyneItem extends Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 32;
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
         pTooltipComponents.add(Component.translatable("cyberware.item.neuropozyne.desc").withStyle(ChatFormatting.GRAY));
     }
 }

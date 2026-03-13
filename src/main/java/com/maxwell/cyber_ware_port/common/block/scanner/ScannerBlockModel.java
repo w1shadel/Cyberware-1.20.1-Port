@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class ScannerBlockModel extends Model {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "scanner_block"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "scanner_block"), "main");
     private final ModelPart root;
     private final ModelPart scanner;
     private final ModelPart scanner_part;
@@ -46,9 +46,9 @@ public class ScannerBlockModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        scanner.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int i3) {
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        scanner.render(poseStack, vertexConsumer, packedLight, packedOverlay);
 
     }
 

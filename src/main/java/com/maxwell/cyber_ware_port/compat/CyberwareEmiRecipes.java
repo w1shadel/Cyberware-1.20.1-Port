@@ -21,8 +21,7 @@ import java.util.List;
 
 @SuppressWarnings("removal")
 public class CyberwareEmiRecipes {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID,
-            "textures/gui/engineering.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
     private static final EmiTexture BACKGROUND = new EmiTexture(TEXTURE, 0, 0, 176, 80);
 
     public static class Assembly implements EmiRecipe {

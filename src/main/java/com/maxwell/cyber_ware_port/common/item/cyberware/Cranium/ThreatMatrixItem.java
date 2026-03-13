@@ -1,15 +1,17 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Cranium;
+package com.maxwell.cyber_ware_port.common.item.cyberware.cranium;
+
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 public class ThreatMatrixItem extends CyberwareItem {
     public ThreatMatrixItem() {
@@ -25,24 +27,19 @@ public class ThreatMatrixItem extends CyberwareItem {
     }
 
     @Override
-    public void onLivingAttack(LivingAttackEvent event, ItemStack stack, LivingEntity wearer) {
+    public void onLivingIncomingDamage(LivingIncomingDamageEvent event, ItemStack stack, LivingEntity wearer) {
         if (!(wearer instanceof Player player)) return;
-        if (event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) ||
-                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE) ||
-                event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {
+        if (event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) ||
+                event.getSource().is(DamageTypeTags.IS_FIRE) ||
+                event.getSource().is(DamageTypeTags.IS_FALL)) {
             return;
         }
         boolean isLightlyArmored = player.getItemBySlot(EquipmentSlot.HEAD).isEmpty() &&
                 player.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
-        if (isLightlyArmored) {
-            if (player.getRandom().nextFloat() < 0.3f) {
-                player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                    if (tryConsumeEventEnergy(data, stack)) {
-                        event.setCanceled(true);
-                        player.level().playSound(null, player.blockPosition(),
-                                SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 2.0f);
-                    }
-                });
+        if (isLightlyArmored && player.getRandom().nextFloat() < 0.3f) {
+            if (tryConsumeEventEnergy(player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get()), stack)) {
+                event.setCanceled(true);
+                player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 2.0f);
             }
         }
     }

@@ -1,81 +1,60 @@
 package com.maxwell.cyber_ware_port.common.network;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record ToggleCyberwarePacket(int slotId) implements CustomPacketPayload {
+    public static final Type<ToggleCyberwarePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "toggle_cyberware"));
 
-public class ToggleCyberwarePacket {
-    private final int slotId;
+    public static final StreamCodec<FriendlyByteBuf, ToggleCyberwarePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ToggleCyberwarePacket::slotId,
+            ToggleCyberwarePacket::new
+    );
 
-    public ToggleCyberwarePacket(int slotId) {
-        this.slotId = slotId;
-
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public ToggleCyberwarePacket(FriendlyByteBuf buf) {
-        this.slotId = buf.readInt();
-
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(slotId);
-
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
-            if (player != null) {
-                player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                    ItemStack stack = data.getInstalledCyberware().getStackInSlot(slotId);
-                    ICyberware cw = CyberwareAPI.getCyberware(stack);
-                    if (!stack.isEmpty() && cw != null) {
-                        if (cw.canToggle(stack)) {
-                            // Exclusive activation check
-                            if (!cw.isActive(stack)) { // If we are trying to turn it ON
-                                for (int i = 0; i < data.getInstalledCyberware().getSlots(); i++) {
-                                    if (i == slotId)
-                                        continue;
-                                    ItemStack other = data.getInstalledCyberware().getStackInSlot(i);
-                                    ICyberware otherCw = CyberwareAPI.getCyberware(other);
-                                    if (!other.isEmpty() && otherCw != null && otherCw.isActive(other)) {
-                                        boolean conflict = false;
-                                        if (cw.getBodyPartType(
-                                                stack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE
-                                                && cw.getBodyPartType(stack) == otherCw.getBodyPartType(other)) {
-                                            conflict = true;
-                                        }
-                                        if (!conflict && (cw.isIncompatible(stack, other)
-                                                || otherCw.isIncompatible(other, stack))) {
-                                            conflict = true;
-                                        }
-                                        if (conflict) {
-                                            // Sending message to player about conflict
-                                            player.sendSystemMessage(net.minecraft.network.chat.Component
-                                                    .translatable("cyberware.message.conflict_active")
-                                                    .withStyle(net.minecraft.ChatFormatting.RED));
-                                            return;
-                                        }
-                                    }
+    public void handle(IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (ctx.player() instanceof ServerPlayer player) {
+                CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+                ItemStack stack = data.getInstalledCyberware().getStackInSlot(slotId);
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (!stack.isEmpty() && cw != null && cw.canToggle(stack)) {
+                    if (!cw.isActive(stack)) {
+                        for (int i = 0; i < data.getInstalledCyberware().getSlots(); i++) {
+                            if (i == slotId) continue;
+                            ItemStack other = data.getInstalledCyberware().getStackInSlot(i);
+                            ICyberware otherCw = CyberwareAPI.getCyberware(other);
+                            if (!other.isEmpty() && otherCw != null && otherCw.isActive(other)) {
+                                if ((cw.getBodyPartType(stack) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE && cw.getBodyPartType(stack) == otherCw.getBodyPartType(other))
+                                        || cw.isIncompatible(stack, other) || otherCw.isIncompatible(other, stack)) {
+                                    player.sendSystemMessage(Component.translatable("cyberware.message.conflict_active").withStyle(ChatFormatting.RED));
+                                    return;
                                 }
                             }
-                            cw.toggle(stack);
-                            data.recalculateCapacity(player);
-                            data.syncToClient(player);
                         }
                     }
-                });
-
+                    cw.toggle(stack);
+                    data.recalculateCapacity(player);
+                    data.syncToClient(player);
+                }
             }
         });
-        context.setPacketHandled(true);
-
     }
 }

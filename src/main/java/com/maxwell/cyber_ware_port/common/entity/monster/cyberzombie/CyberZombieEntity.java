@@ -3,18 +3,19 @@ package com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie;
 import com.maxwell.cyber_ware_port.common.entity.ICyberwareMob;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class CyberZombieEntity extends Zombie implements ICyberwareMob {
     public CyberZombieEntity(EntityType<? extends Zombie> type, Level level) {
         super(type, level);
-        this.setMaxUpStep(2.0F);
-
+        Objects.requireNonNull(this.getAttribute(Attributes.STEP_HEIGHT)).setBaseValue(2.0F);
     }
 
     @Override
@@ -27,7 +28,6 @@ public class CyberZombieEntity extends Zombie implements ICyberwareMob {
                 ModItems.REINFORCED_FIST.get(),
                 ModItems.DEPLOYABLE_WHEELS.get()
         );
-
     }
 
     @Override
@@ -37,12 +37,10 @@ public class CyberZombieEntity extends Zombie implements ICyberwareMob {
                 ModItems.LINEAR_ACTUATORS.get(),
                 ModItems.INTERNAL_DEFIBRILLATOR.get()
         );
-
     }
 
     @Override
     protected boolean isSunBurnTick() {
         return false;
-
     }
 }

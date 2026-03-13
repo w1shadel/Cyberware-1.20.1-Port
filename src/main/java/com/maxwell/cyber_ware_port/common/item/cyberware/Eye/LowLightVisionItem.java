@@ -1,5 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Eye;
-
+package com.maxwell.cyber_ware_port.common.item.cyberware.eye;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;

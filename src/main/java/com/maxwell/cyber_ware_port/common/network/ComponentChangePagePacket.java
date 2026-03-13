@@ -1,51 +1,38 @@
 package com.maxwell.cyber_ware_port.common.network;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.container.CyberwareWorkbenchMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record ComponentChangePagePacket(int direction, int targetPanel) implements CustomPacketPayload {
+    public static final Type<ComponentChangePagePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "component_change_page"));
 
-public class ComponentChangePagePacket {
-    private final int direction;
-    private final int targetPanel;
+    public static final StreamCodec<FriendlyByteBuf, ComponentChangePagePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ComponentChangePagePacket::direction,
+            ByteBufCodecs.VAR_INT, ComponentChangePagePacket::targetPanel,
+            ComponentChangePagePacket::new
+    );
 
-    public ComponentChangePagePacket(int direction, int targetPanel) {
-        this.direction = direction;
-        this.targetPanel = targetPanel;
-
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static ComponentChangePagePacket fromBytes(FriendlyByteBuf buf) {
-        int direction = buf.readInt();
-        int targetPanel = buf.readInt();
-        return new ComponentChangePagePacket(direction, targetPanel);
-
-    }
-
-    public static void handle(ComponentChangePagePacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null && player.containerMenu instanceof CyberwareWorkbenchMenu menu) {
-                switch (msg.targetPanel) {
-                    case 0:
-                        menu.changePage(msg.direction);
-                        break;
-                    case 1:
-                        menu.changeBlueprintPage(msg.direction);
-                        break;
-
+    public void handle(IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            if (ctx.player() instanceof ServerPlayer player && player.containerMenu instanceof CyberwareWorkbenchMenu menu) {
+                if (targetPanel == 0) {
+                    menu.changePage(direction);
+                } else if (targetPanel == 1) {
+                    menu.changeBlueprintPage(direction);
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
-
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(direction);
-        buf.writeInt(targetPanel);
-
     }
 }

@@ -16,11 +16,11 @@ import net.minecraft.world.item.crafting.RecipeManager;
 public class CyberwareEmiPlugin implements EmiPlugin {
     public static final EmiStack WORKBENCH = EmiStack.of(ModBlocks.CYBERWARE_WORKBENCH.get());
     public static final EmiRecipeCategory ASSEMBLY = new EmiRecipeCategory(
-            new ResourceLocation(CyberWare.MODID, "assembly"), WORKBENCH,
-            new EmiTexture(new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png"), 0, 0, 16, 16));
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "assembly"), WORKBENCH,
+            new EmiTexture(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png"), 0, 0, 16, 16));
     public static final EmiRecipeCategory ENGINEERING = new EmiRecipeCategory(
-            new ResourceLocation(CyberWare.MODID, "engineering"), WORKBENCH,
-            new EmiTexture(new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png"), 0, 0, 16, 16));
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "engineering"), WORKBENCH,
+            new EmiTexture(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png"), 0, 0, 16, 16));
 
     @Override
     public void register(EmiRegistry registry) {

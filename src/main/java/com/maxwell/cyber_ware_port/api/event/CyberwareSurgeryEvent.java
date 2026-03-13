@@ -3,8 +3,8 @@ package com.maxwell.cyber_ware_port.api.event;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Cancelable;
+import net.neoforged.bus.api.Event;
 
 public class CyberwareSurgeryEvent extends Event {
     private final LivingEntity patient;
@@ -31,12 +31,12 @@ public class CyberwareSurgeryEvent extends Event {
             super(patient, blockEntity);
         }
 
-        public void setDenialReason(Component reason) {
-            this.denialReason = reason;
-        }
-
         public Component getDenialReason() {
             return denialReason;
+        }
+
+        public void setDenialReason(Component reason) {
+            this.denialReason = reason;
         }
     }
 

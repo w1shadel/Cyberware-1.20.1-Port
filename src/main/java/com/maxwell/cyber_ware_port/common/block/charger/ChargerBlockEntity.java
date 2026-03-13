@@ -12,21 +12,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.energy.EnergyStorage;
+import net.neoforged.neoforge.capabilities.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ChargerBlockEntity extends BlockEntity {
-    private boolean isDrainMode = false;
     private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(1000000, 10000);
     private final LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> energyStorage);
+    private boolean isDrainMode = false;
 
     public ChargerBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CHARGER.get(), pPos, pBlockState);

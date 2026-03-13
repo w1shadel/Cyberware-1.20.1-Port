@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class ComponentBoxScreen extends AbstractContainerScreen<ComponentBoxMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/component_box_normal.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box_normal.png");
 
     public ComponentBoxScreen(ComponentBoxMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);

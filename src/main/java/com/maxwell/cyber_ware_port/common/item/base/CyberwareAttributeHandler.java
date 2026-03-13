@@ -2,13 +2,14 @@ package com.maxwell.cyber_ware_port.common.item.base;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class CyberwareAttributeHandler {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
@@ -27,9 +28,8 @@ public class CyberwareAttributeHandler {
 
     private static void updateAttributes(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                data.recalculateCapacity(serverPlayer);
-            });
+            CyberwareUserData data = serverPlayer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            data.recalculateCapacity(serverPlayer);
         }
     }
 }

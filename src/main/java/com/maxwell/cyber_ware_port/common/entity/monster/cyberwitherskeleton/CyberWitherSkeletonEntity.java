@@ -19,4 +19,5 @@ public class CyberWitherSkeletonEntity extends CyberSkeletonEntity implements IC
     protected boolean isSunBurnTick() {
         return false;
     }
+
 }

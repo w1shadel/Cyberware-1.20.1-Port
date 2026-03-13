@@ -18,7 +18,7 @@ import java.util.List;
 @SuppressWarnings("removal")
 public class ScannerScreen extends AbstractContainerScreen<ScannerMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/scanner_gui.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/scanner_gui.png");
     private static final int SAYING_COUNT = 74;
     private final List<Component> logLines = new ArrayList<>();
     private final RandomSource random = RandomSource.create();

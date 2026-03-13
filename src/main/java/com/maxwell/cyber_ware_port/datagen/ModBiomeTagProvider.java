@@ -9,24 +9,24 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class ModBiomeTagProvider extends BiomeTagsProvider {
     public static final ResourceKey<Biome> HAS_CYBER_LAB = ResourceKey.create(Registries.BIOME,
-            new ResourceLocation(CyberWare.MODID, "has_structure/cyber_lab"));
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "has_structure/cyber_lab"));
 
     public ModBiomeTagProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pProvider,
-            @Nullable ExistingFileHelper existingFileHelper) {
+                               @Nullable ExistingFileHelper existingFileHelper) {
         super(pOutput, pProvider, CyberWare.MODID, existingFileHelper);
     }
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(net.minecraft.tags.TagKey.create(Registries.BIOME,
-                new ResourceLocation(CyberWare.MODID, "has_structure/cyber_lab")))
+                        ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "has_structure/cyber_lab")))
                 .addTag(BiomeTags.IS_OVERWORLD)
                 .remove(BiomeTags.IS_OCEAN)
                 .remove(BiomeTags.IS_RIVER);

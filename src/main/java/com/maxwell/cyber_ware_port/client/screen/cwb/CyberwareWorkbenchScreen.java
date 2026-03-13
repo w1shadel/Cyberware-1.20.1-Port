@@ -34,9 +34,9 @@ import java.util.Optional;
 
 @SuppressWarnings("removal")
 public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareWorkbenchMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png");
-    private static final ResourceLocation COMPONENT_BOX_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/component_box.png");
-    private static final ResourceLocation BLUEPRINT_PANEL_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/blueprint_chest.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
+    private static final ResourceLocation COMPONENT_BOX_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box.png");
+    private static final ResourceLocation BLUEPRINT_PANEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest.png");
     private ItemStack cachedBlueprint = ItemStack.EMPTY;
     private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;
     private float slideProgress = 1.0f;

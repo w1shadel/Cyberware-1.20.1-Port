@@ -7,11 +7,9 @@ import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,13 +25,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,13 +48,13 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return switch (slot) {
                 case SLOT_PAPER -> stack.is(Items.PAPER);
-                case SLOT_INPUT -> CyberwareAPI.isCyberware(stack);
+                case SLOT_INPUT -> CyberwareAPI.getCyberware(stack) != null;
                 case SLOT_OUTPUT -> false;
                 default -> super.isItemValid(slot, stack);
             };
         }
-
     };
+
     private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
         @Override
         public void setStackInSlot(int slot, @NotNull ItemStack stack) {
@@ -79,23 +73,15 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty())
-                return stack;
-            if (slot == SLOT_PAPER && stack.is(Items.PAPER)) {
-                return itemHandler.insertItem(SLOT_PAPER, stack, simulate);
-            }
-            if (slot == SLOT_INPUT && stack.getItem() instanceof ICyberware) {
-                return itemHandler.insertItem(SLOT_INPUT, stack, simulate);
-            }
+            if (stack.isEmpty()) return stack;
+            if (slot == SLOT_PAPER && stack.is(Items.PAPER)) return itemHandler.insertItem(SLOT_PAPER, stack, simulate);
+            if (slot == SLOT_INPUT && CyberwareAPI.getCyberware(stack) != null) return itemHandler.insertItem(SLOT_INPUT, stack, simulate);
             return stack;
         }
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (slot == SLOT_OUTPUT) {
-                return itemHandler.extractItem(slot, amount, simulate);
-            }
-            return ItemStack.EMPTY;
+            return slot == SLOT_OUTPUT ? itemHandler.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override
@@ -108,8 +94,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             return itemHandler.isItemValid(slot, stack);
         }
     };
-    private LazyOptional<IItemHandler> lazyExposedHandler = LazyOptional.empty();
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+
     private int progress = 0;
     private boolean isWorking = false;
 
@@ -127,8 +112,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
 
             @Override
             public void set(int pIndex, int pValue) {
-                if (pIndex == 0)
-                    ScannerBlockEntity.this.progress = pValue;
+                if (pIndex == 0) ScannerBlockEntity.this.progress = pValue;
             }
 
             @Override
@@ -142,9 +126,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         if (pLevel.isClientSide()) {
             if (pEntity.isWorking) {
                 pEntity.progress++;
-                if (pEntity.progress >= MAX_PROGRESS) {
-                    pEntity.progress = 0;
-                }
+                if (pEntity.progress >= MAX_PROGRESS) pEntity.progress = 0;
             } else {
                 pEntity.progress = 0;
             }
@@ -157,15 +139,13 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
                 pEntity.syncToClient();
             }
             if (pLevel.getGameTime() % 20 == 0) {
-                pLevel.playSound(null, pPos, net.minecraft.sounds.SoundEvents.CONDUIT_AMBIENT,
-                        net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 1.2F);
-                pLevel.playSound(null, pPos, net.minecraft.sounds.SoundEvents.BEACON_AMBIENT,
-                        net.minecraft.sounds.SoundSource.BLOCKS, 0.5F, 1.5F);
+                pLevel.playSound(null, pPos, SoundEvents.CONDUIT_AMBIENT, SoundSource.BLOCKS, 0.8F, 1.2F);
+                pLevel.playSound(null, pPos, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.5F, 1.5F);
             }
             setChanged(pLevel, pPos, pState);
             if (pEntity.progress >= MAX_PROGRESS) {
                 pEntity.craftItem();
-                pLevel.playSound(null, pPos, SoundEvents.NOTE_BLOCK_CHIME.get(), SoundSource.BLOCKS, 1.0F, 1.2F);
+                pLevel.playSound(null, pPos, SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.BLOCKS, 1.0F, 1.2F);
                 pEntity.progress = 0;
                 if (!pEntity.hasRecipe()) {
                     pEntity.isWorking = false;
@@ -173,37 +153,12 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
                 }
             }
         } else {
-            pEntity.resetProgress();
+            pEntity.progress = 0;
             if (pEntity.isWorking) {
                 pEntity.isWorking = false;
                 pEntity.syncToClient();
             }
         }
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyExposedHandler = LazyOptional.of(() -> exposedHandler);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyExposedHandler.invalidate();
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (side == null) {
-                return lazyItemHandler.cast();
-            }
-            return lazyExposedHandler.cast();
-        }
-        return super.getCapability(cap, side);
     }
 
     private void syncToClient() {
@@ -224,24 +179,14 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         ItemStack paperStack = itemHandler.getStackInSlot(SLOT_PAPER);
         ItemStack inputStack = itemHandler.getStackInSlot(SLOT_INPUT);
         ItemStack outputStack = itemHandler.getStackInSlot(SLOT_OUTPUT);
-        boolean hasInput = paperStack.is(Items.PAPER) && inputStack.getItem() instanceof ICyberware;
-        if (!hasInput)
-            return false;
-        return outputStack.isEmpty();
-    }
-
-    private void resetProgress() {
-        this.progress = 0;
+        return paperStack.is(Items.PAPER) && CyberwareAPI.getCyberware(inputStack) != null && outputStack.isEmpty();
     }
 
     private void craftItem() {
-        if (!hasRecipe())
-            return;
+        if (!hasRecipe()) return;
         ItemStack inputStack = itemHandler.getStackInSlot(SLOT_INPUT);
         CyberwareEvents.Scan.Complete event = new CyberwareEvents.Scan.Complete(this, inputStack, 0.5f);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
-            return;
-        }
+        if (NeoForge.EVENT_BUS.post(event).isCanceled()) return;
         if (this.level.random.nextFloat() < event.getChance()) {
             ItemStack blueprint = BlueprintItem.createBlueprintFor(inputStack.getItem());
             itemHandler.setStackInSlot(SLOT_OUTPUT, blueprint);
@@ -253,7 +198,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("block.cyber_ware_port.scanner");
     }
 
@@ -264,17 +209,19 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
-        pTag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.saveAdditional(pTag, pRegistries);
+        pTag.put("inventory", itemHandler.serializeNBT(pRegistries));
         pTag.putInt("scanner.progress", progress);
         pTag.putBoolean("scanner.isWorking", isWorking);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(pTag, pRegistries);
+        if (pTag.contains("inventory")) {
+            itemHandler.deserializeNBT(pRegistries, pTag.getCompound("inventory"));
+        }
         progress = pTag.getInt("scanner.progress");
         isWorking = pTag.getBoolean("scanner.isWorking");
     }
@@ -287,21 +234,21 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 
-    @Nullable
     @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return saveWithoutMetadata(pRegistries);
     }
 
-    @Override
-    public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt) {
-        if (pkt.getTag() != null) {
-            this.load(pkt.getTag());
-        }
+    public ItemStackHandler getItemHandler() {
+        return itemHandler;
+    }
+
+    public IItemHandlerModifiable getExposedHandler() {
+        return exposedHandler;
     }
 }

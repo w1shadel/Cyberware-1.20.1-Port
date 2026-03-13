@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cyberwither;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -11,7 +12,7 @@ import net.minecraft.util.Mth;
 @SuppressWarnings("removal")
 public class CyberWitherArmorLayer extends EnergySwirlLayer<CyberWitherBoss, CyberWitherModel> {
     private static final ResourceLocation WITHER_ARMOR_LOCATION =
-            new ResourceLocation("textures/entity/wither/wither_armor.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID,"textures/entity/wither/wither_armor.png");
     private final CyberWitherModel model;
 
     public CyberWitherArmorLayer(RenderLayerParent<CyberWitherBoss, CyberWitherModel> pRenderer, EntityModelSet pModelSet) {

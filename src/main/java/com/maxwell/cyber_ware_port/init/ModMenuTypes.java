@@ -2,37 +2,39 @@ package com.maxwell.cyber_ware_port.init;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.container.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.network.IContainerFactory;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModMenuTypes {
+    // 1.21.1ではRegistries.MENUを使用
     public static final DeferredRegister<MenuType<?>> MENUS =
-            DeferredRegister.create(ForgeRegistries.MENU_TYPES, CyberWare.MODID);
+            DeferredRegister.create(Registries.MENU, CyberWare.MODID);
 
-    private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(IContainerFactory<T> factory, String name) {
-        return MENUS.register(name, () -> IForgeMenuType.create(factory));
+    // ヘルパーメソッド: IMenuTypeExtension.create を使用してネットワーク対応のMenuTypeを作成
+    private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> registerMenuType(String name, IContainerFactory<T> factory) {
+        return MENUS.register(name, () -> IMenuTypeExtension.create(factory));
     }
 
+    // メインクラスから呼ばれる登録メソッド
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
-    }
+    }    // 各メニューの登録
+    public static final DeferredHolder<MenuType<?>, MenuType<RobosurgeonMenu>> ROBO_SURGEON_MENU =
+            registerMenuType("robosurgeon_menu", RobosurgeonMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<CyberwareWorkbenchMenu>> CYBERWARE_WORKBENCH_MENU =
+            registerMenuType("cyberware_workbench_menu", CyberwareWorkbenchMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<ScannerMenu>> SCANNER_MENU =
+            registerMenuType("scanner_menu", ScannerMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<ComponentBoxMenu>> COMPONENT_BOX_MENU =
+            registerMenuType("component_menu", ComponentBoxMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<BlueprintChestMenu>> BLUEPRINT_CHEST_MENU =
+            registerMenuType("blueprint_chest_menu", BlueprintChestMenu::new);
 
-    public static final RegistryObject<MenuType<RobosurgeonMenu>> ROBO_SURGEON_MENU =
-            MENUS.register("robosurgeon_menu",
-                    () -> IForgeMenuType.create(RobosurgeonMenu::new));
-    public static final RegistryObject<MenuType<CyberwareWorkbenchMenu>> CYBERWARE_WORKBENCH_MENU =
-            registerMenuType(CyberwareWorkbenchMenu::new, "cyberware_workbench_menu");
-    public static final RegistryObject<MenuType<ScannerMenu>> SCANNER_MENU =
-            registerMenuType(ScannerMenu::new, "scanner_menu");
-    public static final RegistryObject<MenuType<ComponentBoxMenu>> COMPONENT_BOX_MENU =
-            registerMenuType(ComponentBoxMenu::new, "component_menu");
-    public static final RegistryObject<MenuType<BlueprintChestMenu>> BLUEPRINT_CHEST_MENU =
-            registerMenuType(BlueprintChestMenu::new, "blueprint_chest_menu");
 
 }

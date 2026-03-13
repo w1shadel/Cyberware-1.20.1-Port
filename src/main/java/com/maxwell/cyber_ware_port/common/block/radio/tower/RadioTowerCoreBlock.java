@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
+    public static final Map<ResourceKey<Level>, Long> LAST_TOWER_ACTIVE_TIME = new ConcurrentHashMap<>();
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),
             Block.box(3.5, 8, 7.2, 12.5, 14, 8.7),
@@ -55,7 +56,11 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
             Block.box(8.7, 7, 2.9, 10.7, 15, 4.9),
             Block.box(5.2, 7, 10.9, 7.2, 15, 12.9),
             Block.box(5.2, 7, 2.9, 7.2, 15, 4.9));
-    public static final Map<ResourceKey<Level>, Long> LAST_TOWER_ACTIVE_TIME = new ConcurrentHashMap<>();
+
+    public RadioTowerCoreBlock(Properties pProperties) {
+        super(pProperties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FORMED, false).setValue(FACING, Direction.NORTH));
+    }
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
@@ -69,13 +74,8 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
 
     @Override
     public boolean isLadder(BlockState state, net.minecraft.world.level.LevelReader level, BlockPos pos,
-            net.minecraft.world.entity.LivingEntity entity) {
+                            net.minecraft.world.entity.LivingEntity entity) {
         return true;
-    }
-
-    public RadioTowerCoreBlock(Properties pProperties) {
-        super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FORMED, false).setValue(FACING, Direction.NORTH));
     }
 
     @Nullable
@@ -138,7 +138,7 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
     @javax.annotation.Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
-            BlockEntityType<T> pBlockEntityType) {
+                                                                  BlockEntityType<T> pBlockEntityType) {
         if (pLevel.isClientSide)
             return null;
         if (pBlockEntityType == ModBlockEntities.RADIO_TOWER_CORE.get()) {

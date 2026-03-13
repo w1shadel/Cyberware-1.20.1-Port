@@ -25,6 +25,6 @@ public class ModStructurePools {
     }
 
     private static ResourceKey<StructureTemplatePool> createKey(String name) {
-        return ResourceKey.create(Registries.TEMPLATE_POOL, new ResourceLocation(CyberWare.MODID, name));
+        return ResourceKey.create(Registries.TEMPLATE_POOL, ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, name));
     }
 }

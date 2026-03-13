@@ -1,16 +1,18 @@
 package com.maxwell.cyber_ware_port.common.item.base;
 
 import com.google.common.collect.Multimap;
+import com.maxwell.cyber_ware_port.init.ModDataComponents;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.Collections;
 import java.util.Set;
@@ -21,9 +23,6 @@ public interface ICyberware {
     int getSlot(ItemStack stack);
 
     boolean isPristine(ItemStack stack);
-
-    default void onLivingHurt(LivingHurtEvent event, ItemStack stack, LivingEntity attacker) {
-    }
 
     void setPristine(ItemStack stack, boolean isPristine);
 
@@ -65,7 +64,7 @@ public interface ICyberware {
     }
 
     default boolean isActive(ItemStack stack) {
-        return !stack.hasTag() || !stack.getTag().contains("active") || stack.getTag().getBoolean("active");
+        return stack.getOrDefault(ModDataComponents.ACTIVE.get(), true);
     }
 
     default int getQuality(ItemStack stack) {
@@ -73,21 +72,21 @@ public interface ICyberware {
     }
 
     default void toggle(ItemStack stack) {
-        boolean currentState = isActive(stack);
-        stack.getOrCreateTag().putBoolean("active", !currentState);
+        stack.set(ModDataComponents.ACTIVE.get(), !isActive(stack));
     }
 
-    default Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
-        return com.google.common.collect.ArrayListMultimap.create();
-    }
+    Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack);
 
-    default void onPlayerTick(TickEvent.PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    default void onPlayerTick(PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
     }
 
     default void onItemUseTick(LivingEntityUseItemEvent.Tick event, ItemStack stack, LivingEntity wearer) {
     }
 
-    default void onLivingAttack(LivingAttackEvent event, ItemStack stack, LivingEntity wearer) {
+    default void onLivingIncomingDamage(LivingIncomingDamageEvent event, ItemStack stack, LivingEntity wearer) {
+    }
+
+    default void onLivingDamagePre(LivingDamageEvent.Pre event, ItemStack stack, LivingEntity wearer) {
     }
 
     default void onEntityTeleport(EntityTeleportEvent event, ItemStack stack, LivingEntity wearer) {

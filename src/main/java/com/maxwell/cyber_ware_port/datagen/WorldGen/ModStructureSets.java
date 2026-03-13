@@ -26,6 +26,6 @@ public class ModStructureSets {
     }
 
     private static ResourceKey<StructureSet> createKey(String name) {
-        return ResourceKey.create(Registries.STRUCTURE_SET, new ResourceLocation(CyberWare.MODID, name));
+        return ResourceKey.create(Registries.STRUCTURE_SET, ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, name));
     }
 }

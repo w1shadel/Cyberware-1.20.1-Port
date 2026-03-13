@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 @SuppressWarnings("removal")
 public class CyberSkullItemRenderer extends BlockEntityWithoutLevelRenderer {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
     private final SkullModel model;
 
     public CyberSkullItemRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {

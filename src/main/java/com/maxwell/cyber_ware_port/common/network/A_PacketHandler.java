@@ -1,73 +1,30 @@
 package com.maxwell.cyber_ware_port.common.network;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@SuppressWarnings("removal")
 public class A_PacketHandler {
     private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(CyberWare.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
-    private static int id = 0;
 
-    private static int id() {
-        return id++;
-
+    public static void register(IEventBus eventBus) {
+        eventBus.addListener(A_PacketHandler::onRegisterPayloads);
     }
 
-    public static void register() {
-        INSTANCE.messageBuilder(SyncCyberwareDataPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(SyncCyberwareDataPacket::fromBytes)
-                .encoder(SyncCyberwareDataPacket::toBytes)
-                .consumerMainThread(SyncCyberwareDataPacket::handle)
-                .add();
-        INSTANCE.messageBuilder(StartWorkbenchCraftingPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(StartWorkbenchCraftingPacket::new)
-                .encoder(StartWorkbenchCraftingPacket::toBytes)
-                .consumerMainThread(StartWorkbenchCraftingPacket::handle)
-                .add();
-        INSTANCE.messageBuilder(ToggleCyberwarePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ToggleCyberwarePacket::new)
-                .encoder(ToggleCyberwarePacket::toBytes)
-                .consumerMainThread(ToggleCyberwarePacket::handle)
-                .add();
-        INSTANCE.messageBuilder(SurgeryGhostTogglePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(SurgeryGhostTogglePacket::new)
-                .encoder(SurgeryGhostTogglePacket::toBytes)
-                .consumerMainThread(SurgeryGhostTogglePacket::handle)
-                .add();
-        INSTANCE.messageBuilder(SyncSurgeryProgressPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(SyncSurgeryProgressPacket::fromBytes)
-                .encoder(SyncSurgeryProgressPacket::toBytes)
-                .consumerMainThread(SyncSurgeryProgressPacket::handle)
-                .add();
-        INSTANCE.messageBuilder(OpenPortableCraftingPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(OpenPortableCraftingPacket::fromBytes)
-                .encoder(OpenPortableCraftingPacket::toBytes)
-                .consumerMainThread(OpenPortableCraftingPacket::handle)
-                .add();
-        INSTANCE.messageBuilder(DoubleJumpPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(DoubleJumpPacket::fromBytes)
-                .encoder(DoubleJumpPacket::toBytes)
-                .consumerMainThread(DoubleJumpPacket::handle)
-                .add();
-        INSTANCE.messageBuilder(ComponentChangePagePacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ComponentChangePagePacket::fromBytes)
-                .encoder(ComponentChangePagePacket::toBytes)
-                .consumerMainThread(ComponentChangePagePacket::handle)
-                .add();
-        INSTANCE.messageBuilder(ComponentToggleExtendTabPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ComponentToggleExtendTabPacket::fromBytes)
-                .encoder(ComponentToggleExtendTabPacket::toBytes)
-                .consumerMainThread(ComponentToggleExtendTabPacket::handle)
-                .add();
+    private static void onRegisterPayloads(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
 
+        registrar.playToClient(SyncCyberwareDataPacket.TYPE, SyncCyberwareDataPacket.STREAM_CODEC, SyncCyberwareDataPacket::handle);
+        registrar.playToServer(StartWorkbenchCraftingPacket.TYPE, StartWorkbenchCraftingPacket.STREAM_CODEC, StartWorkbenchCraftingPacket::handle);
+        registrar.playToServer(ToggleCyberwarePacket.TYPE, ToggleCyberwarePacket.STREAM_CODEC, ToggleCyberwarePacket::handle);
+        registrar.playToServer(SurgeryGhostTogglePacket.TYPE, SurgeryGhostTogglePacket.STREAM_CODEC, SurgeryGhostTogglePacket::handle);
+        registrar.playToClient(SyncSurgeryProgressPacket.TYPE, SyncSurgeryProgressPacket.STREAM_CODEC, SyncSurgeryProgressPacket::handle);
+        registrar.playToServer(OpenPortableCraftingPacket.TYPE, OpenPortableCraftingPacket.STREAM_CODEC, OpenPortableCraftingPacket::handle);
+        registrar.playToServer(DoubleJumpPacket.TYPE, DoubleJumpPacket.STREAM_CODEC, DoubleJumpPacket::handle);
+        registrar.playToServer(ComponentChangePagePacket.TYPE, ComponentChangePagePacket.STREAM_CODEC, ComponentChangePagePacket::handle);
+        registrar.playToServer(ComponentToggleExtendTabPacket.TYPE, ComponentToggleExtendTabPacket.STREAM_CODEC, ComponentToggleExtendTabPacket::handle);
     }
 }

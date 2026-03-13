@@ -1,12 +1,12 @@
 package com.maxwell.cyber_ware_port.common.util;
 
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
+import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -19,20 +19,16 @@ public class CyberwareBodyStatus {
     public CyberwareBodyStatus(ItemStackHandler handler) {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            if (stack.isEmpty())
+            if (stack.isEmpty()) {
                 continue;
-
+            }
             ICyberware cw = CyberwareAPI.getCyberware(stack);
-
-            // Collect BodyPartType
             if (cw != null) {
                 BodyPartType type = cw.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
                     presentParts.add(type);
                 }
             }
-
-            // Count Limbs
             if (isArm(stack, cw)) {
                 armCount++;
             } else if (isLeg(stack, cw)) {
@@ -42,7 +38,7 @@ public class CyberwareBodyStatus {
     }
 
     private boolean isArm(ItemStack stack, ICyberware cw) {
-        if (stack.getItem() == ModItems.HUMAN_LEFT_ARM.get() || stack.getItem() == ModItems.HUMAN_RIGHT_ARM.get()) {
+        if (stack.is(ModItems.HUMAN_LEFT_ARM.get()) || stack.is(ModItems.HUMAN_RIGHT_ARM.get())) {
             return true;
         }
         if (cw != null) {
@@ -53,7 +49,7 @@ public class CyberwareBodyStatus {
     }
 
     private boolean isLeg(ItemStack stack, ICyberware cw) {
-        if (stack.getItem() == ModItems.HUMAN_LEFT_LEG.get() || stack.getItem() == ModItems.HUMAN_RIGHT_LEG.get()) {
+        if (stack.is(ModItems.HUMAN_LEFT_LEG.get()) || stack.is(ModItems.HUMAN_RIGHT_LEG.get())) {
             return true;
         }
         if (cw != null) {

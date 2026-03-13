@@ -10,10 +10,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.capabilities.item.IItemHandler;
+import net.neoforged.neoforge.capabilities.item.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.item.SlotItemHandler;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
 
 public class ComponentBoxMenu extends AbstractContainerMenu {
     private final ItemStack lockedStack;

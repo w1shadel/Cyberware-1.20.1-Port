@@ -1,58 +1,40 @@
 package com.maxwell.cyber_ware_port.common.block.cwb.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("removal")
-public class AssemblyRecipe implements Recipe<SimpleContainer> {
-    private final ResourceLocation id;
+public class AssemblyRecipe implements Recipe<RecipeInput> {
     private final List<SizedIngredient> inputs;
     private final ItemStack output;
 
-    public AssemblyRecipe(ResourceLocation id, List<SizedIngredient> inputs, ItemStack output) {
-        this.id = id;
+    public AssemblyRecipe(List<SizedIngredient> inputs, ItemStack output) {
         this.inputs = inputs;
         this.output = output;
-
     }
 
     public List<SizedIngredient> getInputs() {
         return inputs;
-
     }
 
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
+    public boolean matches(RecipeInput pInput, Level pLevel) {
         return true;
-
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(RecipeInput pInput, HolderLookup.Provider pRegistries) {
         return output.copy();
-
-    }
-
-    @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
-        return output;
     }
 
     @Override
@@ -61,8 +43,8 @@ public class AssemblyRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public ResourceLocation getId() {
-        return id;
+    public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
+        return output;
     }
 
     @Override
@@ -76,65 +58,40 @@ public class AssemblyRecipe implements Recipe<SimpleContainer> {
     }
 
     public record SizedIngredient(Ingredient ingredient, int count) {
+        public static final MapCodec<SizedIngredient> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Ingredient.CODEC.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
+                Codec.INT.optionalFieldOf("count", 1).forGetter(SizedIngredient::count)
+        ).apply(inst, SizedIngredient::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, SizedIngredient> STREAM_CODEC = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, SizedIngredient::ingredient,
+                ByteBufCodecs.VAR_INT, SizedIngredient::count,
+                SizedIngredient::new
+        );
     }
 
-    @SuppressWarnings("removal")
     public static class Serializer implements RecipeSerializer<AssemblyRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
+        private static final MapCodec<AssemblyRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                SizedIngredient.CODEC.codec().listOf().fieldOf("inputs").forGetter(r -> r.inputs),
+                ItemStack.CODEC.fieldOf("output").forGetter(r -> r.output)
+        ).apply(inst, AssemblyRecipe::new));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> STREAM_CODEC = StreamCodec.composite(
+                SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.inputs,
+                ItemStack.STREAM_CODEC, r -> r.output,
+                AssemblyRecipe::new
+        );
+
         @Override
-        public AssemblyRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-            List<SizedIngredient> inputs = new ArrayList<>();
-            JsonArray inputArray = GsonHelper.getAsJsonArray(pJson, "inputs");
-            for (int i = 0;
-                 i < inputArray.size();
-                 i++) {
-                JsonObject entry = inputArray.get(i).getAsJsonObject();
-                Ingredient ing;
-                if (entry.has("ingredient")) {
-                    ing = Ingredient.fromJson(entry.get("ingredient"));
-
-                } else {
-                    ing = Ingredient.fromJson(entry);
-
-                }
-                int count = GsonHelper.getAsInt(entry, "count", 1);
-                inputs.add(new SizedIngredient(ing, count));
-
-            }
-            ResourceLocation outputId = new ResourceLocation(GsonHelper.getAsString(pJson, "output"));
-            ItemStack outputStack = new ItemStack(ForgeRegistries.ITEMS.getValue(outputId));
-            return new AssemblyRecipe(pRecipeId, inputs, outputStack);
-
+        public MapCodec<AssemblyRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable AssemblyRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            int size = pBuffer.readInt();
-            List<SizedIngredient> inputs = new ArrayList<>();
-            for (int i = 0;
-                 i < size;
-                 i++) {
-                Ingredient ing = Ingredient.fromNetwork(pBuffer);
-                int count = pBuffer.readInt();
-                inputs.add(new SizedIngredient(ing, count));
-
-            }
-            ItemStack output = pBuffer.readItem();
-            return new AssemblyRecipe(pRecipeId, inputs, output);
-
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, AssemblyRecipe pRecipe) {
-            pBuffer.writeInt(pRecipe.inputs.size());
-            for (SizedIngredient entry : pRecipe.inputs) {
-                entry.ingredient.toNetwork(pBuffer);
-                pBuffer.writeInt(entry.count);
-
-            }
-            pBuffer.writeItem(pRecipe.output);
-
+        public StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

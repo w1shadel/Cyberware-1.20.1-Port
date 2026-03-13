@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.api.event;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 public class CyberwareToleranceEvent extends Event {
     private final LivingEntity entity;

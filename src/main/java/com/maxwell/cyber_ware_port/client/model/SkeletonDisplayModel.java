@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class SkeletonDisplayModel extends Model {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
-            new ResourceLocation(CyberWare.MODID, "skeleton_display"), "main");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "skeleton_display"), "main");
     public final ModelPart root;
     public final ModelPart head;
     public final ModelPart hat;
@@ -65,14 +65,12 @@ public class SkeletonDisplayModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight,
-                               int packedOverlay,
-                               float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int alpha) {
         poseStack.pushPose();
         poseStack.translate(0.0D, 1.5D, 0.0D);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, alpha);
         poseStack.popPose();
     }
 }

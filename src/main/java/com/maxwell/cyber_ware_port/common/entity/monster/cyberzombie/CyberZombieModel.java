@@ -15,7 +15,7 @@ import net.minecraft.util.Mth;
 @SuppressWarnings("removal")
 public class CyberZombieModel extends HierarchicalModel<CyberZombieEntity> {
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_zombie"), "main");
+            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_zombie"), "main");
     private final ModelPart waist;
     private final ModelPart body;
     private final ModelPart head;
@@ -82,13 +82,6 @@ public class CyberZombieModel extends HierarchicalModel<CyberZombieEntity> {
         this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
         animateZombieArms(this.leftArm, this.rightArm, entity.isAggressive(), this.attackTime, ageInTicks);
     }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        waist.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-
-    }
-
     @Override
     public ModelPart root() {
         return waist;

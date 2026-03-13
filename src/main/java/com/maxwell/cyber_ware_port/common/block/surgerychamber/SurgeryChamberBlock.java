@@ -1,9 +1,9 @@
 package com.maxwell.cyber_ware_port.common.block.surgerychamber;
 
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +32,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements EntityBlock {
+    public static final MapCodec<SurgeryChamberBlock> CODEC = simpleCodec(SurgeryChamberBlock::new);
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
     private static final Map<Direction, VoxelShape> LOWER_SHAPES_OPEN = new EnumMap<>(Direction.class);
@@ -56,7 +57,6 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
                 UPPER_SHAPES_OPEN.put(direction, rotateShape(baseUpperOpen, direction));
                 LOWER_SHAPES_CLOSED.put(direction, rotateShape(baseLowerClosed, direction));
                 UPPER_SHAPES_CLOSED.put(direction, rotateShape(baseUpperClosed, direction));
-
             }
         }
     }
@@ -67,162 +67,119 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
                 .setValue(FACING, Direction.NORTH)
                 .setValue(HALF, DoubleBlockHalf.LOWER)
                 .setValue(OPEN, true));
-
     }
 
-    protected static void preventCreativeDropFromBottomPart(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
-        DoubleBlockHalf doubleblockhalf = pState.getValue(HALF);
-        if (doubleblockhalf == DoubleBlockHalf.UPPER) {
-            BlockPos blockpos = pPos.below();
-            BlockState blockstate = pLevel.getBlockState(blockpos);
-            if (blockstate.is(pState.getBlock()) && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER) {
-                pLevel.setBlock(blockpos, Blocks.AIR.defaultBlockState(), 35);
-                pLevel.levelEvent(pPlayer, 2001, blockpos, Block.getId(blockstate));
-
-            }
-        }
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
     }
 
     private static VoxelShape rotateShape(VoxelShape shape, Direction toDir) {
         if (toDir == Direction.NORTH) return shape;
         VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
-        int times = 0;
-        if (toDir == Direction.EAST) times = 1;
-        else if (toDir == Direction.SOUTH) times = 2;
-        else if (toDir == Direction.WEST) times = 3;
-        for (int i = 0;
-             i < times;
-             i++) {
-            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> {
-                double newMinX = 1 - maxZ;
-                double newMaxX = 1 - minZ;
-                double newMinZ = minX;
-                double newMaxZ = maxX;
-                buffer[1] = Shapes.or(buffer[1], Shapes.box(newMinX, minY, newMinZ, newMaxX, maxY, newMaxZ));
-
+        int times = switch (toDir) {
+            case EAST -> 1;
+            case SOUTH -> 2;
+            case WEST -> 3;
+            default -> 0;
+        };
+        for (int i = 0; i < times; i++) {
+            VoxelShape current = buffer[0];
+            VoxelShape rotated = Shapes.empty();
+            current.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> {
+                buffer[1] = Shapes.or(buffer[1], Shapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX));
             });
             buffer[0] = buffer[1];
             buffer[1] = Shapes.empty();
-
         }
         return buffer[0];
-
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING, HALF, OPEN);
-
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        if (pState.getValue(HALF) == DoubleBlockHalf.LOWER) {
-            return new SurgeryChamberBlockEntity(pPos, pState);
-
-        }
-        return null;
-
-    }
-
-    @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (pLevel.isClientSide) {
-            return InteractionResult.SUCCESS;
-
-        }
-        if (pHand == InteractionHand.MAIN_HAND) {
-            BlockPos targetPos = pState.getValue(HALF) == DoubleBlockHalf.UPPER ? pPos.below() : pPos;
-            BlockEntity blockEntity = pLevel.getBlockEntity(targetPos);
-            if (blockEntity instanceof SurgeryChamberBlockEntity chamberEntity) {
-                chamberEntity.toggleDoor();
-                return InteractionResult.CONSUME;
-
-            }
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
+        if (pLevel.isClientSide) return InteractionResult.SUCCESS;
+        BlockPos targetPos = pState.getValue(HALF) == DoubleBlockHalf.UPPER ? pPos.below() : pPos;
+        BlockEntity blockEntity = pLevel.getBlockEntity(targetPos);
+        if (blockEntity instanceof SurgeryChamberBlockEntity chamberEntity) {
+            chamberEntity.toggleDoor();
+            return InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;
-
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
-
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        BlockPos blockpos = pContext.getClickedPos();
-        Level level = pContext.getLevel();
-        if (blockpos.getY() < level.getMaxBuildHeight() - 1
-                && level.getBlockState(blockpos.above()).canBeReplaced(pContext)) {
-            return this.defaultBlockState()
-                    .setValue(FACING, pContext.getHorizontalDirection().getOpposite())
-                    .setValue(HALF, DoubleBlockHalf.LOWER)
-                    .setValue(OPEN, true);
-
-        }
-        return null;
-
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (pBlockEntityType == ModBlockEntities.SURGERY_CHAMBER.get()) {
-            return (lvl, pos, st, be) -> SurgeryChamberBlockEntity.tick(lvl, pos, st, (SurgeryChamberBlockEntity) be);
-
-        }
-        return null;
-
-    }
-
-    @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-        pLevel.setBlock(pPos.above(), pState.setValue(HALF, DoubleBlockHalf.UPPER).setValue(OPEN, true), 3);
-
-    }
-
-    @Override
-    public void playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
-        if (!pLevel.isClientSide) {
-            if (pPlayer.isCreative()) {
-                preventCreativeDropFromBottomPart(pLevel, pPos, pState, pPlayer);
+    public BlockState playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
+        if (!pLevel.isClientSide && pPlayer.isCreative()) {
+            DoubleBlockHalf half = pState.getValue(HALF);
+            if (half == DoubleBlockHalf.UPPER) {
+                BlockPos blockpos = pPos.below();
+                BlockState blockstate = pLevel.getBlockState(blockpos);
+                if (blockstate.is(pState.getBlock()) && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER) {
+                    pLevel.setBlock(blockpos, Blocks.AIR.defaultBlockState(), 35);
+                    pLevel.levelEvent(pPlayer, 2001, blockpos, Block.getId(blockstate));
+                }
             }
         }
         super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
+        return pState;
     }
 
     @Override
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
         DoubleBlockHalf half = pState.getValue(HALF);
         if (pFacing.getAxis() == Direction.Axis.Y && half == DoubleBlockHalf.LOWER == (pFacing == Direction.UP)) {
-            if (!pFacingState.is(this)) {
-                return Blocks.AIR.defaultBlockState();
-
-            }
+            return pFacingState.is(this) ? pState : Blocks.AIR.defaultBlockState();
         }
         if (half == DoubleBlockHalf.LOWER && pFacing == Direction.DOWN && !pState.canSurvive(pLevel, pCurrentPos)) {
             return Blocks.AIR.defaultBlockState();
-
         }
         return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
-
     }
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         Direction facing = pState.getValue(FACING);
         DoubleBlockHalf half = pState.getValue(HALF);
-        boolean isOpen = pState.getValue(OPEN);
-        if (isOpen) {
-            return half == DoubleBlockHalf.LOWER ? LOWER_SHAPES_OPEN.getOrDefault(facing, Shapes.block()) : UPPER_SHAPES_OPEN.getOrDefault(facing, Shapes.block());
+        return pState.getValue(OPEN) ?
+                (half == DoubleBlockHalf.LOWER ? LOWER_SHAPES_OPEN.get(facing) : UPPER_SHAPES_OPEN.get(facing)) :
+                (half == DoubleBlockHalf.LOWER ? LOWER_SHAPES_CLOSED.get(facing) : UPPER_SHAPES_CLOSED.get(facing));
+    }
 
-        } else {
-            return half == DoubleBlockHalf.LOWER ? LOWER_SHAPES_CLOSED.getOrDefault(facing, Shapes.block()) : UPPER_SHAPES_CLOSED.getOrDefault(facing, Shapes.block());
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(FACING, HALF, OPEN);
+    }
 
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return pState.getValue(HALF) == DoubleBlockHalf.LOWER ? new SurgeryChamberBlockEntity(pPos, pState) : null;
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState pState) {
+        return RenderShape.MODEL;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        BlockPos pos = pContext.getClickedPos();
+        Level level = pContext.getLevel();
+        if (pos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(pos.above()).canBeReplaced(pContext)) {
+            return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
         }
+        return null;
+    }
+
+    @Override
+    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
+        pLevel.setBlock(pPos.above(), pState.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        return pBlockEntityType == ModBlockEntities.SURGERY_CHAMBER.get() ? (lvl, pos, st, be) -> SurgeryChamberBlockEntity.tick(lvl, pos, st, (SurgeryChamberBlockEntity) be) : null;
     }
 }

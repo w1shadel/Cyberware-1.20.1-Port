@@ -27,11 +27,6 @@ public class CyberwareJeiPlugin implements IModPlugin {
             RecipeType.create(CyberWare.MODID, "engineering", EngineeringRecipe.class);
     private static mezz.jei.api.runtime.IJeiRuntime jeiRuntime;
 
-    @Override
-    public void onRuntimeAvailable(mezz.jei.api.runtime.IJeiRuntime runtime) {
-        jeiRuntime = runtime;
-    }
-
     public static void showRecipeCategory(RecipeType<?> type) {
         if (jeiRuntime != null) {
             jeiRuntime.getRecipesGui().showTypes(List.of(type));
@@ -39,8 +34,13 @@ public class CyberwareJeiPlugin implements IModPlugin {
     }
 
     @Override
+    public void onRuntimeAvailable(mezz.jei.api.runtime.IJeiRuntime runtime) {
+        jeiRuntime = runtime;
+    }
+
+    @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(CyberWare.MODID, "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "jei_plugin");
 
     }
 

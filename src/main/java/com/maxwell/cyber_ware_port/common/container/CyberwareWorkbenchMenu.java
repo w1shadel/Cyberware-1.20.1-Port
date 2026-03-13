@@ -1,6 +1,6 @@
 package com.maxwell.cyber_ware_port.common.container;
 
-import com.maxwell.cyber_ware_port.common.block.blueprintChest.BlueprintChestBlockEntity;
+import com.maxwell.cyber_ware_port.common.block.blueprintchest.BlueprintChestBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
@@ -15,8 +15,8 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.capabilities.item.SlotItemHandler;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

@@ -1,7 +1,8 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Heart;
+package com.maxwell.cyber_ware_port.common.item.cyberware.heart;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModItems;
@@ -10,8 +11,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class InternalDefibrillatorItem extends CyberwareItem {
     public InternalDefibrillatorItem() {
@@ -25,26 +26,25 @@ public class InternalDefibrillatorItem extends CyberwareItem {
     @Override
     public void onLivingDeath(LivingDeathEvent event, ItemStack stack, LivingEntity wearer) {
         if (wearer.level().isClientSide()) return;
-        wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            if (this.tryConsumeEventEnergy(data, stack)) {
-                event.setCanceled(true);
-                wearer.setHealth(wearer.getMaxHealth() * 0.5f);
-                wearer.level().playSound(null, wearer.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-                if (CyberwareConfig.CONSUME_DEFIBRILLATOR_ON_USE.get()) {
-                    ItemStackHandler handler = data.getInstalledCyberware();
-                    for (int i = 0; i < handler.getSlots(); i++) {
-                        ItemStack stackInSlot = handler.getStackInSlot(i);
-                        if (!stackInSlot.isEmpty() && stackInSlot.getItem() == this) {
-                            handler.setStackInSlot(i, ItemStack.EMPTY);
-                            break;
-                        }
+        CyberwareUserData data = wearer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+        if (this.tryConsumeEventEnergy(data, stack)) {
+            event.setCanceled(true);
+            wearer.setHealth(wearer.getMaxHealth() * 0.5f);
+            wearer.level().playSound(null, wearer.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
+            if (CyberwareConfig.CONSUME_DEFIBRILLATOR_ON_USE.get()) {
+                ItemStackHandler handler = data.getInstalledCyberware();
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    ItemStack stackInSlot = handler.getStackInSlot(i);
+                    if (!stackInSlot.isEmpty() && stackInSlot.is(this)) {
+                        handler.setStackInSlot(i, ItemStack.EMPTY);
+                        break;
                     }
                 }
-                if (wearer instanceof ServerPlayer serverPlayer) {
-                    data.recalculateCapacity(serverPlayer);
-                    data.syncToClient(serverPlayer);
-                }
             }
-        });
+            if (wearer instanceof ServerPlayer serverPlayer) {
+                data.recalculateCapacity(serverPlayer);
+                data.syncToClient(serverPlayer);
+            }
+        }
     }
 }

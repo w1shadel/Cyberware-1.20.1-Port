@@ -8,16 +8,19 @@ import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.conditions.IConditionBuilder;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -605,7 +608,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
         public void save(Consumer<FinishedRecipe> consumer) {
             consumer.accept(new Result(
-                    new ResourceLocation(CyberWare.MODID, getItemName(result) + "_assembly"),
+                    ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, getItemName(result) + "_assembly"),
                     result,
                     ingredients
             ));
@@ -684,7 +687,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
         public void save(Consumer<FinishedRecipe> consumer) {
             consumer.accept(new Result(
-                    new ResourceLocation(CyberWare.MODID, getItemName(input) + "_engineering"),
+                    ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, getItemName(input) + "_engineering"),
                     input,
                     outputs,
                     blueprintChance

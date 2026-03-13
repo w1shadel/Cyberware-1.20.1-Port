@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 @SuppressWarnings("removal")
 public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity, CyberWitherSkeletonModel> {
     private static final ResourceLocation NORMAL_TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
 
     public CyberWitherSkeletonRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new CyberWitherSkeletonModel(pContext.bakeLayer(CyberWitherSkeletonModel.LAYER_LOCATION)), 0.5F);

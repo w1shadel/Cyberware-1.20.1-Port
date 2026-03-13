@@ -6,10 +6,11 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+import java.util.function.Supplier;
 
 @SuppressWarnings("removal")
 public class ModItemModelProvider extends ItemModelProvider {
@@ -35,7 +36,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.COMPONENT_MICROELECTRIC);
         simpleItem(ModItems.NEUROPOZYNE);
         withExistingParent("component_box",
-                new ResourceLocation(CyberWare.MODID, "block/component_box"));
+                ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "block/component_box"));
         katanaItem(ModItems.KATANA);
         simpleItem(ModItems.HUMAN_BRAIN);
         simpleItem(ModItems.HUMAN_HEART);
@@ -102,31 +103,31 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     }
 
-    private void simpleItem(RegistryObject<Item> item) {
+    private void simpleItem(Supplier<Item> item) {
         withExistingParent(item.getId().getPath(),
-                new ResourceLocation("item/generated"))
+                ResourceLocation.fromNamespaceAndPath("item/generated"))
                 .texture("layer0", new ResourceLocation(CyberWare.MODID, "item/" + item.getId().getPath()));
 
     }
 
-    private void cyberwareItem(RegistryObject<Item> item) {
+    private void cyberwareItem(Supplier<Item> item) {
         String path = item.getId().getPath();
-        ResourceLocation standardTexture = new ResourceLocation(CyberWare.MODID, "item/" + path);
-        ResourceLocation scavengedTexture = new ResourceLocation(CyberWare.MODID, "item/" + path + "_scavenged");
-        ItemModelBuilder scavengedModel = withExistingParent(path + "_scavenged", new ResourceLocation("item/generated"))
+        ResourceLocation standardTexture = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "item/" + path);
+        ResourceLocation scavengedTexture = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "item/" + path + "_scavenged");
+        ItemModelBuilder scavengedModel = withExistingParent(path + "_scavenged", ResourceLocation.fromNamespaceAndPath("item/generated"))
                 .texture("layer0", scavengedTexture);
-        withExistingParent(path, new ResourceLocation("item/generated"))
+        withExistingParent(path, ResourceLocation.fromNamespaceAndPath("item/generated"))
                 .texture("layer0", standardTexture)
                 .override()
-                .predicate(new ResourceLocation(CyberWare.MODID, "is_scavenged"), 1.0f)
+                .predicate(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "is_scavenged"), 1.0f)
                 .model(scavengedModel)
                 .end();
 
     }
 
-    private void katanaItem(RegistryObject<Item> item) {
+    private void katanaItem(Supplier<Item> item) {
         withExistingParent(item.getId().getPath(),
-                new ResourceLocation("item/handheld"))
+                ResourceLocation.fromNamespaceAndPath("item/handheld"))
                 .texture("layer0", new ResourceLocation(CyberWare.MODID, "item/" + item.getId().getPath())).transforms()
                 .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
                 .rotation(0, 90, 55)

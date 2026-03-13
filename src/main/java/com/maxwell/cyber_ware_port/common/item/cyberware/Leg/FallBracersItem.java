@@ -1,11 +1,11 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Leg;
+package com.maxwell.cyber_ware_port.common.item.cyberware.leg;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 public class FallBracersItem extends CyberwareItem {
     public FallBracersItem() {

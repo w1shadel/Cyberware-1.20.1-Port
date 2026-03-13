@@ -6,6 +6,8 @@ import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWither
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,17 +18,16 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = CyberWare.MODID)
+@EventBusSubscriber(modid = CyberWare.MODID)
 public class EntitiesItemDropEvents {
     private static List<Item> CACHED_COMMON_POOL = null;
     private static List<Item> CACHED_HIGH_TIER_POOL = null;
@@ -36,20 +37,16 @@ public class EntitiesItemDropEvents {
         LivingEntity entity = event.getEntity();
         if (!(entity instanceof ICyberwareMob cyberMob)) {
             return;
-
         }
         if (CACHED_COMMON_POOL == null) {
             initDropPools();
-
         }
         RandomSource random = entity.getRandom();
         LivingEntity attacker = null;
         if (event.getSource().getEntity() instanceof LivingEntity livingAttacker) {
             attacker = livingAttacker;
-
         }
-        int looting = (attacker != null) ? EnchantmentHelper.getEnchantmentLevel(Enchantments.MOB_LOOTING, attacker)
-                : 0;
+        int looting = (attacker != null) ? EnchantmentHelper.getEnchantmentLevel(attacker.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), attacker) : 0;
         if (entity instanceof CyberWitherBoss) {
             addScavengedDrop(event, ModItems.INTERNAL_DEFIBRILLATOR.get());
             List<Item> witherPool = generateMobDropPool(cyberMob);
@@ -59,33 +56,27 @@ public class EntitiesItemDropEvents {
                 for (int i = 0; i < dropCount; i++) {
                     Item randomItem = witherPool.get(random.nextInt(witherPool.size()));
                     addScavengedDrop(event, randomItem);
-
                 }
             }
             return;
-
         }
         List<Item> pool = generateMobDropPool(cyberMob);
-        if (pool.isEmpty())
-            return;
+        if (pool.isEmpty()) return;
         float dropChance = 0.25f + (looting * 0.05f);
         if (random.nextFloat() < dropChance) {
             Item selectedItem = pool.get(random.nextInt(pool.size()));
             addScavengedDrop(event, selectedItem);
-
         }
-        if (attacker != null && attacker.getMainHandItem().getItem() == ModItems.KATANA.get()) {
+        if (attacker != null && attacker.getMainHandItem().is(ModItems.KATANA.get())) {
             float katanaChance = 0.50f + (looting * 0.10f);
             if (random.nextFloat() < katanaChance) {
                 Item katanaDrop = pool.get(random.nextInt(pool.size()));
                 addScavengedDrop(event, katanaDrop);
-
             }
         }
         if (entity instanceof CyberWitherSkeletonEntity) {
             if (random.nextFloat() < 0.05f + (looting * 0.02f)) {
                 addScavengedDrop(event, ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get());
-
             }
         }
     }
@@ -93,31 +84,23 @@ public class EntitiesItemDropEvents {
     private static List<Item> generateMobDropPool(ICyberwareMob cyberMob) {
         List<Item> pool = new ArrayList<>();
         pool.addAll(CACHED_COMMON_POOL);
-
-        net.minecraft.world.entity.LivingEntity entity = (net.minecraft.world.entity.LivingEntity) cyberMob;
+        LivingEntity entity = (LivingEntity) cyberMob;
         var mobData = com.maxwell.cyber_ware_port.api.json.MobDataManager.MOB_DATA.get(entity.getType());
-
         boolean isHighTier = cyberMob.isHighTierMob();
         List<Item> specialDrops = new ArrayList<>(cyberMob.getSpecialDrops());
         List<Item> forbiddenDrops = new ArrayList<>(cyberMob.getForbiddenDrops());
-
         if (mobData != null) {
             isHighTier |= mobData.isHighTier;
-            if (mobData.specialDrops != null)
-                pool.addAll(mobData.specialDrops);
-            if (mobData.forbiddenDrops != null)
-                forbiddenDrops.addAll(mobData.forbiddenDrops);
+            if (mobData.specialDrops != null) pool.addAll(mobData.specialDrops);
+            if (mobData.forbiddenDrops != null) forbiddenDrops.addAll(mobData.forbiddenDrops);
         }
-
         if (isHighTier) {
             pool.addAll(CACHED_HIGH_TIER_POOL);
         }
-
         if (!specialDrops.isEmpty()) {
             pool.addAll(specialDrops);
             pool.addAll(specialDrops);
         }
-
         if (!forbiddenDrops.isEmpty()) {
             pool.removeAll(forbiddenDrops);
         }
@@ -125,43 +108,33 @@ public class EntitiesItemDropEvents {
     }
 
     private static void addScavengedDrop(LivingDropsEvent event, Item item) {
-        addScavengedDrop(event, new ItemStack(item));
-
-    }
-
-    private static void addScavengedDrop(LivingDropsEvent event, ItemStack stack) {
-        if (stack.getItem() instanceof CyberwareItem cw) {
+        ItemStack stack = new ItemStack(item);
+        if (item instanceof CyberwareItem cw) {
             cw.setPristine(stack, false);
-
         }
-        event.getDrops().add(new ItemEntity(event.getEntity().level(),
-                event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), stack));
-
+        event.getDrops().add(new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), stack));
     }
 
     private static void initDropPools() {
         CACHED_COMMON_POOL = new ArrayList<>();
         CACHED_HIGH_TIER_POOL = new ArrayList<>();
-        List<Item> highTierItems = new ArrayList<>();
-        highTierItems.add(ModItems.INTERNAL_DEFIBRILLATOR.get());
-        highTierItems.add(ModItems.RAPID_FIRE_FLYWHEEL.get());
-        highTierItems.add(ModItems.LINEAR_ACTUATORS.get());
-        highTierItems.add(ModItems.CONSCIOUSNESS_TRANSMITTER.get());
-        highTierItems.add(ModItems.STEM_CELL_SYNTHESIZER.get());
-        for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
+        List<Item> highTierItems = List.of(
+                ModItems.INTERNAL_DEFIBRILLATOR.get(),
+                ModItems.RAPID_FIRE_FLYWHEEL.get(),
+                ModItems.LINEAR_ACTUATORS.get(),
+                ModItems.CONSCIOUSNESS_TRANSMITTER.get(),
+                ModItems.STEM_CELL_SYNTHESIZER.get()
+        );
+        for (DeferredHolder<Item, ? extends Item> entry : ModItems.ITEMS.getEntries()) {
             Item item = entry.get();
             if (item instanceof CyberwareItem) {
-                ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
-                if (id != null && id.getPath().contains("body_part"))
-                    continue;
-                if (item == ModItems.CREATIVE_BATTERY.get())
-                    continue;
+                ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+                if (id.getPath().contains("body_part")) continue;
+                if (item == ModItems.CREATIVE_BATTERY.get()) continue;
                 if (highTierItems.contains(item)) {
                     CACHED_HIGH_TIER_POOL.add(item);
-
                 } else {
                     CACHED_COMMON_POOL.add(item);
-
                 }
             }
         }
@@ -169,14 +142,15 @@ public class EntitiesItemDropEvents {
 
     @SubscribeEvent
     public static void onExplosionStart(ExplosionEvent.Start event) {
-        if (event.getExplosion().getExploder() instanceof CyberCreeperEntity creeper) {
+        if (event.getExplosion().getDirectSourceEntity() instanceof CyberCreeperEntity creeper) {
             if (creeper.isCausingCustomExplosion()) {
                 return;
             }
             event.setCanceled(true);
             Level level = event.getLevel();
-            if (level.isClientSide)
+            if (level.isClientSide) {
                 return;
+            }
             boolean mobGriefing = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
             Level.ExplosionInteraction interaction = mobGriefing
                     ? Level.ExplosionInteraction.BLOCK
@@ -190,11 +164,13 @@ public class EntitiesItemDropEvents {
             }
             level.explode(
                     creeper,
+                    null,
+                    null,
                     creeper.getX(),
                     creeper.getY(),
                     creeper.getZ(),
                     finalRadius,
-                    true,
+                    false,
                     interaction);
             creeper.discard();
         }

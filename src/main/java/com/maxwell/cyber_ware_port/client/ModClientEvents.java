@@ -6,7 +6,7 @@ import com.maxwell.cyber_ware_port.client.model.SkeletonDisplayModel;
 import com.maxwell.cyber_ware_port.client.screen.BlueprintChestScreen;
 import com.maxwell.cyber_ware_port.client.screen.ComponentBoxScreen;
 import com.maxwell.cyber_ware_port.client.screen.cwb.CyberwareWorkbenchScreen;
-import com.maxwell.cyber_ware_port.client.screen.roboSurgeon.RobosurgeonScreen;
+import com.maxwell.cyber_ware_port.client.screen.robosurgeon.RobosurgeonScreen;
 import com.maxwell.cyber_ware_port.client.screen.scanner.ScannerScreen;
 import com.maxwell.cyber_ware_port.client.upgrades.CyberLimbModel;
 import com.maxwell.cyber_ware_port.client.upgrades.CyberwarePlayerLayer;
@@ -44,20 +44,20 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+
+import java.util.function.Supplier;
 
 @SuppressWarnings("removal")
-@Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
     public static final ModelLayerLocation CYBER_SKULL_LAYER = new ModelLayerLocation(
-            new ResourceLocation(CyberWare.MODID, "cyber_wither_skeleton_skull"), "main");
-    private static final ResourceLocation CYBER_WITHER_SKELETON_TEXTURE = new ResourceLocation(CyberWare.MODID,
-            "textures/entity/cyber_wither_skeleton.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_wither_skeleton_skull"), "main");
+    private static final ResourceLocation CYBER_WITHER_SKELETON_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
 
     @SubscribeEvent
     public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
@@ -108,10 +108,10 @@ public class ModClientEvents {
             MenuScreens.register(ModMenuTypes.SCANNER_MENU.get(), ScannerScreen::new);
             MenuScreens.register(ModMenuTypes.COMPONENT_BOX_MENU.get(), ComponentBoxScreen::new);
             MenuScreens.register(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), BlueprintChestScreen::new);
-            ItemProperties.register(ModItems.BLUEPRINT.get(), new ResourceLocation(CyberWare.MODID, "written"),
+            ItemProperties.register(ModItems.BLUEPRINT.get(), ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "written"),
                     (stack, level, entity, seed) -> BlueprintItem.getTargetItem(stack) != null ? 1.0F : 0.0F);
-            ResourceLocation scavengedProperty = new ResourceLocation(CyberWare.MODID, "is_scavenged");
-            for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
+            ResourceLocation scavengedProperty = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "is_scavenged");
+            for (Supplier<Item> entry : ModItems.ITEMS.getEntries()) {
                 if (entry.get() instanceof CyberwareItem) {
                     ItemProperties.register(entry.get(), scavengedProperty, (stack, level, entity,
                                                                              seed) -> (stack.getItem() instanceof CyberwareItem cw && !cw.isPristine(stack)) ? 1.0F

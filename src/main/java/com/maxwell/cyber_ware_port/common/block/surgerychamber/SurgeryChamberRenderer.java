@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 @SuppressWarnings("removal")
 public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChamberBlockEntity> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/surgery_chamber.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/block/surgery_chamber.png");
     private final SurgeryChamberModel model;
 
     public SurgeryChamberRenderer(BlockEntityRendererProvider.Context context) {
@@ -36,7 +36,7 @@ public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChambe
         pPoseStack.mulPose(Axis.YP.rotationDegrees(angle));
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
         this.model.setupAnim(pBlockEntity, pPartialTick);
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay);
         pPoseStack.popPose();
 
     }

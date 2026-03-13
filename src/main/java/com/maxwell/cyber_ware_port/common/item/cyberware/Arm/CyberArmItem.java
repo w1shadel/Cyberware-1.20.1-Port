@@ -1,12 +1,13 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Arm;
+package com.maxwell.cyber_ware_port.common.item.cyberware.arm;
 
+import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class CyberArmItem extends CyberwareItem {
-    public CyberArmItem(int slotId, RegistryObject<Item> incompatibleHumanPart,
-                        com.maxwell.cyber_ware_port.common.item.base.BodyPartType bodyPartType) {
+    public CyberArmItem(int slotId, DeferredHolder<Item, CyberwareItem> incompatibleHumanPart,
+                        BodyPartType bodyPartType) {
         super(new Builder(7, slotId)
                 .maxInstall(1)
                 .incompatible(incompatibleHumanPart)

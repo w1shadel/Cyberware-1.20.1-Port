@@ -1,7 +1,8 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Lung;
+package com.maxwell.cyber_ware_port.common.item.cyberware.lung;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -18,14 +19,13 @@ public class HyperoxygenationBoostItem extends CyberwareItem {
     @Override
     public void onSystemTick(LivingEntity wearer, ItemStack stack) {
         if (wearer.isSprinting()) {
-            wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                int count = stack.getCount();
-                int cost = this.getEnergyConsumption(stack) * count;
-                if (data.extractEnergy(cost, true) == cost) {
-                    data.extractEnergy(cost, false);
-                    wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, count - 1, false, false, false));
-                }
-            });
+            CyberwareUserData data = wearer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            int count = stack.getCount();
+            int cost = this.getEnergyConsumption(stack) * count;
+            if (data.getEnergyStored() >= cost) {
+                data.extractEnergy(cost, false);
+                wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, count - 1, false, false, false));
+            }
         }
     }
 

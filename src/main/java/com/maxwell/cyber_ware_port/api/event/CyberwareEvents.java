@@ -5,14 +5,13 @@ import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntit
 import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 import java.util.List;
 
 public class CyberwareEvents {
-    @Cancelable
-    public static class Recharge extends Event {
+    public static class Recharge extends Event implements ICancellableEvent {
         private final LivingEntity entity;
         private final ChargerBlockEntity tile;
         private final boolean isDrainOperation;
@@ -53,8 +52,7 @@ public class CyberwareEvents {
             return inputStack;
         }
 
-        @Cancelable
-        public static class Pre extends Salvage {
+        public static class Pre extends Salvage implements ICancellableEvent {
             private float blueprintChance;
 
             public Pre(CyberwareWorkbenchBlockEntity tile, ItemStack inputStack, float blueprintChance) {
@@ -94,8 +92,7 @@ public class CyberwareEvents {
             this.inputStack = inputStack;
         }
 
-        @Cancelable
-        public static class Complete extends Scan {
+        public static class Complete extends Scan implements ICancellableEvent {
             private float chance;
             private boolean consumeItem;
 

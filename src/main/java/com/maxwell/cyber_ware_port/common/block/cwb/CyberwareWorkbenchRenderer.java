@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
 public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<CyberwareWorkbenchBlockEntity> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/cyberware_workbench_model.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/block/cyberware_workbench_model.png");
     private final CyberWareWorkBenchModel model;
 
     public CyberwareWorkbenchRenderer(BlockEntityRendererProvider.Context context) {
@@ -35,7 +35,7 @@ public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<Cyberware
         pPoseStack.mulPose(Axis.YP.rotationDegrees(rotationDegrees + 180.0f));
         this.model.setupAnim(pBlockEntity, pPartialTick);
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1);
         pPoseStack.popPose();
 
     }

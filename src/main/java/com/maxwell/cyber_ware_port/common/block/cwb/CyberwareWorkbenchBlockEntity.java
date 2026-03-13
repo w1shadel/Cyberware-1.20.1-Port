@@ -11,13 +11,12 @@ import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -27,16 +26,15 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,9 +63,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            if (slot >= OUTPUT_SLOT_START) {
-                return true;
-            }
+            if (slot >= OUTPUT_SLOT_START) return true;
             return switch (slot) {
                 case INPUT_SLOT -> CyberwareAPI.isCyberware(stack);
                 case PAPER_SLOT -> stack.is(Items.PAPER);
@@ -76,6 +72,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             };
         }
     };
+
     private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
         @Override
         public void setStackInSlot(int slot, @NotNull ItemStack stack) {
@@ -94,39 +91,19 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty())
-                return stack;
-            if (slot == PAPER_SLOT && stack.is(Items.PAPER)) {
-                return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
-            }
-            if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem) {
-                return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
-            }
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (slot == INPUT_SLOT && cw != null) {
-                return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
-            }
+            if (stack.isEmpty()) return stack;
+            if (slot == PAPER_SLOT && stack.is(Items.PAPER)) return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
+            if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem) return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
+            if (slot == INPUT_SLOT && CyberwareAPI.getCyberware(stack) != null) return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
             if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
                 AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-                if (activeRecipe != null && isItemNeededForRecipe(activeRecipe, stack)) {
-                    return itemHandler.insertItem(slot, stack, simulate);
-                }
-                return stack;
-            }
-            if (slot == SPECIAL_OUTPUT_SLOT) {
-                return stack;
+                if (activeRecipe != null && isItemNeededForRecipe(activeRecipe, stack)) return itemHandler.insertItem(slot, stack, simulate);
             }
             return stack;
         }
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (slot == SPECIAL_OUTPUT_SLOT) {
-                return itemHandler.extractItem(slot, amount, simulate);
-            }
-            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
-                return itemHandler.extractItem(slot, amount, simulate);
-            }
             return itemHandler.extractItem(slot, amount, simulate);
         }
 
@@ -140,7 +117,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             return itemHandler.isItemValid(slot, stack);
         }
     };
-    private LazyOptional<IItemHandler> lazyExposedHandler = LazyOptional.empty();
+
     private int progress = 0;
     private boolean isCrafting = false;
     private int cooldown = 0;
@@ -149,41 +126,26 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         super(ModBlockEntities.CYBERWARE_WORKBENCH.get(), pPos, pBlockState);
     }
 
-    public static void tick(Level pLevel, BlockPos pPos, BlockState pState,
-            CyberwareWorkbenchBlockEntity pBlockEntity) {
+    public static void tick(Level pLevel, BlockPos pPos, BlockState pState, CyberwareWorkbenchBlockEntity pBlockEntity) {
         pBlockEntity.prevAnimationProgress = pBlockEntity.animationProgress;
-        if (pBlockEntity.cooldown > 0)
-            pBlockEntity.cooldown--;
+        if (pBlockEntity.cooldown > 0) pBlockEntity.cooldown--;
         float target = pBlockEntity.isCrafting ? 1.0F : 0.0F;
-        float speed = 0.5F;
-        if (pBlockEntity.animationProgress < target) {
-            pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + speed, target);
-        } else if (pBlockEntity.animationProgress > target) {
-            pBlockEntity.animationProgress = Math.max(pBlockEntity.animationProgress - speed, target);
-        }
+        if (pBlockEntity.animationProgress < target) pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + 0.5F, target);
+        else if (pBlockEntity.animationProgress > target) pBlockEntity.animationProgress = Math.max(pBlockEntity.animationProgress - 0.5F, target);
+
         if (!pLevel.isClientSide) {
-            if (pLevel.hasNeighborSignal(pPos)) {
-                pBlockEntity.startCrafting();
+            if (pLevel.hasNeighborSignal(pPos)) pBlockEntity.startCrafting();
+            if (pBlockEntity.cooldown == 0 && pBlockEntity.isCrafting) {
+                pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.5F, 1.2F);
+                pBlockEntity.cooldown = 3;
+                pBlockEntity.craftItem();
             }
-            if (pBlockEntity.cooldown == 0) {
-                if (pBlockEntity.isCrafting) {
-                    pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, net.minecraft.sounds.SoundSource.BLOCKS, 0.5F,
-                            1.2F);
-                    pBlockEntity.cooldown = 3;
-                    pBlockEntity.craftItem();
-                }
-            }
-            if (pBlockEntity.isCrafting) {
-                if (pLevel.getGameTime() % 40 == 0) {
-                    pLevel.playSound(null, pPos, SoundEvents.BEACON_AMBIENT, net.minecraft.sounds.SoundSource.BLOCKS,
-                            0.2F, 1.2F);
-                    pLevel.playSound(null, pPos, SoundEvents.GRINDSTONE_USE, net.minecraft.sounds.SoundSource.BLOCKS,
-                            0.3F, 1.5F);
-                }
+            if (pBlockEntity.isCrafting && pLevel.getGameTime() % 40 == 0) {
+                pLevel.playSound(null, pPos, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.2F, 1.2F);
+                pLevel.playSound(null, pPos, SoundEvents.GRINDSTONE_USE, SoundSource.BLOCKS, 0.3F, 1.5F);
             }
             if (pBlockEntity.isCrafting && pBlockEntity.animationProgress >= 1.0F) {
-                pLevel.playSound(null, pPos, SoundEvents.IRON_TRAPDOOR_CLOSE, net.minecraft.sounds.SoundSource.BLOCKS,
-                        0.5F, 1.2F);
+                pLevel.playSound(null, pPos, SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 0.5F, 1.2F);
                 pBlockEntity.resetCrafting();
             }
         }
@@ -191,9 +153,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
+        for (int i = 0; i < itemHandler.getSlots(); i++) inventory.setItem(i, itemHandler.getStackInSlot(i));
         Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 
@@ -216,9 +176,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     }
 
     private void notifyClient() {
-        if (this.level != null) {
-            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
-        }
+        if (this.level != null) this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
     }
 
     private boolean checkOrConsumeIngredients(AssemblyRecipe recipe, boolean consume) {
@@ -229,16 +187,12 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                 ItemStack stack = this.itemHandler.getStackInSlot(i);
                 if (req.ingredient().test(stack)) {
                     int take = Math.min(stack.getCount(), needed - found);
-                    if (consume) {
-                        this.itemHandler.extractItem(i, take, false);
-                    }
+                    if (consume) this.itemHandler.extractItem(i, take, false);
                     found += take;
-                    if (found >= needed)
-                        break;
+                    if (found >= needed) break;
                 }
             }
-            if (found < needed)
-                return false;
+            if (found < needed) return false;
         }
         return true;
     }
@@ -247,27 +201,18 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         AssemblyRecipe recipe = getActiveAssemblyRecipe();
         if (recipe != null) {
             if (checkOrConsumeIngredients(recipe, false)) {
-                ItemStack result = recipe.getResultItem(Objects.requireNonNull(this.level).registryAccess());
+                ItemStack result = recipe.getResultItem(this.level.registryAccess());
                 ItemStack currentOutput = this.itemHandler.getStackInSlot(SPECIAL_OUTPUT_SLOT);
-                if (currentOutput.isEmpty())
-                    return true;
-                return ItemStack.isSameItemSameTags(currentOutput, result) &&
-                        currentOutput.getCount() + result.getCount() <= currentOutput.getMaxStackSize();
+                if (currentOutput.isEmpty()) return true;
+                return ItemStack.isSameItem(currentOutput, result) && currentOutput.getCount() + result.getCount() <= currentOutput.getMaxStackSize();
             }
             return false;
         }
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
-        if (inputStack.isEmpty())
-            return false;
-        SimpleContainer tempContainer = new SimpleContainer(1);
-        tempContainer.setItem(0, inputStack);
-        var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
-                .getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempContainer, this.level);
+        if (inputStack.isEmpty()) return false;
+        var recipeOpt = this.level.getRecipeManager().getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), new SingleRecipeInput(inputStack), this.level);
         if (recipeOpt.isPresent()) {
-            for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) {
-                if (this.itemHandler.getStackInSlot(i).isEmpty())
-                    return true;
-            }
+            for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) if (this.itemHandler.getStackInSlot(i).isEmpty()) return true;
         }
         return false;
     }
@@ -276,108 +221,74 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         ItemStack remainder = stack.copy();
         for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) {
             remainder = this.itemHandler.insertItem(i, remainder, false);
-            if (remainder.isEmpty()) {
-                return ItemStack.EMPTY;
-            }
+            if (remainder.isEmpty()) return ItemStack.EMPTY;
         }
         return remainder;
     }
-
+    public float getRenderProgress(float pPartialTick) {
+        return net.minecraft.util.Mth.lerp(pPartialTick, this.prevAnimationProgress, this.animationProgress);
+    }
     private void craftItem() {
         AssemblyRecipe recipe = getActiveAssemblyRecipe();
         if (recipe != null) {
             if (checkOrConsumeIngredients(recipe, true)) {
-                ItemStack result = recipe.getResultItem(Objects.requireNonNull(this.level).registryAccess()).copy();
+                ItemStack result = recipe.getResultItem(this.level.registryAccess()).copy();
                 ICyberware cw = CyberwareAPI.getCyberware(result);
-                if (cw != null) {
-                    cw.setPristine(result, true);
-                }
+                if (cw != null) cw.setPristine(result, true);
                 this.itemHandler.insertItem(SPECIAL_OUTPUT_SLOT, result, false);
-                if (CyberwareConfig.CONSUME_BLUEPRINT.get()) {
-                    this.itemHandler.extractItem(BLUEPRINT_SLOT, 1, false);
-                }
+                if (CyberwareConfig.CONSUME_BLUEPRINT.get()) this.itemHandler.extractItem(BLUEPRINT_SLOT, 1, false);
             }
             return;
         }
         ItemStack inputStack = this.itemHandler.getStackInSlot(INPUT_SLOT);
-        if (inputStack.isEmpty())
-            return;
-        SimpleContainer tempContainer = new SimpleContainer(1);
-        tempContainer.setItem(0, inputStack);
-        var recipeOpt = Objects.requireNonNull(this.level).getRecipeManager()
-                .getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), tempContainer, this.level);
+        if (inputStack.isEmpty()) return;
+        var recipeOpt = this.level.getRecipeManager().getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), new SingleRecipeInput(inputStack), this.level);
         if (recipeOpt.isPresent()) {
-            EngineeringRecipe engRecipe = recipeOpt.get();
+            EngineeringRecipe engRecipe = recipeOpt.get().value();
             float baseChance = engRecipe.getBlueprintChance();
             CyberwareEvents.Salvage.Pre preEvent = new CyberwareEvents.Salvage.Pre(this, inputStack, baseChance);
-            if (MinecraftForge.EVENT_BUS.post(preEvent)) {
-                return;
-            }
+            if (NeoForge.EVENT_BUS.post(preEvent).isCanceled()) return;
             List<ItemStack> results = engRecipe.rollOutputs(this.level.random);
             CyberwareEvents.Salvage.Post postEvent = new CyberwareEvents.Salvage.Post(this, inputStack, results);
-            MinecraftForge.EVENT_BUS.post(postEvent);
+            NeoForge.EVENT_BUS.post(postEvent);
             this.itemHandler.extractItem(INPUT_SLOT, 1, false);
             for (ItemStack result : postEvent.getOutputs()) {
                 ItemStack remainder = mergeIntoOutput(result);
-                if (!remainder.isEmpty()) {
-                    net.minecraft.world.level.block.Block.popResource(this.level, this.worldPosition.above(),
-                            remainder);
-                }
+                if (!remainder.isEmpty()) Block.popResource(this.level, this.worldPosition.above(), remainder);
             }
             ItemStack paperStack = this.itemHandler.getStackInSlot(PAPER_SLOT);
-            if (!paperStack.isEmpty() && paperStack.is(Items.PAPER)) {
-                if (this.level.random.nextFloat() < preEvent.getBlueprintChance()) {
-                    ItemStack blueprint = BlueprintItem.createBlueprintFor(inputStack.getItem());
-                    ItemStack remainder = mergeIntoOutput(blueprint);
-                    if (remainder.isEmpty()) {
-                        this.itemHandler.extractItem(PAPER_SLOT, 1, false);
-                    }
-                }
+            if (paperStack.is(Items.PAPER) && this.level.random.nextFloat() < preEvent.getBlueprintChance()) {
+                ItemStack blueprint = BlueprintItem.createBlueprintFor(inputStack.getItem());
+                if (mergeIntoOutput(blueprint).isEmpty()) this.itemHandler.extractItem(PAPER_SLOT, 1, false);
             }
         }
     }
 
     @Nullable
     private AssemblyRecipe getActiveAssemblyRecipe() {
-        if (this.cachedRecipe != null) {
-            return this.cachedRecipe;
-        }
-        if (this.level == null)
-            return null;
+        if (this.cachedRecipe != null) return this.cachedRecipe;
+        if (this.level == null) return null;
         ItemStack blueprintStack = this.itemHandler.getStackInSlot(BLUEPRINT_SLOT);
-        if (blueprintStack.isEmpty() || !(blueprintStack.getItem() instanceof BlueprintItem)) {
-            return null;
-        }
+        if (blueprintStack.isEmpty() || !(blueprintStack.getItem() instanceof BlueprintItem)) return null;
         Item targetItem = BlueprintItem.getTargetItem(blueprintStack);
-        if (targetItem == null)
-            return null;
-        var recipes = this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get());
-        for (AssemblyRecipe recipe : recipes) {
-            if (recipe.getResultItem(this.level.registryAccess()).getItem() == targetItem) {
-                this.cachedRecipe = recipe;
-                return recipe;
+        if (targetItem == null) return null;
+        for (RecipeHolder<AssemblyRecipe> holder : this.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get())) {
+            if (holder.value().getResultItem(this.level.registryAccess()).getItem() == targetItem) {
+                this.cachedRecipe = holder.value();
+                return this.cachedRecipe;
             }
         }
         return null;
     }
 
     private boolean isItemNeededForRecipe(AssemblyRecipe recipe, ItemStack stack) {
-        if (stack.isEmpty())
-            return false;
-        for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
-            if (input.ingredient().test(stack)) {
-                return true;
-            }
-        }
+        if (stack.isEmpty()) return false;
+        for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) if (input.ingredient().test(stack)) return true;
         return false;
     }
 
-    public float getRenderProgress(float pPartialTick) {
-        return this.prevAnimationProgress + (this.animationProgress - this.prevAnimationProgress) * pPartialTick;
-    }
-
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("block.cyber_ware_port.cyberware_workbench");
     }
 
@@ -387,60 +298,36 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         return new CyberwareWorkbenchMenu(pContainerId, pPlayerInventory, this);
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyExposedHandler.cast();
-        }
-        return super.getCapability(cap, side);
+    public ItemStackHandler getItemHandler() {
+        return itemHandler;
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyExposedHandler = LazyOptional.of(() -> exposedHandler);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyExposedHandler.invalidate();
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        pTag.put("inventory", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.saveAdditional(pTag, pRegistries);
+        pTag.put("inventory", itemHandler.serializeNBT(pRegistries));
         pTag.putInt("workbench.progress", this.progress);
         pTag.putBoolean("workbench.isCrafting", this.isCrafting);
         pTag.putInt("workbench.cooldown", this.cooldown);
-        super.saveAdditional(pTag);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(pTag, pRegistries);
+        if (pTag.contains("inventory")) itemHandler.deserializeNBT(pRegistries, pTag.getCompound("inventory"));
         this.progress = pTag.getInt("workbench.progress");
         this.isCrafting = pTag.getBoolean("workbench.isCrafting");
         this.cooldown = pTag.getInt("workbench.cooldown");
         this.cachedRecipe = null;
     }
 
-    @Nullable
     @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
-    }
-
-    @Override
-    public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt) {
-        if (pkt.getTag() != null) {
-            this.load(pkt.getTag());
-        }
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return saveWithoutMetadata(pRegistries);
     }
 }

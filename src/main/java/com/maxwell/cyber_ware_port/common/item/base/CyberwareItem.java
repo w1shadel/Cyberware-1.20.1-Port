@@ -2,52 +2,40 @@ package com.maxwell.cyber_ware_port.common.item.base;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.init.ModDataComponents;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CyberwareItem extends Item implements ICyberware {
-    private static final String NBT_KEY_PRISTINE = "IsPristine";
-    private static final String DOC_essenceCost = "Essence cost to install this cyberware.";
     private final int essenceCost;
-    private static final String DOC_slotId = "The internal inventory slot ID (0-based) where this item belongs.";
     private final int slotId;
-    private static final String DOC_maxInstallAmount = "Maximum number of this item that can be installed in the same slot.";
     private final int maxInstallAmount;
-    private static final String DOC_hasEnergyProperties = "Whether this cyberware uses or generates energy (Forge Energy).";
     private final boolean hasEnergyProperties;
-    private static final String DOC_energyConsumption = "Amount of energy consumed per tick or operation.";
     private final int energyConsumption;
-    private static final String DOC_energyGeneration = "Amount of energy generated per tick.";
     private final int energyGeneration;
-    private static final String DOC_quality = "Priority level for installation exclusivity. 0=Human parts (Lowest), 1=Standard Cyberware, 2+=High-tier (Overrides lower).";
     private final int quality;
-    private static final String DOC_eventConsumption = "Energy cost for special events or active abilities.";
     private final int eventConsumption;
-    private static final String DOC_energyStorage = "Internal energy storage capacity of this item.";
     private final int energyStorage;
-    private static final String DOC_stackingRule = "Logic for how energy properties stack when multiple items are installed.";
     private final StackingRule stackingRule;
-    private static final String DOC_incompatible = "List of items that cannot be installed alongside this one.";
-    private final Set<RegistryObject<Item>> incompatibleRegistryObjects;
-    private static final String DOC_prerequisite = "List of items required before this one can be installed.";
-    private final Set<RegistryObject<Item>> prerequisiteRegistryObjects;
-    private static final String DOC_bodyPartType = "Specific body part type (e.g., ARM_LEFT, LEG_RIGHT) for precise exclusivity checks.";
+    private final Set<Supplier<? extends Item>> incompatibleRegistryObjects;
+    private final Set<Supplier<? extends Item>> prerequisiteRegistryObjects;
     private final BodyPartType bodyPartType;
-    private static final String DOC_modifiers = "Attribute modifiers (e.g., strength boost) applied when installed.";
-    private final Multimap<Attribute, AttributeModifier> baseAttributeModifiers;
+    private final Multimap<Holder<Attribute>, AttributeModifier> baseAttributeModifiers;
 
     public CyberwareItem(Builder builder) {
         super(builder.properties);
@@ -89,21 +77,12 @@ public class CyberwareItem extends Item implements ICyberware {
 
     @Override
     public boolean isPristine(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
-        return nbt == null || !nbt.contains(NBT_KEY_PRISTINE) || nbt.getBoolean(NBT_KEY_PRISTINE);
+        return stack.getOrDefault(ModDataComponents.PRISTINE.get(), true);
     }
 
     @Override
     public void setPristine(ItemStack stack, boolean isPristine) {
-        if (isPristine) {
-            if (stack.hasTag()) {
-                CompoundTag tag = stack.getTag();
-                tag.remove(NBT_KEY_PRISTINE);
-                if (tag.isEmpty()) stack.setTag(null);
-            }
-        } else {
-            stack.getOrCreateTag().putBoolean(NBT_KEY_PRISTINE, false);
-        }
+        stack.set(ModDataComponents.PRISTINE.get(), isPristine);
     }
 
     @Override
@@ -113,24 +92,12 @@ public class CyberwareItem extends Item implements ICyberware {
 
     @Override
     public Set<Item> getPrerequisites(ItemStack stack) {
-        return this.prerequisiteRegistryObjects.stream()
-                .map(RegistryObject::get)
-                .collect(Collectors.toSet());
+        return this.prerequisiteRegistryObjects.stream().map(Supplier::get).collect(Collectors.toSet());
     }
 
     @Override
     public Set<Item> getIncompatibleItems(ItemStack stack) {
-        return this.incompatibleRegistryObjects.stream()
-                .map(RegistryObject::get)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public boolean isIncompatible(ItemStack self, ItemStack other) {
-        if (self.getItem() == other.getItem()) {
-            return this.getMaxInstallAmount(self) <= 1;
-        }
-        return getIncompatibleItems(self).contains(other.getItem());
+        return this.incompatibleRegistryObjects.stream().map(Supplier::get).collect(Collectors.toSet());
     }
 
     @Override
@@ -156,7 +123,13 @@ public class CyberwareItem extends Item implements ICyberware {
         return isPristine(stack) ? base : base / 2;
     }
 
-    public boolean tryConsumeEventEnergy(net.minecraftforge.energy.IEnergyStorage energyStorage, ItemStack stack) {
+    @Override
+    public int getEnergyStorage(ItemStack stack) {
+        int base = this.energyStorage;
+        return isPristine(stack) ? base : base / 2;
+    }
+
+    public boolean tryConsumeEventEnergy(IEnergyStorage energyStorage, ItemStack stack) {
         int cost = this.getEventConsumption(stack);
         if (cost <= 0) return true;
         if (energyStorage.extractEnergy(cost, true) == cost) {
@@ -167,92 +140,54 @@ public class CyberwareItem extends Item implements ICyberware {
     }
 
     @Override
-    public int getEnergyStorage(ItemStack stack) {
-        int base = this.energyStorage;
-        return isPristine(stack) ? base : base / 2;
-    }
-
-    @Override
-    public Component getName(ItemStack stack) {
-        if (!isPristine(stack)) {
-            return Component.translatable(this.getDescriptionId(stack))
-                    .withStyle(ChatFormatting.DARK_GRAY);
-        }
-        return Component.translatable(this.getDescriptionId(stack))
-                .withStyle(ChatFormatting.AQUA);
-    }
-
-    @Override
     public StackingRule getStackingEnergyRule(ItemStack stack) {
         return this.stackingRule;
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
-        if (isPristine(stack)) {
-            return this.baseAttributeModifiers;
-        }
-        Multimap<Attribute, AttributeModifier> modified = ArrayListMultimap.create();
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack) {
+        if (isPristine(stack)) return this.baseAttributeModifiers;
+        Multimap<Holder<Attribute>, AttributeModifier> modified = ArrayListMultimap.create();
         this.baseAttributeModifiers.forEach((attr, mod) -> {
-            double newValue = mod.getAmount() * 0.5;
-            AttributeModifier newMod = new AttributeModifier(
-                    mod.getId(),
-                    mod.getName() + " (Damaged)",
-                    newValue,
-                    mod.getOperation()
-            );
+            double newValue = mod.amount() * 0.5;
+            AttributeModifier newMod = new AttributeModifier(mod.id().withSuffix("_damaged"), newValue, mod.operation());
             modified.put(attr, newMod);
         });
         return modified;
     }
 
     @Override
-    public void onSystemTick(LivingEntity entity, ItemStack stack) {
+    public Component getName(ItemStack stack) {
+        ChatFormatting style = isPristine(stack) ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY;
+        return Component.translatable(this.getDescriptionId(stack)).withStyle(style);
     }
 
     public static class Builder {
-        private final Properties properties;
+        private final Properties properties = new Properties();
         private final int essenceCost;
         private final int slotId;
-        private final Set<RegistryObject<Item>> prerequisites = new HashSet<>();
-        private final Set<RegistryObject<Item>> incompatibleItems = new HashSet<>();
-        private final Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        private final Set<Supplier<? extends Item>> prerequisites = new HashSet<>();
+        private final Set<Supplier<? extends Item>> incompatibleItems = new HashSet<>();
+        private final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
         private int maxInstallAmount = 1;
         private boolean hasEnergyProperties = false;
         private int energyConsumption = 0;
         private int energyGeneration = 0;
         private int energyStorage = 0;
         private int eventConsumption = 0;
-        private static final String DOC_quality = "Default quality is 1 (Standard Cyberware). Set to 0 for Human parts.";
         private int quality = 1;
         private StackingRule stackingRule = StackingRule.LINEAR;
-        private static final String DOC_bodyPartType = "Default is NONE. Needs to be set for Limbs (ARM_LEFT, etc.).";
         private BodyPartType bodyPartType = BodyPartType.NONE;
 
         public Builder(int essenceCost, int slotId) {
-            this.properties = new Properties();
             this.essenceCost = essenceCost;
             this.slotId = slotId;
         }
 
-        private static final String DOC_method_quality = "Sets the priority quality. Higher quality items replace lower quality items in the same body slot.";
-
-        public Builder quality(int quality) {
-            this.quality = quality;
-            return this;
-        }
-
-        private static final String DOC_method_bodyPart = "Defines the specific body part type (e.g., ARM_LEFT, LEG_RIGHT). Essential for exclusivity.";
-
-        public Builder bodyPart(BodyPartType type) {
-            this.bodyPartType = type;
-            return this;
-        }
-
-        public Builder maxInstall(int amount) {
-            this.maxInstallAmount = amount;
-            return this;
-        }
+        public Builder quality(int quality) { this.quality = quality; return this; }
+        public Builder bodyPart(BodyPartType type) { this.bodyPartType = type; return this; }
+        public Builder maxInstall(int amount) { this.maxInstallAmount = amount; return this; }
+        public Builder eventCost(int cost) { this.eventConsumption = cost; return this; }
 
         public Builder energy(int consumption, int generation, int storage, StackingRule rule) {
             this.hasEnergyProperties = true;
@@ -264,29 +199,19 @@ public class CyberwareItem extends Item implements ICyberware {
         }
 
         @SafeVarargs
-        public final Builder requires(RegistryObject<Item>... items) {
+        public final Builder requires(Supplier<? extends Item>... items) {
             Collections.addAll(this.prerequisites, items);
             return this;
         }
 
-        public Builder eventCost(int cost) {
-            this.eventConsumption = cost;
-            return this;
-        }
-
-        public Builder properties(java.util.function.Consumer<Properties> consumer) {
-            consumer.accept(this.properties);
-            return this;
-        }
-
         @SafeVarargs
-        public final Builder incompatible(RegistryObject<Item>... items) {
+        public final Builder incompatible(Supplier<? extends Item>... items) {
             Collections.addAll(this.incompatibleItems, items);
             return this;
         }
 
-        public Builder addAttribute(Attribute attribute, String uuidStr, double amount, AttributeModifier.Operation operation) {
-            this.attributeModifiers.put(attribute, new AttributeModifier(UUID.fromString(uuidStr), "Cyberware modifier", amount, operation));
+        public Builder addAttribute(Holder<Attribute> attribute, String idStr, double amount, AttributeModifier.Operation operation) {
+            this.attributeModifiers.put(attribute, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, idStr), amount, operation));
             return this;
         }
 

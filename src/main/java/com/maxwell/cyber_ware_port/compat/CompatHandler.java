@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.compat;
 
-import com.maxwell.cyber_ware_port.compat.Proxy.EmiProxy;
-import com.maxwell.cyber_ware_port.compat.Proxy.JeiProxy;
-import net.minecraftforge.fml.ModList;
+import com.maxwell.cyber_ware_port.compat.proxy.EmiProxy;
+import com.maxwell.cyber_ware_port.compat.proxy.JeiProxy;
+import net.neoforged.fml.ModList;
 
 public class CompatHandler {
     public static void showAssemblyRecipes() {

@@ -27,7 +27,7 @@ public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRec
 
     public EngineeringRecipeCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(
-                new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png"),
+                ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png"),
                 0, 0, 176, 80);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.CYBERWARE_WORKBENCH.get()));
 

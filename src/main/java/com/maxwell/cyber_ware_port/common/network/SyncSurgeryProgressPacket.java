@@ -1,39 +1,28 @@
 package com.maxwell.cyber_ware_port.common.network;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record SyncSurgeryProgressPacket(int progress, int maxProgress) implements CustomPacketPayload {
+    public static final Type<SyncSurgeryProgressPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "sync_surgery_progress"));
 
-public class SyncSurgeryProgressPacket {
-    private final int progress;
-    private final int maxProgress;
+    public static final StreamCodec<FriendlyByteBuf, SyncSurgeryProgressPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, SyncSurgeryProgressPacket::progress,
+            ByteBufCodecs.VAR_INT, SyncSurgeryProgressPacket::maxProgress,
+            SyncSurgeryProgressPacket::new
+    );
 
-    public SyncSurgeryProgressPacket(int progress, int maxProgress) {
-        this.progress = progress;
-        this.maxProgress = maxProgress;
-
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static SyncSurgeryProgressPacket fromBytes(FriendlyByteBuf buf) {
-        return new SyncSurgeryProgressPacket(buf.readInt(), buf.readInt());
-
-    }
-
-    public static void handle(SyncSurgeryProgressPacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.update(msg.progress, msg.maxProgress));
-
-        });
-        ctx.get().setPacketHandled(true);
-
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(this.progress);
-        buf.writeInt(this.maxProgress);
-
+    public void handle(IPayloadContext ctx) {
+        ctx.enqueueWork(() -> ClientPacketHandler.handleProgressPacket(this, ctx));
     }
 }

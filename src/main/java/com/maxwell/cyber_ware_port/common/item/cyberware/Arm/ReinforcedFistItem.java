@@ -1,11 +1,11 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Arm;
+package com.maxwell.cyber_ware_port.common.item.cyberware.arm;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class ReinforcedFistItem extends CyberwareItem {
     public ReinforcedFistItem() {

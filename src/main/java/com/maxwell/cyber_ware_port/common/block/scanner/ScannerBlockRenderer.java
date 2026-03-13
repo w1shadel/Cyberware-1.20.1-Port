@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
 public class ScannerBlockRenderer implements BlockEntityRenderer<ScannerBlockEntity> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/block/scanner.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/block/scanner.png");
     private final ScannerBlockModel model;
 
     public ScannerBlockRenderer(BlockEntityRendererProvider.Context context) {
@@ -40,7 +40,7 @@ public class ScannerBlockRenderer implements BlockEntityRenderer<ScannerBlockEnt
         }
         this.model.setupMovingParts(pBlockEntity.isWorking(), animTime);
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1);
         pPoseStack.popPose();
 
     }

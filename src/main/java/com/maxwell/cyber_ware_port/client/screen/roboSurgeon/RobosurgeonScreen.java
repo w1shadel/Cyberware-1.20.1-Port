@@ -33,7 +33,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.item.ItemStackHandler;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -41,19 +41,14 @@ import java.util.List;
 
 @SuppressWarnings("removal")
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
-    private static final ResourceLocation INTERNAL_PARTS_TEXTURE = new ResourceLocation(CyberWare.MODID,
-            "textures/gui/player_internal_part.png");
-    private static final ResourceLocation SKELETON_TEXTURE = new ResourceLocation(
+    private static final ResourceLocation INTERNAL_PARTS_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/player_internal_part.png");
+    private static final ResourceLocation SKELETON_TEXTURE = ResourceLocation.fromNamespaceAndPath(
             "textures/entity/skeleton/skeleton.png");
     private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/surgery.png");
-    private static final ResourceLocation MARKER_TEXTURE = new ResourceLocation(CyberWare.MODID,
-            "textures/gui/marker.png");
-    private static final ResourceLocation RED_SLOT_TEXTURE = new ResourceLocation(CyberWare.MODID,
-            "textures/gui/red_slot.png");
-    private static final ResourceLocation BLUE_SLOT_TEXTURE = new ResourceLocation(CyberWare.MODID,
-            "textures/gui/blue_slot.png");
-    private static final ResourceLocation ALERT_ICON = new ResourceLocation(CyberWare.MODID,
-            "textures/gui/risk_icons.png");
+    private static final ResourceLocation MARKER_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/marker.png");
+    private static final ResourceLocation RED_SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/red_slot.png");
+    private static final ResourceLocation BLUE_SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blue_slot.png");
+    private static final ResourceLocation ALERT_ICON = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/risk_icons.png");
     private static final float ANIMATION_DURATION = 2000f;
     private static final int SLOT_SIZE = 18;
     private static final int SLOT_SPACING = 2;
@@ -87,7 +82,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public static void renderEntityWithRotation(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw,
-            LivingEntity pEntity) {
+                                                LivingEntity pEntity) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
@@ -141,7 +136,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw,
-            Model pModel, ResourceLocation texture) {
+                                         Model pModel, ResourceLocation texture) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
@@ -874,14 +869,13 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 new TargetMarker(Component.literal("Bone"), 3.0f, 20.8f, -5.5f,
                         slots(RobosurgeonBlockEntity.SLOT_BONES)))),
         NONE(0, 0, 0, 0, 0, 0, 45f, List.of());
-
         final int hitX, hitY, hitW, hitH;
         final int zoomOffsetX, zoomOffsetY;
         final float zoomScale;
         final List<TargetMarker> markers;
 
         BodyPart(int hitX, int hitY, int hitW, int hitH, int zoomOffsetX, int zoomOffsetY, float zoomScale,
-                List<TargetMarker> markers) {
+                 List<TargetMarker> markers) {
             this.hitX = hitX;
             this.hitY = hitY;
             this.hitW = hitW;

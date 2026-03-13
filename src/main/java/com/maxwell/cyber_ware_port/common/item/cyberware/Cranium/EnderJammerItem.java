@@ -1,11 +1,12 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Cranium;
+package com.maxwell.cyber_ware_port.common.item.cyberware.cranium;
+
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
 public class EnderJammerItem extends CyberwareItem {
     public EnderJammerItem() {
@@ -22,10 +23,10 @@ public class EnderJammerItem extends CyberwareItem {
 
     @Override
     public void onEntityTeleport(EntityTeleportEvent event, ItemStack stack, LivingEntity wearer) {
-        wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            if (this.tryConsumeEventEnergy(data, stack)) {
+        if (this.tryConsumeEventEnergy(wearer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get()), stack)) {
+            if (event.isCanceled()) {
                 event.setCanceled(true);
             }
-        });
+        }
     }
 }

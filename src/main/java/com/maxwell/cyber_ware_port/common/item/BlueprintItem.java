@@ -1,54 +1,50 @@
 package com.maxwell.cyber_ware_port.common.item;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.component.CustomData;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
-@SuppressWarnings("removal")
 public class BlueprintItem extends Item {
     public BlueprintItem(Properties pProperties) {
         super(pProperties);
-
     }
 
     public static ItemStack createBlueprintFor(Item targetItem) {
         ItemStack stack = new ItemStack(com.maxwell.cyber_ware_port.init.ModItems.BLUEPRINT.get());
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.putString("targetItem", ForgeRegistries.ITEMS.getKey(targetItem).toString());
+        ResourceLocation key = BuiltInRegistries.ITEM.getKey(targetItem);
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(tag -> {
+            tag.putString("targetItem", key.toString());
+        }));
         return stack;
-
     }
 
     public static Item getTargetItem(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("targetItem")) {
-            ResourceLocation loc = new ResourceLocation(tag.getString("targetItem"));
-            return ForgeRegistries.ITEMS.getValue(loc);
-
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            CompoundTag tag = customData.copyTag();
+            if (tag.contains("targetItem")) {
+                return BuiltInRegistries.ITEM.get(ResourceLocation.parse(tag.getString("targetItem")));
+            }
         }
         return null;
-
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         Item target = getTargetItem(pStack);
         if (target != null) {
             pTooltipComponents.add(Component.literal("Schematic for: ").append(target.getDescription()));
-
         } else {
             pTooltipComponents.add(Component.literal("Blank Schematic"));
-
         }
-        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
-
+        super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
     }
 }

@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.item.ItemStackHandler;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -30,30 +30,30 @@ import java.util.List;
 
 public class CyberwareMenuScreen extends Screen {
     private static final ResourceLocation HUD_COLOR_ICON =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/hud_color.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_color.png");
     private static final ResourceLocation HUD_POS_ICON =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/hud_pos.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_pos.png");
     private static final ResourceLocation HUD_RESET_ICON =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/hud_reset.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_reset.png");
     private static final float INNER_RADIUS = 40.0f;
     private static final float OUTER_RADIUS = 100.0f;
     private static final float ITEM_RADIUS = (INNER_RADIUS + OUTER_RADIUS) / 2.0f;
-    private final List<ToggleablePart> parts = new ArrayList<>();
-    private boolean isHudMoveMode = false;
-    private boolean isDraggingHud = false;
-    private int dragOffsetX = 0;
-    private int dragOffsetY = 0;
     private static final int HUD_WIDTH = 80;
     private static final int HUD_HEIGHT = 25;
     private static final int POS_BTN_X = 338;
     private static final int POS_BTN_Y = 63;
     private static final int BTN_SIZE = 16;
-    public boolean isColorSettingsOpen = false;
-    private EditBox hexInput;
     private static final int[] PRESET_COLORS = {
             0xFF00FFFF, 0xFF00FF00, 0xFFFF0000, 0xFFFFFF00,
             0xFFFFFFFF, 0xFFFF00FF, 0xFF0000FF, 0xFFFF8000
     };
+    private final List<ToggleablePart> parts = new ArrayList<>();
+    public boolean isColorSettingsOpen = false;
+    private boolean isHudMoveMode = false;
+    private boolean isDraggingHud = false;
+    private int dragOffsetX = 0;
+    private int dragOffsetY = 0;
+    private EditBox hexInput;
 
     public CyberwareMenuScreen() {
         super(Component.translatable("gui.cyber_ware_port.menu"));

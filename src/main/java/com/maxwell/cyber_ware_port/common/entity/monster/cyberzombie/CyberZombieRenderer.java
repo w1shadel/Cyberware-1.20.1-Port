@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class CyberZombieRenderer extends MobRenderer<CyberZombieEntity, CyberZombieModel> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_zombie.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_zombie.png");
 
     public CyberZombieRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberZombieModel(context.bakeLayer(CyberZombieModel.LAYER_LOCATION)), 0.5F);

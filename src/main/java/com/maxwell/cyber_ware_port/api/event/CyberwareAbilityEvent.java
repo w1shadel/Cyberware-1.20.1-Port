@@ -3,11 +3,10 @@ package com.maxwell.cyber_ware_port.api.event;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
-@Cancelable
-public class CyberwareAbilityEvent extends Event {
+public class CyberwareAbilityEvent extends Event implements ICancellableEvent {
     private final LivingEntity entity;
     private final ItemStack stack;
     private final ICyberware cyberware;

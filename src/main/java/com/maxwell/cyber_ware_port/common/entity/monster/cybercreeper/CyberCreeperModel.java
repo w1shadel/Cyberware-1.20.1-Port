@@ -14,9 +14,9 @@ import net.minecraft.util.Mth;
 @SuppressWarnings("removal")
 public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_creeper"), "main");
+            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "main");
     public static final ModelLayerLocation ARMOR_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_creeper"), "armor");
+            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "armor");
     private final ModelPart body;
     private final ModelPart head;
     private final ModelPart leg0;
@@ -51,11 +51,6 @@ public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
         body.addOrReplaceChild("leg2", CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, deformation), PartPose.offset(-2.0F, -6.0F, -4.0F));
         body.addOrReplaceChild("leg3", CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, deformation), PartPose.offset(2.0F, -6.0F, -4.0F));
         return LayerDefinition.create(meshdefinition, 64, 32);
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

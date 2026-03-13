@@ -1,6 +1,6 @@
 package com.maxwell.cyber_ware_port.common.container;
 
-import com.maxwell.cyber_ware_port.common.block.blueprintChest.BlueprintChestBlockEntity;
+import com.maxwell.cyber_ware_port.common.block.blueprintchest.BlueprintChestBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
@@ -12,8 +12,8 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.capabilities.item.SlotItemHandler;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
 public class BlueprintChestMenu extends AbstractContainerMenu {

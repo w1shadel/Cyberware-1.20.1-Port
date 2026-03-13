@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 @SuppressWarnings("removal")
 public class CyberSkullRenderer implements BlockEntityRenderer<SkullBlockEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
     private final SkullModel model;
 
     public CyberSkullRenderer(BlockEntityRendererProvider.Context context) {

@@ -1,12 +1,14 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,9 @@ public class SurgeryManager {
         List<ItemStack> ejectList = new ArrayList<>();
         for (int i = 0; i < table.getSlots(); i++) {
             ItemStack tableStack = table.getStackInSlot(i);
-            if (isGhost(tableStack))
+            if (isGhost(tableStack)) {
                 continue;
+            }
             ItemStack oldPart = body.getStackInSlot(i);
             if (!oldPart.isEmpty()) {
                 ejectList.add(oldPart.copy());
@@ -27,10 +30,11 @@ public class SurgeryManager {
         }
         resolveConflicts(body, ejectList);
         for (ItemStack stack : ejectList) {
-            if (stack.isEmpty())
+            if (stack.isEmpty()) {
                 continue;
+            }
             if (!player.getInventory().add(stack)) {
-                net.minecraft.world.entity.item.ItemEntity itemEntity = player.drop(stack, false);
+                ItemEntity itemEntity = player.drop(stack, false);
                 if (itemEntity != null) {
                     itemEntity.setNoPickUpDelay();
                     itemEntity.setUnlimitedLifetime();
@@ -43,13 +47,15 @@ public class SurgeryManager {
         for (int i = 0; i < body.getSlots(); i++) {
             ItemStack s1 = body.getStackInSlot(i);
             ICyberware cw1 = CyberwareAPI.getCyberware(s1);
-            if (cw1 == null)
+            if (cw1 == null) {
                 continue;
+            }
             for (int j = i + 1; j < body.getSlots(); j++) {
                 ItemStack s2 = body.getStackInSlot(j);
                 ICyberware cw2 = CyberwareAPI.getCyberware(s2);
-                if (cw2 == null)
+                if (cw2 == null) {
                     continue;
+                }
                 boolean conflict = false;
                 if (cw1.getBodyPartType(s1) != BodyPartType.NONE
                         && cw1.getBodyPartType(s1) == cw2.getBodyPartType(s2)) {
@@ -77,13 +83,12 @@ public class SurgeryManager {
                     if (loserIndex == i) {
                         break;
                     }
-
                 }
             }
         }
     }
 
     public static boolean isGhost(ItemStack s) {
-        return !s.isEmpty() && s.hasTag() && s.getTag().getBoolean("cyberware_ghost");
+        return !s.isEmpty() && s.getOrDefault(CyberWare.GHOST_COMPONENT, false);
     }
 }

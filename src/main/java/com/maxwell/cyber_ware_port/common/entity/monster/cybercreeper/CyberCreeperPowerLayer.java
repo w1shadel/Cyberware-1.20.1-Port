@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -9,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperEntity, CyberCreeperModel> {
     private static final ResourceLocation POWER_LOCATION =
-            new ResourceLocation("textures/entity/creeper/creeper_armor.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID,"textures/entity/creeper/creeper_armor.png");
     private final CyberCreeperModel model;
 
     public CyberCreeperPowerLayer(RenderLayerParent<CyberCreeperEntity, CyberCreeperModel> pRenderer, EntityModelSet pModelSet) {

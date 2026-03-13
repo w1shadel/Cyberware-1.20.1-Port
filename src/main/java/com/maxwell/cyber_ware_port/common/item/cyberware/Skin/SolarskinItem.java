@@ -1,7 +1,8 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Skin;
+package com.maxwell.cyber_ware_port.common.item.cyberware.skin;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -26,9 +27,8 @@ public class SolarskinItem extends CyberwareItem {
             int unitGeneration = this.getEnergyGeneration(stack);
             int totalGeneration = unitGeneration * stack.getCount();
             if (totalGeneration > 0) {
-                wearer.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                    data.receiveEnergy(totalGeneration, false);
-                });
+                CyberwareUserData data = wearer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+                data.receiveEnergy(totalGeneration, false);
             }
         }
     }

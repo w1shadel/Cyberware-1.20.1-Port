@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.block.blueprintChest;
+package com.maxwell.cyber_ware_port.common.block.blueprintchest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class BlueprintChestBlock extends HorizontalDirectionalBlock implements EntityBlock {

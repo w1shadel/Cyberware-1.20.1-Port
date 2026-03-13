@@ -9,7 +9,7 @@ import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberCreeperRenderer extends MobRenderer<CyberCreeperEntity, CyberCreeperModel> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/entity/cyber_creeper.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_creeper.png");
 
     public CyberCreeperRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberCreeperModel(context.bakeLayer(CyberCreeperModel.LAYER_LOCATION)), 0.5F);

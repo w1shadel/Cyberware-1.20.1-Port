@@ -15,7 +15,7 @@ import net.minecraft.world.item.Items;
 @SuppressWarnings("removal")
 public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkeletonEntity> {
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(new ResourceLocation(CyberWare.MODID, "cyber_witherskeleton"), "main");
+            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_witherskeleton"), "main");
     private final ModelPart waist;
     private final ModelPart body;
     private final ModelPart head;
@@ -57,12 +57,6 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
         PartDefinition rightLeg = body.addOrReplaceChild("rightLeg", CubeListBuilder.create().texOffs(0, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-2.0F, 12.0F, 0.0F));
         PartDefinition leftLeg = body.addOrReplaceChild("leftLeg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(2.0F, 12.0F, 0.0F));
         return LayerDefinition.create(meshdefinition, 64, 32);
-
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        waist.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
 
     }
 

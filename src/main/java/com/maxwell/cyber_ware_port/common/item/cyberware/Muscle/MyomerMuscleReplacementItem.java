@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Muscle;
+package com.maxwell.cyber_ware_port.common.item.cyberware.muscle;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
@@ -18,11 +18,11 @@ public class MyomerMuscleReplacementItem extends CyberwareItem {
                 .addAttribute(Attributes.MOVEMENT_SPEED,
                         "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
                         0.1,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL)
+                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
                 .addAttribute(Attributes.ATTACK_DAMAGE,
                         "0fedcba9-8765-4321-0987-654321fedcba",
                         0.1,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
     }
 
