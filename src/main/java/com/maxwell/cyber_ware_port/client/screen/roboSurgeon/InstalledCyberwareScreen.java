@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.screen.roboSurgeon;
+package com.maxwell.cyber_ware_port.client.screen.robosurgeon;
 
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import net.minecraft.client.gui.GuiGraphics;

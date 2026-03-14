@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
 public class RadioTowerCoreBlockEntity extends BlockEntity {
     private static final int BASE_HEIGHT = 4;
@@ -18,19 +17,19 @@ public class RadioTowerCoreBlockEntity extends BlockEntity {
     }
 
     public void deformFencesOnly() {
-        if (this.getLevel() == null || this.getLevel().isClientSide()) return;
+        if (this.level == null || this.level.isClientSide()) return;
         setStructureState(false, false);
     }
 
     public void tryToFormStructure() {
-        if (this.getLevel() == null || this.getLevel().isClientSide()) return;
+        if (this.level == null || this.level.isClientSide()) return;
         if (checkStructure()) {
             setStructureState(true);
         }
     }
 
     public void deformStructure() {
-        if (this.getLevel() == null || this.getLevel().isClientSide()) return;
+        if (this.level == null || this.level.isClientSide()) return;
         setStructureState(false);
     }
 
@@ -39,23 +38,22 @@ public class RadioTowerCoreBlockEntity extends BlockEntity {
     }
 
     private void setStructureState(boolean formed, boolean includeCore) {
-        Level level = this.getLevel();
-        if (level == null) return;
-        BlockPos corePos = this.getBlockPos();
+        if (this.level == null) return;
+        BlockPos corePos = this.worldPosition;
         if (includeCore) {
             BlockState coreState = this.getBlockState();
             if (coreState.hasProperty(RadioTowerCoreBlock.FORMED)) {
-                level.setBlock(corePos, coreState.setValue(RadioTowerCoreBlock.FORMED, formed), 3);
+                this.level.setBlock(corePos, coreState.setValue(RadioTowerCoreBlock.FORMED, formed), 3);
             }
         }
         for (int yOffset = 1; yOffset <= SHAFT_HEIGHT; yOffset++) {
-            updateFenceState(level, corePos.below(yOffset), formed);
+            updateFenceState(this.level, corePos.below(yOffset), formed);
         }
         for (int yOffset = SHAFT_HEIGHT + 1; yOffset <= TOTAL_HEIGHT; yOffset++) {
             BlockPos layerCenter = corePos.below(yOffset);
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
-                    updateFenceState(level, layerCenter.offset(x, 0, z), formed);
+                    updateFenceState(this.level, layerCenter.offset(x, 0, z), formed);
                 }
             }
         }
@@ -70,25 +68,15 @@ public class RadioTowerCoreBlockEntity extends BlockEntity {
         }
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        BlockPos pos = this.getBlockPos();
-        return new AABB(
-                pos.getX() - 5.0, pos.getY() - 15.0, pos.getZ() - 5.0,
-                pos.getX() + 6.0, pos.getY() + 2.0, pos.getZ() + 6.0
-        );
-    }
-
     private boolean checkStructure() {
-        Level level = this.getLevel();
-        if (level == null) return false;
-        BlockPos corePos = this.getBlockPos();
+        if (this.level == null) return false;
+        BlockPos corePos = this.worldPosition;
         for (int yOffset = 1; yOffset <= SHAFT_HEIGHT; yOffset++) {
             BlockPos layerCenter = corePos.below(yOffset);
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     BlockPos targetPos = layerCenter.offset(x, 0, z);
-                    BlockState state = level.getBlockState(targetPos);
+                    BlockState state = this.level.getBlockState(targetPos);
                     if (x == 0 && z == 0) {
                         if (!state.is(ModBlocks.RADIO_TOWER_COMPONENT.get())) return false;
                     } else {
@@ -101,10 +89,8 @@ public class RadioTowerCoreBlockEntity extends BlockEntity {
             BlockPos layerCenter = corePos.below(yOffset);
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
-                    BlockState state = level.getBlockState(layerCenter.offset(x, 0, z));
-                    if (!state.is(ModBlocks.RADIO_TOWER_COMPONENT.get())) {
-                        return false;
-                    }
+                    BlockState state = this.level.getBlockState(layerCenter.offset(x, 0, z));
+                    if (!state.is(ModBlocks.RADIO_TOWER_COMPONENT.get())) return false;
                 }
             }
         }

@@ -45,10 +45,10 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private boolean isPowered = true;
     private boolean needsCapacityUpdate = true;
     private int respawnGracePeriod = 0;
-    private boolean hasCyberLeftArm = false;
-    private boolean hasCyberRightArm = false;
-    private boolean hasCyberLeftLeg = false;
-    private boolean hasCyberRightLeg = false;
+    public boolean hasCyberLeftArm = false;
+    public boolean hasCyberRightArm = false;
+    public boolean hasCyberLeftLeg = false;
+    public boolean hasCyberRightLeg = false;
     private int maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
     private int toleranceImmunityTime = 0;
     private int currentEnergy = 0;
@@ -65,7 +65,28 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             needsCapacityUpdate = true;
         }
     };
+    public boolean hasCyberLeftArm() {
+        return this.hasCyberLeftArm;
+    }
 
+    public boolean hasCyberRightArm() {
+        return this.hasCyberRightArm;
+    }
+
+    public boolean hasCyberLeftLeg() {
+        return this.hasCyberLeftLeg;
+    }
+
+    public boolean hasCyberRightLeg() {
+        return this.hasCyberRightLeg;
+    }
+    public int getLastProduction() {
+        return this.lastProduction;
+    }
+
+    public int getLastConsumption() {
+        return this.lastConsumption;
+    }
     public void recalculateCapacity(ServerPlayer player) {
         float oldMaxHealth = player.getHealth();
         float oldMaxHealthVal = player.getMaxHealth();

@@ -1,11 +1,10 @@
 package com.maxwell.cyber_ware_port.api.event;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.Cancelable;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
-@Cancelable
-public class CyberwareRejectionEvent extends Event {
+public class CyberwareRejectionEvent extends Event implements ICancellableEvent {
     private final LivingEntity entity;
     private final int currentTolerance;
 

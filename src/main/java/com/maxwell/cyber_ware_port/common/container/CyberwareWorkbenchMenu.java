@@ -8,15 +8,18 @@ import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.item.SlotItemHandler;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,8 +29,6 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     private static final int WORKBENCH_SLOTS = 10;
     private static final int PANEL_X = -61;
     private static final int PANEL_Y = 12;
-    private static final int SLOT_OFFSET_X = 10;
-    private static final int SLOT_OFFSET_Y = 6;
     public final CyberwareWorkbenchBlockEntity blockEntity;
     private final Level level;
     private final List<List<Slot>> pageSlots = new ArrayList<>();
@@ -39,6 +40,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     private int maxPages = 0;
     private int blueprintCurrentPage = 0;
     private int blueprintMaxPages = 0;
+
     private final ContainerData pageData = new SimpleContainerData(6) {
         @Override
         public int get(int index) {
@@ -50,329 +52,192 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
                 case 4 -> blueprintCurrentPage;
                 case 5 -> blueprintMaxPages;
                 default -> 0;
-
             };
-
         }
 
         @Override
         public void set(int index, int value) {
             switch (index) {
-                case 0 -> {
-                    currentPage = value;
-                    updateSlotPositions();
-                }
+                case 0 -> { currentPage = value; updateSlotPositions(); }
                 case 1 -> maxPages = value;
-                case 2 -> {
-                    isExtendedOpen = (value == 1);
-                    updateSlotPositions();
-
-                }
+                case 2 -> { isExtendedOpen = (value == 1); updateSlotPositions(); }
                 case 3 -> hasBlueprintLibrary = (value == 1);
-                case 4 -> {
-                    blueprintCurrentPage = value;
-                    updateSlotPositions();
-                }
+                case 4 -> { blueprintCurrentPage = value; updateSlotPositions(); }
                 case 5 -> blueprintMaxPages = value;
-
             }
         }
     };
 
-    public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+    public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, RegistryFriendlyByteBuf extraData) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
-
     }
 
     public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), pContainerId);
         this.blockEntity = (CyberwareWorkbenchBlockEntity) entity;
         this.level = inv.player.level();
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
-            this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
-            this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT, 115, 53));
-            for (int i = 0;
-                 i < 3;
-                 i++) {
-                for (int j = 0;
-                     j < 2;
-                     j++) {
-                    this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.OUTPUT_SLOT_START + (i * 2 + j), 71 + j * 18, 17 + i * 18));
 
-                }
+        IItemHandler handler = this.blockEntity.getItemHandler();
+        this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
+        this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
+        this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT, 115, 53));
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 2; j++) {
+                this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.OUTPUT_SLOT_START + (i * 2 + j), 71 + j * 18, 17 + i * 18));
             }
-            this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.SPECIAL_OUTPUT_SLOT, 141, 21));
+        }
+        this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.SPECIAL_OUTPUT_SLOT, 141, 21));
 
-        });
         findAndAddExternalInventory();
         findAndAddBlueprintLibrary();
         addDataSlots(pageData);
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
         updateSlotPositions();
-
     }
 
     private void findAndAddExternalInventory() {
         BlockPos center = blockEntity.getBlockPos();
-        List<ComponentBoxBlockEntity> foundBoxes = new ArrayList<>();
         for (int x = -3; x <= 3; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -3; z <= 3; z++) {
                     if (x == 0 && y == 0 && z == 0) continue;
-                    BlockEntity targetBe = level.getBlockEntity(center.offset(x, y, z));
-                    if (targetBe instanceof ComponentBoxBlockEntity box) foundBoxes.add(box);
+                    BlockPos pos = center.offset(x, y, z);
+                    IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
+                    if (level.getBlockEntity(pos) instanceof ComponentBoxBlockEntity && handler != null) {
+                        this.hasExtendedInventory = true;
+                        List<Slot> currentBoxSlots = new ArrayList<>();
+                        for (int i = 0; i < 18; i++) {
+                            Slot slot = new SlotItemHandler(handler, i, -10000, -10000);
+                            this.addSlot(slot);
+                            currentBoxSlots.add(slot);
+                        }
+                        pageSlots.add(currentBoxSlots);
+                    }
                 }
             }
         }
-        if (!foundBoxes.isEmpty()) {
-            this.hasExtendedInventory = true;
-            this.maxPages = foundBoxes.size();
-            for (ComponentBoxBlockEntity box : foundBoxes) {
-                List<Slot> currentBoxSlots = new ArrayList<>();
-                box.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-                    for (int row = 0; row < 6; row++) {
-                        for (int col = 0; col < 3; col++) {
-                            int index = col + row * 3;
-                            if (index < handler.getSlots()) {
-                                Slot slot = new SlotItemHandler(handler, index, -10000, -10000);
-                                this.addSlot(slot);
-                                currentBoxSlots.add(slot);
-                            }
-                        }
-                    }
-                });
-                pageSlots.add(currentBoxSlots);
-            }
-        }
+        this.maxPages = pageSlots.size();
     }
 
     private void findAndAddBlueprintLibrary() {
         BlockPos center = blockEntity.getBlockPos();
-        List<BlueprintChestBlockEntity> foundChests = new ArrayList<>();
         for (int x = -3; x <= 3; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -3; z <= 3; z++) {
                     if (x == 0 && y == 0 && z == 0) continue;
-                    BlockEntity targetBe = level.getBlockEntity(center.offset(x, y, z));
-                    if (targetBe instanceof BlueprintChestBlockEntity chest) {
-                        foundChests.add(chest);
-                    }
-                }
-            }
-        }
-        if (!foundChests.isEmpty()) {
-            this.hasBlueprintLibrary = true;
-            this.blueprintMaxPages = foundChests.size();
-            for (BlueprintChestBlockEntity chest : foundChests) {
-                List<Slot> currentChestSlots = new ArrayList<>();
-                chest.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-                    for (int row = 0; row < 6; row++) {
-                        for (int col = 0; col < 3; col++) {
-                            int index = col + row * 3;
-                            if (index < 18 && index < handler.getSlots()) {
-                                Slot slot = new SlotItemHandler(handler, index, -10000, -10000) {
-                                    @Override
-                                    public boolean mayPlace(@NotNull ItemStack stack) {
-                                        return stack.getItem() instanceof BlueprintItem;
-                                    }
-                                };
-                                this.addSlot(slot);
-                                currentChestSlots.add(slot);
-                            }
+                    BlockPos pos = center.offset(x, y, z);
+                    IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
+                    if (level.getBlockEntity(pos) instanceof BlueprintChestBlockEntity && handler != null) {
+                        this.hasBlueprintLibrary = true;
+                        List<Slot> currentChestSlots = new ArrayList<>();
+                        for (int i = 0; i < 18; i++) {
+                            Slot slot = new SlotItemHandler(handler, i, -10000, -10000) {
+                                @Override public boolean mayPlace(@NotNull ItemStack s) { return s.getItem() instanceof BlueprintItem; }
+                            };
+                            this.addSlot(slot);
+                            currentChestSlots.add(slot);
                         }
-                    }
-                });
-                blueprintPageSlots.add(currentChestSlots);
-            }
-        }
-    }
-
-    @Override
-    public void setData(int id, int data) {
-        super.setData(id, data);
-
-    }
-
-    public void changePage(int direction) {
-        int newPage = currentPage + direction;
-        if (newPage >= 0 && newPage < maxPages) {
-            currentPage = newPage;
-            pageData.set(0, newPage);
-
-        }
-    }
-
-    public void changeBlueprintPage(int direction) {
-        int newPage = blueprintCurrentPage + direction;
-        if (newPage >= 0 && newPage < blueprintMaxPages) {
-            blueprintCurrentPage = newPage;
-            pageData.set(4, newPage);
-
-        }
-    }
-
-    public void setExtendedOpen(boolean open) {
-        this.isExtendedOpen = open;
-        pageData.set(2, open ? 1 : 0);
-
-    }
-
-    private void updateSlotPositions() {
-        int startY = PANEL_Y + SLOT_OFFSET_Y;
-        int leftStartX = PANEL_X + SLOT_OFFSET_X;
-        for (int i = 0;
-             i < pageSlots.size();
-             i++) {
-            List<Slot> slots = pageSlots.get(i);
-            boolean isVisible = (i == currentPage) && isExtendedOpen;
-            layoutSlots(slots, isVisible, leftStartX, startY);
-
-        }
-        int rightStartX = 176 + 5;
-        for (int i = 0;
-             i < blueprintPageSlots.size();
-             i++) {
-            List<Slot> slots = blueprintPageSlots.get(i);
-            boolean isVisible = (i == blueprintCurrentPage) && isExtendedOpen && hasBlueprintLibrary;
-            layoutSlots(slots, isVisible, rightStartX, 18);
-
-        }
-    }
-
-    private void layoutSlots(List<Slot> slots, boolean isVisible, int startX, int startY) {
-        for (int row = 0;
-             row < 6;
-             row++) {
-            for (int col = 0;
-                 col < 3;
-                 col++) {
-                int index = col + row * 3;
-                if (index < slots.size()) {
-                    Slot slot = slots.get(index);
-                    if (isVisible) {
-                        slot.x = startX + col * 18;
-                        slot.y = startY + row * 18;
-
-                    } else {
-                        slot.x = -10000;
-                        slot.y = -10000;
-
+                        blueprintPageSlots.add(currentChestSlots);
                     }
                 }
             }
         }
+        this.blueprintMaxPages = blueprintPageSlots.size();
     }
 
-    public int getCurrentPage() {
-        return pageData.get(0);
+    public void updateSlotPositions() {
+        int leftX = PANEL_X + 10;
+        int topY = PANEL_Y + 6;
+        for (int i = 0; i < pageSlots.size(); i++) {
+            layoutSlots(pageSlots.get(i), (i == currentPage) && isExtendedOpen, leftX, topY);
+        }
+        int rightX = 176 + 5;
+        for (int i = 0; i < blueprintPageSlots.size(); i++) {
+            layoutSlots(blueprintPageSlots.get(i), (i == blueprintCurrentPage) && isExtendedOpen && hasBlueprintLibrary, rightX, 18);
+        }
     }
+    private static final java.lang.reflect.Field slotX, slotY;
 
-    public int getMaxPages() {
-        return pageData.get(1);
+    static {
+        try {
+            slotX = Slot.class.getDeclaredField("x");
+            slotX.setAccessible(true);
+            slotY = Slot.class.getDeclaredField("y");
+            slotY.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    public int getBlueprintCurrentPage() {
-        return pageData.get(4);
+    private void setSlotPos(Slot slot, int x, int y) {
+        try {
+            slotX.set(slot, x);
+            slotY.set(slot, y);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    public int getBlueprintMaxPages() {
-        return pageData.get(5);
+    private void layoutSlots(List<Slot> slots, boolean visible, int startX, int startY) {
+        for (int i = 0; i < slots.size(); i++) {
+            Slot slot = slots.get(i);
+            if (visible) {
+                setSlotPos(slot, startX + (i % 3) * 18, startY + (i / 3) * 18);
+            } else {
+                setSlotPos(slot, -10000, -10000);
+            }
+        }
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int pIndex) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
-        int totalSlots = this.slots.size();
+
         int WB_END = WORKBENCH_SLOTS;
-        int EXT_START = WB_END;
-        int leftCount = pageSlots.stream().mapToInt(List::size).sum();
-        int EXT_END = EXT_START + leftCount;
-        int LIB_START = EXT_END;
-        int rightCount = blueprintPageSlots.stream().mapToInt(List::size).sum();
-        int LIB_END = LIB_START + rightCount;
-        int PLAYER_START = LIB_END;
-        int PLAYER_END = totalSlots;
-        if (pIndex < PLAYER_START) {
-            if (!moveItemStackTo(sourceStack, PLAYER_START, PLAYER_END, true)) {
-                return ItemStack.EMPTY;
-            }
-        } else if (pIndex >= PLAYER_START && pIndex < PLAYER_END) {
-            boolean moved = false;
-            if (sourceStack.getItem() instanceof BlueprintItem) {
-                if (moveItemStackTo(sourceStack, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT + 1, false)) {
-                    moved = true;
-                } else if (hasBlueprintLibrary && rightCount > 0) {
-                    if (moveItemStackTo(sourceStack, LIB_START, LIB_END, false)) {
-                        moved = true;
-                    }
-                }
-            } else if (sourceStack.getItem() instanceof ICyberware) {
-                if (moveItemStackTo(sourceStack, CyberwareWorkbenchBlockEntity.INPUT_SLOT, CyberwareWorkbenchBlockEntity.INPUT_SLOT + 1, false)) {
-                    moved = true;
-                } else if (isExtendedOpen && leftCount > 0) {
-                    if (moveItemStackTo(sourceStack, EXT_START, EXT_END, false)) {
-                        moved = true;
-                    }
-                }
-            } else if (sourceStack.is(net.minecraft.world.item.Items.PAPER)) {
-                if (moveItemStackTo(sourceStack, CyberwareWorkbenchBlockEntity.PAPER_SLOT, CyberwareWorkbenchBlockEntity.PAPER_SLOT + 1, false)) {
-                    moved = true;
-                }
-            } else {
-                if (isExtendedOpen && leftCount > 0) {
-                    if (moveItemStackTo(sourceStack, EXT_START, EXT_END, false)) {
-                        moved = true;
-                    }
-                }
-            }
-            if (!moved) {
-                return ItemStack.EMPTY;
-            }
-        }
-        if (sourceStack.getCount() == 0) {
-            sourceSlot.set(ItemStack.EMPTY);
+        int EXT_END = WB_END + pageSlots.stream().mapToInt(List::size).sum();
+        int LIB_END = EXT_END + blueprintPageSlots.stream().mapToInt(List::size).sum();
+
+        if (pIndex < LIB_END) {
+            if (!moveItemStackTo(sourceStack, LIB_END, slots.size(), true)) return ItemStack.EMPTY;
         } else {
-            sourceSlot.setChanged();
+            if (sourceStack.getItem() instanceof BlueprintItem) {
+                if (!moveItemStackTo(sourceStack, 2, 3, false) && !moveItemStackTo(sourceStack, EXT_END, LIB_END, false)) return ItemStack.EMPTY;
+            } else if (sourceStack.getItem() instanceof ICyberware) {
+                if (!moveItemStackTo(sourceStack, 0, 1, false) && !moveItemStackTo(sourceStack, WB_END, EXT_END, false)) return ItemStack.EMPTY;
+            } else if (sourceStack.is(Items.PAPER)) {
+                if (!moveItemStackTo(sourceStack, 1, 2, false)) return ItemStack.EMPTY;
+            } else if (!moveItemStackTo(sourceStack, WB_END, EXT_END, false)) {
+                return ItemStack.EMPTY;
+            }
         }
-        if (sourceStack.getCount() == copyOfSourceStack.getCount()) {
-            return ItemStack.EMPTY;
-        }
+
+        if (sourceStack.isEmpty()) sourceSlot.setByPlayer(ItemStack.EMPTY);
+        else sourceSlot.setChanged();
         sourceSlot.onTake(playerIn, sourceStack);
         return copyOfSourceStack;
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
-        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
-                pPlayer, ModBlocks.CYBERWARE_WORKBENCH.get());
-
+    public boolean stillValid(@NotNull Player pPlayer) {
+        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), pPlayer, ModBlocks.CYBERWARE_WORKBENCH.get());
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
-        for (int i = 0;
-             i < 3;
-             ++i) {
-            for (int l = 0;
-                 l < 9;
-                 ++l) {
+        for (int i = 0; i < 3; ++i) {
+            for (int l = 0; l < 9; ++l) {
                 this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
-
             }
         }
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {
-        for (int i = 0;
-             i < 9;
-             ++i) {
+        for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
-
         }
     }
 
+    public void changePage(int direction) { currentPage = Math.clamp(currentPage + direction, 0, Math.max(0, maxPages - 1)); updateSlotPositions(); }
+    public void changeBlueprintPage(int direction) { blueprintCurrentPage = Math.clamp(blueprintCurrentPage + direction, 0, Math.max(0, blueprintMaxPages - 1)); updateSlotPositions(); }
 }

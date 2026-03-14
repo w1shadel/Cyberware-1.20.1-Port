@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.upgrades.cyberEye;
+package com.maxwell.cyber_ware_port.client.upgrades.cybereye;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
@@ -15,42 +15,41 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.capabilities.item.ItemStackHandler;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 
-@Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
     private static final ResourceLocation BATTERY_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/battery_hud.png");
 
     @SubscribeEvent
-    public static void onRenderGui(RenderGuiOverlayEvent.Post event) {
-        if (event.getOverlay() != VanillaGuiOverlay.HOTBAR.type()) return;
-        Minecraft mc = Minecraft.getInstance();
-        Player player = mc.player;
-        if (player == null) return;
-        player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
-            if (!isHudActive(userData)) {
-                return;
+    public static void onRenderGuiLayer(RenderGuiLayerEvent.Post event) {
+        // VanillaGuiLayers.HOTBAR の後に描画を行う
+        if (VanillaGuiLayers.HOTBAR.equals(event.getName())) {
+            Minecraft mc = Minecraft.getInstance();
+            Player player = mc.player;
+            if (player == null) return;
+
+            CyberwareUserData userData = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            if (isHudActive(userData)) {
+                int x = ClientCyberwareSettings.hudX;
+                int y = ClientCyberwareSettings.hudY;
+                renderBatteryHud(event.getGuiGraphics(), mc, userData, x, y);
             }
-            int x = ClientCyberwareSettings.hudX;
-            int y = ClientCyberwareSettings.hudY;
-            renderBatteryHud(event.getGuiGraphics(), mc, userData, x, y);
-        });
+        }
     }
 
     private static boolean isHudActive(CyberwareUserData data) {
-        ItemStackHandler handler = data.getInstalledCyberware();
+        IItemHandler handler = data.getInstalledCyberware();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.isEmpty()) continue;
             ICyberware cw = CyberwareAPI.getCyberware(stack);
             if (cw != null && stack.is(ModItems.HUDJACK.get())) {
-                if (cw.isActive(stack)) {
-                    return true;
-                }
+                if (cw.isActive(stack)) return true;
             }
         }
         return false;
@@ -59,29 +58,20 @@ public class CyberwareHudOverlay {
     public static void renderBatteryHud(GuiGraphics g, Minecraft mc, CyberwareUserData data, int x, int y) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderTexture(0, BATTERY_TEXTURE);
         int current = data.getEnergyStored();
         int max = data.getMaxEnergyStored();
         int prod = data.getLastProduction();
         int cons = data.getLastConsumption();
         float r, gVal, b, a;
         int textColor;
+
         if (current <= 0) {
-            long time = System.currentTimeMillis();
-            boolean flash = (time % 500) < 250;
-            if (flash) {
-                r = 1.0f;
-                gVal = 0.0f;
-                b = 0.0f;
-                a = 1.0f;
-                textColor = 0xFFFF0000;
-            } else {
-                r = 0.5f;
-                gVal = 0.0f;
-                b = 0.0f;
-                a = 1.0f;
-                textColor = 0xFF880000;
-            }
+            boolean flash = (System.currentTimeMillis() % 500) < 250;
+            r = flash ? 1.0f : 0.5f;
+            gVal = 0.0f;
+            b = 0.0f;
+            a = 1.0f;
+            textColor = flash ? 0xFFFF0000 : 0xFF880000;
         } else {
             float[] userColor = ClientCyberwareSettings.getColorFloats();
             r = userColor[0];
@@ -90,38 +80,33 @@ public class CyberwareHudOverlay {
             a = userColor[3];
             textColor = ClientCyberwareSettings.hudColor;
         }
-        RenderSystem.setShaderColor(r, gVal, b, a);
-        int startX = x;
-        int startY = y;
+
+        g.setColor(r, gVal, b, a);
         int texTotalWidth = 37;
         int texTotalHeight = 25;
         int frameWidth = 13;
         int frameHeight = 25;
-        g.blit(BATTERY_TEXTURE, startX, startY, 0, 0, frameWidth, frameHeight, texTotalWidth, texTotalHeight);
+
+        g.blit(BATTERY_TEXTURE, x, y, 0, 0, frameWidth, frameHeight, texTotalWidth, texTotalHeight);
+
         if (max > 0 && current > 0) {
             int barTextureU = 27;
             int barTextureV = 2;
             int barWidth = 10;
             int barFullHeight = 22;
-            int offsetX = 2;
-            int offsetY = 2;
             float pct = (float) current / max;
             int renderHeight = (int) (barFullHeight * pct);
             if (renderHeight > 0) {
-                int screenY = startY + offsetY + (barFullHeight - renderHeight);
+                int screenY = y + 2 + (barFullHeight - renderHeight);
                 int textureV = barTextureV + (barFullHeight - renderHeight);
-                g.blit(BATTERY_TEXTURE,
-                        startX + offsetX, screenY,
-                        barTextureU, textureV,
-                        barWidth, renderHeight,
-                        texTotalWidth, texTotalHeight);
+                g.blit(BATTERY_TEXTURE, x + 2, screenY, barTextureU, textureV, barWidth, renderHeight, texTotalWidth, texTotalHeight);
             }
         }
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        int textX = startX + frameWidth + 4;
-        int textY = startY + 4;
-        g.drawString(mc.font, current + " / " + max, textX, textY, textColor, true);
-        g.drawString(mc.font, "-" + cons + " / +" + prod, textX, textY + 10, textColor, true);
+
+        g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        int textX = x + frameWidth + 4;
+        g.drawString(mc.font, current + " / " + max, textX, y + 4, textColor, true);
+        g.drawString(mc.font, "-" + cons + " / +" + prod, textX, y + 14, textColor, true);
         RenderSystem.disableBlend();
     }
 }

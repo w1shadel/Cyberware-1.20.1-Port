@@ -1,5 +1,7 @@
 package com.maxwell.cyber_ware_port.common.block.radio;
 
+import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlock;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,6 +30,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RadioKitBlock extends HorizontalDirectionalBlock {
+    public static final MapCodec<RadioKitBlock> CODEC = simpleCodec(RadioKitBlock::new);
+
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final Map<ResourceKey<Level>, Long> LAST_ACTIVE_TIME = new ConcurrentHashMap<>();
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
@@ -47,6 +51,11 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.valueOf(false))
                 .setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
     }
 
     @Nullable

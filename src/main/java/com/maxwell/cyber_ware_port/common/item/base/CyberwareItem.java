@@ -8,7 +8,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -145,7 +144,7 @@ public class CyberwareItem extends Item implements ICyberware {
     }
 
     @Override
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
         if (isPristine(stack)) return this.baseAttributeModifiers;
         Multimap<Holder<Attribute>, AttributeModifier> modified = ArrayListMultimap.create();
         this.baseAttributeModifiers.forEach((attr, mod) -> {

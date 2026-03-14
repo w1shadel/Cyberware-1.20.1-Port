@@ -1,10 +1,10 @@
 package com.maxwell.cyber_ware_port.common.block.charger;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
-import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -12,20 +12,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.capabilities.energy.EnergyStorage;
-import net.neoforged.neoforge.capabilities.energy.IEnergyStorage;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ChargerBlockEntity extends BlockEntity {
     private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(1000000, 10000);
-    private final LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> energyStorage);
     private boolean isDrainMode = false;
 
     public ChargerBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -41,14 +38,17 @@ public class ChargerBlockEntity extends BlockEntity {
     }
 
     private void handlePlayerEnergyTransfer(Level level, BlockPos pos) {
-        AABB area = new AABB(pos).move(0, 0, 0).expandTowards(0, 0.5, 0);
+        AABB area = new AABB(pos).expandTowards(0, 0.5, 0);
         List<Player> players = level.getEntitiesOfClass(Player.class, area);
         for (Player player : players) {
             CyberwareEvents.Recharge event = new CyberwareEvents.Recharge(player, this, isDrainMode);
-            if (MinecraftForge.EVENT_BUS.post(event)) {
+            NeoForge.EVENT_BUS.post(event);
+            if (((ICancellableEvent) event).isCanceled()) {
                 continue;
             }
-            player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(userData -> {
+
+            IEnergyStorage userData = player.getCapability(Capabilities.EnergyStorage.ENTITY, null);
+            if (userData != null) {
                 int maxTransfer = 10000;
                 if (isDrainMode) {
                     int extracted = userData.extractEnergy(maxTransfer, true);
@@ -66,22 +66,18 @@ public class ChargerBlockEntity extends BlockEntity {
                         userData.receiveEnergy(received, false);
                     }
                 }
-            });
+            }
         }
     }
 
     private void distributeEnergy(Level level, BlockPos pos) {
         for (Direction direction : Direction.values()) {
             if (this.energyStorage.getEnergyStored() <= 0) break;
-            BlockEntity neighborBe = level.getBlockEntity(pos.relative(direction));
-            if (neighborBe != null) {
-                neighborBe.getCapability(ForgeCapabilities.ENERGY, direction.getOpposite()).ifPresent(targetStorage -> {
-                    if (targetStorage.canReceive()) {
-                        int extracted = this.energyStorage.extractEnergy(10000, true);
-                        int received = targetStorage.receiveEnergy(extracted, false);
-                        this.energyStorage.extractEnergy(received, false);
-                    }
-                });
+            IEnergyStorage targetStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(direction), direction.getOpposite());
+            if (targetStorage != null && targetStorage.canReceive()) {
+                int extracted = this.energyStorage.extractEnergy(10000, true);
+                int received = targetStorage.receiveEnergy(extracted, false);
+                this.energyStorage.extractEnergy(received, false);
             }
         }
     }
@@ -108,34 +104,24 @@ public class ChargerBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) {
-            return energyHandler.cast();
-        }
-        return super.getCapability(cap, side);
+    public IEnergyStorage getEnergyStorage() {
+        return energyStorage;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
-        pTag.put("Energy", energyStorage.serializeNBT());
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.saveAdditional(pTag, pRegistries);
+        pTag.put("Energy", energyStorage.serializeNBT(pRegistries));
         pTag.putBoolean("IsDrainMode", isDrainMode);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        super.loadAdditional(pTag, pRegistries);
         if (pTag.contains("Energy")) {
-            energyStorage.deserializeNBT(pTag.get("Energy"));
+            energyStorage.deserializeNBT(pRegistries, pTag.get("Energy"));
         }
         this.isDrainMode = pTag.getBoolean("IsDrainMode");
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyHandler.invalidate();
     }
 
     private class CustomEnergyStorage extends EnergyStorage {

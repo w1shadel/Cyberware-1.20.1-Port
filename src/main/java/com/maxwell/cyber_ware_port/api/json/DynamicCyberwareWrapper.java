@@ -55,6 +55,7 @@ public class DynamicCyberwareWrapper implements ICyberware {
         return data.attributeModifiers;
     }
 
+
     @Override
     public boolean hasEnergyProperties(ItemStack stack) {
         return false;

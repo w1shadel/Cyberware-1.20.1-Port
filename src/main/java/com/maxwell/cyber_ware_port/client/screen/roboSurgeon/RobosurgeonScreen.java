@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.screen.roboSurgeon;
+package com.maxwell.cyber_ware_port.client.screen.robosurgeon;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;

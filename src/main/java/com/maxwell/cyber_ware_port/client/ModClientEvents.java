@@ -36,12 +36,12 @@ import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.maxwell.cyber_ware_port.init.ModEntities;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
@@ -49,10 +49,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-import java.util.function.Supplier;
-
-@SuppressWarnings("removal")
 @EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModClientEvents {
     public static final ModelLayerLocation CYBER_SKULL_LAYER = new ModelLayerLocation(
@@ -71,19 +70,16 @@ public class ModClientEvents {
         event.registerEntityRenderer(ModEntities.CYBER_CREEPER.get(), CyberCreeperRenderer::new);
         event.registerEntityRenderer(ModEntities.CYBER_WITHER.get(), CyberWitherBossRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CYBER_SKULL.get(), CyberSkullRenderer::new);
-
     }
 
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SurgeryChamberModel.LAYER_LOCATION, SurgeryChamberModel::createBodyLayer);
-        event.registerLayerDefinition(PlayerInternalPartsModel.LAYER_LOCATION,
-                PlayerInternalPartsModel::createBodyLayer);
+        event.registerLayerDefinition(PlayerInternalPartsModel.LAYER_LOCATION, PlayerInternalPartsModel::createBodyLayer);
         event.registerLayerDefinition(CyberWareWorkBenchModel.LAYER_LOCATION, CyberWareWorkBenchModel::createBodyLayer);
         event.registerLayerDefinition(ScannerBlockModel.LAYER_LOCATION, ScannerBlockModel::createBodyLayer);
         event.registerLayerDefinition(RadioTowerModel.LAYER_LOCATION, RadioTowerModel::createBodyLayer);
-        event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION,
-                CyberWitherSkeletonModel::createBodyLayer);
+        event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION, CyberWitherSkeletonModel::createBodyLayer);
         event.registerLayerDefinition(CyberSkeletonModel.LAYER_LOCATION, CyberSkeletonModel::createBodyLayer);
         event.registerLayerDefinition(SkeletonDisplayModel.LAYER_LOCATION, SkeletonDisplayModel::createBodyLayer);
         event.registerLayerDefinition(CyberZombieModel.LAYER_LOCATION, CyberZombieModel::createBodyLayer);
@@ -101,21 +97,25 @@ public class ModClientEvents {
     }
 
     @SubscribeEvent
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenuTypes.ROBO_SURGEON_MENU.get(), RobosurgeonScreen::new);
+        event.register(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), CyberwareWorkbenchScreen::new);
+        event.register(ModMenuTypes.SCANNER_MENU.get(), ScannerScreen::new);
+        event.register(ModMenuTypes.COMPONENT_BOX_MENU.get(), ComponentBoxScreen::new);
+        event.register(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), BlueprintChestScreen::new);
+    }
+
+    @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            MenuScreens.register(ModMenuTypes.ROBO_SURGEON_MENU.get(), RobosurgeonScreen::new);
-            MenuScreens.register(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), CyberwareWorkbenchScreen::new);
-            MenuScreens.register(ModMenuTypes.SCANNER_MENU.get(), ScannerScreen::new);
-            MenuScreens.register(ModMenuTypes.COMPONENT_BOX_MENU.get(), ComponentBoxScreen::new);
-            MenuScreens.register(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), BlueprintChestScreen::new);
             ItemProperties.register(ModItems.BLUEPRINT.get(), ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "written"),
                     (stack, level, entity, seed) -> BlueprintItem.getTargetItem(stack) != null ? 1.0F : 0.0F);
+
             ResourceLocation scavengedProperty = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "is_scavenged");
-            for (Supplier<Item> entry : ModItems.ITEMS.getEntries()) {
+            for (DeferredHolder<Item, ? extends Item> entry : ModItems.ITEMS.getEntries()) {
                 if (entry.get() instanceof CyberwareItem) {
-                    ItemProperties.register(entry.get(), scavengedProperty, (stack, level, entity,
-                                                                             seed) -> (stack.getItem() instanceof CyberwareItem cw && !cw.isPristine(stack)) ? 1.0F
-                            : 0.0F);
+                    ItemProperties.register(entry.get(), scavengedProperty, (stack, level, entity, seed) ->
+                            (stack.getItem() instanceof CyberwareItem cw && !cw.isPristine(stack)) ? 1.0F : 0.0F);
                 }
             }
             SkullBlockRenderer.SKIN_BY_TYPE.put(CyberSkullType.CYBER_WITHER_SKELETON, CYBER_WITHER_SKELETON_TEXTURE);
@@ -124,12 +124,11 @@ public class ModClientEvents {
 
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
-        for (String skinType : new String[]{"default", "slim"}) {
-            PlayerRenderer renderer = event.getSkin(skinType);
+        for (PlayerSkin.Model skinModel : PlayerSkin.Model.values()) {
+            PlayerRenderer renderer = event.getSkin(skinModel);
             if (renderer != null) {
                 renderer.addLayer(new CyberwarePlayerLayer(renderer));
             }
         }
     }
-
 }

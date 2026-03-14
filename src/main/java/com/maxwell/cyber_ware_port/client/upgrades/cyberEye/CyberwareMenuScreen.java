@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.upgrades.cyberEye;
+package com.maxwell.cyber_ware_port.client.upgrades.cybereye;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
@@ -22,7 +22,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.item.ItemStackHandler;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
