@@ -36,7 +36,7 @@ public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChambe
         pPoseStack.mulPose(Axis.YP.rotationDegrees(angle));
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
         this.model.setupAnim(pBlockEntity, pPartialTick);
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, -1);
         pPoseStack.popPose();
 
     }

@@ -40,7 +40,7 @@ public class ScannerBlockRenderer implements BlockEntityRenderer<ScannerBlockEnt
         }
         this.model.setupMovingParts(pBlockEntity.isWorking(), animTime);
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, -1);
         pPoseStack.popPose();
 
     }

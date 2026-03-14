@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.block.cwb;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
@@ -12,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("removal")
 public class CyberWareWorkBenchModel extends Model {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("modid", "cyberwareworkbenchmodel"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyberwareworkbenchmodel"), "main");
     private final ModelPart root;
     private final ModelPart hammer;
 

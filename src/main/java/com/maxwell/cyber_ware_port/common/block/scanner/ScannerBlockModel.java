@@ -46,9 +46,9 @@ public class ScannerBlockModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int i3) {
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay);
-        scanner.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+        scanner.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 
     }
 

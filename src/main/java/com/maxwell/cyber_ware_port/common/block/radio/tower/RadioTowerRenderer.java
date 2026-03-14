@@ -33,7 +33,7 @@ public class RadioTowerRenderer implements BlockEntityRenderer<RadioTowerCoreBlo
         pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         pPoseStack.translate(0.0D, 1.0D, 0.0D);
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay,1);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, -1);
         pPoseStack.popPose();
 
     }

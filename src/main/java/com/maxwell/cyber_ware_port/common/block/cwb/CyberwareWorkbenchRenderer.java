@@ -35,7 +35,7 @@ public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<Cyberware
         pPoseStack.mulPose(Axis.YP.rotationDegrees(rotationDegrees + 180.0f));
         this.model.setupAnim(pBlockEntity, pPartialTick);
         VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, 1);
+        this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, -1);
         pPoseStack.popPose();
 
     }
