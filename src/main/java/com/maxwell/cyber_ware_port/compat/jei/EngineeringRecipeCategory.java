@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRecipe> {
     public static final RecipeType<EngineeringRecipe> RECIPE_TYPE = RecipeType.create(CyberWare.MODID, "engineering", EngineeringRecipe.class);
     private static final ResourceLocation BACKGROUND_LOC = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
-
     private final IDrawable background;
     private final IDrawable icon;
 
@@ -57,20 +56,17 @@ public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRec
         Ingredient inputIng = recipe.getIngredients().get(0);
         builder.addSlot(RecipeIngredientRole.INPUT, 15, 20)
                 .addIngredients(inputIng);
-
         builder.addSlot(RecipeIngredientRole.CATALYST, 15, 53)
                 .addItemStack(new ItemStack(Items.PAPER))
                 .addTooltipCallback((view, tooltip) ->
                         tooltip.add(Component.translatable("gui.cyber_ware_port.need_paper").withStyle(ChatFormatting.GRAY))
                 );
-
         int outputX = 71;
         int outputY = 17;
         for (int i = 0; i < Math.min(recipe.outputs().size(), 6); i++) {
             EngineeringRecipe.OutputEntry entry = recipe.outputs().get(i);
             int x = outputX + (i % 2) * 18;
             int y = outputY + (i / 2) * 18;
-
             builder.addSlot(RecipeIngredientRole.OUTPUT, x, y)
                     .addItemStack(entry.stack())
                     .addTooltipCallback((view, tooltip) -> {
@@ -78,7 +74,6 @@ public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRec
                         tooltip.add(Component.literal(String.format("%.0f%% Chance", chance)).withStyle(ChatFormatting.YELLOW));
                     });
         }
-
         float bpChance = recipe.getBlueprintChance();
         if (bpChance > 0 && inputIng.getItems().length > 0) {
             ItemStack blueprint = BlueprintItem.createBlueprintFor(inputIng.getItems()[0].getItem());

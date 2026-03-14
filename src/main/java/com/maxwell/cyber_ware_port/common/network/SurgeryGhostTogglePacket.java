@@ -18,7 +18,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements CustomPacketPayload {
     public static final Type<SurgeryGhostTogglePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "surgery_ghost_toggle"));
-
     public static final StreamCodec<RegistryFriendlyByteBuf, SurgeryGhostTogglePacket> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, SurgeryGhostTogglePacket::pos,
             ByteBufCodecs.VAR_INT, SurgeryGhostTogglePacket::slotId,
@@ -38,7 +37,6 @@ public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements Cust
                     ItemStackHandler itemHandler = tile.getItemHandler();
                     ItemStack currentStack = itemHandler.getStackInSlot(slotId);
                     boolean changed = false;
-
                     if (!currentStack.isEmpty() && currentStack.getOrDefault(CyberWare.GHOST_COMPONENT, false)) {
                         itemHandler.setStackInSlot(slotId, ItemStack.EMPTY);
                         changed = true;
@@ -53,7 +51,6 @@ public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements Cust
                             changed = true;
                         }
                     }
-
                     if (changed) {
                         tile.setChanged();
                         player.level().sendBlockUpdated(pos, tile.getBlockState(), tile.getBlockState(), 3);

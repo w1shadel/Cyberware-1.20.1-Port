@@ -21,10 +21,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class RobosurgeonBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final MapCodec<RobosurgeonBlock> CODEC = simpleCodec(RobosurgeonBlock::new);
+
     public RobosurgeonBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
+
     @Override
     protected com.mojang.serialization.MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;

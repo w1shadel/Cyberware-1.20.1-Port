@@ -1,4 +1,3 @@
-
 package com.maxwell.cyber_ware_port.client;
 
 import com.maxwell.cyber_ware_port.CyberWare;
@@ -98,30 +97,38 @@ public class ForgeClientEvents {
             }
             if (cyberware.hasEnergyProperties(stack)) {
                 int consumption = cyberware.getEnergyConsumption(stack);
-                if (consumption > 0) tooltip.add(Component.translatable("cyberware.tooltip.powerConsumption", consumption).withStyle(ChatFormatting.RED));
+                if (consumption > 0)
+                    tooltip.add(Component.translatable("cyberware.tooltip.powerConsumption", consumption).withStyle(ChatFormatting.RED));
                 int generation = cyberware.getEnergyGeneration(stack);
-                if (generation > 0) tooltip.add(Component.translatable("cyberware.tooltip.powerProduction", generation).withStyle(ChatFormatting.GREEN));
+                if (generation > 0)
+                    tooltip.add(Component.translatable("cyberware.tooltip.powerProduction", generation).withStyle(ChatFormatting.GREEN));
                 int storage = cyberware.getEnergyStorage(stack);
-                if (storage > 0) tooltip.add(Component.translatable("cyberware.tooltip.capacity", storage).withStyle(ChatFormatting.AQUA));
+                if (storage > 0)
+                    tooltip.add(Component.translatable("cyberware.tooltip.capacity", storage).withStyle(ChatFormatting.AQUA));
                 int eventCost = cyberware.getEventConsumption(stack);
-                if (eventCost > 0) tooltip.add(Component.translatable("cyberware.tooltip.eventCost", eventCost).withStyle(ChatFormatting.RED));
+                if (eventCost > 0)
+                    tooltip.add(Component.translatable("cyberware.tooltip.eventCost", eventCost).withStyle(ChatFormatting.RED));
             }
-            if (cyberware.getMaxInstallAmount(stack) > 1) tooltip.add(Component.translatable("cyberware.tooltip.maxInstall", cyberware.getMaxInstallAmount(stack)).withStyle(ChatFormatting.BLUE));
+            if (cyberware.getMaxInstallAmount(stack) > 1)
+                tooltip.add(Component.translatable("cyberware.tooltip.maxInstall", cyberware.getMaxInstallAmount(stack)).withStyle(ChatFormatting.BLUE));
             tooltip.add(Component.translatable("cyberware.tooltip.essence", cyberware.getEssenceCost(stack)).withStyle(ChatFormatting.DARK_PURPLE));
             Set<Item> reqs = cyberware.getPrerequisites(stack);
             if (!reqs.isEmpty()) {
                 tooltip.add(Component.empty());
                 tooltip.add(Component.translatable("cyberware.tooltip.requires").withStyle(ChatFormatting.AQUA));
-                for (Item req : reqs) tooltip.add(Component.literal(" - ").append(req.getName(new ItemStack(req))).withStyle(ChatFormatting.GRAY));
+                for (Item req : reqs)
+                    tooltip.add(Component.literal(" - ").append(req.getName(new ItemStack(req))).withStyle(ChatFormatting.GRAY));
             }
             Set<Item> incompatibles = cyberware.getIncompatibleItems(stack);
             if (!incompatibles.isEmpty()) {
                 tooltip.add(Component.empty());
                 tooltip.add(Component.translatable("cyberware.tooltip.incompatible").withStyle(ChatFormatting.RED));
-                for (Item incompatible : incompatibles) tooltip.add(Component.literal(" - ").append(incompatible.getName(new ItemStack(incompatible))).withStyle(ChatFormatting.GRAY));
+                for (Item incompatible : incompatibles)
+                    tooltip.add(Component.literal(" - ").append(incompatible.getName(new ItemStack(incompatible))).withStyle(ChatFormatting.GRAY));
             }
             CyberwareSlotType slotType = CyberwareSlotType.fromId(cyberware.getSlot(stack));
-            if (slotType != null) tooltip.add(Component.translatable("cyberware.tooltip.slot", slotType.getDisplayName()).withStyle(ChatFormatting.GRAY));
+            if (slotType != null)
+                tooltip.add(Component.translatable("cyberware.tooltip.slot", slotType.getDisplayName()).withStyle(ChatFormatting.GRAY));
             tooltip.add(Component.translatable(cyberware.isPristine(stack) ? "cyberware.quality.manufactured" : "cyberware.quality.scavenged").withStyle(cyberware.isPristine(stack) ? ChatFormatting.AQUA : ChatFormatting.RED));
         }
     }

@@ -20,5 +20,8 @@
       }
     }
   ],
-  "output": "cyber_ware_port:dense_battery"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:dense_battery"
+  }
 }

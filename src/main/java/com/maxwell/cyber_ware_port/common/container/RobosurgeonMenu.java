@@ -31,7 +31,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
         this.blockEntity = (RobosurgeonBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(entity.getLevel(), entity.getBlockPos());
         addDataSlots(data);
-
         IItemHandler handler = this.blockEntity.getItemHandler();
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
             this.addSlot(new SlotItemHandler(handler, i, -10000, -10000) {
@@ -40,7 +39,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     if (!super.mayPlace(stack)) return false;
                     ICyberware myCw = CyberwareAPI.getCyberware(stack);
                     if (myCw == null) return true;
-
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
                         if (j == this.getSlotIndex()) continue;
                         ItemStack other = handler.getStackInSlot(j);
@@ -49,7 +47,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                         if (otherCw == null) continue;
                         if (myCw.isIncompatible(stack, other) || otherCw.isIncompatible(other, stack)) return false;
                     }
-
                     int currentCount = stack.getCount();
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
                         if (j == this.getSlotIndex()) continue;
@@ -63,7 +60,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                 }
             });
         }
-
         if (!inv.player.level().isClientSide && inv.player instanceof ServerPlayer serverPlayer) {
             this.blockEntity.populateGhostItems(serverPlayer);
         }
@@ -146,7 +142,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                             if (targetSlot.hasItem() && targetSlot.getItem().getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
                                 targetSlot.set(ItemStack.EMPTY);
                             }
-                            // Don't allow moving ghost items from the table to inventory
                             if (index < RobosurgeonBlockEntity.TOTAL_SLOTS && itemstack1.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
                                 return ItemStack.EMPTY;
                             }

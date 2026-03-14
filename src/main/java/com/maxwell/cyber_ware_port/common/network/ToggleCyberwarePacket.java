@@ -18,7 +18,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ToggleCyberwarePacket(int slotId) implements CustomPacketPayload {
     public static final Type<ToggleCyberwarePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "toggle_cyberware"));
-
     public static final StreamCodec<FriendlyByteBuf, ToggleCyberwarePacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, ToggleCyberwarePacket::slotId,
             ToggleCyberwarePacket::new

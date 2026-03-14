@@ -3,7 +3,6 @@ package com.maxwell.cyber_ware_port.client.upgrades.cybereye;
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.client.ClientCyberwareSettings;
-import com.maxwell.cyber_ware_port.client.KeyInit;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
@@ -173,7 +172,6 @@ public class CyberwareMenuScreen extends Screen {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f matrix = g.pose().last().pose();
-
         int segments = 60;
         for (int i = 0; i <= segments; i++) {
             double angle = 2 * Math.PI * i / segments;
@@ -185,7 +183,6 @@ public class CyberwareMenuScreen extends Screen {
         MeshData meshData = buffer.build();
         if (meshData != null) BufferUploader.drawWithShader(meshData);
         RenderSystem.disableBlend();
-
         if (!parts.isEmpty()) {
             double angleStep = 2 * Math.PI / parts.size();
             for (int i = 0; i < parts.size(); i++) {
@@ -195,7 +192,6 @@ public class CyberwareMenuScreen extends Screen {
                 int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
                 boolean isActive = part.item.isActive(part.stack);
                 boolean isHovered = (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12);
-
                 if (isHovered) {
                     Component statusText = isActive
                             ? Component.translatable("cyberware.gui.active")
@@ -303,14 +299,17 @@ public class CyberwareMenuScreen extends Screen {
                 int hudX = ClientCyberwareSettings.hudX, hudY = ClientCyberwareSettings.hudY;
                 int rX = hudX + (HUD_WIDTH - BTN_SIZE) / 2, rY = hudY + HUD_HEIGHT + 5;
                 if (mouseX >= rX && mouseX <= rX + BTN_SIZE && mouseY >= rY && mouseY <= rY + BTN_SIZE) {
-                    ClientCyberwareSettings.hudX = 10; ClientCyberwareSettings.hudY = 10;
-                    playClickSound(); return true;
+                    ClientCyberwareSettings.hudX = 10;
+                    ClientCyberwareSettings.hudY = 10;
+                    playClickSound();
+                    return true;
                 }
                 if (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT) {
                     isDraggingHud = true;
                     dragOffsetX = (int) mouseX - hudX;
                     dragOffsetY = (int) mouseY - hudY;
-                    playClickSound(); return true;
+                    playClickSound();
+                    return true;
                 }
             }
             if (!isColorSettingsOpen && !isHudMoveMode) {

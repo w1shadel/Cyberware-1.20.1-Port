@@ -193,6 +193,8 @@
   "death.attack.cyberware.noessence": "%1$sの体が拒絶しました。",
   "death.attack.cyberware.nomuscles": "%1$sはバラバラになった。",
   "death.attack.cyberware.surgery": "%1$sはオペから生還しませんでした。",
+  "emi.category.cyber_ware_port.assembly": "組み立て",
+  "emi.category.cyber_ware_port.engineering": "分解",
   "entity.cyber_ware_port.cyber_creeper": "サイバークリーパー",
   "entity.cyber_ware_port.cyber_skeleton": "サイバースケルトン",
   "entity.cyber_ware_port.cyber_wither": "サイバーウィザー",

@@ -29,6 +29,19 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     private static final int WORKBENCH_SLOTS = 10;
     private static final int PANEL_X = -61;
     private static final int PANEL_Y = 12;
+    private static final java.lang.reflect.Field slotX, slotY;
+
+    static {
+        try {
+            slotX = Slot.class.getDeclaredField("x");
+            slotX.setAccessible(true);
+            slotY = Slot.class.getDeclaredField("y");
+            slotY.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public final CyberwareWorkbenchBlockEntity blockEntity;
     private final Level level;
     private final List<List<Slot>> pageSlots = new ArrayList<>();
@@ -40,7 +53,6 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     private int maxPages = 0;
     private int blueprintCurrentPage = 0;
     private int blueprintMaxPages = 0;
-
     private final ContainerData pageData = new SimpleContainerData(6) {
         @Override
         public int get(int index) {
@@ -58,11 +70,20 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
         @Override
         public void set(int index, int value) {
             switch (index) {
-                case 0 -> { currentPage = value; updateSlotPositions(); }
+                case 0 -> {
+                    currentPage = value;
+                    updateSlotPositions();
+                }
                 case 1 -> maxPages = value;
-                case 2 -> { isExtendedOpen = (value == 1); updateSlotPositions(); }
+                case 2 -> {
+                    isExtendedOpen = (value == 1);
+                    updateSlotPositions();
+                }
                 case 3 -> hasBlueprintLibrary = (value == 1);
-                case 4 -> { blueprintCurrentPage = value; updateSlotPositions(); }
+                case 4 -> {
+                    blueprintCurrentPage = value;
+                    updateSlotPositions();
+                }
                 case 5 -> blueprintMaxPages = value;
             }
         }
@@ -76,7 +97,6 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
         super(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), pContainerId);
         this.blockEntity = (CyberwareWorkbenchBlockEntity) entity;
         this.level = inv.player.level();
-
         IItemHandler handler = this.blockEntity.getItemHandler();
         this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
         this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
@@ -87,7 +107,6 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
             }
         }
         this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.SPECIAL_OUTPUT_SLOT, 141, 21));
-
         findAndAddExternalInventory();
         findAndAddBlueprintLibrary();
         addDataSlots(pageData);
@@ -133,7 +152,10 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
                         List<Slot> currentChestSlots = new ArrayList<>();
                         for (int i = 0; i < 18; i++) {
                             Slot slot = new SlotItemHandler(handler, i, -10000, -10000) {
-                                @Override public boolean mayPlace(@NotNull ItemStack s) { return s.getItem() instanceof BlueprintItem; }
+                                @Override
+                                public boolean mayPlace(@NotNull ItemStack s) {
+                                    return s.getItem() instanceof BlueprintItem;
+                                }
                             };
                             this.addSlot(slot);
                             currentChestSlots.add(slot);
@@ -157,18 +179,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
             layoutSlots(blueprintPageSlots.get(i), (i == blueprintCurrentPage) && isExtendedOpen && hasBlueprintLibrary, rightX, 18);
         }
     }
-    private static final java.lang.reflect.Field slotX, slotY;
 
-    static {
-        try {
-            slotX = Slot.class.getDeclaredField("x");
-            slotX.setAccessible(true);
-            slotY = Slot.class.getDeclaredField("y");
-            slotY.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
     private void setSlotPos(Slot slot, int x, int y) {
         try {
             slotX.set(slot, x);
@@ -177,6 +188,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
             throw new RuntimeException(e);
         }
     }
+
     private void layoutSlots(List<Slot> slots, boolean visible, int startX, int startY) {
         for (int i = 0; i < slots.size(); i++) {
             Slot slot = slots.get(i);
@@ -187,6 +199,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
             }
         }
     }
+
     public int getCurrentPage() {
         return this.pageData.get(0);
     }
@@ -202,35 +215,36 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     public int getBlueprintMaxPages() {
         return this.pageData.get(5);
     }
+
     public void setExtendedOpen(boolean open) {
         this.isExtendedOpen = open;
         this.pageData.set(2, open ? 1 : 0);
     }
+
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
-
         int WB_END = WORKBENCH_SLOTS;
         int EXT_END = WB_END + pageSlots.stream().mapToInt(List::size).sum();
         int LIB_END = EXT_END + blueprintPageSlots.stream().mapToInt(List::size).sum();
-
         if (pIndex < LIB_END) {
             if (!moveItemStackTo(sourceStack, LIB_END, slots.size(), true)) return ItemStack.EMPTY;
         } else {
             if (sourceStack.getItem() instanceof BlueprintItem) {
-                if (!moveItemStackTo(sourceStack, 2, 3, false) && !moveItemStackTo(sourceStack, EXT_END, LIB_END, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(sourceStack, 2, 3, false) && !moveItemStackTo(sourceStack, EXT_END, LIB_END, false))
+                    return ItemStack.EMPTY;
             } else if (sourceStack.getItem() instanceof ICyberware) {
-                if (!moveItemStackTo(sourceStack, 0, 1, false) && !moveItemStackTo(sourceStack, WB_END, EXT_END, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(sourceStack, 0, 1, false) && !moveItemStackTo(sourceStack, WB_END, EXT_END, false))
+                    return ItemStack.EMPTY;
             } else if (sourceStack.is(Items.PAPER)) {
                 if (!moveItemStackTo(sourceStack, 1, 2, false)) return ItemStack.EMPTY;
             } else if (!moveItemStackTo(sourceStack, WB_END, EXT_END, false)) {
                 return ItemStack.EMPTY;
             }
         }
-
         if (sourceStack.isEmpty()) sourceSlot.setByPlayer(ItemStack.EMPTY);
         else sourceSlot.setChanged();
         sourceSlot.onTake(playerIn, sourceStack);
@@ -256,6 +270,13 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
         }
     }
 
-    public void changePage(int direction) { currentPage = Math.clamp(currentPage + direction, 0, Math.max(0, maxPages - 1)); updateSlotPositions(); }
-    public void changeBlueprintPage(int direction) { blueprintCurrentPage = Math.clamp(blueprintCurrentPage + direction, 0, Math.max(0, blueprintMaxPages - 1)); updateSlotPositions(); }
+    public void changePage(int direction) {
+        currentPage = Math.clamp(currentPage + direction, 0, Math.max(0, maxPages - 1));
+        updateSlotPositions();
+    }
+
+    public void changeBlueprintPage(int direction) {
+        blueprintCurrentPage = Math.clamp(blueprintCurrentPage + direction, 0, Math.max(0, blueprintMaxPages - 1));
+        updateSlotPositions();
+    }
 }

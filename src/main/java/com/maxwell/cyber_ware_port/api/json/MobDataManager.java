@@ -31,7 +31,6 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
                 if (!json.has("mob")) return;
                 ResourceLocation mobId = ResourceLocation.parse(json.get("mob").getAsString());
                 EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(mobId);
-
                 if (entityType != BuiltInRegistries.ENTITY_TYPE.get(BuiltInRegistries.ENTITY_TYPE.getDefaultKey())) {
                     MobData data = new MobData();
                     if (json.has("replace_with")) {
@@ -40,7 +39,6 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
                     }
                     data.chance = json.has("chance") ? json.get("chance").getAsDouble() : 0.0;
                     data.isHighTier = json.has("is_high_tier") && json.get("is_high_tier").getAsBoolean();
-
                     if (json.has("special_drops")) {
                         JsonArray drops = json.getAsJsonArray("special_drops");
                         for (JsonElement e : drops) {
@@ -49,7 +47,6 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
                                 data.specialDrops.add(item);
                         }
                     }
-
                     if (json.has("forbidden_drops")) {
                         JsonArray drops = json.getAsJsonArray("forbidden_drops");
                         for (JsonElement e : drops) {

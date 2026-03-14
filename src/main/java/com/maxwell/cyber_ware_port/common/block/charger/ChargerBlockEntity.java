@@ -17,7 +17,6 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -46,7 +45,6 @@ public class ChargerBlockEntity extends BlockEntity {
             if (((ICancellableEvent) event).isCanceled()) {
                 continue;
             }
-
             IEnergyStorage userData = player.getCapability(Capabilities.EnergyStorage.ENTITY, null);
             if (userData != null) {
                 int maxTransfer = 10000;

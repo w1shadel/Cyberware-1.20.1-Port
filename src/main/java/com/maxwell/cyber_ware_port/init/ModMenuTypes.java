@@ -12,19 +12,17 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModMenuTypes {
-    // 1.21.1ではRegistries.MENUを使用
     public static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(Registries.MENU, CyberWare.MODID);
 
-    // ヘルパーメソッド: IMenuTypeExtension.create を使用してネットワーク対応のMenuTypeを作成
     private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> registerMenuType(String name, IContainerFactory<T> factory) {
         return MENUS.register(name, () -> IMenuTypeExtension.create(factory));
     }
 
-    // メインクラスから呼ばれる登録メソッド
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
-    }    // 各メニューの登録
+    }
+
     public static final DeferredHolder<MenuType<?>, MenuType<RobosurgeonMenu>> ROBO_SURGEON_MENU =
             registerMenuType("robosurgeon_menu", RobosurgeonMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<CyberwareWorkbenchMenu>> CYBERWARE_WORKBENCH_MENU =
@@ -35,6 +33,5 @@ public class ModMenuTypes {
             registerMenuType("component_menu", ComponentBoxMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<BlueprintChestMenu>> BLUEPRINT_CHEST_MENU =
             registerMenuType("blueprint_chest_menu", BlueprintChestMenu::new);
-
 
 }

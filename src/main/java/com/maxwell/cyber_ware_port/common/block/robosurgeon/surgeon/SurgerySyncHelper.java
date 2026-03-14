@@ -26,7 +26,6 @@ public class SurgerySyncHelper {
                 table.setStackInSlot(i, createGhost(b));
                 changed = true;
             } else if (!t.isEmpty() && !b.isEmpty() && ItemStack.matches(t, b)) {
-                // If a real item matches the body, turn it back into a ghost to prevent accidental surgery
                 table.setStackInSlot(i, createGhost(b));
                 changed = true;
             }

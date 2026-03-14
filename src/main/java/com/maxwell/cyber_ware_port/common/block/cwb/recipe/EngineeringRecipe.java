@@ -28,9 +28,17 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
         this.blueprintChance = blueprintChance;
     }
 
-    public Ingredient input() { return input; }
-    public List<OutputEntry> outputs() { return outputs; }
-    public float blueprintChance() { return blueprintChance; }
+    public Ingredient input() {
+        return input;
+    }
+
+    public List<OutputEntry> outputs() {
+        return outputs;
+    }
+
+    public float blueprintChance() {
+        return blueprintChance;
+    }
 
     @Override
     public NonNullList<Ingredient> getIngredients() {
@@ -88,7 +96,6 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
                 ItemStack.CODEC.fieldOf("stack").forGetter(OutputEntry::stack),
                 Codec.FLOAT.fieldOf("chance").forGetter(OutputEntry::chance)
         ).apply(inst, OutputEntry::new));
-
         public static final StreamCodec<RegistryFriendlyByteBuf, OutputEntry> STREAM_CODEC = StreamCodec.composite(
                 ItemStack.STREAM_CODEC, OutputEntry::stack,
                 ByteBufCodecs.FLOAT, OutputEntry::chance,
@@ -98,13 +105,11 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
 
     public static class Serializer implements RecipeSerializer<EngineeringRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-
         private static final MapCodec<EngineeringRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC.fieldOf("input").forGetter(EngineeringRecipe::input),
                 OutputEntry.CODEC.codec().listOf().fieldOf("outputs").forGetter(EngineeringRecipe::outputs),
                 Codec.FLOAT.optionalFieldOf("blueprint_chance", 0.5f).forGetter(EngineeringRecipe::blueprintChance)
         ).apply(inst, EngineeringRecipe::new));
-
         private static final StreamCodec<RegistryFriendlyByteBuf, EngineeringRecipe> STREAM_CODEC = StreamCodec.composite(
                 Ingredient.CONTENTS_STREAM_CODEC, EngineeringRecipe::input,
                 OutputEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), EngineeringRecipe::outputs,

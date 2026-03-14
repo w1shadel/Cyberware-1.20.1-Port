@@ -193,6 +193,8 @@
   "death.attack.cyberware.noessence": "%1$s's body rejected it.",
   "death.attack.cyberware.nomuscles": "%1$s fell apart.",
   "death.attack.cyberware.surgery": "%1$s did not survive the operation.",
+  "emi.category.cyber_ware_port.assembly": "Assembly",
+  "emi.category.cyber_ware_port.engineering": "Engineering",
   "entity.cyber_ware_port.cyber_creeper": "Cyber Creeper",
   "entity.cyber_ware_port.cyber_skeleton": "Cyber Skeleton",
   "entity.cyber_ware_port.cyber_wither": "Cyber Wither",

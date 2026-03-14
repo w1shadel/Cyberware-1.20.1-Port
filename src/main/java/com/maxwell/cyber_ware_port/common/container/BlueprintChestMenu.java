@@ -26,7 +26,6 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
     public BlueprintChestMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), pContainerId);
         this.blockEntity = (BlueprintChestBlockEntity) entity;
-
         var handler = this.blockEntity.getItemHandler();
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 9; col++) {
@@ -38,7 +37,6 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
                 });
             }
         }
-
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
     }
@@ -49,7 +47,6 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
-
         if (pIndex < CONTAINER_SLOTS) {
             if (!moveItemStackTo(sourceStack, CONTAINER_SLOTS, slots.size(), true)) {
                 return ItemStack.EMPTY;
@@ -63,7 +60,6 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         }
-
         if (sourceStack.isEmpty()) {
             sourceSlot.set(ItemStack.EMPTY);
         } else {

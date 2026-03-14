@@ -37,6 +37,7 @@ public class RadioTowerRenderer implements BlockEntityRenderer<RadioTowerCoreBlo
         pPoseStack.popPose();
 
     }
+
     @Override
     public @NotNull AABB getRenderBoundingBox(RadioTowerCoreBlockEntity blockEntity) {
         BlockPos pos = blockEntity.getBlockPos();

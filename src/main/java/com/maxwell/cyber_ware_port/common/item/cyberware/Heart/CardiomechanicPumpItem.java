@@ -9,7 +9,6 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 public class CardiomechanicPumpItem extends CyberwareItem {

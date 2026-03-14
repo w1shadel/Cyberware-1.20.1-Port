@@ -1,6 +1,5 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon;
 
-import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.event.CyberwareSurgeryEvent;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon.SurgeryManager;
@@ -14,7 +13,6 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareSlotType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.SyncSurgeryProgressPacket;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +34,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;

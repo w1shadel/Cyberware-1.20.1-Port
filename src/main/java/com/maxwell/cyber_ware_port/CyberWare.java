@@ -14,7 +14,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 @Mod(CyberWare.MODID)
 public class CyberWare {
     public static final String MODID = "cyber_ware_port";
-
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> GHOST_COMPONENT = ModDataComponents.GHOST_COMPONENT;
 
     public CyberWare(IEventBus modEventBus, ModContainer modContainer) {
@@ -26,9 +25,7 @@ public class CyberWare {
         ModRecipes.register(modEventBus);
         ModEntities.register(modEventBus);
         CyberwareCapabilityProvider.register(modEventBus);
-
         A_PacketHandler.register(modEventBus);
-
         modContainer.registerConfig(ModConfig.Type.COMMON, CyberwareConfig.COMMON_CONFIG);
     }
 }

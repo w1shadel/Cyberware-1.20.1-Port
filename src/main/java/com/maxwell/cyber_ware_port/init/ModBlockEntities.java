@@ -29,7 +29,9 @@ public class ModBlockEntities {
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
-    }    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
+    }
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
             BLOCK_ENTITIES.register("surgery_chamber",
                     () -> BlockEntityType.Builder.of(
                             SurgeryChamberBlockEntity::new,
@@ -77,6 +79,5 @@ public class ModBlockEntities {
                             BlueprintChestBlockEntity::new,
                             ModBlocks.BLUEPRINT_CHEST.get()
                     ).build(null));
-
 
 }

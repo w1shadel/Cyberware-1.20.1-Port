@@ -20,7 +20,6 @@ public class ComponentBoxCapability {
     public static void register(RegisterCapabilitiesEvent event) {
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, context) -> {
             final HolderLookup.Provider provider = HolderLookup.Provider.create(Stream.of(BuiltInRegistries.ITEM.asLookup()));
-
             ItemStackHandler handler = new ItemStackHandler(18) {
                 @Override
                 public boolean isItemValid(int slot, @NotNull ItemStack s) {
@@ -35,12 +34,10 @@ public class ComponentBoxCapability {
                     stack.set(DataComponents.CUSTOM_DATA, CustomData.of(serializeNBT(provider)));
                 }
             };
-
             CustomData data = stack.get(DataComponents.CUSTOM_DATA);
             if (data != null) {
                 handler.deserializeNBT(provider, data.copyTag());
             }
-
             return handler;
         }, ModItems.COMPONENT_BOX.get());
     }

@@ -11,7 +11,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record StartWorkbenchCraftingPacket() implements CustomPacketPayload {
     public static final Type<StartWorkbenchCraftingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "start_workbench_crafting"));
-
     public static final StreamCodec<FriendlyByteBuf, StartWorkbenchCraftingPacket> STREAM_CODEC = StreamCodec.unit(new StartWorkbenchCraftingPacket());
 
     @Override

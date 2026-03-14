@@ -39,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
     public static final int INPUT_SLOT = 0;
@@ -52,7 +51,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public float animationProgress = 0.0f;
     public float prevAnimationProgress = 0.0f;
     private AssemblyRecipe cachedRecipe = null;
-
     private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -73,7 +71,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             };
         }
     };
-
     private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
         @Override
         public void setStackInSlot(int slot, @NotNull ItemStack stack) {
@@ -94,11 +91,14 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             if (stack.isEmpty()) return stack;
             if (slot == PAPER_SLOT && stack.is(Items.PAPER)) return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
-            if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem) return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
-            if (slot == INPUT_SLOT && CyberwareAPI.getCyberware(stack) != null) return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
+            if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem)
+                return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
+            if (slot == INPUT_SLOT && CyberwareAPI.getCyberware(stack) != null)
+                return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
             if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
                 AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-                if (activeRecipe != null && isItemNeededForRecipe(activeRecipe, stack)) return itemHandler.insertItem(slot, stack, simulate);
+                if (activeRecipe != null && isItemNeededForRecipe(activeRecipe, stack))
+                    return itemHandler.insertItem(slot, stack, simulate);
             }
             return stack;
         }
@@ -118,7 +118,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             return itemHandler.isItemValid(slot, stack);
         }
     };
-
     private int progress = 0;
     private boolean isCrafting = false;
     private int cooldown = 0;
@@ -131,9 +130,10 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         pBlockEntity.prevAnimationProgress = pBlockEntity.animationProgress;
         if (pBlockEntity.cooldown > 0) pBlockEntity.cooldown--;
         float target = pBlockEntity.isCrafting ? 1.0F : 0.0F;
-        if (pBlockEntity.animationProgress < target) pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + 0.5F, target);
-        else if (pBlockEntity.animationProgress > target) pBlockEntity.animationProgress = Math.max(pBlockEntity.animationProgress - 0.5F, target);
-
+        if (pBlockEntity.animationProgress < target)
+            pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + 0.5F, target);
+        else if (pBlockEntity.animationProgress > target)
+            pBlockEntity.animationProgress = Math.max(pBlockEntity.animationProgress - 0.5F, target);
         if (!pLevel.isClientSide) {
             if (pLevel.hasNeighborSignal(pPos)) pBlockEntity.startCrafting();
             if (pBlockEntity.cooldown == 0 && pBlockEntity.isCrafting) {
@@ -177,7 +177,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     }
 
     private void notifyClient() {
-        if (this.level != null) this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        if (this.level != null)
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
     }
 
     private boolean checkOrConsumeIngredients(AssemblyRecipe recipe, boolean consume) {
@@ -213,7 +214,8 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         if (inputStack.isEmpty()) return false;
         var recipeOpt = this.level.getRecipeManager().getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), new SingleRecipeInput(inputStack), this.level);
         if (recipeOpt.isPresent()) {
-            for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++) if (this.itemHandler.getStackInSlot(i).isEmpty()) return true;
+            for (int i = OUTPUT_SLOT_START; i < SPECIAL_OUTPUT_SLOT; i++)
+                if (this.itemHandler.getStackInSlot(i).isEmpty()) return true;
         }
         return false;
     }
@@ -226,9 +228,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         }
         return remainder;
     }
+
     public float getRenderProgress(float pPartialTick) {
         return net.minecraft.util.Mth.lerp(pPartialTick, this.prevAnimationProgress, this.animationProgress);
     }
+
     private void craftItem() {
         AssemblyRecipe recipe = getActiveAssemblyRecipe();
         if (recipe != null) {

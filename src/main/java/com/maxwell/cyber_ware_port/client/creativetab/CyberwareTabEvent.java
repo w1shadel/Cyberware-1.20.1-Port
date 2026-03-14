@@ -11,7 +11,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
 import java.lang.reflect.Field;
@@ -132,23 +131,16 @@ public class CyberwareTabEvent {
     private static boolean updateVisibility(CreativeModeInventoryScreen screen) {
         CreativeModeTab selectedTab = null;
         try {
-            selectedTab = ObfuscationReflectionHelper.getPrivateValue(
-                    CreativeModeInventoryScreen.class,
-                    screen,
-                    "f_98505_"
-            );
-
-        } catch (Exception e) {
-            try {
-                Field f = CreativeModeInventoryScreen.class.getDeclaredField("selectedTab");
-                f.setAccessible(true);
-                selectedTab = (CreativeModeTab) f.get(screen);
-
-            } catch (Exception ex) {
-                return false;
-
+            for (Field field : CreativeModeInventoryScreen.class.getDeclaredFields()) {
+                if (field.getType() == CreativeModeTab.class) {
+                    field.setAccessible(true);
+                    selectedTab = (CreativeModeTab) field.get(screen);
+                    break;
+                }
             }
+        } catch (Exception e) {
         }
+        if (selectedTab == null) return false;
         boolean isMyTab = (selectedTab == ModItems.CW_TABS.get());
         for (CyberwareSideTabButton btn : customTabs) {
             btn.visible = isMyTab;

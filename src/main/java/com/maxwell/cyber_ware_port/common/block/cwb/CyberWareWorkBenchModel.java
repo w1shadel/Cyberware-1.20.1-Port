@@ -60,6 +60,6 @@ public class CyberWareWorkBenchModel extends Model {
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
-        root.render(poseStack, vertexConsumer, i,i1,i2);
+        root.render(poseStack, vertexConsumer, i, i1, i2);
     }
 }

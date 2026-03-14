@@ -37,7 +37,6 @@ public class CyberwareConfig {
                 .comment("Whether blueprints are consumed when crafting in the Cyberware Workbench.")
                 .define("consumeBlueprint", false);
         BUILDER.pop();
-
         BUILDER.push("Spawning");
         WITHER_CONVERSION_CHANCE = BUILDER
                 .comment("Chance (0.0 to 1.0) for a Wither Skeleton to become a Cyber Wither Skeleton.")
@@ -52,7 +51,6 @@ public class CyberwareConfig {
                 .comment("Chance (0.0 to 1.0) for a Creeper to spawn as a Cyber Creeper")
                 .defineInRange("creeperConversionChance", 0.1, 0.0, 1.0);
         BUILDER.pop();
-
         COMMON_CONFIG = BUILDER.build();
     }
 }

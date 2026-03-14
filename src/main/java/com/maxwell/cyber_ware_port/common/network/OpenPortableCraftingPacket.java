@@ -14,7 +14,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record OpenPortableCraftingPacket() implements CustomPacketPayload {
     public static final Type<OpenPortableCraftingPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "open_portable_crafting"));
-
     public static final StreamCodec<FriendlyByteBuf, OpenPortableCraftingPacket> STREAM_CODEC = StreamCodec.unit(new OpenPortableCraftingPacket());
 
     @Override

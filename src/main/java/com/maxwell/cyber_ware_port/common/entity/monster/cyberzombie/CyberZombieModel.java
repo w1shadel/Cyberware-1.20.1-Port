@@ -1,8 +1,6 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -82,6 +80,7 @@ public class CyberZombieModel extends HierarchicalModel<CyberZombieEntity> {
         this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
         animateZombieArms(this.leftArm, this.rightArm, entity.isAggressive(), this.attackTime, ageInTicks);
     }
+
     @Override
     public ModelPart root() {
         return waist;

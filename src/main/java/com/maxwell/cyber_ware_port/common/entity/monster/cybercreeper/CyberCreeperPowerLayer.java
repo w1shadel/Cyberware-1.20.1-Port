@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperEntity, CyberCreeperModel> {
     private static final ResourceLocation POWER_LOCATION =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID,"textures/entity/creeper/creeper_armor.png");
+            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/creeper/creeper_armor.png");
     private final CyberCreeperModel model;
 
     public CyberCreeperPowerLayer(RenderLayerParent<CyberCreeperEntity, CyberCreeperModel> pRenderer, EntityModelSet pModelSet) {

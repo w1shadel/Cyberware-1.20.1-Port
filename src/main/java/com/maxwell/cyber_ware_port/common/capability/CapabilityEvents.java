@@ -26,7 +26,6 @@ import java.util.Iterator;
 
 @EventBusSubscriber(modid = CyberWare.MODID)
 public class CapabilityEvents {
-
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -60,7 +59,6 @@ public class CapabilityEvents {
         Player newPlayer = event.getEntity();
         CyberwareUserData oldData = original.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         CyberwareUserData newData = newPlayer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-
         if (!event.isWasDeath()) {
             newData.copyFrom(oldData);
         } else {
@@ -79,7 +77,6 @@ public class CapabilityEvents {
                 }
             }
         }
-
         if (newPlayer instanceof ServerPlayer serverPlayer) {
             newData.recalculateCapacity(serverPlayer);
             newData.syncToClient(serverPlayer);

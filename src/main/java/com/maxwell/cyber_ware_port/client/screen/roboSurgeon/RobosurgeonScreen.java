@@ -14,7 +14,6 @@ import com.maxwell.cyber_ware_port.common.risk.SurgeryAlert;
 import com.maxwell.cyber_ware_port.common.risk.SurgeryAnalyzer;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -23,7 +22,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -42,7 +40,6 @@ import org.joml.Quaternionf;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
     private static final ResourceLocation INTERNAL_PARTS_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/player_internal_part.png");
@@ -60,6 +57,19 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private static final int BOTTOM_HEIGHT = 91;
     private static final int TEXTURE_INVENTORY_START_Y = 131;
     private static final float BASE_SCALE = 45f;
+    private static final Field slotX, slotY;
+
+    static {
+        try {
+            slotX = Slot.class.getDeclaredField("x");
+            slotX.setAccessible(true);
+            slotY = Slot.class.getDeclaredField("y");
+            slotY.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private PlayerInternalPartsModel internalPartsModel;
     private BodyPart selectedPart = BodyPart.NONE;
     private TargetMarker selectedMarker = null;
@@ -76,34 +86,12 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private float currentOffsetY = 0f;
     private boolean hideName = false;
 
-    private static final Field slotX, slotY;
-
-    static {
-        try {
-            slotX = Slot.class.getDeclaredField("x");
-            slotX.setAccessible(true);
-            slotY = Slot.class.getDeclaredField("y");
-            slotY.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public RobosurgeonScreen(RobosurgeonMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
         this.imageWidth = GUI_WIDTH;
         this.imageHeight = TOP_HEIGHT + BOTTOM_HEIGHT;
         this.inventoryLabelY = this.imageHeight - 94;
         this.titleLabelY = 6;
-    }
-
-    private void setSlotPos(Slot slot, int x, int y) {
-        try {
-            slotX.set(slot, x);
-            slotY.set(slot, y);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void renderEntityWithRotation(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw, LivingEntity pEntity) {
@@ -167,6 +155,15 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         pGuiGraphics.flush();
         pGuiGraphics.pose().popPose();
         Lighting.setupFor3DItems();
+    }
+
+    private void setSlotPos(Slot slot, int x, int y) {
+        try {
+            slotX.set(slot, x);
+            slotY.set(slot, y);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -532,7 +529,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             int uiWidth = (SLOT_SIZE * targets.length) + (SLOT_SPACING * (targets.length - 1));
             int uiX = (this.width - uiWidth) / 2;
             for (int i = 0; i < targets.length; i++) {
-                if (targets[i] < this.menu.slots.size()) setSlotPos(this.menu.slots.get(targets[i]), uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING)) + 1, 106);
+                if (targets[i] < this.menu.slots.size())
+                    setSlotPos(this.menu.slots.get(targets[i]), uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING)) + 1, 106);
             }
         }
     }
@@ -583,10 +581,19 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         final int hitX, hitY, hitW, hitH, zoomOffsetX, zoomOffsetY;
         final float zoomScale;
         final List<TargetMarker> markers;
+
         BodyPart(int hX, int hY, int hW, int hH, int zX, int zY, float zS, List<TargetMarker> m) {
-            this.hitX = hX; this.hitY = hY; this.hitW = hW; this.hitH = hH; this.zoomOffsetX = zX; this.zoomOffsetY = zY; this.zoomScale = zS; this.markers = m;
+            this.hitX = hX;
+            this.hitY = hY;
+            this.hitW = hW;
+            this.hitH = hH;
+            this.zoomOffsetX = zX;
+            this.zoomOffsetY = zY;
+            this.zoomScale = zS;
+            this.markers = m;
         }
     }
 
-    public record TargetMarker(Component name, float modelX, float modelY, float modelZ, int[] relatedSlots) {}
+    public record TargetMarker(Component name, float modelX, float modelY, float modelZ, int[] relatedSlots) {
+    }
 }

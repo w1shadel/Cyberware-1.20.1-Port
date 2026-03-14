@@ -12,7 +12,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ComponentChangePagePacket(int direction, int targetPanel) implements CustomPacketPayload {
     public static final Type<ComponentChangePagePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "component_change_page"));
-
     public static final StreamCodec<FriendlyByteBuf, ComponentChangePagePacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, ComponentChangePagePacket::direction,
             ByteBufCodecs.VAR_INT, ComponentChangePagePacket::targetPanel,

@@ -1,12 +1,6 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.maxwell.cyber_ware_port.common.block.blueprintchest.BlueprintChestBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.charger.ChargerBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
-import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,7 +16,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 public class CyberwareCapabilityProvider {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, CyberWare.MODID);
-
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<CyberwareUserData>> CYBERWARE_DATA =
             ATTACHMENT_TYPES.register("cyberware_data", () -> AttachmentType.serializable(CyberwareUserData::new)
                     .copyOnDeath()
@@ -39,13 +32,11 @@ public class CyberwareCapabilityProvider {
                 net.minecraft.world.entity.EntityType.PLAYER,
                 (player, side) -> player.getData(CYBERWARE_DATA.get())
         );
-
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SCANNER.get(), (be, side) -> be.getExposedHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.ROBO_SURGEON.get(), (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.COMPONENT_BOX.get(), (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.BLUEPRINT_CHEST.get(), (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CYBERWARE_WORKBENCH.get(), (be, side) -> be.getItemHandler());
-
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.CHARGER.get(), (be, side) -> be.getEnergyStorage());
     }
 }

@@ -7,18 +7,24 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_plating"
+      "stack": {
+        "id": "cyber_ware_port:component_plating",
+        "count": 1
+      }
     },
     {
       "chance": 1.0,
-      "count": 2,
-      "item": "cyber_ware_port:component_storage"
+      "stack": {
+        "id": "cyber_ware_port:component_storage",
+        "count": 2
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_microelectric"
+      "stack": {
+        "id": "cyber_ware_port:component_microelectric",
+        "count": 1
+      }
     }
   ]
 }

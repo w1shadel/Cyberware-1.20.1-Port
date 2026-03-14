@@ -41,6 +41,7 @@ repositories {
         content {
             includeGroup "curse.maven"
         }
+
     }
 }
 neoForge {
@@ -127,19 +128,11 @@ configurations {
 }
 
 dependencies {
-    compileOnly "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
-    runtimeOnly "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
-    implementation "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
-    implementation "curse.maven:lionfish-api-1001614:6168249"
-    implementation "curse.maven:jade-324717:6853386"
-    implementation "curse.maven:mmmmmmmmmmmm-225738:7206981"
-    implementation "curse.maven:selene-499980:7340883"
-    implementation "curse.maven:curios-309927:6529130"
-    implementation "curse.maven:lionfish-api-1001614:6168249"
-    implementation "curse.maven:better-combat-by-daedelus-639842:7348161"
-    implementation "curse.maven:cloth-config-348521:5729127"
+   compileOnly "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
+   // runtimeOnly "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
+   // implementation "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
+    compileOnly "curse.maven:emi-580555:6420931"
     implementation "curse.maven:mekanism-268560:7621971"
-    implementation "curse.maven:playeranimator-658587:7389814"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

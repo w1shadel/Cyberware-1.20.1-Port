@@ -62,7 +62,6 @@ public class AssemblyRecipe implements Recipe<RecipeInput> {
                 Ingredient.CODEC.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
                 Codec.INT.optionalFieldOf("count", 1).forGetter(SizedIngredient::count)
         ).apply(inst, SizedIngredient::new));
-
         public static final StreamCodec<RegistryFriendlyByteBuf, SizedIngredient> STREAM_CODEC = StreamCodec.composite(
                 Ingredient.CONTENTS_STREAM_CODEC, SizedIngredient::ingredient,
                 ByteBufCodecs.VAR_INT, SizedIngredient::count,
@@ -72,12 +71,10 @@ public class AssemblyRecipe implements Recipe<RecipeInput> {
 
     public static class Serializer implements RecipeSerializer<AssemblyRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-
         private static final MapCodec<AssemblyRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 SizedIngredient.CODEC.codec().listOf().fieldOf("inputs").forGetter(r -> r.inputs),
                 ItemStack.CODEC.fieldOf("output").forGetter(r -> r.output)
         ).apply(inst, AssemblyRecipe::new));
-
         private static final StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> STREAM_CODEC = StreamCodec.composite(
                 SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.inputs,
                 ItemStack.STREAM_CODEC, r -> r.output,

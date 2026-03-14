@@ -27,10 +27,8 @@ public class CyberwareJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         var recipeManager = Minecraft.getInstance().level.getRecipeManager();
-
         registration.addRecipes(AssemblyRecipeCategory.RECIPE_TYPE,
                 recipeManager.getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get()).stream().map(RecipeHolder::value).toList());
-
         registration.addRecipes(EngineeringRecipeCategory.RECIPE_TYPE,
                 recipeManager.getAllRecipesFor(ModRecipes.ENGINEERING_TYPE.get()).stream().map(RecipeHolder::value).toList());
     }

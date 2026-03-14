@@ -148,10 +148,8 @@ public class CyberwareItem extends Item implements ICyberware {
         if (isPristine(stack)) {
             return this.baseAttributeModifiers;
         }
-
         Multimap<Holder<Attribute>, AttributeModifier> modified = ArrayListMultimap.create();
         this.baseAttributeModifiers.forEach((attr, mod) -> {
-            // mod.amount() は 1.21.1 では amount() メソッドです
             double newValue = mod.amount() * 0.5;
             AttributeModifier newMod = new AttributeModifier(
                     mod.id().withSuffix("_damaged"),
@@ -191,10 +189,25 @@ public class CyberwareItem extends Item implements ICyberware {
             this.slotId = slotId;
         }
 
-        public Builder quality(int quality) { this.quality = quality; return this; }
-        public Builder bodyPart(BodyPartType type) { this.bodyPartType = type; return this; }
-        public Builder maxInstall(int amount) { this.maxInstallAmount = amount; return this; }
-        public Builder eventCost(int cost) { this.eventConsumption = cost; return this; }
+        public Builder quality(int quality) {
+            this.quality = quality;
+            return this;
+        }
+
+        public Builder bodyPart(BodyPartType type) {
+            this.bodyPartType = type;
+            return this;
+        }
+
+        public Builder maxInstall(int amount) {
+            this.maxInstallAmount = amount;
+            return this;
+        }
+
+        public Builder eventCost(int cost) {
+            this.eventConsumption = cost;
+            return this;
+        }
 
         public Builder energy(int consumption, int generation, int storage, StackingRule rule) {
             this.hasEnergyProperties = true;
@@ -221,10 +234,12 @@ public class CyberwareItem extends Item implements ICyberware {
             this.attributeModifiers.put(attribute, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, idStr), amount, operation));
             return this;
         }
+
         public Builder rarity(net.minecraft.world.item.Rarity rarity) {
             this.properties.rarity(rarity);
             return this;
         }
+
         public CyberwareItem build() {
             this.properties.stacksTo(Math.max(this.maxInstallAmount, 1));
             return new CyberwareItem(this);

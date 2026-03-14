@@ -7,7 +7,6 @@ import com.maxwell.cyber_ware_port.api.json.MobDataManager;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,7 +29,6 @@ import java.util.function.BiConsumer;
 
 @EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ModCyberwareEvents {
-
     @SubscribeEvent
     public static void onRegisterReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new CyberwareDataManager());
@@ -143,6 +141,5 @@ public class ModCyberwareEvents {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
-//        CyberwareCommands.register(event.getDispatcher());
     }
 }

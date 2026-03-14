@@ -30,15 +30,16 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
         pObject.forEach((location, element) -> {
             try {
                 JsonObject json = element.getAsJsonObject();
+                if (!json.has("item")) return;
                 ResourceLocation itemId = ResourceLocation.parse(json.get("item").getAsString());
                 Item item = BuiltInRegistries.ITEM.get(itemId);
                 if (item != null && item != BuiltInRegistries.ITEM.get(BuiltInRegistries.ITEM.getDefaultKey())) {
+                    if (!json.has("slot")) return;
                     CyberwareData data = new CyberwareData();
                     String slotStr = json.get("slot").getAsString().toUpperCase();
                     data.slotId = BodyRegionEnum.valueOf(slotStr).getStartSlot();
                     data.essence = json.has("essence") ? json.get("essence").getAsInt() : 20;
                     data.maxInstall = json.has("max_install") ? json.get("max_install").getAsInt() : 1;
-
                     if (json.has("attributes")) {
                         JsonArray attrs = json.getAsJsonArray("attributes");
                         for (JsonElement attrElement : attrs) {
@@ -49,12 +50,10 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                                 double amount = attrObj.get("amount").getAsDouble();
                                 AttributeModifier.Operation op = AttributeModifier.Operation.valueOf(attrObj.get("operation").getAsString().toUpperCase());
                                 ResourceLocation modId = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "dynamic_" + location.getPath().replace("/", "_"));
-                                // wrapAsHolderを使用してAttributeからHolder<Attribute>へ変換
                                 data.attributeModifiers.put(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attr), new AttributeModifier(modId, amount, op));
                             }
                         }
                     }
-
                     if (json.has("incompatible")) {
                         for (JsonElement e : json.getAsJsonArray("incompatible")) {
                             Item incomp = BuiltInRegistries.ITEM.get(ResourceLocation.parse(e.getAsString()));
@@ -63,7 +62,6 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                             }
                         }
                     }
-
                     if (json.has("stacking")) {
                         String ruleStr = json.get("stacking").getAsString().toUpperCase();
                         data.stackingRule = ICyberware.StackingRule.valueOf(ruleStr);

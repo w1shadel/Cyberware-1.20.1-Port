@@ -11,7 +11,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SyncCyberwareDataPacket(CompoundTag data) implements CustomPacketPayload {
     public static final Type<SyncCyberwareDataPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "sync_cyberware_data"));
-
     public static final StreamCodec<FriendlyByteBuf, SyncCyberwareDataPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.COMPOUND_TAG, SyncCyberwareDataPacket::data,
             SyncCyberwareDataPacket::new

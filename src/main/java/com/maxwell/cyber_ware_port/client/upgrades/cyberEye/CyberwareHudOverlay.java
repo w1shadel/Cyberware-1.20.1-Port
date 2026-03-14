@@ -16,9 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
@@ -27,12 +27,10 @@ public class CyberwareHudOverlay {
 
     @SubscribeEvent
     public static void onRenderGuiLayer(RenderGuiLayerEvent.Post event) {
-        // VanillaGuiLayers.HOTBAR の後に描画を行う
         if (VanillaGuiLayers.HOTBAR.equals(event.getName())) {
             Minecraft mc = Minecraft.getInstance();
             Player player = mc.player;
             if (player == null) return;
-
             CyberwareUserData userData = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             if (isHudActive(userData)) {
                 int x = ClientCyberwareSettings.hudX;
@@ -64,7 +62,6 @@ public class CyberwareHudOverlay {
         int cons = data.getLastConsumption();
         float r, gVal, b, a;
         int textColor;
-
         if (current <= 0) {
             boolean flash = (System.currentTimeMillis() % 500) < 250;
             r = flash ? 1.0f : 0.5f;
@@ -80,15 +77,12 @@ public class CyberwareHudOverlay {
             a = userColor[3];
             textColor = ClientCyberwareSettings.hudColor;
         }
-
         g.setColor(r, gVal, b, a);
         int texTotalWidth = 37;
         int texTotalHeight = 25;
         int frameWidth = 13;
         int frameHeight = 25;
-
         g.blit(BATTERY_TEXTURE, x, y, 0, 0, frameWidth, frameHeight, texTotalWidth, texTotalHeight);
-
         if (max > 0 && current > 0) {
             int barTextureU = 27;
             int barTextureV = 2;
@@ -102,7 +96,6 @@ public class CyberwareHudOverlay {
                 g.blit(BATTERY_TEXTURE, x + 2, screenY, barTextureU, textureV, barWidth, renderHeight, texTotalWidth, texTotalHeight);
             }
         }
-
         g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         int textX = x + frameWidth + 4;
         g.drawString(mc.font, current + " / " + max, textX, y + 4, textColor, true);

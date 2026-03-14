@@ -19,10 +19,15 @@ import com.maxwell.cyber_ware_port.common.item.cyberware.cranium.*;
 import com.maxwell.cyber_ware_port.common.item.cyberware.eye.*;
 import com.maxwell.cyber_ware_port.common.item.cyberware.heart.*;
 import com.maxwell.cyber_ware_port.common.item.cyberware.leg.*;
-import com.maxwell.cyber_ware_port.common.item.cyberware.lung.*;
-import com.maxwell.cyber_ware_port.common.item.cyberware.muscle.*;
-import com.maxwell.cyber_ware_port.common.item.cyberware.skin.*;
 import com.maxwell.cyber_ware_port.common.item.cyberware.lower_organs.*;
+import com.maxwell.cyber_ware_port.common.item.cyberware.lung.CompressedOxygenImplantItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.lung.HyperoxygenationBoostItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.muscle.MyomerMuscleReplacementItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.muscle.WiredReflexesItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SolarskinItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SubdermalSpikesItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SyntheticSkinItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.skin.TargetedImmunosuppressantItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.Direction;
@@ -105,15 +110,13 @@ public class ModItems {
     public static final DeferredHolder<Item, TargetedImmunosuppressantItem> TARGETED_IMMUNOSUPPRESSANT = ITEMS.register("skin_upgrades_immuno", TargetedImmunosuppressantItem::new);
     public static final DeferredHolder<Item, WiredReflexesItem> WIRED_REFLEXES = ITEMS.register("muscle_upgrades_wired_reflexes", WiredReflexesItem::new);
     public static final DeferredHolder<Item, BonelacingItem> BONELACING = ITEMS.register("bone_upgrades_bonelacing", BonelacingItem::new);
-    public static final DeferredHolder<Item, CorticalStackItem> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
-    public static final DeferredHolder<Item, CitrateEnhancementItem> CITRATE_ENHANCEMENT = ITEMS.register("bone_upgrades_boneflex", CitrateEnhancementItem::new);
+    public static final DeferredHolder<Item, CitrateEnhancementItem> CITRATE_ENHANCEMENT = ITEMS.register("bone_upgrades_boneflex", CitrateEnhancementItem::new);    public static final DeferredHolder<Item, CorticalStackItem> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
     public static final DeferredHolder<Item, DenseBatteryItem> DENSE_BATTERY = ITEMS.register("dense_battery", DenseBatteryItem::new);
     public static final DeferredHolder<Item, MarrowBatteryItem> MARROW_BATTERY = ITEMS.register("bone_upgrades_bonebattery", MarrowBatteryItem::new);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_BRAIN = registerHumanPart("body_part_brain", RobosurgeonBlockEntity.SLOT_BRAIN, 1, BodyPartType.BRAIN);
     public static final DeferredHolder<Item, RapidFireFlywheelItem> RAPID_FIRE_FLYWHEEL = ITEMS.register("arm_upgrades_bow", RapidFireFlywheelItem::new);
-    public static final DeferredHolder<Item, ConsciousnessTransmitterItem> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
     public static final DeferredHolder<Item, ImplantedSpursItem> IMPLANTED_SPURS = ITEMS.register("foot_upgrades_spurs", ImplantedSpursItem::new);
-    public static final DeferredHolder<Item, FineManipulatorsItem> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands", FineManipulatorsItem::new);
+    public static final DeferredHolder<Item, FineManipulatorsItem> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands", FineManipulatorsItem::new);    public static final DeferredHolder<Item, ConsciousnessTransmitterItem> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_HEART = registerHumanPart("body_part_heart", RobosurgeonBlockEntity.SLOT_HEART, 1, BodyPartType.HEART);
     public static final DeferredHolder<Item, CardiomechanicPumpItem> CARDIOMECHANIC_PUMP = ITEMS.register("cyberheart", CardiomechanicPumpItem::new);
     public static final DeferredHolder<Item, InternalDefibrillatorItem> INTERNAL_DEFIBRILLATOR = ITEMS.register("heart_upgrades_defibrillator", InternalDefibrillatorItem::new);
@@ -188,4 +191,8 @@ public class ModItems {
         ITEMS.register(eventBus);
         TABS.register(eventBus);
     }
+
+
+
+
 }

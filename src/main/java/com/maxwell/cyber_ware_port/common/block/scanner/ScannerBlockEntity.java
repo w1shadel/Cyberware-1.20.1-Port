@@ -4,7 +4,6 @@ import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.container.ScannerMenu;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
-import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -54,7 +53,6 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             };
         }
     };
-
     private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
         @Override
         public void setStackInSlot(int slot, @NotNull ItemStack stack) {
@@ -75,7 +73,8 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             if (stack.isEmpty()) return stack;
             if (slot == SLOT_PAPER && stack.is(Items.PAPER)) return itemHandler.insertItem(SLOT_PAPER, stack, simulate);
-            if (slot == SLOT_INPUT && CyberwareAPI.getCyberware(stack) != null) return itemHandler.insertItem(SLOT_INPUT, stack, simulate);
+            if (slot == SLOT_INPUT && CyberwareAPI.getCyberware(stack) != null)
+                return itemHandler.insertItem(SLOT_INPUT, stack, simulate);
             return stack;
         }
 
@@ -94,7 +93,6 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             return itemHandler.isItemValid(slot, stack);
         }
     };
-
     private int progress = 0;
     private boolean isWorking = false;
 

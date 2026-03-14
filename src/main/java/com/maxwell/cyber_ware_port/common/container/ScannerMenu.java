@@ -23,12 +23,10 @@ public class ScannerMenu extends AbstractContainerMenu {
         super(ModMenuTypes.SCANNER_MENU.get(), containerId);
         this.blockEntity = (ScannerBlockEntity) entity;
         this.data = data;
-
         var handler = this.blockEntity.getItemHandler();
         this.addSlot(new SlotItemHandler(handler, ScannerBlockEntity.SLOT_INPUT, 35, 53));
         this.addSlot(new SlotItemHandler(handler, ScannerBlockEntity.SLOT_PAPER, 15, 53));
         this.addSlot(new SlotItemHandler(handler, ScannerBlockEntity.SLOT_OUTPUT, 137, 53));
-
         checkContainerDataCount(data, 2);
         addDataSlots(data);
         addPlayerInventory(inv);
@@ -61,20 +59,16 @@ public class ScannerMenu extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
             }
-
             if (itemstack1.isEmpty()) {
                 slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
-
             if (itemstack1.getCount() == itemstack.getCount()) {
                 return ItemStack.EMPTY;
             }
-
             slot.onTake(playerIn, itemstack1);
         }
-
         return itemstack;
     }
 

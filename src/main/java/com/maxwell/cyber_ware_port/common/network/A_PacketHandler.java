@@ -1,9 +1,6 @@
 package com.maxwell.cyber_ware_port.common.network;
 
-import com.maxwell.cyber_ware_port.CyberWare;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -16,7 +13,6 @@ public class A_PacketHandler {
 
     private static void onRegisterPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
-
         registrar.playToClient(SyncCyberwareDataPacket.TYPE, SyncCyberwareDataPacket.STREAM_CODEC, SyncCyberwareDataPacket::handle);
         registrar.playToServer(StartWorkbenchCraftingPacket.TYPE, StartWorkbenchCraftingPacket.STREAM_CODEC, StartWorkbenchCraftingPacket::handle);
         registrar.playToServer(ToggleCyberwarePacket.TYPE, ToggleCyberwarePacket.STREAM_CODEC, ToggleCyberwarePacket::handle);

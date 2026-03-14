@@ -32,9 +32,9 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements EntityBlock {
-    public static final MapCodec<SurgeryChamberBlock> CODEC = simpleCodec(SurgeryChamberBlock::new);
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
+    public static final MapCodec<SurgeryChamberBlock> CODEC = simpleCodec(SurgeryChamberBlock::new);
     private static final Map<Direction, VoxelShape> LOWER_SHAPES_OPEN = new EnumMap<>(Direction.class);
     private static final Map<Direction, VoxelShape> UPPER_SHAPES_OPEN = new EnumMap<>(Direction.class);
     private static final Map<Direction, VoxelShape> LOWER_SHAPES_CLOSED = new EnumMap<>(Direction.class);
@@ -69,11 +69,6 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
                 .setValue(OPEN, true));
     }
 
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
     private static VoxelShape rotateShape(VoxelShape shape, Direction toDir) {
         if (toDir == Direction.NORTH) return shape;
         VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
@@ -93,6 +88,11 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
             buffer[1] = Shapes.empty();
         }
         return buffer[0];
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
     }
 
     @Override

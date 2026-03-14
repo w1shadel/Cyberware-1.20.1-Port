@@ -12,7 +12,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ComponentToggleExtendTabPacket(boolean open) implements CustomPacketPayload {
     public static final Type<ComponentToggleExtendTabPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "component_toggle_tab"));
-
     public static final StreamCodec<FriendlyByteBuf, ComponentToggleExtendTabPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, ComponentToggleExtendTabPacket::open,
             ComponentToggleExtendTabPacket::new

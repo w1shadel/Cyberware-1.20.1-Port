@@ -14,7 +14,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DoubleJumpPacket() implements CustomPacketPayload {
     public static final Type<DoubleJumpPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "double_jump"));
-
     public static final StreamCodec<FriendlyByteBuf, DoubleJumpPacket> STREAM_CODEC = StreamCodec.unit(new DoubleJumpPacket());
 
     @Override

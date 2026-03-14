@@ -18,9 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
@@ -464,7 +462,6 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     public boolean isPowered() {
         return this.getHealth() <= this.getMaxHealth() / 2.0F;
     }
-
 
     public int getInvulnerableTicks() {
         return this.entityData.get(DATA_ID_INV);

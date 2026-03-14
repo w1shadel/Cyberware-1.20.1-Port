@@ -10,7 +10,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SyncSurgeryProgressPacket(int progress, int maxProgress) implements CustomPacketPayload {
     public static final Type<SyncSurgeryProgressPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "sync_surgery_progress"));
-
     public static final StreamCodec<FriendlyByteBuf, SyncSurgeryProgressPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, SyncSurgeryProgressPacket::progress,
             ByteBufCodecs.VAR_INT, SyncSurgeryProgressPacket::maxProgress,

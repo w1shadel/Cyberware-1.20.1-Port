@@ -1,6 +1,5 @@
 package com.maxwell.cyber_ware_port.common.block.radio.tower;
 
-import com.maxwell.cyber_ware_port.common.block.radio.RadioKitBlock;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -27,9 +26,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
-    public static final MapCodec<RadioTowerCoreBlock> CODEC = simpleCodec(RadioTowerCoreBlock::new);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
+    public static final MapCodec<RadioTowerCoreBlock> CODEC = simpleCodec(RadioTowerCoreBlock::new);
     public static final Map<ResourceKey<Level>, Long> LAST_TOWER_ACTIVE_TIME = new ConcurrentHashMap<>();
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(6.5, 0, 6.5, 9.5, 16, 9.5),

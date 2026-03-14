@@ -110,7 +110,6 @@ public class ModClientEvents {
         event.enqueueWork(() -> {
             ItemProperties.register(ModItems.BLUEPRINT.get(), ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "written"),
                     (stack, level, entity, seed) -> BlueprintItem.getTargetItem(stack) != null ? 1.0F : 0.0F);
-
             ResourceLocation scavengedProperty = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "is_scavenged");
             for (DeferredHolder<Item, ? extends Item> entry : ModItems.ITEMS.getEntries()) {
                 if (entry.get() instanceof CyberwareItem) {

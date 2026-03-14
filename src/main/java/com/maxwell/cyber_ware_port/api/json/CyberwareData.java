@@ -12,12 +12,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CyberwareData {
+    public final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
     public int essence = 20;
     public int slotId = 0;
     public int maxInstall = 1;
     public boolean isPristine = true;
     public ICyberware.StackingRule stackingRule = ICyberware.StackingRule.STATIC;
-    public final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
     public Set<Item> incompatibleItems = new HashSet<>();
     public Set<Item> prerequisites = new HashSet<>();
 
