@@ -38,7 +38,7 @@ public class ChargerBlockEntity extends BlockEntity {
     }
 
     private void handlePlayerEnergyTransfer(Level level, BlockPos pos) {
-        AABB area = new AABB(pos).expandTowards(0, 0.5, 0);
+        AABB area = new AABB(pos).inflate(0.2, 1.0, 0.2);
         List<Player> players = level.getEntitiesOfClass(Player.class, area);
         for (Player player : players) {
             CyberwareEvents.Recharge event = new CyberwareEvents.Recharge(player, this, isDrainMode);
@@ -73,7 +73,8 @@ public class ChargerBlockEntity extends BlockEntity {
     private void distributeEnergy(Level level, BlockPos pos) {
         for (Direction direction : Direction.values()) {
             if (this.energyStorage.getEnergyStored() <= 0) break;
-            IEnergyStorage targetStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(direction), direction.getOpposite());
+            BlockPos targetPos = pos.relative(direction);
+            IEnergyStorage targetStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, targetPos, direction.getOpposite());
             if (targetStorage != null && targetStorage.canReceive()) {
                 int extracted = this.energyStorage.extractEnergy(10000, true);
                 int received = targetStorage.receiveEnergy(extracted, false);
