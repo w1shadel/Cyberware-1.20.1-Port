@@ -1,12 +1,13 @@
 package com.maxwell.cyber_ware_port.client.screen.robosurgeon;
 
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.item.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +31,20 @@ public class InstalledCyberwareScreen extends Screen {
             this.onClose();
         }).bounds(this.width / 2 - 100, this.height - 28, 200, 20).build());
         if (this.minecraft != null && this.minecraft.player != null) {
-            this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(cyberware -> {
-                ItemStackHandler installed = cyberware.getInstalledCyberware();
-                for (int i = 0;
-                     i < installed.getSlots();
-                     i++) {
-                    ItemStack stack = installed.getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        this.installedCyberware.add(stack);
-                    }
+            CyberwareUserData cyberware = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            ItemStackHandler installed = cyberware.getInstalledCyberware();
+            for (int i = 0; i < installed.getSlots(); i++) {
+                ItemStack stack = installed.getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    this.installedCyberware.add(stack);
                 }
-            });
+            }
         }
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         int listTop = 32;
         int listBottom = this.height - 36;
@@ -58,7 +56,7 @@ public class InstalledCyberwareScreen extends Screen {
         int currentY = listTop + 4 - (int) this.scrollOffset;
         for (ItemStack stack : this.installedCyberware) {
             guiGraphics.renderItem(stack, listLeft + 5, currentY);
-            guiGraphics.drawString(this.font, stack.getDisplayName(), listLeft + 28, currentY + 5, 0xFFFFFF);
+            guiGraphics.drawString(this.font, stack.getHoverName(), listLeft + 28, currentY + 5, 0xFFFFFF);
             if (mouseY >= listTop && mouseY < listBottom && isMouseOver(mouseX, mouseY, listLeft + 5, currentY, 16, 16)) {
                 guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY);
             }
@@ -72,15 +70,14 @@ public class InstalledCyberwareScreen extends Screen {
             int scrollBarY = listTop + (int) (((float) this.scrollOffset / (contentHeight - listHeight)) * (listHeight - scrollBarHeight));
             guiGraphics.fill(listRight - SCROLL_BAR_WIDTH - 1, scrollBarY, listRight - 1, scrollBarY + scrollBarHeight, 0xFFFFFFFF);
         }
-
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int listHeight = this.height - 36 - 32;
         int contentHeight = this.installedCyberware.size() * ITEM_HEIGHT;
         int maxScroll = Math.max(0, contentHeight - listHeight);
-        this.scrollOffset -= delta * 10.0;
+        this.scrollOffset -= scrollY * 10.0;
         this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, maxScroll));
         return true;
     }
@@ -91,7 +88,9 @@ public class InstalledCyberwareScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.previousScreen);
+        if (this.minecraft != null) {
+            this.minecraft.setScreen(this.previousScreen);
+        }
     }
 
     @Override

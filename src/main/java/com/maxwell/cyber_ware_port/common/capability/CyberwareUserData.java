@@ -87,6 +87,11 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     public int getLastConsumption() {
         return this.lastConsumption;
     }
+    public int getMaxTolerance(LivingEntity entity) {
+        CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getNewTolerance();
+    }
     public void recalculateCapacity(ServerPlayer player) {
         float oldMaxHealth = player.getHealth();
         float oldMaxHealthVal = player.getMaxHealth();

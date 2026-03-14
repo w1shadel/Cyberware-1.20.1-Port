@@ -9,7 +9,7 @@ public class DenseBatteryItem extends CyberwareItem {
         super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(1)
                 .energy(0, 0, 60000, StackingRule.STATIC)
-                .properties(p -> p.rarity(Rarity.RARE)));
+                .rarity(Rarity.RARE));
 
     }
 }

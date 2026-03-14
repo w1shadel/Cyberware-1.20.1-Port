@@ -9,7 +9,7 @@ public class CreativeBatteryItem extends CyberwareItem {
         super(new Builder(0, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(1)
                 .energy(0, 1_000_000, 2_000_000_000, StackingRule.STATIC)
-                .properties(p -> p.rarity(Rarity.EPIC))
+                .rarity(Rarity.EPIC)
         );
     }
 }

@@ -50,7 +50,7 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                                 AttributeModifier.Operation op = AttributeModifier.Operation.valueOf(attrObj.get("operation").getAsString().toUpperCase());
                                 ResourceLocation modId = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "dynamic_" + location.getPath().replace("/", "_"));
                                 // wrapAsHolderを使用してAttributeからHolder<Attribute>へ変換
-                                data.attributeModifiers.put((Attribute) BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attr), new AttributeModifier(modId, amount, op));
+                                data.attributeModifiers.put(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attr), new AttributeModifier(modId, amount, op));
                             }
                         }
                     }

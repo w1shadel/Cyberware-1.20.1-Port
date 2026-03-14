@@ -52,6 +52,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public float animationProgress = 0.0f;
     public float prevAnimationProgress = 0.0f;
     private AssemblyRecipe cachedRecipe = null;
+
     private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int slot) {

@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.api.json;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -16,7 +17,7 @@ public class CyberwareData {
     public int maxInstall = 1;
     public boolean isPristine = true;
     public ICyberware.StackingRule stackingRule = ICyberware.StackingRule.STATIC;
-    public Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
+    public final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
     public Set<Item> incompatibleItems = new HashSet<>();
     public Set<Item> prerequisites = new HashSet<>();
 

@@ -144,12 +144,20 @@ public class CyberwareItem extends Item implements ICyberware {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
-        if (isPristine(stack)) return this.baseAttributeModifiers;
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack) {
+        if (isPristine(stack)) {
+            return this.baseAttributeModifiers;
+        }
+
         Multimap<Holder<Attribute>, AttributeModifier> modified = ArrayListMultimap.create();
         this.baseAttributeModifiers.forEach((attr, mod) -> {
+            // mod.amount() は 1.21.1 では amount() メソッドです
             double newValue = mod.amount() * 0.5;
-            AttributeModifier newMod = new AttributeModifier(mod.id().withSuffix("_damaged"), newValue, mod.operation());
+            AttributeModifier newMod = new AttributeModifier(
+                    mod.id().withSuffix("_damaged"),
+                    newValue,
+                    mod.operation()
+            );
             modified.put(attr, newMod);
         });
         return modified;
@@ -213,7 +221,10 @@ public class CyberwareItem extends Item implements ICyberware {
             this.attributeModifiers.put(attribute, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, idStr), amount, operation));
             return this;
         }
-
+        public Builder rarity(net.minecraft.world.item.Rarity rarity) {
+            this.properties.rarity(rarity);
+            return this;
+        }
         public CyberwareItem build() {
             this.properties.stacksTo(Math.max(this.maxInstallAmount, 1));
             return new CyberwareItem(this);

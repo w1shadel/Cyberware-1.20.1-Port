@@ -2,6 +2,7 @@ package com.maxwell.cyber_ware_port.api.json;
 
 import com.google.common.collect.Multimap;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -51,10 +52,9 @@ public class DynamicCyberwareWrapper implements ICyberware {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack) {
         return data.attributeModifiers;
     }
-
 
     @Override
     public boolean hasEnergyProperties(ItemStack stack) {

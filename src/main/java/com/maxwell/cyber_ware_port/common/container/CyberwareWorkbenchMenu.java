@@ -187,7 +187,25 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
             }
         }
     }
+    public int getCurrentPage() {
+        return this.pageData.get(0);
+    }
 
+    public int getMaxPages() {
+        return this.pageData.get(1);
+    }
+
+    public int getBlueprintCurrentPage() {
+        return this.pageData.get(4);
+    }
+
+    public int getBlueprintMaxPages() {
+        return this.pageData.get(5);
+    }
+    public void setExtendedOpen(boolean open) {
+        this.isExtendedOpen = open;
+        this.pageData.set(2, open ? 1 : 0);
+    }
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);

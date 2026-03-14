@@ -7,15 +7,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-@Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class SurgeryOverlay {
     @SubscribeEvent
-    public static void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
-        if (event.getOverlay() != VanillaGuiOverlay.HELMET.type()) return;
+    public static void onRenderLayer(RenderGuiLayerEvent.Post event) {
+        if (!VanillaGuiLayers.CAMERA_OVERLAYS.equals(event.getName())) return;
         int progress = ClientPacketHandler.currentProgress;
         int max = ClientPacketHandler.maxProgress;
         if (progress <= 0) return;

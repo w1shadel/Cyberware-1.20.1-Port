@@ -3,16 +3,14 @@ package com.maxwell.cyber_ware_port.client.upgrades.cybereye;
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.client.ClientCyberwareSettings;
+import com.maxwell.cyber_ware_port.client.KeyInit;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.common.network.ToggleCyberwarePacket;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,6 +20,8 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -63,18 +63,15 @@ public class CyberwareMenuScreen extends Screen {
         super.init();
         parts.clear();
         if (this.minecraft != null && this.minecraft.player != null) {
-            this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-                ItemStackHandler handler = data.getInstalledCyberware();
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    ItemStack stack = handler.getStackInSlot(i);
-                    ICyberware cw = CyberwareAPI.getCyberware(stack);
-                    if (cw != null) {
-                        if (cw.canToggle(stack)) {
-                            parts.add(new ToggleablePart(i, stack, cw));
-                        }
-                    }
+            CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            IItemHandler handler = data.getInstalledCyberware();
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw != null && cw.canToggle(stack)) {
+                    parts.add(new ToggleablePart(i, stack, cw));
                 }
-            });
+            }
         }
         int boxWidth = 80;
         int boxHeight = 20;
@@ -92,7 +89,6 @@ public class CyberwareMenuScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        this.hexInput.tick();
         handleMovementInput();
     }
 
@@ -110,8 +106,8 @@ public class CyberwareMenuScreen extends Screen {
 
     private void updateKey(KeyMapping keyMapping) {
         long window = Minecraft.getInstance().getWindow().getWindow();
-        int keyCode = keyMapping.getKey().getValue();
-        boolean isDown = InputConstants.isKeyDown(window, keyCode);
+        InputConstants.Key key = keyMapping.getKey();
+        boolean isDown = InputConstants.isKeyDown(window, key.getValue());
         keyMapping.setDown(isDown);
     }
 
@@ -129,14 +125,6 @@ public class CyberwareMenuScreen extends Screen {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        if (this.isColorSettingsOpen && this.hexInput.isFocused()) {
-            if (this.hexInput.charTyped(codePoint, modifiers)) return true;
-        }
-        return super.charTyped(codePoint, modifiers);
     }
 
     @Override
@@ -167,11 +155,10 @@ public class CyberwareMenuScreen extends Screen {
     }
 
     private void renderIconButton(GuiGraphics g, ResourceLocation texture, int x, int y, int mouseX, int mouseY, String tooltip) {
-        RenderSystem.setShaderTexture(0, texture);
         float[] rgba = ClientCyberwareSettings.getColorFloats();
-        RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-        g.blit(texture, x, y, BTN_SIZE, BTN_SIZE, 0, 0, 8, 8, 8, 8);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+        g.blit(texture, x, y, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE);
+        g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (mouseX >= x && mouseX <= x + BTN_SIZE && mouseY >= y && mouseY <= y + BTN_SIZE) {
             g.renderOutline(x - 1, y - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
             if (!isColorSettingsOpen && !isHudMoveMode) {
@@ -182,28 +169,23 @@ public class CyberwareMenuScreen extends Screen {
 
     private void renderRadialMenu(GuiGraphics g, int centerX, int centerY, int mouseX, int mouseY) {
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f matrix = g.pose().last().pose();
-        float red = 1.0f;
-        float green = 0.0f;
-        float blue = 0.0f;
-        float alpha = 0.4f;
-        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+
         int segments = 60;
         for (int i = 0; i <= segments; i++) {
             double angle = 2 * Math.PI * i / segments;
             float cos = (float) Math.cos(angle);
             float sin = (float) Math.sin(angle);
-            buffer.vertex(matrix, centerX + cos * OUTER_RADIUS, centerY + sin * OUTER_RADIUS, 0)
-                    .color(red, green, blue, alpha).endVertex();
-            buffer.vertex(matrix, centerX + cos * INNER_RADIUS, centerY + sin * INNER_RADIUS, 0)
-                    .color(red, green, blue, alpha).endVertex();
+            buffer.addVertex(matrix, centerX + cos * OUTER_RADIUS, centerY + sin * OUTER_RADIUS, 0).setColor(1.0f, 0.0f, 0.0f, 0.4f);
+            buffer.addVertex(matrix, centerX + cos * INNER_RADIUS, centerY + sin * INNER_RADIUS, 0).setColor(1.0f, 0.0f, 0.0f, 0.4f);
         }
-        tesselator.end();
+        MeshData meshData = buffer.build();
+        if (meshData != null) BufferUploader.drawWithShader(meshData);
         RenderSystem.disableBlend();
+
         if (!parts.isEmpty()) {
             double angleStep = 2 * Math.PI / parts.size();
             for (int i = 0; i < parts.size(); i++) {
@@ -213,7 +195,7 @@ public class CyberwareMenuScreen extends Screen {
                 int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
                 boolean isActive = part.item.isActive(part.stack);
                 boolean isHovered = (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12);
-                g.pose().pushPose();
+
                 if (isHovered) {
                     Component statusText = isActive
                             ? Component.translatable("cyberware.gui.active")
@@ -226,7 +208,6 @@ public class CyberwareMenuScreen extends Screen {
                 if (isHovered) {
                     g.renderTooltip(this.font, part.stack, mouseX, mouseY);
                 }
-                g.pose().popPose();
             }
         }
     }
@@ -255,33 +236,30 @@ public class CyberwareMenuScreen extends Screen {
             }
         }
         g.drawCenteredString(this.font, "HUD Color Palette", centerX, startY - 15, 0xFFFFFFFF);
-        g.drawCenteredString(this.font, "(Hex)", centerX, this.hexInput.getY() + 20 + 2, 0xFFAAAAAA);
+        g.drawCenteredString(this.font, "(Hex)", centerX, this.hexInput.getY() + 22, 0xFFAAAAAA);
     }
 
     private void renderHudPreview(GuiGraphics g, int mouseX, int mouseY) {
         if (this.minecraft.player == null) return;
-        this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-            int hudX = ClientCyberwareSettings.hudX;
-            int hudY = ClientCyberwareSettings.hudY;
-            if (isHudMoveMode) {
-                g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
-                g.drawCenteredString(this.font, "DRAG TO MOVE", hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
-                if (isDraggingHud || (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT)) {
-                    g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
-                }
-                int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
-                int resetBtnY = hudY + HUD_HEIGHT + 5;
-                RenderSystem.setShaderTexture(0, HUD_RESET_ICON);
-                float[] rgba = ClientCyberwareSettings.getColorFloats();
-                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-                g.blit(HUD_RESET_ICON, resetBtnX, resetBtnY, BTN_SIZE, BTN_SIZE, 0, 0, 8, 8, 8, 8);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
-                    g.renderOutline(resetBtnX - 1, resetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
-                    g.renderTooltip(this.font, Component.literal("Reset Position"), mouseX, mouseY);
-                }
+        int hudX = ClientCyberwareSettings.hudX;
+        int hudY = ClientCyberwareSettings.hudY;
+        if (isHudMoveMode) {
+            g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
+            g.drawCenteredString(this.font, "DRAG TO MOVE", hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
+            if (isDraggingHud || (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT)) {
+                g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
             }
-        });
+            int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
+            int resetBtnY = hudY + HUD_HEIGHT + 5;
+            float[] rgba = ClientCyberwareSettings.getColorFloats();
+            g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+            g.blit(HUD_RESET_ICON, resetBtnX, resetBtnY, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE);
+            g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+            if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
+                g.renderOutline(resetBtnX - 1, resetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+                g.renderTooltip(this.font, Component.literal("Reset Position"), mouseX, mouseY);
+            }
+        }
     }
 
     @Override
@@ -290,9 +268,7 @@ public class CyberwareMenuScreen extends Screen {
             int centerX = width / 2;
             int centerY = height / 2;
             if (!isHudMoveMode) {
-                int colorBtnX = POS_BTN_X;
-                int colorBtnY = POS_BTN_Y + 21;
-                if (mouseX >= colorBtnX && mouseX <= colorBtnX + BTN_SIZE && mouseY >= colorBtnY && mouseY <= colorBtnY + BTN_SIZE) {
+                if (mouseX >= POS_BTN_X && mouseX <= POS_BTN_X + BTN_SIZE && mouseY >= POS_BTN_Y + 21 && mouseY <= POS_BTN_Y + 21 + BTN_SIZE) {
                     toggleColorSettings();
                     playClickSound();
                     return true;
@@ -309,46 +285,33 @@ public class CyberwareMenuScreen extends Screen {
                 if (this.hexInput.mouseClicked(mouseX, mouseY, button)) {
                     this.setFocused(this.hexInput);
                     return true;
-                } else {
-                    this.setFocused(null);
-                    this.hexInput.setFocused(false);
                 }
-                int swatchSize = 20;
-                int gap = 4;
+                int swatchSize = 20, gap = 4;
                 int totalWidth = (swatchSize * PRESET_COLORS.length) + (gap * (PRESET_COLORS.length - 1));
                 int startX = centerX - totalWidth / 2;
-                int startY = centerY - 15;
                 for (int i = 0; i < PRESET_COLORS.length; i++) {
                     int x = startX + (swatchSize + gap) * i;
-                    int y = startY;
-                    if (mouseX >= x && mouseX <= x + swatchSize && mouseY >= y && mouseY <= y + swatchSize) {
+                    if (mouseX >= x && mouseX <= x + swatchSize && mouseY >= centerY - 15 && mouseY <= centerY - 15 + swatchSize) {
                         ClientCyberwareSettings.hudColor = PRESET_COLORS[i];
                         this.hexInput.setValue(ClientCyberwareSettings.getHudColorAsHex());
                         playClickSound();
                         return true;
                     }
                 }
-                return true;
             }
             if (isHudMoveMode) {
-                int hudX = ClientCyberwareSettings.hudX;
-                int hudY = ClientCyberwareSettings.hudY;
-                int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
-                int resetBtnY = hudY + HUD_HEIGHT + 5;
-                if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
-                    ClientCyberwareSettings.hudX = 10;
-                    ClientCyberwareSettings.hudY = 10;
-                    playClickSound();
-                    return true;
+                int hudX = ClientCyberwareSettings.hudX, hudY = ClientCyberwareSettings.hudY;
+                int rX = hudX + (HUD_WIDTH - BTN_SIZE) / 2, rY = hudY + HUD_HEIGHT + 5;
+                if (mouseX >= rX && mouseX <= rX + BTN_SIZE && mouseY >= rY && mouseY <= rY + BTN_SIZE) {
+                    ClientCyberwareSettings.hudX = 10; ClientCyberwareSettings.hudY = 10;
+                    playClickSound(); return true;
                 }
                 if (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT) {
                     isDraggingHud = true;
                     dragOffsetX = (int) mouseX - hudX;
                     dragOffsetY = (int) mouseY - hudY;
-                    playClickSound();
-                    return true;
+                    playClickSound(); return true;
                 }
-                return true;
             }
             if (!isColorSettingsOpen && !isHudMoveMode) {
                 double angleStep = 2 * Math.PI / parts.size();
@@ -358,7 +321,7 @@ public class CyberwareMenuScreen extends Screen {
                     int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
                     int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
                     if (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12) {
-                        A_PacketHandler.INSTANCE.sendToServer(new ToggleCyberwarePacket(part.slotId));
+                        PacketDistributor.sendToServer(new ToggleCyberwarePacket(part.slotId));
                         playClickSound();
                         part.item.toggle(part.stack);
                         return true;

@@ -2,6 +2,7 @@ package com.maxwell.cyber_ware_port.common.item.base;
 
 import com.google.common.collect.Multimap;
 import com.maxwell.cyber_ware_port.init.ModDataComponents;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -74,9 +75,9 @@ public interface ICyberware {
         stack.set(ModDataComponents.ACTIVE.get(), !isActive(stack));
     }
 
-    Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack stack);
+    Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(ItemStack stack);
 
-    default void onPlayerTick(PlayerTickEvent event, ItemStack stack, LivingEntity wearer) {
+    default void onPlayerTick(PlayerTickEvent.Post event, ItemStack stack, LivingEntity wearer) {
     }
 
     default void onItemUseTick(LivingEntityUseItemEvent.Tick event, ItemStack stack, LivingEntity wearer) {
