@@ -7,20 +7,6 @@
   "outputs": [
     {
       "chance": 1.0,
-<<<<<<< HEAD
-      "count": 2,
-      "item": "cyber_ware_port:component_fiberoptics"
-    },
-    {
-      "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_microelectric"
-    },
-    {
-      "chance": 0.5,
-      "count": 1,
-      "item": "minecraft:glowstone_dust"
-=======
       "stack": {
         "count": 1,
         "id": "cyber_ware_port:component_fiberoptics"
@@ -39,7 +25,6 @@
         "count": 1,
         "id": "minecraft:glowstone_dust"
       }
->>>>>>> 8b554d04d2ce8932f4a4d6ecc2bf41b6e00a68c7
     }
   ]
 }

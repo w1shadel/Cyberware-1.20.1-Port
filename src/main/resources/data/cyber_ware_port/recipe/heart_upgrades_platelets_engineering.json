@@ -7,20 +7,6 @@
   "outputs": [
     {
       "chance": 1.0,
-<<<<<<< HEAD
-      "count": 1,
-      "item": "cyber_ware_port:component_reactor"
-    },
-    {
-      "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_microelectric"
-    },
-    {
-      "chance": 0.5,
-      "count": 1,
-      "item": "minecraft:slime_ball"
-=======
       "stack": {
         "count": 1,
         "id": "cyber_ware_port:component_reactor"
@@ -39,7 +25,6 @@
         "count": 1,
         "id": "minecraft:slime_ball"
       }
->>>>>>> 8b554d04d2ce8932f4a4d6ecc2bf41b6e00a68c7
     }
   ]
 }

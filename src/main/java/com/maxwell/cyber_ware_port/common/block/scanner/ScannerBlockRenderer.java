@@ -35,7 +35,7 @@ public class ScannerBlockRenderer implements BlockEntityRenderer<ScannerBlockEnt
         pPoseStack.mulPose(Axis.YP.rotationDegrees(rotationDegrees));
         float animTime = 0;
         if (pBlockEntity.isWorking()) {
-            animTime = pBlockEntity.getProgress() + pPartialTick;
+            animTime = pBlockEntity.getLevel().getGameTime() + pPartialTick;
 
         }
         this.model.setupMovingParts(pBlockEntity.isWorking(), animTime);

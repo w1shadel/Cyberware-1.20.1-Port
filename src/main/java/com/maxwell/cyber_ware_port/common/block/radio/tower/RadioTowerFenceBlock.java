@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.core.Direction;
 
 public class RadioTowerFenceBlock extends FenceBlock {
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
@@ -25,6 +26,11 @@ public class RadioTowerFenceBlock extends FenceBlock {
                 .setValue(WATERLOGGED, Boolean.valueOf(false))
                 .setValue(FORMED, Boolean.valueOf(false)));
 
+    }
+
+    @Override
+    public boolean connectsTo(BlockState pState, boolean pIsSideSolid, Direction pDirection) {
+        return pState.is(this) || pState.getBlock() instanceof RadioTowerCoreBlock || super.connectsTo(pState, pIsSideSolid, pDirection);
     }
 
     @Override

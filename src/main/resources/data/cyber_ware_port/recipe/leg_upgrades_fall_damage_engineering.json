@@ -7,20 +7,6 @@
   "outputs": [
     {
       "chance": 1.0,
-<<<<<<< HEAD
-      "count": 2,
-      "item": "cyber_ware_port:component_titanium"
-    },
-    {
-      "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_actuator"
-    },
-    {
-      "chance": 0.8,
-      "count": 2,
-      "item": "minecraft:white_wool"
-=======
       "stack": {
         "count": 1,
         "id": "cyber_ware_port:component_titanium"
@@ -39,7 +25,6 @@
         "count": 1,
         "id": "minecraft:white_wool"
       }
->>>>>>> 8b554d04d2ce8932f4a4d6ecc2bf41b6e00a68c7
     }
   ]
 }
