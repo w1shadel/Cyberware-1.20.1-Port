@@ -391,10 +391,10 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     private void updateBodyStatus() {
         CyberwareBodyStatus status = new CyberwareBodyStatus(installedCyberware);
-        this.hasCyberLeftArm = status.getArmCount() >= 1;
-        this.hasCyberRightArm = status.getArmCount() >= 2;
-        this.hasCyberLeftLeg = status.getLegCount() >= 1;
-        this.hasCyberRightLeg = status.getLegCount() >= 2;
+        this.hasCyberLeftArm = status.getCyberArmCount() >= 1;
+        this.hasCyberRightArm = status.getCyberArmCount() >= 2;
+        this.hasCyberLeftLeg = status.getCyberLegCount() >= 1;
+        this.hasCyberRightLeg = status.getCyberLegCount() >= 2;
     }
 
     public void syncToClient(ServerPlayer player) {
