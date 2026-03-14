@@ -1,0 +1,25 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_reactor"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_microelectric"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:ghast_tear"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:heart_upgrades_medkit"
+  }
+}

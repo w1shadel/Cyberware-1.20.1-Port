@@ -1,0 +1,19 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_reactor"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_microelectric"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:skin_upgrades_immuno"
+  }
+}

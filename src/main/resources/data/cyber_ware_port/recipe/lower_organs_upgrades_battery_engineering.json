@@ -1,0 +1,30 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:lower_organs_upgrades_battery"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_storage"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_microelectric"
+      }
+    }
+  ]
+}

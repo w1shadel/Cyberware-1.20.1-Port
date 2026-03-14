@@ -1,0 +1,30 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:leg_upgrades_fall_damage"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_titanium"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "chance": 0.8,
+      "stack": {
+        "count": 1,
+        "id": "minecraft:white_wool"
+      }
+    }
+  ]
+}

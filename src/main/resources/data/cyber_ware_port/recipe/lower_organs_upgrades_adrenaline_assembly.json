@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_microelectric"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:sugar"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:lower_organs_upgrades_adrenaline"
+  }
+}

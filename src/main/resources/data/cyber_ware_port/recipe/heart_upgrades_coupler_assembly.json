@@ -1,0 +1,24 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_titanium"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_synthnerves"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:heart_upgrades_coupler"
+  }
+}

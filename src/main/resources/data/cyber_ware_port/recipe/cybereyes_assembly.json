@@ -1,0 +1,31 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_fiberoptics"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_ssc"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:glass_pane"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:cybereyes"
+  }
+}

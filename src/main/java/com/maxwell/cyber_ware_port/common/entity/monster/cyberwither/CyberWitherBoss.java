@@ -483,11 +483,11 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     }
 
     public float getHeadYRot(int pHead) {
-        return this.yRotHeads[pHead];
+        return pHead <= 0 ? this.getYRot() : this.yRotHeads[pHead - 1];
     }
 
     public float getHeadXRot(int pHead) {
-        return this.xRotHeads[pHead];
+        return pHead <= 0 ? this.getXRot() : this.xRotHeads[pHead - 1];
     }
 
     @Override

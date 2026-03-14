@@ -1,0 +1,23 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:bone_upgrades_boneflex"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_titanium"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_reactor"
+      }
+    }
+  ]
+}

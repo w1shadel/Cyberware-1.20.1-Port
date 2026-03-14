@@ -1,0 +1,30 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:hand_upgrades_craft_hands"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_fiberoptics"
+      }
+    },
+    {
+      "chance": 0.8,
+      "stack": {
+        "count": 1,
+        "id": "minecraft:crafting_table"
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_actuator"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:bow"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:arm_upgrades_bow"
+  }
+}

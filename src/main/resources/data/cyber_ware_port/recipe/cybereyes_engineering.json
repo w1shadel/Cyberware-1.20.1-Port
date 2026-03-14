@@ -1,0 +1,37 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:cybereyes"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_plating"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_fiberoptics"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_ssc"
+      }
+    },
+    {
+      "chance": 0.5,
+      "stack": {
+        "count": 1,
+        "id": "minecraft:glass_pane"
+      }
+    }
+  ]
+}

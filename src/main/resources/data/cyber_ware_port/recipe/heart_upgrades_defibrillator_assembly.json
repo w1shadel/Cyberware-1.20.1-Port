@@ -1,0 +1,25 @@
+{
+  "type": "cyber_ware_port:assembly",
+  "inputs": [
+    {
+      "ingredient": {
+        "item": "cyber_ware_port:component_storage"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": {
+        "item": "cyber_ware_port:component_microelectric"
+      }
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:redstone_block"
+      }
+    }
+  ],
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:heart_upgrades_defibrillator"
+  }
+}

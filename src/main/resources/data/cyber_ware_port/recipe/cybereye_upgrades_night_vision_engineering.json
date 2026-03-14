@@ -1,0 +1,30 @@
+{
+  "type": "cyber_ware_port:engineering",
+  "blueprint_chance": 0.15,
+  "input": {
+    "item": "cyber_ware_port:cybereye_upgrades_night_vision"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_fiberoptics"
+      }
+    },
+    {
+      "chance": 1.0,
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_microelectric"
+      }
+    },
+    {
+      "chance": 0.5,
+      "stack": {
+        "count": 1,
+        "id": "minecraft:glowstone_dust"
+      }
+    }
+  ]
+}
