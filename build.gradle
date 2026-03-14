@@ -141,6 +141,7 @@ dependencies {
     implementation "curse.maven:better-combat-by-daedelus-639842:7348161"
     implementation "curse.maven:qliphoth-awakening-1271707:7429887"
     implementation "curse.maven:cloth-config-348521:5729127"
+    implementation "curse.maven:mekanism-268560:7621971"
     implementation "curse.maven:playeranimator-658587:7389814"
     implementation "curse.maven:fdlib-1271749:7429840"
 }

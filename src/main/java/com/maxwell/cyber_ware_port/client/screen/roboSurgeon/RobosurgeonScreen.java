@@ -265,7 +265,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 int x = (this.width - this.imageWidth) / 2;
                 int y = (this.height - this.imageHeight) / 2;
                 int subBaseX = x + 40;
-                int subBaseY = y + TOP_HEIGHT + 11 - 30;
+                int subBaseY = y + TOP_HEIGHT - 55;
                 if (pMouseX >= subBaseX - 18.5 && pMouseX <= subBaseX + 18.5 && pMouseY >= subBaseY - 18.5 && pMouseY <= subBaseY + 18.5) {
                     this.selectedPart = BodyPart.INTERNAL;
                     this.hideName = true;
@@ -465,7 +465,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         float currentRotation = isDraggingModel ? this.viewRotation : ease * 360f;
         if (this.internalPartsModel != null && this.selectedPart != BodyPart.ARM_LEFT && this.selectedPart != BodyPart.ARM_RIGHT && this.selectedPart != BodyPart.LEG_LEFT && this.selectedPart != BodyPart.LEG_RIGHT && this.selectedPart != BodyPart.HEAD && this.selectedPart != BodyPart.TORSO) {
             int subX = (this.selectedPart == BodyPart.INTERNAL) ? drawX - 48 : x + 40;
-            int subY = (this.selectedPart == BodyPart.INTERNAL) ? drawY : y + TOP_HEIGHT + 11;
+            int subY = (this.selectedPart == BodyPart.INTERNAL) ? drawY : y + TOP_HEIGHT - 21;
             int subScale = (this.selectedPart == BodyPart.INTERNAL) ? (int) currentScale : 40;
             if (this.selectedPart == BodyPart.NONE) {
                 int boxX = subX - 18, boxY = subY - 52;
@@ -474,7 +474,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             }
             for (int i = 0; i < 3; i++) {
                 this.internalPartsModel.setVisibleLayer(i);
-                renderCustomModel(g, subX, subY, subScale, currentRotation, this.internalPartsModel, INTERNAL_PARTS_TEXTURE);
+                int renderY = subY + (this.selectedPart == BodyPart.NONE ? 17 : 0);
+                renderCustomModel(g, subX, renderY, subScale, currentRotation, this.internalPartsModel, INTERNAL_PARTS_TEXTURE);
             }
         }
         if (this.selectedPart != BodyPart.INTERNAL) {

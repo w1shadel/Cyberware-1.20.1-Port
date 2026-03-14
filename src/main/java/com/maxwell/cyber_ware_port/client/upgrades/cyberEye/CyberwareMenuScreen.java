@@ -129,6 +129,7 @@ public class CyberwareMenuScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.render(g, mouseX, mouseY, partialTick);
         int centerX = width / 2;
         int centerY = height / 2;
         if (isColorSettingsOpen || isHudMoveMode) {
@@ -151,7 +152,6 @@ public class CyberwareMenuScreen extends Screen {
             g.drawCenteredString(this.font, "HUD MOVE MODE", centerX, 40, 0xFF00FF00);
             g.drawCenteredString(this.font, "Drag HUD to move / Press ESC to finish", centerX, 55, 0xFFFFFFFF);
         }
-        super.render(g, mouseX, mouseY, partialTick);
     }
 
     private void renderIconButton(GuiGraphics g, ResourceLocation texture, int x, int y, int mouseX, int mouseY, String tooltip) {
