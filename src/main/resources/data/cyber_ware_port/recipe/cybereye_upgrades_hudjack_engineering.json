@@ -7,13 +7,17 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 2,
-      "item": "cyber_ware_port:component_ssc"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_ssc"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_microelectric"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_microelectric"
+      }
     }
   ]
 }

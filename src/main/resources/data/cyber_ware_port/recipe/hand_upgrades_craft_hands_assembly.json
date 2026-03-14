@@ -14,11 +14,13 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "minecraft:crafting_table"
       }
     }
   ],
-  "output": "cyber_ware_port:hand_upgrades_craft_hands"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:hand_upgrades_craft_hands"
+  }
 }

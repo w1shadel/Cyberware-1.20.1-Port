@@ -8,7 +8,6 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_plating"
       }
@@ -20,5 +19,8 @@
       }
     }
   ],
-  "output": "cyber_ware_port:foot_upgrades_aqua"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:foot_upgrades_aqua"
+  }
 }

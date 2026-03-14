@@ -10,12 +10,12 @@
     }
   },
   "pattern": [
-    "  I",
     " I ",
-    "S  "
+    " I ",
+    " S "
   ],
   "result": {
-    "item": "cyber_ware_port:katana"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "cyber_ware_port:katana"
+  }
 }

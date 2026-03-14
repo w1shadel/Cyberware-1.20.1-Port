@@ -14,11 +14,13 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_plating"
       }
     }
   ],
-  "output": "cyber_ware_port:cyberlimbs_cyberarm_right"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:cyberlimbs_cyberarm_right"
+  }
 }

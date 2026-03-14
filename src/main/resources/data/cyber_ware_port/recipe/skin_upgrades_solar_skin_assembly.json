@@ -8,17 +8,18 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_fiberoptics"
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "minecraft:quartz"
       }
     }
   ],
-  "output": "cyber_ware_port:skin_upgrades_solar_skin"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:skin_upgrades_solar_skin"
+  }
 }

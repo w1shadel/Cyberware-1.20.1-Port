@@ -7,18 +7,24 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_ssc"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_ssc"
+      }
     },
     {
       "chance": 0.0,
-      "count": 1,
-      "item": "minecraft:ender_pearl"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:ender_pearl"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "minecraft:obsidian"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:obsidian"
+      }
     }
   ]
 }

@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "C": {
-      "tag": "forge:chests"
+      "tag": "c:chests"
     },
     "I": {
       "item": "minecraft:iron_ingot"
@@ -15,7 +15,7 @@
     " I "
   ],
   "result": {
-    "item": "cyber_ware_port:component_box"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "cyber_ware_port:component_box"
+  }
 }

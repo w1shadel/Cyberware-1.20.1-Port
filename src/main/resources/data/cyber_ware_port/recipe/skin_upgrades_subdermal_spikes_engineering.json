@@ -7,13 +7,17 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 2,
-      "item": "cyber_ware_port:component_titanium"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_titanium"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_actuator"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_actuator"
+      }
     }
   ]
 }

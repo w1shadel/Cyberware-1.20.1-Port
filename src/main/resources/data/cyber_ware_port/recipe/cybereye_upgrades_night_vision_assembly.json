@@ -8,17 +8,18 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_microelectric"
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "minecraft:glowstone_dust"
       }
     }
   ],
-  "output": "cyber_ware_port:cybereye_upgrades_night_vision"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:cybereye_upgrades_night_vision"
+  }
 }

@@ -18,7 +18,7 @@
     "IPI"
   ],
   "result": {
-    "item": "cyber_ware_port:cyberware_workbench"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "cyber_ware_port:cyberware_workbench"
+  }
 }

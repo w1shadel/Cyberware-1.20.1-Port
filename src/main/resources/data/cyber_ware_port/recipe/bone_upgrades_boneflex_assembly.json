@@ -2,17 +2,18 @@
   "type": "cyber_ware_port:assembly",
   "inputs": [
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_titanium"
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_reactor"
       }
     }
   ],
-  "output": "cyber_ware_port:bone_upgrades_boneflex"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:bone_upgrades_boneflex"
+  }
 }

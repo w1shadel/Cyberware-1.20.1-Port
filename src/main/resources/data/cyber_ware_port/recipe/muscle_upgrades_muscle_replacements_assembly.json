@@ -14,5 +14,8 @@
       }
     }
   ],
-  "output": "cyber_ware_port:muscle_upgrades_muscle_replacements"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:muscle_upgrades_muscle_replacements"
+  }
 }

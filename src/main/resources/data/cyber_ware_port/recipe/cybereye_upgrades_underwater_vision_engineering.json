@@ -7,18 +7,24 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_fiberoptics"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_fiberoptics"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "minecraft:prismarine_shard"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:prismarine_shard"
+      }
     },
     {
       "chance": 0.5,
-      "count": 1,
-      "item": "minecraft:glass_pane"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:glass_pane"
+      }
     }
   ]
 }

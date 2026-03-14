@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+<<<<<<< HEAD
   "pattern": [
     "BFB",
     "TRT",
@@ -28,5 +29,27 @@
   "result": {
     "item": "cyber_ware_port:radio_tower_core",
     "count": 1
+=======
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "cyber_ware_port:radio_tower_component"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "ICI",
+    "CDC",
+    "ICI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "cyber_ware_port:radio_tower_core"
+>>>>>>> 8b554d04d2ce8932f4a4d6ecc2bf41b6e00a68c7
   }
 }

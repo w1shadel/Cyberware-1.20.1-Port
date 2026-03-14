@@ -19,7 +19,6 @@
   ],
   "result": {
     "count": 4,
-    "item": "cyber_ware_port:radio_tower_component"
-  },
-  "show_notification": true
+    "id": "cyber_ware_port:radio_tower_component"
+  }
 }

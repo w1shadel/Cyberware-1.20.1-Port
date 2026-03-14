@@ -8,11 +8,13 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "minecraft:piston"
       }
     }
   ],
-  "output": "cyber_ware_port:leg_upgrades_jump_boost"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:leg_upgrades_jump_boost"
+  }
 }

@@ -14,17 +14,18 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_ssc"
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "minecraft:glass_pane"
       }
     }
   ],
-  "output": "cyber_ware_port:cybereyes"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:cybereyes"
+  }
 }

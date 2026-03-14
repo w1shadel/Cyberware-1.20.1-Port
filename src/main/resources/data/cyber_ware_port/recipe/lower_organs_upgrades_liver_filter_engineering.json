@@ -7,18 +7,24 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_plating"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_plating"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_fullerene"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_fullerene"
+      }
     },
     {
       "chance": 0.5,
-      "count": 1,
-      "item": "minecraft:charcoal"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:charcoal"
+      }
     }
   ]
 }

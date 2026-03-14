@@ -2,13 +2,11 @@
   "type": "cyber_ware_port:assembly",
   "inputs": [
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_actuator"
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_fiberoptics"
       }
@@ -20,5 +18,8 @@
       }
     }
   ],
-  "output": "cyber_ware_port:cybereye_upgrades_zoom"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:cybereye_upgrades_zoom"
+  }
 }

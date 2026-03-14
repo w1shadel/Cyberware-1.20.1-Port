@@ -7,13 +7,17 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 2,
-      "item": "cyber_ware_port:component_actuator"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_actuator"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "minecraft:piston"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:piston"
+      }
     }
   ]
 }

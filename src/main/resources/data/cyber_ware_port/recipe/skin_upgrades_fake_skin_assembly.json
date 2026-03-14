@@ -8,7 +8,6 @@
       }
     },
     {
-      "count": 1,
       "ingredient": {
         "item": "cyber_ware_port:component_synthnerves"
       }
@@ -20,5 +19,8 @@
       }
     }
   ],
-  "output": "cyber_ware_port:skin_upgrades_fake_skin"
+  "output": {
+    "count": 1,
+    "id": "cyber_ware_port:skin_upgrades_fake_skin"
+  }
 }

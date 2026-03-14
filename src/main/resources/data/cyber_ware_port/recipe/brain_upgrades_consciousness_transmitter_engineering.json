@@ -7,18 +7,24 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 2,
-      "item": "cyber_ware_port:component_ssc"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_ssc"
+      }
     },
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_fiberoptics"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_fiberoptics"
+      }
     },
     {
       "chance": 0.5,
-      "count": 1,
-      "item": "minecraft:ender_eye"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:ender_eye"
+      }
     }
   ]
 }

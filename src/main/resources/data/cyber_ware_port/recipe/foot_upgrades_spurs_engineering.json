@@ -7,13 +7,17 @@
   "outputs": [
     {
       "chance": 1.0,
-      "count": 1,
-      "item": "cyber_ware_port:component_plating"
+      "stack": {
+        "count": 1,
+        "id": "cyber_ware_port:component_plating"
+      }
     },
     {
       "chance": 1.0,
-      "count": 4,
-      "item": "minecraft:iron_nugget"
+      "stack": {
+        "count": 1,
+        "id": "minecraft:iron_nugget"
+      }
     }
   ]
 }

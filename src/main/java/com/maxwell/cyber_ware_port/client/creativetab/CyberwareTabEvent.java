@@ -134,7 +134,7 @@ public class CyberwareTabEvent {
         try {
             selectedTab = ObfuscationReflectionHelper.getPrivateValue(
                     CreativeModeInventoryScreen.class,
-                    null,
+                    screen,
                     "f_98505_"
             );
 
@@ -142,7 +142,7 @@ public class CyberwareTabEvent {
             try {
                 Field f = CreativeModeInventoryScreen.class.getDeclaredField("selectedTab");
                 f.setAccessible(true);
-                selectedTab = (CreativeModeTab) f.get(null);
+                selectedTab = (CreativeModeTab) f.get(screen);
 
             } catch (Exception ex) {
                 return false;

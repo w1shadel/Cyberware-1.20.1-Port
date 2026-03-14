@@ -21,7 +21,7 @@
     "IRI"
   ],
   "result": {
-    "item": "cyber_ware_port:surgery_chamber"
-  },
-  "show_notification": true
+    "count": 1,
+    "id": "cyber_ware_port:surgery_chamber"
+  }
 }
