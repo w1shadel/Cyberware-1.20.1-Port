@@ -143,8 +143,12 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     for (int pass = 0; pass < 2; pass++) {
                         for (int i = slotType; i < slotType + RobosurgeonBlockEntity.SLOTS_PER_PART; i++) {
                             Slot targetSlot = this.slots.get(i);
-                            if (pass == 1 && targetSlot.hasItem() && targetSlot.getItem().getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                            if (targetSlot.hasItem() && targetSlot.getItem().getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
                                 targetSlot.set(ItemStack.EMPTY);
+                            }
+                            // Don't allow moving ghost items from the table to inventory
+                            if (index < RobosurgeonBlockEntity.TOTAL_SLOTS && itemstack1.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                                return ItemStack.EMPTY;
                             }
                             if (targetSlot.mayPlace(itemstack1) && this.moveItemStackTo(itemstack1, i, i + 1, false)) {
                                 moved = true;

@@ -89,6 +89,6 @@ public class SurgeryManager {
     }
 
     public static boolean isGhost(ItemStack s) {
-        return !s.isEmpty() && s.getOrDefault(CyberWare.GHOST_COMPONENT, false);
+        return !s.isEmpty() && s.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false);
     }
 }

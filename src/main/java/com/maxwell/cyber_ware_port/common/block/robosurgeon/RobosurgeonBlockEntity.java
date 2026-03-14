@@ -158,7 +158,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         List<ItemStack> futureBody = new ArrayList<>();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = itemHandler.getStackInSlot(i);
-            ItemStack finalStack = isGhost(table) ? playerBody.getStackInSlot(i) : table;
+            ItemStack finalStack = SurgeryManager.isGhost(table) ? playerBody.getStackInSlot(i) : table;
             if (!finalStack.isEmpty()) {
                 futureBody.add(finalStack);
                 futureCounts.put(finalStack.getItem(), futureCounts.getOrDefault(finalStack.getItem(), 0) + finalStack.getCount());
@@ -176,7 +176,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     private boolean isGhost(ItemStack stack) {
-        return !stack.isEmpty() && stack.getOrDefault(CyberWare.GHOST_COMPONENT, false);
+        return SurgeryManager.isGhost(stack);
     }
 
     private ICyberware getCyber(ItemStack stack) {
@@ -199,7 +199,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         ItemStackHandler playerBody = data.getInstalledCyberware();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = itemHandler.getStackInSlot(i);
-            if (isGhost(table)) continue;
+            if (SurgeryManager.isGhost(table)) continue;
             if (!ItemStack.matches(table, playerBody.getStackInSlot(i))) return true;
         }
         return false;

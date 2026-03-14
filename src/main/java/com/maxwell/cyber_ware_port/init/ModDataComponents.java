@@ -14,13 +14,13 @@ public class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(CyberWare.MODID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> GHOST_COMPONENT =
-            register("ghost", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL));
+            register("ghost", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL).persistent(com.mojang.serialization.Codec.BOOL));
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> PRISTINE =
-            register("pristine", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL));
+            register("pristine", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL).persistent(com.mojang.serialization.Codec.BOOL));
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> ACTIVE =
-            register("active", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL));
+            register("active", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL).persistent(com.mojang.serialization.Codec.BOOL));
 
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {
         return COMPONENTS.registerComponentType(name, builder);
