@@ -33,29 +33,25 @@ import net.minecraftforge.items.ItemStackHandler;
 import java.util.*;
 
 public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergyStorage {
-    // Basic State
+
     private boolean isInitialized = false;
     private boolean isPowered = true;
     private boolean needsCapacityUpdate = true;
     private int respawnGracePeriod = 0;
 
-    // Body Status (Managed by CyberwareBodyStatus)
     private boolean hasCyberLeftArm = false;
     private boolean hasCyberRightArm = false;
     private boolean hasCyberLeftLeg = false;
     private boolean hasCyberRightLeg = false;
 
-    // Essence / Tolerance
     private int maxTolerance = CyberwareConfig.MAX_TOLERANCE.get();
     private int toleranceImmunityTime = 0;
 
-    // Energy
     private int currentEnergy = 0;
     private int maxEnergy = 0;
     private int lastProduction = 0;
     private int lastConsumption = 0;
 
-    // Inventory
     private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -181,7 +177,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return this.maxTolerance;
     }
 
-    // --- Energy Management ---
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
@@ -225,7 +220,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return maxEnergy > 0;
     }
 
-    // --- Tolerance & Essence Management ---
 
     public int getMaxTolerance(LivingEntity entity) {
         CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
@@ -245,7 +239,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         return getMaxTolerance(entity) - consumed;
     }
 
-    // --- Survival & Condition Checks ---
 
     public void tick(ServerPlayer player) {
         if (this.toleranceImmunityTime > 0) {
@@ -294,7 +287,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             return;
         }
 
-        // Non-lethal conditions
         if (!status.hasPart(BodyPartType.EYES)) {
             player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0, false, false));
         }

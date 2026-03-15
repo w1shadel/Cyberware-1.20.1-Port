@@ -48,9 +48,8 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                             if (otherStackInside.isEmpty())
                                 continue;
 
-                            // If the other stack is a ghost, we essentially ignore its presence for
-                            // compatibility checks
-                            // because it will be removed/replaced when the new item is placed.
+
+
                             if (otherStackInside.hasTag() && otherStackInside.getTag() != null
                                     && otherStackInside.getTag().getBoolean("cyberware_ghost")) {
                                 continue;
@@ -66,14 +65,13 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                             }
                         }
 
-                        // Check max install amount
                         int currentCount = stack.getCount();
                         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
                             if (i == this.getSlotIndex())
                                 continue;
                             ItemStack otherStack = handler.getStackInSlot(i);
                             if (!otherStack.isEmpty() && otherStack.getItem() == stack.getItem()) {
-                                // Skip ghost items in count - they will be replaced/handled
+
                                 if (otherStack.hasTag() && otherStack.getTag() != null
                                         && otherStack.getTag().getBoolean("cyberware_ghost")) {
                                     continue;
@@ -110,7 +108,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     slot.set(ItemStack.EMPTY);
                 }
             }
-            // Auto-eject conflicting ghosts when placing a new item
+
             ItemStack carried = getCarried();
             if (!carried.isEmpty()) {
                 ICyberware newCw = CyberwareAPI.getCyberware(carried);
@@ -124,10 +122,10 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
 
                                     boolean shouldEject = false;
                                     if (i == slotId) {
-                                        // Always eject ghost in the same slot being occupied
+
                                         shouldEject = true;
                                     } else {
-                                        // Only eject other ghosts if they are explicitly incompatible
+
                                         ICyberware existingCw = CyberwareAPI.getCyberware(existing);
                                         if (existingCw != null) {
                                             if (newCw.isIncompatible(carried, existing)
@@ -187,9 +185,9 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                 ICyberware cw = CyberwareAPI.getCyberware(itemstack1);
                 if (cw != null) {
                     int slotType = cw.getSlot(itemstack1);
-                    // Try to find the correct slot in Robosurgeon
+
                     boolean moved = false;
-                    for (int pass = 0; pass < 2; pass++) { // Pass 0: empty slots, Pass 1: ghost slots
+                    for (int pass = 0; pass < 2; pass++) { 
                         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
                             if (i >= slotType && i < slotType + RobosurgeonBlockEntity.SLOTS_PER_PART) {
                                 Slot targetSlot = this.slots.get(i);
@@ -197,7 +195,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                                     ItemStack targetItem = targetSlot.getItem();
                                     if (targetItem.hasTag() && targetItem.getTag() != null
                                             && targetItem.getTag().getBoolean("cyberware_ghost")) {
-                                        targetSlot.set(ItemStack.EMPTY); // Clear ghost to allow move
+                                        targetSlot.set(ItemStack.EMPTY); 
                                     }
                                 }
 
