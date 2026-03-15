@@ -154,11 +154,24 @@ public class ForgeClientEvents {
         if (event.getKey() == mc.options.keyJump.getKey().getValue() && event.getAction() == GLFW.GLFW_PRESS) {
             if (!player.onGround() && !player.isCreative() && !player.isSpectator()) {
                 CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-                if (data.isCyberwareInstalled(ModItems.LINEAR_ACTUATORS.get()) && !player.getPersistentData().getBoolean(NBT_DOUBLE_JUMPED)) {
-                    PacketDistributor.sendToServer(new DoubleJumpPacket());
+                ItemStack actuatorStack = getInstalledStack(data, ModItems.LINEAR_ACTUATORS.get());
+                if (!actuatorStack.isEmpty()) {
+                    ICyberware cw = CyberwareAPI.getCyberware(actuatorStack);
+                    if (cw != null && cw.isActive(actuatorStack) && !player.getPersistentData().getBoolean(NBT_DOUBLE_JUMPED)) {
+                        PacketDistributor.sendToServer(new DoubleJumpPacket());
+                    }
                 }
             }
         }
+    }
+
+    private static ItemStack getInstalledStack(CyberwareUserData data, Item item) {
+        ItemStackHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (stack.is(item)) return stack;
+        }
+        return ItemStack.EMPTY;
     }
 
     @SubscribeEvent

@@ -41,7 +41,13 @@ public class LinearActuatorsItem extends CyberwareItem {
     }
 
     @Override
+    public boolean canToggle(ItemStack stack) {
+        return true;
+    }
+
+    @Override
     public void onSystemTick(LivingEntity wearer, ItemStack stack) {
+        if (!isActive(stack)) return;
         if (!(wearer instanceof Player player)) return;
         CompoundTag tag = player.getPersistentData();
         if (player.isCrouching() && player.onGround()) {
@@ -93,6 +99,7 @@ public class LinearActuatorsItem extends CyberwareItem {
 
     @Override
     public void onLivingJump(LivingEvent.LivingJumpEvent event, ItemStack stack, LivingEntity wearer) {
+        if (!isActive(stack)) return;
         if (wearer.level().isClientSide()) return;
         if (!(wearer instanceof ServerPlayer player)) return;
         CompoundTag tag = player.getPersistentData();

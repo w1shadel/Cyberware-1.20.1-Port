@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "attack_range": 3.25,
+    "range_bonus": 0,
     "pose": "bettercombat:pose_two_handed_katana",
     "two_handed": true,
     "category": "katana",
@@ -26,23 +26,13 @@
         }
       },
       {
-        "hitbox": "VERTICAL_PLANE",
-        "damage_multiplier": 1.2,
-        "angle": 120,
+        "hitbox": "FORWARD_BOX",
+        "damage_multiplier": 1,
+        "angle": 0,
         "upswing": 0.5,
-        "animation": "bettercombat:two_handed_slash_vertical_right",
+        "animation": "bettercombat:two_handed_stab_right",
         "swing_sound": {
-          "id": "bettercombat:katana_slash"
-        }
-      },
-      {
-        "hitbox": "HORIZONTAL_PLANE",
-        "damage_multiplier": 0.8,
-        "angle": 120,
-        "upswing": 0.5,
-        "animation": "bettercombat:two_handed_slash_horizontal_left",
-        "swing_sound": {
-          "id": "bettercombat:katana_slash"
+          "id": "bettercombat:spear_stab"
         }
       }
     ]
