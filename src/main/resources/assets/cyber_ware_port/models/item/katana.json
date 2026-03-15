@@ -38,7 +38,7 @@
     "thirdperson_lefthand": {
       "rotation": [
         0,
-        90,
+        -90,
         55
       ],
       "scale": [
@@ -55,7 +55,7 @@
     "thirdperson_righthand": {
       "rotation": [
         0,
-        -90,
+        90,
         55
       ],
       "scale": [

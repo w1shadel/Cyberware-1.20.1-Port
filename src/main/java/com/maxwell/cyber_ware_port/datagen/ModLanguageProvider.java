@@ -19,6 +19,8 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         if (locale.equals("zh_cn")) {
             add("itemGroup.cyber_ware_port.items", "机械改造");
+            add("emi.category.cyber_ware_port.assembly", "组装");
+            add("emi.category.cyber_ware_port.engineering", "工程");
             add(ModItems.KATANA.get(), "太刀");
             add(ModItems.NEUROPOZYNE.get(), "排斥反应抑制药剂");
             add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "赛博僵尸刷怪蛋");
@@ -331,6 +333,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.73", "已GOX掉10万比特币");
         }
         if (locale.equals("ru_ru")) {
+            add("emi.category.cyber_ware_port.assembly", "Сборка");
+            add("emi.category.cyber_ware_port.engineering", "Инженерия");
             add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "Яйцо призыва кибер-зомби");
             add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "Яйцо призыва кибер-скелета");
             add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "Яйцо призыва кибер-скелета-иссушителя");
@@ -643,6 +647,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.72", "Призываем сатану");
         }
         if (locale.equals("fr_fr")) {
+            add("emi.category.cyber_ware_port.assembly", "Assemblage");
+            add("emi.category.cyber_ware_port.engineering", "Ingénierie");
             add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "Œuf d'apparition de cyber-zombie");
             add(ModItems.CYBER_SKELETON_SPAWN_EGG.get(), "Œuf d'apparition de cyber-squelette");
             add(ModItems.CYBER_WITHER_SKELETON_SPAWN_EGG.get(), "Œuf d'apparition de cyber-wither squelette");
@@ -904,6 +910,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.21", "Recréation des Civilisations");
         }
         if (locale.equals("en_us")) {
+            add("emi.category.cyber_ware_port.assembly", "Assembly");
+            add("emi.category.cyber_ware_port.engineering", "Engineering");
             add("itemGroup.cyber_ware_port.items", "Cyberware");
             add("cyberware.gui.no_active", "No cyberware");
             add("tooltip.cyber_ware_port.charger", "A block that allows charging/discharging by standing on it");
@@ -1217,6 +1225,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add("cyberware.gui.scanner_saying.73", "Goxxed 100,000 Bitcoin");
         }
         if (locale.equals("ja_jp")) {
+            add("emi.category.cyber_ware_port.assembly", "組み立て");
+            add("emi.category.cyber_ware_port.engineering", "分解");
             add("itemGroup.cyber_ware_port.items", "サイバーウェア");
             add("cyberware.gui.no_active", "サイバーウェアがありません");
             add(ModItems.CYBER_ZOMBIE_SPAWN_EGG.get(), "サイバーゾンビのスポーンエッグ");

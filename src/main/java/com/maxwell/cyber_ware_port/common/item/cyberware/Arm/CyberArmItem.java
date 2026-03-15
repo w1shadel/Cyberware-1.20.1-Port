@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Arm;
+package com.maxwell.cyber_ware_port.common.item.cyberware.arm;
 
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.item.Item;

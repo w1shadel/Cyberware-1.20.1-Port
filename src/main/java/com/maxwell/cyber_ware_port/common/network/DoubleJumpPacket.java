@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.common.network;
 
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
-import com.maxwell.cyber_ware_port.common.item.cyberware.Leg.LinearActuatorsItem;
+import com.maxwell.cyber_ware_port.common.item.cyberware.leg.LinearActuatorsItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
