@@ -193,6 +193,8 @@
   "death.attack.cyberware.noessence": "%1$s的身体产生了排斥反应。",
   "death.attack.cyberware.nomuscles": "%1$s散架了。",
   "death.attack.cyberware.surgery": "%1$s没能从手术中活下来。",
+  "emi.category.cyber_ware_port.assembly": "组装",
+  "emi.category.cyber_ware_port.engineering": "工程",
   "entity.cyber_ware_port.cyber_creeper": "赛博爬行者",
   "entity.cyber_ware_port.cyber_skeleton": "赛博骷髅",
   "entity.cyber_ware_port.cyber_wither": "赛博凋灵",

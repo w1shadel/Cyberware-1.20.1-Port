@@ -141,6 +141,8 @@
   "death.attack.cyberware.noessence": "Le corps de %1$s l'a rejeté.",
   "death.attack.cyberware.nomuscles": "%1$s s'est effondré.",
   "death.attack.cyberware.surgery": "%1$s n'a pas survécu à l'opération.",
+  "emi.category.cyber_ware_port.assembly": "Assemblage",
+  "emi.category.cyber_ware_port.engineering": "Ingénierie",
   "entity.cyber_ware_port.cyber_creeper": "Cyber Creeper",
   "entity.cyber_ware_port.cyber_skeleton": "Cyber Squelette",
   "entity.cyber_ware_port.cyber_wither": "Cyber Wither",

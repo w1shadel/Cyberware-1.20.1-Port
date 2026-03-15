@@ -192,6 +192,8 @@
   "death.attack.cyberware.noessence": "Тело %1$s отвергло его.",
   "death.attack.cyberware.nomuscles": "%1$s развалился на части.",
   "death.attack.cyberware.surgery": "%1$s не выжил после операции.",
+  "emi.category.cyber_ware_port.assembly": "Сборка",
+  "emi.category.cyber_ware_port.engineering": "Инженерия",
   "entity.cyber_ware_port.cyber_creeper": "Кибер-крипер",
   "entity.cyber_ware_port.cyber_skeleton": "Кибер-скелет",
   "entity.cyber_ware_port.cyber_wither": "Кибер-иссушитель",
