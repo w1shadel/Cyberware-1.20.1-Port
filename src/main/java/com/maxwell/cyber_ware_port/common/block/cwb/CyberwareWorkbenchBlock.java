@@ -107,7 +107,6 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (pLevel.isClientSide) return null;
         return pBlockEntityType == ModBlockEntities.CYBERWARE_WORKBENCH.get() ? (lvl, pos, st, be) -> CyberwareWorkbenchBlockEntity.tick(lvl, pos, st, (CyberwareWorkbenchBlockEntity) be) : null;
     }
 

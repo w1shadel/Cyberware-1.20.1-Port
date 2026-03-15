@@ -130,10 +130,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         pBlockEntity.prevAnimationProgress = pBlockEntity.animationProgress;
         if (pBlockEntity.cooldown > 0) pBlockEntity.cooldown--;
         float target = pBlockEntity.isCrafting ? 1.0F : 0.0F;
+        float speed = 0.1F;
         if (pBlockEntity.animationProgress < target)
-            pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + 0.5F, target);
+            pBlockEntity.animationProgress = Math.min(pBlockEntity.animationProgress + speed, target);
         else if (pBlockEntity.animationProgress > target)
-            pBlockEntity.animationProgress = Math.max(pBlockEntity.animationProgress - 0.5F, target);
+            pBlockEntity.animationProgress = Math.max(pBlockEntity.animationProgress - speed, target);
         if (!pLevel.isClientSide) {
             if (pLevel.hasNeighborSignal(pPos)) pBlockEntity.startCrafting();
             if (pBlockEntity.cooldown == 0 && pBlockEntity.isCrafting) {
@@ -327,12 +328,21 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     }
 
     @Override
+    public void onDataPacket(net.minecraft.network.Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        super.onDataPacket(net, pkt, lookupProvider);
+        CompoundTag tag = pkt.getTag();
+        if (tag != null) {
+            this.loadAdditional(tag, lookupProvider);
+        }
+    }
+    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
-
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
-        return saveWithoutMetadata(pRegistries);
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, pRegistries);
+        return tag;
     }
 }
