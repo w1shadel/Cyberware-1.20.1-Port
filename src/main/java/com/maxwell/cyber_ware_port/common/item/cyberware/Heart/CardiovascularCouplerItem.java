@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Heart;
+package com.maxwell.cyber_ware_port.common.item.cyberware.heart;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;

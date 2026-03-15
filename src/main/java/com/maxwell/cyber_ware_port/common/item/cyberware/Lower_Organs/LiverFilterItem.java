@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.common.item.cyberware.Lower_Organs;
+package com.maxwell.cyber_ware_port.common.item.cyberware.lower_organs;
 
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;

@@ -15,8 +15,6 @@ public class CyberwareBodyStatus {
     private final Set<BodyPartType> presentParts = EnumSet.noneOf(BodyPartType.class);
     private int armCount = 0;
     private int legCount = 0;
-    private int cyberArmCount = 0;
-    private int cyberLegCount = 0;
 
     public CyberwareBodyStatus(ItemStackHandler handler) {
         for (int i = 0; i < handler.getSlots(); i++) {
@@ -37,20 +35,10 @@ public class CyberwareBodyStatus {
             // Count Limbs
             if (isArm(stack, cw)) {
                 armCount++;
-                if (isCybernetic(stack, cw)) {
-                    cyberArmCount++;
-                }
             } else if (isLeg(stack, cw)) {
                 legCount++;
-                if (isCybernetic(stack, cw)) {
-                    cyberLegCount++;
-                }
             }
         }
-    }
-
-    private boolean isCybernetic(ItemStack stack, ICyberware cw) {
-        return cw != null && cw.getQuality(stack) > 0;
     }
 
     private boolean isArm(ItemStack stack, ICyberware cw) {
@@ -85,14 +73,6 @@ public class CyberwareBodyStatus {
 
     public int getLegCount() {
         return legCount;
-    }
-
-    public int getCyberArmCount() {
-        return cyberArmCount;
-    }
-
-    public int getCyberLegCount() {
-        return cyberLegCount;
     }
 
     public boolean isHandFunctional() {
