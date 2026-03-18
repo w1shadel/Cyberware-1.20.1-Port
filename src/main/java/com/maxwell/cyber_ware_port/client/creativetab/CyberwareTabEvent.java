@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("removal")
@@ -100,21 +101,33 @@ public class CyberwareTabEvent {
             CyberwareTabState.currentPage = 0;
         }
     }
-
     private static void reloadScreen() {
-        isReloading = true;
-        refreshTabContents();
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.setScreen(new CreativeModeInventoryScreen(
+        if (mc.player == null) return;
+
+        isReloading = true;
+
+        try {
+            CreativeModeTab tab = ModItems.CW_TABS.get();
+            CreativeModeTab.ItemDisplayParameters params = new CreativeModeTab.ItemDisplayParameters(
+                    mc.player.connection.enabledFeatures(),
+                    mc.options.operatorItemsTab().get(),
+                    mc.player.level().registryAccess()
+            );
+            tab.buildContents(params);
+            mc.setScreen(null);
+            CreativeModeInventoryScreen screen = new CreativeModeInventoryScreen(
                     mc.player,
                     mc.player.connection.enabledFeatures(),
                     mc.options.operatorItemsTab().get()
-            ));
-        }
-        isReloading = false;
-    }
+            );
+            mc.setScreen(screen);
 
+        } catch (Exception e) {
+        } finally {
+            isReloading = false;
+        }
+    }
     private static void refreshTabContents() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {

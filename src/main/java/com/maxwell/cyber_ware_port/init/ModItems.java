@@ -242,30 +242,38 @@ public class ModItems {
                         RobosurgeonBlockEntity.SLOT_BOOTS, 1, BodyPartType.FOOT_LEFT);
         public static final RegistryObject<Item> HUMAN_RIGHT_FOOT = registerHumanPart("body_part_foot_right",
                         RobosurgeonBlockEntity.SLOT_BOOTS, 1, BodyPartType.FOOT_RIGHT);
-        public static final RegistryObject<CreativeModeTab> CW_TABS = TABS.register("cyber_wear_port",
-                        () -> CreativeModeTab.builder()
-                                        .title(Component.translatable("itemGroup.cyber_ware_port.items"))
-                                        .icon(() -> new ItemStack(ModBlocks.SURGERY_CHAMBER.get()))
-                                        .displayItems((enabledFeatures, entries) -> {
-                                                int page = CyberwareTabState.currentPage;
-                                                for (RegistryObject<Item> entry : ITEMS.getEntries()) {
-                                                        Item item = entry.get();
-                                                        if (item instanceof CyberwareItem cw) {
-                                                                if (page == 0) {
-                                                                        entries.accept(new ItemStack(item));
-                                                                } else if (page == 1) {
-                                                                        ItemStack scavenged = new ItemStack(item);
-                                                                        cw.setPristine(scavenged, false);
-                                                                        entries.accept(scavenged);
-                                                                }
-                                                        } else {
-                                                                if (page == 0) {
-                                                                        entries.accept(new ItemStack(item));
-                                                                }
-                                                        }
-                                                }
-                                        }).build());
+    public static final RegistryObject<CreativeModeTab> CW_TABS = TABS.register("cyber_wear_port",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.cyber_ware_port.items"))
+                    .icon(() -> new ItemStack(ModBlocks.SURGERY_CHAMBER.get()))
+                    .displayItems((enabledFeatures, entries) -> {
+                        // 現在のページを取得（staticであることを確認してください）
+                        int page = CyberwareTabState.currentPage;
 
+                        // デバッグ用ログ（実戦環境のログに出力されます）
+                        // CyberWare.LOGGER.info("Cyberware Tab Building - Page: {}", page);
+
+                        for (RegistryObject<Item> entry : ITEMS.getEntries()) {
+                            if (!entry.isPresent()) continue;
+                            Item item = entry.get();
+
+                            if (item instanceof CyberwareItem cw) {
+                                ItemStack stack = new ItemStack(item);
+                                if (page == 1) {
+                                    // ページ1：中古品
+                                    cw.setPristine(stack, false);
+                                    entries.accept(stack);
+                                } else {
+                                    // ページ0：新品
+                                    entries.accept(stack);
+                                }
+                            } else {
+                                // サイバーウェア以外のアイテム
+                                // ページ1でも表示させることで「空のタブ」と判定されるのを防ぐ
+                                entries.accept(new ItemStack(item));
+                            }
+                        }
+                    }).build());
         private static RegistryObject<Item> registerHumanPart(String name, int slotId, int maxInstall,
                         BodyPartType bodyPartType) {
                 return ITEMS.register(name, () -> new CyberwareItem.Builder(0, slotId)

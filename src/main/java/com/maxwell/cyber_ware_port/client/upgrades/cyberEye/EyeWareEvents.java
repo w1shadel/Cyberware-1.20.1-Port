@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.upgrades.cyberEye;
+package com.maxwell.cyber_ware_port.client.upgrades.cybereye;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
