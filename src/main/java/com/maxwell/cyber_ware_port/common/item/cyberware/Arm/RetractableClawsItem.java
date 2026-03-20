@@ -16,7 +16,7 @@ public class RetractableClawsItem extends CyberwareItem {
 
     @Override
     public void onLivingDamagePre(LivingDamageEvent.Pre event, ItemStack stack, LivingEntity wearer) {
-        if (event.getSource().getEntity() == wearer && wearer.getMainHandItem().isEmpty()) {
+        if (event != null && event.getSource() != null && event.getSource().getEntity() == wearer && wearer.getMainHandItem().isEmpty()) {
             float bonusDamage = 1.0f * stack.getCount();
             event.setNewDamage(event.getNewDamage() + bonusDamage);
         }

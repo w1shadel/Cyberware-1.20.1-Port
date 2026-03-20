@@ -128,9 +128,10 @@ configurations {
 }
 
 dependencies {
-   compileOnly "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
-   // runtimeOnly "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
-   // implementation "mezz.jei:jei-1.21-neoforge-api:${jei_version}"
+    compileOnly "curse.maven:jei-238222:7420587"
+    implementation "curse.maven:emi-580555:6420931"
+    implementation "curse.maven:lithium-360438:7740400"
+    implementation "curse.maven:curios-309927:6529130"
     compileOnly "curse.maven:emi-580555:6420931"
     implementation "curse.maven:mekanism-268560:7621971"
 }

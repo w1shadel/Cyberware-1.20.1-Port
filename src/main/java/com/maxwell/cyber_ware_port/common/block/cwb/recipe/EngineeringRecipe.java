@@ -78,9 +78,11 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
 
     @Override
     public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
+        if (!outputs.isEmpty()) {
+            return outputs.get(0).stack();
+        }
         return ItemStack.EMPTY;
     }
-
     @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipes.ENGINEERING_SERIALIZER.get();
@@ -126,5 +128,6 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
         public StreamCodec<RegistryFriendlyByteBuf, EngineeringRecipe> streamCodec() {
             return STREAM_CODEC;
         }
+
     }
 }

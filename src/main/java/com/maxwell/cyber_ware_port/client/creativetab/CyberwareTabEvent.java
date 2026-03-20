@@ -20,7 +20,7 @@ import java.util.List;
 
 @EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class CyberwareTabEvent {
-    // リソースパスはすべて小文字であることを確認してください（本番環境のLinux/JARは文字の大小を区別します）
+
     private static final ResourceLocation TAB_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(CyberWare.MODID.toLowerCase(), "textures/gui/extended_tabs.png");
 
@@ -34,7 +34,7 @@ public class CyberwareTabEvent {
             customTabs.clear();
             int guiLeft = screen.getGuiLeft();
             int guiTop = screen.getGuiTop();
-            int buttonX = guiLeft - 21; // パネル位置に合わせて微調整
+            int buttonX = guiLeft - 21;
 
             CyberwareSideTabButton btn1 = new CyberwareSideTabButton(
                     buttonX, guiTop + 8, 17, 17,

@@ -25,8 +25,7 @@ public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberW
             ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
     private static final ResourceLocation WITHER_INVULNERABLE_LOCATION =
             ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
-    private static final ResourceLocation BEAM_LOCATION =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/guardian_beam.png");
+    private static final ResourceLocation BEAM_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/guardian_beam.png");
 
     public CyberWitherBossRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberWitherModel(context.bakeLayer(CyberWitherModel.LAYER_LOCATION)), 1.0F);
