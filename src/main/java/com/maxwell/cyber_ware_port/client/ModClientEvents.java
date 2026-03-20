@@ -32,10 +32,8 @@ import com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie.CyberZombie
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.CyberSkullType;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
-import com.maxwell.cyber_ware_port.init.ModBlockEntities;
-import com.maxwell.cyber_ware_port.init.ModEntities;
-import com.maxwell.cyber_ware_port.init.ModItems;
-import com.maxwell.cyber_ware_port.init.ModMenuTypes;
+import com.maxwell.cyber_ware_port.init.*;
+import net.minecraft.client.RecipeBookCategories;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -46,6 +44,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -73,7 +72,10 @@ public class ModClientEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.CYBER_SKULL.get(), CyberSkullRenderer::new);
 
     }
-
+    @SubscribeEvent
+    public static void registerRecipeBookCategories(RegisterRecipeBookCategoriesEvent event) {
+        event.registerRecipeCategoryFinder(ModRecipes.ENGINEERING_TYPE.get(), recipe -> RecipeBookCategories.CRAFTING_MISC);
+    }
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SurgeryChamberModel.LAYER_LOCATION, SurgeryChamberModel::createBodyLayer);

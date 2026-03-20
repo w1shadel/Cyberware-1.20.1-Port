@@ -73,15 +73,13 @@ public class EmiEngineeringRecipe implements EmiRecipe {
     @Override
     public void addWidgets(WidgetHolder widgets) {
         widgets.addTexture(new EmiTexture(CyberwareEmiPlugin.GUI_TEXTURE, 0, 0, 176, 80), 0, 0);
-
-        widgets.addSlot(input, 15, 20).drawBack(false);
+        widgets.addSlot(input, 14, 19).drawBack(false);
         widgets.addSlot(EmiStack.of(Items.PAPER), 15, 53).drawBack(false)
                 .appendTooltip(Component.translatable("gui.cyber_ware_port.need_paper").withStyle(ChatFormatting.GRAY));
 
-        int gridX = 71;
-        int gridY = 17;
+        int gridX = 70;
+        int gridY = 16;
         for (int i = 0; i < Math.min(outputs.size(), 6); i++) {
-            // 確率の取得。ここもゲッター名を確認してください
             float chance = recipe.getOutputs().get(i).chance() * 100;
             widgets.addSlot(outputs.get(i), gridX + (i % 2) * 18, gridY + (i / 2) * 18).drawBack(false)
                     .appendTooltip(Component.literal(String.format("%.0f%% Chance", chance)).withStyle(ChatFormatting.YELLOW));
@@ -89,7 +87,7 @@ public class EmiEngineeringRecipe implements EmiRecipe {
 
         if (!blueprint.isEmpty()) {
             float bpChance = recipe.getBlueprintChance() * 100;
-            widgets.addSlot(blueprint, 115, 53).drawBack(false)
+            widgets.addSlot(blueprint, 114, 52).drawBack(false)
                     .appendTooltip(Component.translatable("gui.cyber_ware_port.blueprint_chance", String.format("%.0f", bpChance)).withStyle(ChatFormatting.BLUE));
         }
     }
