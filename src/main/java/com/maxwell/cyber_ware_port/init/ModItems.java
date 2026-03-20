@@ -161,6 +161,7 @@ public class ModItems {
                     .icon(() -> new ItemStack(ModBlocks.SURGERY_CHAMBER.get()))
                     .displayItems((enabledFeatures, entries) -> {
                         int page = CyberwareTabState.currentPage;
+
                         for (DeferredHolder<Item, ? extends Item> holder : ITEMS.getEntries()) {
                             Item item = holder.get();
                             if (item instanceof CyberwareItem cw) {
@@ -171,10 +172,8 @@ public class ModItems {
                                     cw.setPristine(scavenged, false);
                                     entries.accept(scavenged);
                                 }
-                            } else {
-                                if (page == 0) {
-                                    entries.accept(new ItemStack(item));
-                                }
+                            } else if (page == 0) {
+                                entries.accept(new ItemStack(item));
                             }
                         }
                     }).build());

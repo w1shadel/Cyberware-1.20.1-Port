@@ -10,12 +10,14 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import org.slf4j.Logger;
+import com.mojang.logging.LogUtils;
 
 @Mod(CyberWare.MODID)
 public class CyberWare {
     public static final String MODID = "cyber_ware_port";
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> GHOST_COMPONENT = ModDataComponents.GHOST_COMPONENT;
-
+    public static final Logger LOGGER = LogUtils.getLogger();
     public CyberWare(IEventBus modEventBus, ModContainer modContainer) {
         ModDataComponents.register(modEventBus);
         ModItems.register(modEventBus);

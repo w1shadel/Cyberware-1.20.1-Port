@@ -97,6 +97,12 @@ public class CyberwareTabEvent {
         isReloading = true;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
+            CreativeModeTab tab = ModItems.CW_TABS.get();
+            tab.buildContents(new CreativeModeTab.ItemDisplayParameters(
+                    mc.player.connection.enabledFeatures(),
+                    mc.options.operatorItemsTab().get(),
+                    mc.player.level().registryAccess()
+            ));
             mc.setScreen(new CreativeModeInventoryScreen(
                     mc.player,
                     mc.player.connection.enabledFeatures(),
@@ -120,6 +126,7 @@ public class CyberwareTabEvent {
                 return (CreativeModeTab) cachedSelectedTabField.get(null);
             }
         } catch (Exception e) {
+            CyberWare.LOGGER.error("Failed to get selected tab via reflection", e);
         }
         return null;
     }
