@@ -8,14 +8,9 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
@@ -69,33 +64,6 @@ public class EyeWareEvents {
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
-        Minecraft mc = Minecraft.getInstance();
-        Player player = mc.player;
-        if (player == null) return;
-        if (isFeatureActive(player, ModItems.TARGETING_OVERLAY.get())) {
-            PoseStack poseStack = event.getPoseStack();
-            Vec3 cameraPos = event.getCamera().getPosition();
-            double range = 32.0;
-            for (Entity e : mc.level.entitiesForRendering()) {
-                if (e instanceof LivingEntity && e != player && e.isAlive()) {
-                    if (e.distanceToSqr(player) < range * range) {
-                        renderEntityOutline(poseStack, e, cameraPos);
-                    }
-                }
-            }
-        }
     }
 
-    private static void renderEntityOutline(PoseStack poseStack, Entity entity, Vec3 cameraPos) {
-        poseStack.pushPose();
-        poseStack.translate(
-                entity.getX() - cameraPos.x,
-                entity.getY() - cameraPos.y,
-                entity.getZ() - cameraPos.z
-        );
-        AABB aabb = entity.getBoundingBox().move(-entity.getX(), -entity.getY(), -entity.getZ());
-        VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
-        LevelRenderer.renderLineBox(poseStack, consumer, aabb, 1.0F, 0.0F, 0.0F, 1.0F);
-        poseStack.popPose();
-    }
 }
