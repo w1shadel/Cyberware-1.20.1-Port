@@ -13,6 +13,7 @@ public class SubdermalSpikesItem extends CyberwareItem {
 
     @Override
     public void onLivingDamagePre(LivingDamageEvent.Pre event, ItemStack stack, LivingEntity wearer) {
+        if (event == null) return;
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             if (event.getSource().getDirectEntity() != attacker) return;
             if (attacker != wearer) {

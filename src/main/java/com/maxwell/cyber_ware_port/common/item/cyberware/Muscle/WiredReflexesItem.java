@@ -29,6 +29,7 @@ public class WiredReflexesItem extends CyberwareItem {
 
     @Override
     public void onLivingDamagePre(LivingDamageEvent.Pre event, ItemStack stack, LivingEntity wearer) {
+        if (event == null) return;
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             CyberwareUserData data = wearer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             int reflexCost = 10;

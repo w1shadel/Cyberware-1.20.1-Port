@@ -50,6 +50,7 @@ public class ModCyberwareEvents {
 
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
+        if (event == null) return;
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             dispatch(attacker, (cw, stack) -> cw.onLivingDamagePre(event, stack, attacker));
         }
