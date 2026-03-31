@@ -1,0 +1,10 @@
+{
+  "values": [
+    "cyber_ware_port:body_part_heart",
+    "cyber_ware_port:cyberheart",
+    "cyber_ware_port:heart_upgrades_defibrillator",
+    "cyber_ware_port:heart_upgrades_platelets",
+    "cyber_ware_port:heart_upgrades_medkit",
+    "cyber_ware_port:heart_upgrades_coupler"
+  ]
+}

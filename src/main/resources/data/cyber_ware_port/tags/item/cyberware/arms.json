@@ -1,0 +1,9 @@
+{
+  "values": [
+    "cyber_ware_port:arm_upgrades_bow",
+    "cyber_ware_port:body_part_arm_left",
+    "cyber_ware_port:cyberlimbs_cyberarm_left",
+    "cyber_ware_port:body_part_arm_right",
+    "cyber_ware_port:cyberlimbs_cyberarm_right"
+  ]
+}
