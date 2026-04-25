@@ -2,23 +2,22 @@ package com.maxwell.cyber_ware_port.common.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-public class KatanaItem extends SwordItem {
-    public KatanaItem() {
-        super(Tiers.IRON, new Properties()
-                .attributes(SwordItem.createAttributes(Tiers.IRON, 4, -2.0F))
-                .stacksTo(1));
+public class KatanaItem extends Item {
+    public KatanaItem(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
-        pTooltipComponents.add(Component.translatable("cyberware.item.katana.desc").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
+        super.appendHoverText(itemStack, context, display, builder, tooltipFlag);
+        builder.accept(Component.translatable("cyberware.item.katana.desc").withStyle(ChatFormatting.GRAY));
     }
 }

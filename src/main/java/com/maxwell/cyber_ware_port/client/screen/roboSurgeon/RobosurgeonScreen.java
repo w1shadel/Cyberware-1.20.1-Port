@@ -26,7 +26,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -42,13 +42,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
-    private static final ResourceLocation INTERNAL_PARTS_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/player_internal_part.png");
-    private static final ResourceLocation SKELETON_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/skeleton/skeleton.png");
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/surgery.png");
-    private static final ResourceLocation MARKER_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/marker.png");
-    private static final ResourceLocation RED_SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/red_slot.png");
-    private static final ResourceLocation BLUE_SLOT_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blue_slot.png");
-    private static final ResourceLocation ALERT_ICON = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/risk_icons.png");
+    private static final Identifier INTERNAL_PARTS_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/player_internal_part.png");
+    private static final Identifier SKELETON_TEXTURE = Identifier.withDefaultNamespace("textures/entity/skeleton/skeleton.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/surgery.png");
+    private static final Identifier MARKER_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/marker.png");
+    private static final Identifier RED_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/red_slot.png");
+    private static final Identifier BLUE_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blue_slot.png");
+    private static final Identifier ALERT_ICON = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/risk_icons.png");
     private static final float ANIMATION_DURATION = 2000f;
     private static final int SLOT_SIZE = 18;
     private static final int SLOT_SPACING = 2;
@@ -141,7 +141,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         return slots;
     }
 
-    public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw, Model pModel, ResourceLocation texture) {
+    public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw, Model pModel, Identifier texture) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPose((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));

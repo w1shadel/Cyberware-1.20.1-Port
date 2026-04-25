@@ -7,7 +7,7 @@ import com.maxwell.cyber_ware_port.init.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -231,7 +231,7 @@ public class CyberwareItem extends Item implements ICyberware {
         }
 
         public Builder addAttribute(Holder<Attribute> attribute, String idStr, double amount, AttributeModifier.Operation operation) {
-            this.attributeModifiers.put(attribute, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, idStr), amount, operation));
+            this.attributeModifiers.put(attribute, new AttributeModifier(Identifier.fromNamespaceAndPath(CyberWare.MODID, idStr), amount, operation));
             return this;
         }
 

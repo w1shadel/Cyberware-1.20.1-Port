@@ -8,17 +8,24 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.ToggleCyberwarePacket;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4f;
@@ -27,12 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CyberwareMenuScreen extends Screen {
-    private static final ResourceLocation HUD_COLOR_ICON =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_color.png");
-    private static final ResourceLocation HUD_POS_ICON =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_pos.png");
-    private static final ResourceLocation HUD_RESET_ICON =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_reset.png");
+    private static final Identifier HUD_COLOR_ICON =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_color.png");
+    private static final Identifier HUD_POS_ICON =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_pos.png");
+    private static final Identifier HUD_RESET_ICON =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/hud_reset.png");
     private static final float INNER_RADIUS = 40.0f;
     private static final float OUTER_RADIUS = 100.0f;
     private static final float ITEM_RADIUS = (INNER_RADIUS + OUTER_RADIUS) / 2.0f;
@@ -104,85 +111,91 @@ public class CyberwareMenuScreen extends Screen {
     }
 
     private void updateKey(KeyMapping keyMapping) {
-        long window = Minecraft.getInstance().getWindow().getWindow();
+       Window window = Minecraft.getInstance().getWindow();
         InputConstants.Key key = keyMapping.getKey();
         boolean isDown = InputConstants.isKeyDown(window, key.getValue());
         keyMapping.setDown(isDown);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        // 1. イベントからキー情報を抽出
+        int keyCode = event.key();
+        // 必要であれば scanCode や modifiers も event.scancode(), event.modifiers() で取れます
+
         if (this.isColorSettingsOpen && this.hexInput.isFocused()) {
-            if (this.hexInput.keyPressed(keyCode, scanCode, modifiers)) return true;
+            // 2. EditBox も KeyEvent を受け取るように変更されている
+            if (this.hexInput.keyPressed(event)) return true;
+
             if (keyCode == InputConstants.KEY_ESCAPE) {
                 toggleColorSettings();
                 return true;
             }
         }
-        if (this.isHudMoveMode && (keyCode == InputConstants.KEY_ESCAPE || keyCode == this.minecraft.options.keyInventory.getKey().getValue())) {
-            this.isHudMoveMode = false;
-            return true;
+
+        if (this.isHudMoveMode) {
+            // インベントリキーの判定なども keyCode を使用
+            if (keyCode == InputConstants.KEY_ESCAPE || keyCode == this.minecraft.options.keyInventory.getKey().getValue()) {
+                this.isHudMoveMode = false;
+                return true;
+            }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+
+        return super.keyPressed(event);
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
+
         int centerX = width / 2;
         int centerY = height / 2;
+
         if (isColorSettingsOpen || isHudMoveMode) {
+            // fillGradient の引数順序に注意 (oo.txt 167行目)
             g.fillGradient(0, 0, width, height, 0x80000000, 0x80000000);
         }
+
         if (!isColorSettingsOpen && !isHudMoveMode) {
             renderRadialMenu(g, centerX, centerY, mouseX, mouseY);
         }
+
         renderHudPreview(g, mouseX, mouseY);
+
         if (!isHudMoveMode) {
             renderIconButton(g, HUD_COLOR_ICON, POS_BTN_X, POS_BTN_Y + 20, mouseX, mouseY, "HUD Color Settings");
             if (!isColorSettingsOpen) {
                 renderIconButton(g, HUD_POS_ICON, POS_BTN_X, POS_BTN_Y, mouseX, mouseY, "Move HUD Position");
             }
         }
+
         if (isColorSettingsOpen) {
             renderColorSettings(g, centerX, centerY, mouseX, mouseY);
         }
+
         if (isHudMoveMode) {
-            g.drawCenteredString(this.font, "HUD MOVE MODE", centerX, 40, 0xFF00FF00);
-            g.drawCenteredString(this.font, "Drag HUD to move / Press ESC to finish", centerX, 55, 0xFFFFFFFF);
+            g.centeredText(this.font, Component.literal("HUD MOVE MODE"), centerX, 40, 0xFF00FF00);
+            g.centeredText(this.font, Component.literal("Drag HUD to move / Press ESC to finish"), centerX, 55, 0xFFFFFFFF);
         }
     }
 
-    private void renderIconButton(GuiGraphics g, ResourceLocation texture, int x, int y, int mouseX, int mouseY, String tooltip) {
+    private void renderIconButton(GuiGraphicsExtractor g, Identifier texture, int x, int y, int mouseX, int mouseY, String tooltip) {
         float[] rgba = ClientCyberwareSettings.getColorFloats();
-        g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-        g.blit(texture, x, y, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE);
-        g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        int color = ARGB.color((int)(rgba[3]*255), (int)(rgba[0]*255), (int)(rgba[1]*255), (int)(rgba[2]*255));
+
+        // blit の新しい形式 (oo.txt 189行目)
+        g.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE, color);
+
         if (mouseX >= x && mouseX <= x + BTN_SIZE && mouseY >= y && mouseY <= y + BTN_SIZE) {
-            g.renderOutline(x - 1, y - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+            g.outline(x - 1, y - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
             if (!isColorSettingsOpen && !isHudMoveMode) {
-                g.renderTooltip(this.font, Component.literal(tooltip), mouseX, mouseY);
+                g.setTooltipForNextFrame(Component.literal(tooltip), mouseX, mouseY);
             }
         }
     }
 
-    private void renderRadialMenu(GuiGraphics g, int centerX, int centerY, int mouseX, int mouseY) {
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f matrix = g.pose().last().pose();
-        int segments = 60;
-        for (int i = 0; i <= segments; i++) {
-            double angle = 2 * Math.PI * i / segments;
-            float cos = (float) Math.cos(angle);
-            float sin = (float) Math.sin(angle);
-            buffer.addVertex(matrix, centerX + cos * OUTER_RADIUS, centerY + sin * OUTER_RADIUS, 0).setColor(1.0f, 0.0f, 0.0f, 0.4f);
-            buffer.addVertex(matrix, centerX + cos * INNER_RADIUS, centerY + sin * INNER_RADIUS, 0).setColor(1.0f, 0.0f, 0.0f, 0.4f);
-        }
-        MeshData meshData = buffer.build();
-        if (meshData != null) BufferUploader.drawWithShader(meshData);
-        RenderSystem.disableBlend();
+    private void renderRadialMenu(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
+
         if (!parts.isEmpty()) {
             double angleStep = 2 * Math.PI / parts.size();
             for (int i = 0; i < parts.size(); i++) {
@@ -190,79 +203,112 @@ public class CyberwareMenuScreen extends Screen {
                 double itemAngle = i * angleStep - Math.PI / 2;
                 int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
                 int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
+
                 boolean isActive = part.item.isActive(part.stack);
                 boolean isHovered = (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12);
+
                 if (isHovered) {
-                    Component statusText = isActive
-                            ? Component.translatable("cyberware.gui.active")
-                            : Component.translatable("cyberware.gui.inactive");
-                    g.drawCenteredString(this.font, statusText, x, y - 20, 0xFFFFFF00);
+                    Component statusText = isActive ? Component.translatable("cyberware.gui.active") : Component.translatable("cyberware.gui.inactive");
+                    g.centeredText(this.font, statusText, x, y - 20, 0xFFFFFF00);
                 }
-                g.renderItem(part.stack, x - 8, y - 8);
+
+                // renderItem -> item (oo.txt 442行目)
+                g.item(part.stack, x - 8, y - 8);
+
                 int outlineColor = isActive ? 0xFF00FF00 : 0xFFFF0000;
-                g.renderOutline(x - 10, y - 10, 20, 20, outlineColor);
+                g.outline(x - 10, y - 10, 20, 20, outlineColor);
+
                 if (isHovered) {
-                    g.renderTooltip(this.font, part.stack, mouseX, mouseY);
+                    g.setTooltipForNextFrame(this.font, part.stack, mouseX, mouseY);
                 }
             }
         }
     }
 
-    private void renderColorSettings(GuiGraphics g, int centerX, int centerY, int mouseX, int mouseY) {
-        int boxWidth = 80;
-        this.hexInput.setX(centerX - boxWidth / 2);
-        this.hexInput.setY(centerY + 15);
+    private void renderColorSettings(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
+        // hexInput の位置更新
+        this.hexInput.setPosition(centerX - 40, centerY + 15);
         this.hexInput.setVisible(true);
-        int swatchSize = 20;
-        int gap = 4;
+
+        int swatchSize = 20, gap = 4;
         int totalWidth = (swatchSize * PRESET_COLORS.length) + (gap * (PRESET_COLORS.length - 1));
         int startX = centerX - totalWidth / 2;
-        int startY = centerY - 15;
+
         for (int i = 0; i < PRESET_COLORS.length; i++) {
             int color = PRESET_COLORS[i];
             int x = startX + (swatchSize + gap) * i;
-            int y = startY;
+            int y = centerY - 15;
+
             g.fill(x, y, x + swatchSize, y + swatchSize, color);
-            g.renderOutline(x, y, swatchSize, swatchSize, 0xFF888888);
+            g.outline(x, y, swatchSize, swatchSize, 0xFF888888);
+
             if (mouseX >= x && mouseX <= x + swatchSize && mouseY >= y && mouseY <= y + swatchSize) {
-                g.renderOutline(x - 1, y - 1, swatchSize + 2, swatchSize + 2, 0xFFFFFFFF);
-            }
-            if (color == ClientCyberwareSettings.hudColor) {
-                g.renderOutline(x - 2, y - 2, swatchSize + 4, swatchSize + 4, 0xFFFFFF00);
+                g.outline(x - 1, y - 1, swatchSize + 2, swatchSize + 2, 0xFFFFFFFF);
             }
         }
-        g.drawCenteredString(this.font, "HUD Color Palette", centerX, startY - 15, 0xFFFFFFFF);
-        g.drawCenteredString(this.font, "(Hex)", centerX, this.hexInput.getY() + 22, 0xFFAAAAAA);
     }
 
-    private void renderHudPreview(GuiGraphics g, int mouseX, int mouseY) {
+    private void renderHudPreview(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         if (this.minecraft.player == null) return;
+
         int hudX = ClientCyberwareSettings.hudX;
         int hudY = ClientCyberwareSettings.hudY;
+
         if (isHudMoveMode) {
-            g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
-            g.drawCenteredString(this.font, "DRAG TO MOVE", hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
+            // 1. renderOutline -> outline (oo.txt 161行目)
+            g.outline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
+
+            // 2. drawCenteredString -> centeredText (oo.txt 179行目)
+            g.centeredText(this.font, Component.literal("DRAG TO MOVE"), hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
+
             if (isDraggingHud || (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT)) {
-                g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
+                g.outline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
             }
+
             int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
             int resetBtnY = hudY + HUD_HEIGHT + 5;
+
+            // 3. 色の計算 (float[] -> ARGB int)
             float[] rgba = ClientCyberwareSettings.getColorFloats();
-            g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-            g.blit(HUD_RESET_ICON, resetBtnX, resetBtnY, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE);
-            g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+            int iconColor = net.minecraft.util.ARGB.color(
+                    (int)(rgba[3] * 255), // Alpha
+                    (int)(rgba[0] * 255), // Red
+                    (int)(rgba[1] * 255), // Green
+                    (int)(rgba[2] * 255)  // Blue
+            );
+
+            // 4. g.setColor は使わず、blit の引数に色を渡す (oo.txt 189行目)
+            g.blit(
+                    net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
+                    HUD_RESET_ICON,
+                    resetBtnX,
+                    resetBtnY,
+                    0.0F, 0.0F,          // U, V
+                    BTN_SIZE, BTN_SIZE,  // Width, Height
+                    BTN_SIZE, BTN_SIZE,  // TextureWidth, TextureHeight
+                    iconColor            // ここで色を指定
+            );
+
             if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
-                g.renderOutline(resetBtnX - 1, resetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
-                g.renderTooltip(this.font, Component.literal("Reset Position"), mouseX, mouseY);
+                g.outline(resetBtnX - 1, resetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+
+                // 5. renderTooltip -> setTooltipForNextFrame (oo.txt 583行目)
+                g.setTooltipForNextFrame(Component.literal("Reset Position"), mouseX, mouseY);
             }
         }
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        // 1. イベントから各値を取り出す
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
+
         if (button == 0) {
             int centerX = width / 2;
             int centerY = height / 2;
+
             if (!isHudMoveMode) {
                 if (mouseX >= POS_BTN_X && mouseX <= POS_BTN_X + BTN_SIZE && mouseY >= POS_BTN_Y + 21 && mouseY <= POS_BTN_Y + 21 + BTN_SIZE) {
                     toggleColorSettings();
@@ -278,7 +324,8 @@ public class CyberwareMenuScreen extends Screen {
                 }
             }
             if (isColorSettingsOpen) {
-                if (this.hexInput.mouseClicked(mouseX, mouseY, button)) {
+                // 2. ウィジェットへは event オブジェクトをそのまま渡す
+                if (this.hexInput.mouseClicked(event, false)) {
                     this.setFocused(this.hexInput);
                     return true;
                 }
@@ -312,7 +359,7 @@ public class CyberwareMenuScreen extends Screen {
                     return true;
                 }
             }
-            if (!isColorSettingsOpen && !isHudMoveMode) {
+            if (!isColorSettingsOpen && !isHudMoveMode && !parts.isEmpty()) {
                 double angleStep = 2 * Math.PI / parts.size();
                 for (int i = 0; i < parts.size(); i++) {
                     ToggleablePart part = parts.get(i);
@@ -320,7 +367,7 @@ public class CyberwareMenuScreen extends Screen {
                     int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
                     int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
                     if (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12) {
-                        PacketDistributor.sendToServer(new ToggleCyberwarePacket(part.slotId));
+                        ClientPacketDistributor.sendToServer(new ToggleCyberwarePacket(part.slotId));
                         playClickSound();
                         part.item.toggle(part.stack);
                         return true;
@@ -328,9 +375,25 @@ public class CyberwareMenuScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
-
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        if (isHudMoveMode && isDraggingHud && event.button() == 0) {
+            ClientCyberwareSettings.hudX = (int) event.x() - dragOffsetX;
+            ClientCyberwareSettings.hudY = (int) event.y() - dragOffsetY;
+            return true;
+        }
+        return super.mouseDragged(event, dx, dy);
+    }
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0 && isDraggingHud) {
+            isDraggingHud = false;
+            return true;
+        }
+        return super.mouseReleased(event);
+    }
     private void toggleColorSettings() {
         isColorSettingsOpen = !isColorSettingsOpen;
         this.hexInput.setVisible(isColorSettingsOpen);
@@ -344,24 +407,7 @@ public class CyberwareMenuScreen extends Screen {
         Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (isHudMoveMode && isDraggingHud && button == 0) {
-            ClientCyberwareSettings.hudX = (int) mouseX - dragOffsetX;
-            ClientCyberwareSettings.hudY = (int) mouseY - dragOffsetY;
-            return true;
-        }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-    }
 
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0 && isDraggingHud) {
-            isDraggingHud = false;
-            return true;
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
 
     @Override
     public boolean isPauseScreen() {

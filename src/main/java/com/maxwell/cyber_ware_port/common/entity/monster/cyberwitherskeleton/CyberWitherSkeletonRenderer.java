@@ -4,12 +4,12 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("removal")
 public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity, CyberWitherSkeletonModel> {
-    private static final ResourceLocation NORMAL_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+    private static final Identifier NORMAL_TEXTURE =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
 
     public CyberWitherSkeletonRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new CyberWitherSkeletonModel(pContext.bakeLayer(CyberWitherSkeletonModel.LAYER_LOCATION)), 0.5F);
@@ -17,7 +17,7 @@ public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeleton
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CyberWitherSkeletonEntity cyberWitherSkeletonEntity) {
+    public Identifier getTextureLocation(CyberWitherSkeletonEntity cyberWitherSkeletonEntity) {
         return NORMAL_TEXTURE;
 
     }

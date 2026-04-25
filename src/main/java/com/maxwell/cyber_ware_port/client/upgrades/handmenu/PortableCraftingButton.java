@@ -1,6 +1,6 @@
 package com.maxwell.cyber_ware_port.client.upgrades.handmenu;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -15,10 +15,10 @@ public class PortableCraftingButton extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(g, mouseX, mouseY, partialTick);
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        this.extractDefaultSprite(graphics);
         int itemX = this.getX() + 2;
         int itemY = this.getY() + 2;
-        g.renderItem(craftingTableStack, itemX, itemY);
+        graphics.item(this.craftingTableStack, itemX, itemY);
     }
 }

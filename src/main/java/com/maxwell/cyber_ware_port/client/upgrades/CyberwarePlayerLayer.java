@@ -5,52 +5,89 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
-public class CyberwarePlayerLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    private static final ResourceLocation CYBER_SKIN_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_limbs.png");
-    private final CyberLimbModel<AbstractClientPlayer> cyberLimbModel;
+public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
+    private static final Identifier CYBER_SKIN_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_limbs.png");
+    private final CyberLimbModel<AvatarRenderState> cyberLimbModel;
 
-    public CyberwarePlayerLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer) {
+    public CyberwarePlayerLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
         super(renderer);
         this.cyberLimbModel = new CyberLimbModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(CyberLimbModel.LAYER_LOCATION));
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-                       AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
-                       float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
+                       AvatarRenderState state, float yRot, float xRot) {
+
+        // 1. プレイヤー実体の取得
+        Entity entity = Minecraft.getInstance().level.getEntity(state.id);
+        if (!(entity instanceof Player player)) return;
+
+        // 2. データの取得
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) {
             return;
         }
-        PlayerModel<AbstractClientPlayer> parentModel = this.getParentModel();
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(CYBER_SKIN_TEXTURE));
-        if (data.hasCyberRightArm() && player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)) {
-            this.cyberLimbModel.rightArm.copyFrom(parentModel.rightArm);
-            this.cyberLimbModel.rightArm.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
+
+        // 3. アニメーション同期
+        this.cyberLimbModel.setupAnim(state);
+
+        var renderType = RenderTypes.entityCutout(CYBER_SKIN_TEXTURE);
+
+
+        if (data.hasCyberRightArm() && state.showRightSleeve) {
+            submitNodeCollector.submitModelPart(
+                    this.cyberLimbModel.rightArm,
+                    poseStack,
+                    renderType,
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY,
+                    null // Sprite は通常 null で OK
+            );
         }
-        if (data.hasCyberLeftArm() && player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE)) {
-            this.cyberLimbModel.leftArm.copyFrom(parentModel.leftArm);
-            this.cyberLimbModel.leftArm.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
+
+        if (data.hasCyberLeftArm() && state.showLeftSleeve) {
+            submitNodeCollector.submitModelPart(
+                    this.cyberLimbModel.leftArm,
+                    poseStack,
+                    renderType,
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY,
+                    null
+            );
         }
-        if (data.hasCyberRightLeg() && player.isModelPartShown(PlayerModelPart.RIGHT_PANTS_LEG)) {
-            this.cyberLimbModel.rightLeg.copyFrom(parentModel.rightLeg);
-            this.cyberLimbModel.rightLeg.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
+
+        if (data.hasCyberRightLeg() && state.showRightPants) {
+            submitNodeCollector.submitModelPart(
+                    this.cyberLimbModel.rightLeg,
+                    poseStack,
+                    renderType,
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY,
+                    null
+            );
         }
-        if (data.hasCyberLeftLeg() && player.isModelPartShown(PlayerModelPart.LEFT_PANTS_LEG)) {
-            this.cyberLimbModel.leftLeg.copyFrom(parentModel.leftLeg);
-            this.cyberLimbModel.leftLeg.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
+
+        if (data.hasCyberLeftLeg() && state.showLeftPants) {
+            submitNodeCollector.submitModelPart(
+                    this.cyberLimbModel.leftLeg,
+                    poseStack,
+                    renderType,
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY,
+                    null
+            );
         }
     }
 }

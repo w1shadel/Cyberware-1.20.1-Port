@@ -9,12 +9,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 public class RadioTowerRenderer implements BlockEntityRenderer<RadioTowerCoreBlockEntity> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/block/radio_tower_complete.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/block/radio_tower_complete.png");
     private final RadioTowerModel model;
 
     public RadioTowerRenderer(BlockEntityRendererProvider.Context context) {

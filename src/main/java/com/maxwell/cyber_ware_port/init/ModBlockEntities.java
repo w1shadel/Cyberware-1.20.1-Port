@@ -19,65 +19,66 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, CyberWare.MODID);
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberSkullBlockEntity>> CYBER_SKULL =
             BLOCK_ENTITIES.register("cyber_wither_skeleton_skull",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>( // Builder ではなくコンストラクタを直接呼ぶ
                             CyberSkullBlockEntity::new,
                             ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
                             ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get()
-                    ).build(null));
-
+                    ));
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
             BLOCK_ENTITIES.register("surgery_chamber",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             SurgeryChamberBlockEntity::new,
                             ModBlocks.SURGERY_CHAMBER.get()
-                    ).build(null));
+                    ));
+
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RobosurgeonBlockEntity>> ROBO_SURGEON =
             BLOCK_ENTITIES.register("robo_surgeon",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             RobosurgeonBlockEntity::new,
                             ModBlocks.ROBO_SURGEON.get()
-                    ).build(null));
+                    ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RadioTowerCoreBlockEntity>> RADIO_TOWER_CORE =
             BLOCK_ENTITIES.register("radio_tower_core",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             RadioTowerCoreBlockEntity::new,
                             ModBlocks.RADIO_TOWER_CORE.get()
-                    ).build(null));
+                    ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberwareWorkbenchBlockEntity>> CYBERWARE_WORKBENCH =
             BLOCK_ENTITIES.register("cyberware_workbench",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             CyberwareWorkbenchBlockEntity::new,
                             ModBlocks.CYBERWARE_WORKBENCH.get()
-                    ).build(null));
+                    ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ComponentBoxBlockEntity>> COMPONENT_BOX =
             BLOCK_ENTITIES.register("component_box",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             ComponentBoxBlockEntity::new,
                             ModBlocks.COMPONENT_BOX.get()
-                    ).build(null));
+                    ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ScannerBlockEntity>> SCANNER =
             BLOCK_ENTITIES.register("scanner",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             ScannerBlockEntity::new,
                             ModBlocks.SCANNER.get()
-                    ).build(null));
+                    ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ChargerBlockEntity>> CHARGER =
             BLOCK_ENTITIES.register("chager",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             ChargerBlockEntity::new,
                             ModBlocks.CHARGER.get()
-                    ).build(null));
+                    ));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BlueprintChestBlockEntity>> BLUEPRINT_CHEST =
             BLOCK_ENTITIES.register("blueprint_chest",
-                    () -> BlockEntityType.Builder.of(
+                    () -> new BlockEntityType<>(
                             BlueprintChestBlockEntity::new,
                             ModBlocks.BLUEPRINT_CHEST.get()
-                    ).build(null));
+                    ));
 
 }

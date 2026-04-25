@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.WallSkullBlock;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("removal")
 public class CyberSkullRenderer implements BlockEntityRenderer<SkullBlockEntity> {
-    private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
     private final SkullModel model;
 
     public CyberSkullRenderer(BlockEntityRendererProvider.Context context) {

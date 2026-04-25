@@ -6,12 +6,12 @@ import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EnergySwirlLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberWitherArmorLayer extends EnergySwirlLayer<CyberWitherBoss, CyberWitherModel> {
-    private static final ResourceLocation WITHER_ARMOR_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/wither/wither_armor.png");
+    private static final Identifier WITHER_ARMOR_LOCATION = Identifier.withDefaultNamespace("textures/entity/wither/wither_armor.png");
     private final CyberWitherModel model;
 
     public CyberWitherArmorLayer(RenderLayerParent<CyberWitherBoss, CyberWitherModel> pRenderer, EntityModelSet pModelSet) {
@@ -25,7 +25,7 @@ public class CyberWitherArmorLayer extends EnergySwirlLayer<CyberWitherBoss, Cyb
     }
 
     @Override
-    protected ResourceLocation getTextureLocation() {
+    protected Identifier getTextureLocation() {
         return WITHER_ARMOR_LOCATION;
     }
 

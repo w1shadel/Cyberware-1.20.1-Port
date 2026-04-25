@@ -5,7 +5,8 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.BodyRegionEnum;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -25,13 +26,13 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    protected void apply(Map<Identifier, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         DYNAMIC_CYBERWARE.clear();
         pObject.forEach((location, element) -> {
             try {
                 JsonObject json = element.getAsJsonObject();
                 if (!json.has("item")) return;
-                ResourceLocation itemId = ResourceLocation.parse(json.get("item").getAsString());
+                Identifier itemId = Identifier.parse(json.get("item").getAsString());
                 Item item = BuiltInRegistries.ITEM.get(itemId);
                 if (item != null && item != BuiltInRegistries.ITEM.get(BuiltInRegistries.ITEM.getDefaultKey())) {
                     if (!json.has("slot")) return;
@@ -44,19 +45,19 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                         JsonArray attrs = json.getAsJsonArray("attributes");
                         for (JsonElement attrElement : attrs) {
                             JsonObject attrObj = attrElement.getAsJsonObject();
-                            ResourceLocation attrId = ResourceLocation.parse(attrObj.get("attribute").getAsString());
+                            Identifier attrId = Identifier.parse(attrObj.get("attribute").getAsString());
                             Attribute attr = BuiltInRegistries.ATTRIBUTE.get(attrId);
                             if (attr != null) {
                                 double amount = attrObj.get("amount").getAsDouble();
                                 AttributeModifier.Operation op = AttributeModifier.Operation.valueOf(attrObj.get("operation").getAsString().toUpperCase());
-                                ResourceLocation modId = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "dynamic_" + location.getPath().replace("/", "_"));
+                                Identifier modId = Identifier.fromNamespaceAndPath(CyberWare.MODID, "dynamic_" + location.getPath().replace("/", "_"));
                                 data.attributeModifiers.put(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attr), new AttributeModifier(modId, amount, op));
                             }
                         }
                     }
                     if (json.has("incompatible")) {
                         for (JsonElement e : json.getAsJsonArray("incompatible")) {
-                            Item incomp = BuiltInRegistries.ITEM.get(ResourceLocation.parse(e.getAsString()));
+                            Item incomp = BuiltInRegistries.ITEM.get(Identifier.parse(e.getAsString()));
                             if (incomp != BuiltInRegistries.ITEM.get(BuiltInRegistries.ITEM.getDefaultKey())) {
                                 data.incompatibleItems.add(incomp);
                             }

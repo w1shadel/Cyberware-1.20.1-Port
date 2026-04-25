@@ -10,15 +10,15 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 @SuppressWarnings("removal")
 public class CyberSkullItemRenderer extends BlockEntityWithoutLevelRenderer {
-    private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
     private final SkullModel model;
 
     public CyberSkullItemRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {

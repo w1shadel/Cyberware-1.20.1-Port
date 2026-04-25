@@ -4,11 +4,11 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("removal")
 public class CyberZombieRenderer extends MobRenderer<CyberZombieEntity, CyberZombieModel> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_zombie.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_zombie.png");
 
     public CyberZombieRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberZombieModel(context.bakeLayer(CyberZombieModel.LAYER_LOCATION)), 0.5F);
@@ -16,7 +16,7 @@ public class CyberZombieRenderer extends MobRenderer<CyberZombieEntity, CyberZom
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CyberZombieEntity entity) {
+    public Identifier getTextureLocation(CyberZombieEntity entity) {
         return TEXTURE;
 
     }

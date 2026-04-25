@@ -14,6 +14,9 @@ import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlock;
 import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlock;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberBlock;
 import com.maxwell.cyber_ware_port.common.item.CyberSkullType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -24,6 +27,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ModBlocks {
@@ -38,7 +42,8 @@ public class ModBlocks {
             () -> new CyberWallSkullBlock(CyberSkullType.CYBER_WITHER_SKELETON,
                     BlockBehaviour.Properties.of()
                             .strength(1.0F)
-                            .lootFrom(CYBER_WITHER_SKELETON_SKULL)
+                            .overrideLootTable(Optional.of(ResourceKey.create(Registries.LOOT_TABLE,
+                                    Identifier.fromNamespaceAndPath(CyberWare.MODID, "blocks/cyber_wither_skeleton_skull"))))
                             .pushReaction(PushReaction.DESTROY)
             ));
     public static final DeferredHolder<Block, RobosurgeonBlock> ROBO_SURGEON = registerBlock("robo_surgeon",

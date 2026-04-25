@@ -29,14 +29,13 @@ import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SubdermalSpikesIte
 import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SyntheticSkinItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.skin.TargetedImmunosuppressantItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -50,37 +49,42 @@ public class ModItems {
             () -> new StandingAndWallBlockItem(
                     ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
                     ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get(),
-                    new Item.Properties().rarity(Rarity.RARE),
-                    Direction.DOWN) {
-                @Override
-                public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-                    consumer.accept(new IClientItemExtensions() {
-                        private CyberSkullItemRenderer renderer;
-
-                        @Override
-                        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                            if (this.renderer == null) {
-                                this.renderer = new CyberSkullItemRenderer(
-                                        Minecraft.getInstance().getBlockEntityRenderDispatcher(),
-                                        Minecraft.getInstance().getEntityModels());
-                            }
-                            return this.renderer;
-                        }
-                    });
-                }
-            });
+                    Direction.DOWN,
+                    new Item.Properties()
+                            .rarity(Rarity.RARE)
+                            .equippableUnswappable(EquipmentSlot.HEAD)
+            ));
     public static final DeferredHolder<Item, Item> CYBER_ZOMBIE_SPAWN_EGG = ITEMS.register("cyber_zombie_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.CYBER_ZOMBIE, 0x445555, 0x00AAAA, new Item.Properties()));
+            () -> new SpawnEggItem(
+                    new Item.Properties()
+                            .spawnEgg(ModEntities.CYBER_ZOMBIE.get())
+            ));
     public static final DeferredHolder<Item, Item> CYBER_SKELETON_SPAWN_EGG = ITEMS.register("cyber_skeleton_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.CYBER_SKELETON, 0x888888, 0x4444AA, new Item.Properties()));
+            () -> new SpawnEggItem(
+                    new Item.Properties()
+                            .spawnEgg(ModEntities.CYBER_SKELETON.get())
+            ));
     public static final DeferredHolder<Item, Item> CYBER_WITHER_SKELETON_SPAWN_EGG = ITEMS.register("cyber_wither_skeleton_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.CYBER_WITHER_SKELETON, 0x111111, 0xFF2222, new Item.Properties()));
+            () -> new SpawnEggItem(
+                    new Item.Properties()
+                            .spawnEgg(ModEntities.CYBER_WITHER_SKELETON.get())
+            ));
     public static final DeferredHolder<Item, Item> CYBER_CREEPER_SPAWN_EGG = ITEMS.register("cyber_creeper_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.CYBER_CREEPER, 0x0DA70B, 0xFF0000, new Item.Properties()));
+            () -> new SpawnEggItem(
+                    new Item.Properties()
+                            .spawnEgg(ModEntities.CYBER_CREEPER.get())
+            ));
     public static final DeferredHolder<Item, Item> CYBER_WITHER_SPAWN_EGG = ITEMS.register("cyber_wither_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.CYBER_WITHER, 0x222222, 0x55FFFF, new Item.Properties()));
+            () -> new SpawnEggItem(
+                    new Item.Properties()
+                            .spawnEgg(ModEntities.CYBER_WITHER.get())
+            ));
     public static final DeferredHolder<Item, ComponentBoxItem> COMPONENT_BOX = ITEMS.register("component_box", ComponentBoxItem::new);
-    public static final DeferredHolder<Item, KatanaItem> KATANA = ITEMS.register("katana", KatanaItem::new);
+    public static final DeferredHolder<Item, KatanaItem> KATANA = ITEMS.register("katana",
+            () -> new KatanaItem(new Item.Properties()
+                    .sword(ToolMaterial.IRON, 4.0F, -2.0F)
+                    .stacksTo(1)
+            ));
     public static final DeferredHolder<Item, Item> COMPONENT_ACTUATOR = ITEMS.register("component_actuator", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> COMPONENT_REACTOR = ITEMS.register("component_reactor", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> COMPONENT_TITANIUM = ITEMS.register("component_titanium", () -> new Item(new Item.Properties()));

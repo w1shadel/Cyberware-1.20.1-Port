@@ -12,14 +12,16 @@ import com.maxwell.cyber_ware_port.common.network.ClientPacketHandler;
 import com.maxwell.cyber_ware_port.common.network.DoubleJumpPacket;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModItems;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +29,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -36,7 +40,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.Set;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class ForgeClientEvents {
     private static final String NBT_DOUBLE_JUMPED = "cyberware_double_jumped";
 
@@ -81,9 +85,10 @@ public class ForgeClientEvents {
         }
         ICyberware cyberware = CyberwareAPI.getCyberware(stack);
         if (cyberware != null) {
-            ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
+            Identifier registryName = BuiltInRegistries.ITEM.getKey(item);
             if (registryName.getPath().contains("body_part")) return;
-            if (!Screen.hasShiftDown()) {
+            boolean isShiftDown = InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT);
+            if (!isShiftDown) {
                 tooltip.add(Component.empty());
                 tooltip.add(Component.translatable("cyberware.tooltip.shiftPrompt", Component.translatable("key.keyboard.shift")).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
                 return;
@@ -148,7 +153,7 @@ public class ForgeClientEvents {
             if (data.isCyberwareInstalled(ModItems.CYBER_EYE.get())) {
                 if (mc.screen == null) mc.setScreen(new CyberwareMenuScreen());
             } else {
-                player.displayClientMessage(Component.translatable("message.cyber_ware_port.no_hud_installed"), true);
+                player.sendOverlayMessage(Component.translatable("message.cyber_ware_port.no_hud_installed"));
             }
         }
         if (event.getKey() == mc.options.keyJump.getKey().getValue() && event.getAction() == GLFW.GLFW_PRESS) {
@@ -157,8 +162,8 @@ public class ForgeClientEvents {
                 ItemStack actuatorStack = getInstalledStack(data, ModItems.LINEAR_ACTUATORS.get());
                 if (!actuatorStack.isEmpty()) {
                     ICyberware cw = CyberwareAPI.getCyberware(actuatorStack);
-                    if (cw != null && cw.isActive(actuatorStack) && !player.getPersistentData().getBoolean(NBT_DOUBLE_JUMPED)) {
-                        PacketDistributor.sendToServer(new DoubleJumpPacket());
+                    if (cw != null && cw.isActive(actuatorStack) && !player.getPersistentData().getBooleanOr(NBT_DOUBLE_JUMPED, false)) {
+                        ClientPacketDistributor.sendToServer(new DoubleJumpPacket());
                     }
                 }
             }
@@ -176,29 +181,37 @@ public class ForgeClientEvents {
 
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
-        PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
-        model.leftArm.visible = model.leftSleeve.visible = true;
-        model.rightArm.visible = model.rightSleeve.visible = true;
-        model.leftLeg.visible = model.leftPants.visible = true;
-        model.rightLeg.visible = model.rightPants.visible = true;
-        CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        if (hasSkinUpgrade(data)) return;
-        if (data.hasCyberLeftArm()) {
-            model.leftArm.visible = false;
-            model.leftSleeve.visible = false;
-        }
-        if (data.hasCyberRightArm()) {
-            model.rightArm.visible = false;
-            model.rightSleeve.visible = false;
-        }
-        if (data.hasCyberLeftLeg()) {
-            model.leftLeg.visible = false;
-            model.leftPants.visible = false;
-        }
-        if (data.hasCyberRightLeg()) {
-            model.rightLeg.visible = false;
-            model.rightPants.visible = false;
+        if (!(event.getRenderState() instanceof AvatarRenderState state)) return;
+        int entityId = state.id;
+        var model = event.getRenderer().getModel();
+        Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+
+        if (entity instanceof Player player) {
+            CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+
+            if (hasSkinUpgrade(data)) return;
+
+            state.showLeftSleeve = true;
+            state.showRightSleeve = true;
+            state.showLeftPants = true;
+            state.showRightPants = true;
+
+            // Cyberwareの状態を適用
+            if (data.hasCyberLeftArm()) {
+                state.showLeftSleeve = false;
+            }
+
+            if (data.hasCyberRightArm()) {
+                state.showRightSleeve = false;
+            }
+
+            if (data.hasCyberLeftLeg()) {
+                state.showLeftPants = false;
+            }
+
+            if (data.hasCyberRightLeg()) {
+                state.showRightPants = false;
+            }
         }
     }
 

@@ -11,20 +11,20 @@ import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 @EmiEntrypoint
 public class CyberwareEmiPlugin implements EmiPlugin {
-    public static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
+    public static final Identifier GUI_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
     public static final EmiRecipeCategory ASSEMBLY_CATEGORY = new EmiRecipeCategory(
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "assembly"),
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "assembly"),
             EmiStack.of(ModBlocks.CYBERWARE_WORKBENCH.get()),
             new EmiTexture(GUI_TEXTURE, 0, 0, 16, 16)
     );
     public static final EmiRecipeCategory ENGINEERING_CATEGORY = new EmiRecipeCategory(
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "engineering"),
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "engineering"),
             EmiStack.of(ModBlocks.CYBERWARE_WORKBENCH.get()),
             new EmiTexture(GUI_TEXTURE, 16, 0, 16, 16)
     );

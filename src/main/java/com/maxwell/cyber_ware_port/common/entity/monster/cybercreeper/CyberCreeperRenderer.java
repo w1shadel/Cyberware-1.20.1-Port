@@ -4,12 +4,12 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberCreeperRenderer extends MobRenderer<CyberCreeperEntity, CyberCreeperModel> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_creeper.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_creeper.png");
 
     public CyberCreeperRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberCreeperModel(context.bakeLayer(CyberCreeperModel.LAYER_LOCATION)), 0.5F);
@@ -17,7 +17,7 @@ public class CyberCreeperRenderer extends MobRenderer<CyberCreeperEntity, CyberC
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CyberCreeperEntity entity) {
+    public Identifier getTextureLocation(CyberCreeperEntity entity) {
         return TEXTURE;
     }
 

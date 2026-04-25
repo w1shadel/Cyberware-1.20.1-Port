@@ -6,7 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModBiomeTagProvider extends BiomeTagsProvider {
     public static final ResourceKey<Biome> HAS_CYBER_LAB = ResourceKey.create(Registries.BIOME,
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "has_structure/cyber_lab"));
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "has_structure/cyber_lab"));
 
     public ModBiomeTagProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pProvider,
                                @Nullable ExistingFileHelper existingFileHelper) {
@@ -26,7 +26,7 @@ public class ModBiomeTagProvider extends BiomeTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(net.minecraft.tags.TagKey.create(Registries.BIOME,
-                        ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "has_structure/cyber_lab")))
+                        Identifier.fromNamespaceAndPath(CyberWare.MODID, "has_structure/cyber_lab")))
                 .addTag(BiomeTags.IS_OVERWORLD)
                 .remove(BiomeTags.IS_OCEAN)
                 .remove(BiomeTags.IS_RIVER);

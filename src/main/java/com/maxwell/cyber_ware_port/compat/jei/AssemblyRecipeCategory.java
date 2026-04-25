@@ -15,13 +15,13 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class AssemblyRecipeCategory implements IRecipeCategory<AssemblyRecipe> {
     public static final RecipeType<AssemblyRecipe> RECIPE_TYPE = RecipeType.create(CyberWare.MODID, "assembly", AssemblyRecipe.class);
-    private static final ResourceLocation BACKGROUND_LOC = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
+    private static final Identifier BACKGROUND_LOC = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
     private final IDrawable background;
     private final IDrawable icon;
 

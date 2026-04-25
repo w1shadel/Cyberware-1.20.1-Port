@@ -4,21 +4,25 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 
-public class CyberLimbModel<T extends LivingEntity> extends EntityModel<T> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_limbs"), "main");
+public class CyberLimbModel<S extends HumanoidRenderState> extends HumanoidModel<S> {
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_limbs"), "main");
     public final ModelPart leftArm;
     public final ModelPart rightArm;
     public final ModelPart leftLeg;
     public final ModelPart rightLeg;
 
     public CyberLimbModel(ModelPart root) {
+        super(root, RenderTypes::entityCutout);
         this.leftArm = root.getChild("left_arm");
         this.rightArm = root.getChild("right_arm");
         this.leftLeg = root.getChild("left_leg");
@@ -46,12 +50,8 @@ public class CyberLimbModel<T extends LivingEntity> extends EntityModel<T> {
                 PartPose.offset(1.9F, 12.0F, 0.0F));
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
     @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
+    public void setupAnim(S state) {
+        super.setupAnim(state);
     }
 }

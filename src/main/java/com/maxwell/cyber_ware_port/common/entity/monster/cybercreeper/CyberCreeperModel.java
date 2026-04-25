@@ -6,15 +6,15 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
 public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "main");
     public static final ModelLayerLocation ARMOR_LOCATION =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "armor");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "armor");
     private final ModelPart body;
     private final ModelPart head;
     private final ModelPart leg0;

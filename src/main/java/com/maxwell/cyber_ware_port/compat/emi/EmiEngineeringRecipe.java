@@ -10,7 +10,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -44,7 +44,7 @@ public class EmiEngineeringRecipe implements EmiRecipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return holder.id();
     }
 

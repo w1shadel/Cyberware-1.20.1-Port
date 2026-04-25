@@ -7,12 +7,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class BlueprintChestScreen extends AbstractContainerScreen<BlueprintChestMenu> {
-    private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest_inv.png");
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest_inv.png");
 
     public BlueprintChestScreen(BlueprintChestMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);

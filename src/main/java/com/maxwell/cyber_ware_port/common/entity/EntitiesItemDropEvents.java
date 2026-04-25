@@ -8,7 +8,7 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -128,7 +128,7 @@ public class EntitiesItemDropEvents {
         for (DeferredHolder<Item, ? extends Item> entry : ModItems.ITEMS.getEntries()) {
             Item item = entry.get();
             if (item instanceof CyberwareItem) {
-                ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+                Identifier id = BuiltInRegistries.ITEM.getKey(item);
                 if (id.getPath().contains("body_part")) continue;
                 if (item == ModItems.CREATIVE_BATTERY.get()) continue;
                 if (highTierItems.contains(item)) {

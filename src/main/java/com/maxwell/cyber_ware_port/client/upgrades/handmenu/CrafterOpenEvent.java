@@ -11,9 +11,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CrafterOpenEvent {
     private static PortableCraftingButton craftingBtn = null;
 
@@ -30,7 +31,7 @@ public class CrafterOpenEvent {
                 int btnX = guiLeft + 130;
                 int btnY = guiTop + 60;
                 craftingBtn = new PortableCraftingButton(btnX, btnY, (btn) -> {
-                    PacketDistributor.sendToServer(new OpenPortableCraftingPacket());
+                    ClientPacketDistributor.sendToServer(new OpenPortableCraftingPacket());
                 });
                 event.addListener(craftingBtn);
             }

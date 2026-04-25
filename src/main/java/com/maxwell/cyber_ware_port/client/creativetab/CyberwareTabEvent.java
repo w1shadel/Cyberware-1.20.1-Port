@@ -5,8 +5,10 @@ import com.maxwell.cyber_ware_port.common.CyberwareTabState;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,11 +20,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CyberWare.MODID,  value = Dist.CLIENT)
 public class CyberwareTabEvent {
 
-    private static final ResourceLocation TAB_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID.toLowerCase(), "textures/gui/extended_tabs.png");
+    private static final Identifier TAB_TEXTURE =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID.toLowerCase(), "textures/gui/extended_tabs.png");
 
     private static final List<CyberwareSideTabButton> customTabs = new ArrayList<>();
     private static boolean isReloading = false;
@@ -69,23 +71,31 @@ public class CyberwareTabEvent {
     public static void onScreenRenderPost(ScreenEvent.Render.Post event) {
         if (event.getScreen() instanceof CreativeModeInventoryScreen screen) {
             if (updateVisibility(screen)) {
+                var g = event.getGuiGraphics();
+
                 int guiLeft = screen.getGuiLeft();
                 int guiTop = screen.getGuiTop();
                 int panelX = guiLeft - 28;
 
-                event.getGuiGraphics().pose().pushPose();
-                event.getGuiGraphics().pose().translate(0, 0, 100);
+                g.pose().pushMatrix();
+                g.nextStratum();
+                g.blit(
+                        RenderPipelines.GUI_TEXTURED, // パイプライン
+                        TAB_TEXTURE,                 // テクスチャ (Identifier)
+                        panelX,                      // x
+                        guiTop,                      // y
+                        0.0F,                        // u
+                        0.0F,                        // v
+                        28,                          // width
+                        128,                         // height
+                        256,                         // textureWidth
+                        256                          // textureHeight
+                );
 
-                RenderSystem.setShaderTexture(0, TAB_TEXTURE);
-                RenderSystem.enableBlend();
-                event.getGuiGraphics().blit(TAB_TEXTURE, panelX, guiTop, 0, 0, 28, 128, 256, 256);
-
-                RenderSystem.disableBlend();
-                event.getGuiGraphics().pose().popPose();
+                g.pose().popMatrix();
             }
         }
     }
-
     @SubscribeEvent
     public static void onScreenClosing(ScreenEvent.Closing event) {
         if (event.getScreen() instanceof CreativeModeInventoryScreen && !isReloading) {

@@ -16,7 +16,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -102,7 +102,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         float healthRatio = (oldMaxHealthVal > 0) ? oldMaxHealth / oldMaxHealthVal : 1.0F;
         AttributeMap attributeMap = player.getAttributes();
         for (AttributeInstance instance : attributeMap.getSyncableAttributes()) {
-            List<ResourceLocation> toRemove = new ArrayList<>();
+            List<Identifier> toRemove = new ArrayList<>();
             instance.getModifiers().forEach(mod -> {
                 if (mod.id().getNamespace().equals(CyberWare.MODID) && mod.id().getPath().startsWith("slot_")) {
                     toRemove.add(mod.id());
@@ -126,7 +126,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                         cyberware.getAttributeModifiers(stack).forEach((attribute, originalModifier) -> {
                             AttributeInstance instance = attributeMap.getInstance(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(Objects.requireNonNull(attribute).value()));
                             if (instance != null) {
-                                ResourceLocation modId = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "slot_" + finalI + "_" + originalModifier.id().getPath());
+                                Identifier modId = Identifier.fromNamespaceAndPath(CyberWare.MODID, "slot_" + finalI + "_" + originalModifier.id().getPath());
                                 AttributeModifier newModifier = new AttributeModifier(modId, originalModifier.amount() * count, originalModifier.operation());
                                 instance.addOrUpdateTransientModifier(newModifier);
                             }

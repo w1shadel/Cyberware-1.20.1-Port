@@ -9,12 +9,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 @SuppressWarnings("removal")
 public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChamberBlockEntity> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/block/surgery_chamber.png");
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/block/surgery_chamber.png");
     private final SurgeryChamberModel model;
 
     public SurgeryChamberRenderer(BlockEntityRendererProvider.Context context) {

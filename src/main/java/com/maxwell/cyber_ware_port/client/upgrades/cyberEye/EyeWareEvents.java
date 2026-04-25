@@ -43,7 +43,6 @@ public class EyeWareEvents {
             if (player != null && isFeatureActive(player, ModItems.LIQUID_REFRACTION.get())) {
                 event.setNearPlaneDistance(-8.0F);
                 event.setFarPlaneDistance(200.0F);
-                event.setCanceled(true);
             }
         }
     }
@@ -55,4 +54,4 @@ public class EyeWareEvents {
             event.setNewFovModifier(event.getNewFovModifier() * 0.5f);
         }
     }
-}
+}

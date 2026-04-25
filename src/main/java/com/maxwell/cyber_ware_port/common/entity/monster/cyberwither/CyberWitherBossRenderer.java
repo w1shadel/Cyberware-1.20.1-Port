@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
@@ -21,11 +21,11 @@ import org.joml.Matrix4f;
 
 @SuppressWarnings("removal")
 public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberWitherModel> {
-    private static final ResourceLocation WITHER_LOCATION =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
-    private static final ResourceLocation WITHER_INVULNERABLE_LOCATION =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
-    private static final ResourceLocation BEAM_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/guardian_beam.png");
+    private static final Identifier WITHER_LOCATION =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
+    private static final Identifier WITHER_INVULNERABLE_LOCATION =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
+    private static final Identifier BEAM_LOCATION = Identifier.withDefaultNamespace("textures/entity/guardian_beam.png");
 
     public CyberWitherBossRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberWitherModel(context.bakeLayer(CyberWitherModel.LAYER_LOCATION)), 1.0F);
@@ -130,7 +130,7 @@ public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberW
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CyberWitherBoss pEntity) {
+    public Identifier getTextureLocation(CyberWitherBoss pEntity) {
         int invulTicks = pEntity.getInvulnerableTicks();
         if (invulTicks > 0) {
             return WITHER_LOCATION;

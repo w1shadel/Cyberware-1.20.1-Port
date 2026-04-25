@@ -6,13 +6,13 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Items;
 
 public class CyberSkeletonModel extends HierarchicalModel<CyberSkeletonEntity> {
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "cyber_skeleton"), "main");
+            new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_skeleton"), "main");
     private final ModelPart waist;
     private final ModelPart body;
     private final ModelPart head;

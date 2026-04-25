@@ -14,7 +14,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EngineeringRecipeCategory implements IRecipeCategory<EngineeringRecipe> {
     public static final RecipeType<EngineeringRecipe> RECIPE_TYPE = RecipeType.create(CyberWare.MODID, "engineering", EngineeringRecipe.class);
-    private static final ResourceLocation BACKGROUND_LOC = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
+    private static final Identifier BACKGROUND_LOC = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
     private final IDrawable background;
     private final IDrawable icon;
 

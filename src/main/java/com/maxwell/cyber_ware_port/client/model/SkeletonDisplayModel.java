@@ -9,12 +9,12 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 
-public class SkeletonDisplayModel extends Model {
+public class SkeletonDisplayModel extends Model.Simple {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "skeleton_display"), "main");
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "skeleton_display"), "main");
     public final ModelPart root;
     public final ModelPart head;
     public final ModelPart hat;
@@ -25,7 +25,7 @@ public class SkeletonDisplayModel extends Model {
     public final ModelPart leftLeg;
 
     public SkeletonDisplayModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root,RenderTypes::entityCutout);
         this.root = root;
         this.head = root.getChild("head");
         this.hat = root.getChild("hat");
@@ -62,15 +62,5 @@ public class SkeletonDisplayModel extends Model {
         partdefinition.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(0, 16).mirror()
                 .addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F), PartPose.offset(2.0F, 12.0F, 0.0F));
         return LayerDefinition.create(meshdefinition, 64, 32);
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int alpha) {
-        poseStack.pushPose();
-        poseStack.translate(0.0D, 1.5D, 0.0D);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, alpha);
-        poseStack.popPose();
     }
 }

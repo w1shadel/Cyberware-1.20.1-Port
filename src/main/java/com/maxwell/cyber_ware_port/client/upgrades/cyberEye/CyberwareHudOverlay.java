@@ -7,10 +7,11 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModItems;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor; // GuiGraphicsの代わり
+import net.minecraft.client.renderer.RenderPipelines; // Pipelineの指定に必要
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB; // 色の合成用
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -22,8 +23,8 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
-    private static final ResourceLocation BATTERY_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/battery_hud.png");
+    private static final Identifier BATTERY_TEXTURE =
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/battery_hud.png");
 
     @SubscribeEvent
     public static void onRenderGuiLayer(RenderGuiLayerEvent.Post event) {
@@ -35,6 +36,7 @@ public class CyberwareHudOverlay {
             if (isHudActive(userData)) {
                 int x = ClientCyberwareSettings.hudX;
                 int y = ClientCyberwareSettings.hudY;
+                // getGuiGraphics() を GuiGraphicsExtractor として扱う
                 renderBatteryHud(event.getGuiGraphics(), mc, userData, x, y);
             }
         }
@@ -53,36 +55,49 @@ public class CyberwareHudOverlay {
         return false;
     }
 
-    public static void renderBatteryHud(GuiGraphics g, Minecraft mc, CyberwareUserData data, int x, int y) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
+    public static void renderBatteryHud(GuiGraphicsExtractor g, Minecraft mc, CyberwareUserData data, int x, int y) {
+        // RenderSystem の直接操作は不要になりました
+
         int current = data.getEnergyStored();
         int max = data.getMaxEnergyStored();
         int prod = data.getLastProduction();
         int cons = data.getLastConsumption();
-        float r, gVal, b, a;
+
+        int hudColor;
         int textColor;
+
         if (current <= 0) {
             boolean flash = (System.currentTimeMillis() % 500) < 250;
-            r = flash ? 1.0f : 0.5f;
-            gVal = 0.0f;
-            b = 0.0f;
-            a = 1.0f;
-            textColor = flash ? 0xFFFF0000 : 0xFF880000;
+            hudColor = flash ? 0xFFFF0000 : 0xFF880000;
+            textColor = hudColor;
         } else {
             float[] userColor = ClientCyberwareSettings.getColorFloats();
-            r = userColor[0];
-            gVal = userColor[1];
-            b = userColor[2];
-            a = userColor[3];
+            hudColor = ARGB.color(
+                    (int)(userColor[3] * 255),
+                    (int)(userColor[0] * 255),
+                    (int)(userColor[1] * 255),
+                    (int)(userColor[2] * 255)
+            );
             textColor = ClientCyberwareSettings.hudColor;
         }
-        g.setColor(r, gVal, b, a);
+
         int texTotalWidth = 37;
         int texTotalHeight = 25;
         int frameWidth = 13;
         int frameHeight = 25;
-        g.blit(BATTERY_TEXTURE, x, y, 0, 0, frameWidth, frameHeight, texTotalWidth, texTotalHeight);
+
+        // g.blit の新しい形式 (oo.txt 189行目)
+        // 引数: (Pipeline, Texture, x, y, u, v, width, height, texWidth, texHeight, color)
+        g.blit(
+                RenderPipelines.GUI_TEXTURED,
+                BATTERY_TEXTURE,
+                x, y,
+                0.0F, 0.0F,
+                frameWidth, frameHeight,
+                texTotalWidth, texTotalHeight,
+                hudColor
+        );
+
         if (max > 0 && current > 0) {
             int barTextureU = 27;
             int barTextureV = 2;
@@ -90,16 +105,27 @@ public class CyberwareHudOverlay {
             int barFullHeight = 22;
             float pct = (float) current / max;
             int renderHeight = (int) (barFullHeight * pct);
+
             if (renderHeight > 0) {
                 int screenY = y + 2 + (barFullHeight - renderHeight);
-                int textureV = barTextureV + (barFullHeight - renderHeight);
-                g.blit(BATTERY_TEXTURE, x + 2, screenY, barTextureU, textureV, barWidth, renderHeight, texTotalWidth, texTotalHeight);
+                float textureV = (float)barTextureV + (barFullHeight - renderHeight);
+
+                g.blit(
+                        RenderPipelines.GUI_TEXTURED,
+                        BATTERY_TEXTURE,
+                        x + 2, screenY,
+                        (float)barTextureU, textureV,
+                        barWidth, renderHeight,
+                        texTotalWidth, texTotalHeight,
+                        hudColor
+                );
             }
         }
-        g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        // テキスト描画 (oo.txt 171行目)
+        // g.drawString -> g.text (引数: font, string, x, y, color, dropShadow)
         int textX = x + frameWidth + 4;
-        g.drawString(mc.font, current + " / " + max, textX, y + 4, textColor, true);
-        g.drawString(mc.font, "-" + cons + " / +" + prod, textX, y + 14, textColor, true);
-        RenderSystem.disableBlend();
+        g.text(mc.font, current + " / " + max, textX, y + 4, textColor, true);
+        g.text(mc.font, "-" + cons + " / +" + prod, textX, y + 14, textColor, true);
     }
 }

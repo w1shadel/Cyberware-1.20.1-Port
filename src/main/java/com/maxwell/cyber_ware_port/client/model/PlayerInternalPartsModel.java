@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.client.model;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
@@ -7,35 +8,38 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("removal")
-public class PlayerInternalPartsModel extends Model {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("modid", "playerinternalpartsmodel"), "main");
+public class PlayerInternalPartsModel extends Model.Simple {
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "playerinternalpartsmodel"), "main");
+
     private final ModelPart root;
     private final ModelPart bone;
     private final ModelPart muscal;
     private final ModelPart skin;
 
     public PlayerInternalPartsModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
-        this.root = root.getChild("root");
-        this.bone = this.root.getChild("bone");
-        this.muscal = this.root.getChild("muscal");
-        this.skin = this.root.getChild("skin");
+        super(root, RenderTypes::entityCutout);
 
+        this.root = root;
+        this.bone = root.getChild("root").getChild("bone");
+        this.muscal = root.getChild("root").getChild("muscal");
+        this.skin = root.getChild("root").getChild("skin");
     }
 
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
         PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
-        PartDefinition bone = root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -4.0F, 0.0F));
-        PartDefinition muscal = root.addOrReplaceChild("muscal", CubeListBuilder.create().texOffs(0, 12).addBox(-5.0F, -4.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
-        PartDefinition skin = root.addOrReplaceChild("skin", CubeListBuilder.create().texOffs(0, 24).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
-        return LayerDefinition.create(meshdefinition, 64, 64);
 
+        root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -4.0F, 0.0F));
+        root.addOrReplaceChild("muscal", CubeListBuilder.create().texOffs(0, 12).addBox(-5.0F, -4.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+        root.addOrReplaceChild("skin", CubeListBuilder.create().texOffs(0, 24).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
     public void setVisibleLayer(int type) {
@@ -46,13 +50,6 @@ public class PlayerInternalPartsModel extends Model {
             case 0 -> this.skin.visible = true;
             case 1 -> this.muscal.visible = true;
             case 2 -> this.bone.visible = true;
-
         }
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
-        root.render(poseStack, vertexConsumer, i, i1, i2);
-
     }
 }

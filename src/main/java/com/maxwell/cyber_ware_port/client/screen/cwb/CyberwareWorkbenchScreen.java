@@ -18,7 +18,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareWorkbenchMenu> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
-    private static final ResourceLocation COMPONENT_BOX_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box.png");
-    private static final ResourceLocation BLUEPRINT_PANEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
+    private static final Identifier COMPONENT_BOX_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box.png");
+    private static final Identifier BLUEPRINT_PANEL_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest.png");
     private ItemStack cachedBlueprint = ItemStack.EMPTY;
     private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;
     private float slideProgress = 1.0f;

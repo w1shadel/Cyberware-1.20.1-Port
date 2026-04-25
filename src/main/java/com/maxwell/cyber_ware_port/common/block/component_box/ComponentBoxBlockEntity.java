@@ -9,7 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +43,7 @@ public class ComponentBoxBlockEntity extends BlockEntity implements MenuProvider
     private boolean isComponent(ItemStack stack) {
         Item item = stack.getItem();
         if (item instanceof CyberwareItem || item instanceof ComponentBoxItem) return false;
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+        Identifier id = BuiltInRegistries.ITEM.getKey(item);
         return id.getPath().contains("component_");
     }
 
