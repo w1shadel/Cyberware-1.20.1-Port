@@ -1,35 +1,56 @@
 package com.maxwell.cyber_ware_port.compat.jei;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
+import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @JeiPlugin
 public class CyberwareJeiPlugin implements IModPlugin {
+
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, "jei_plugin");
+    public @NotNull Identifier getPluginUid() {
+        return Identifier.fromNamespaceAndPath(CyberWare.MODID, "jei_plugin");
     }
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new AssemblyRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
-        registration.addRecipeCategories(new EngineeringRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+        var guiHelper = registration.getJeiHelpers().getGuiHelper();
+        registration.addRecipeCategories(new AssemblyRecipeCategory(guiHelper));
+        registration.addRecipeCategories(new EngineeringRecipeCategory(guiHelper));
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        var recipeManager = Minecraft.getInstance().level.getRecipeManager();
-        registration.addRecipes(AssemblyRecipeCategory.RECIPE_TYPE,
-                recipeManager.getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get()).stream().map(RecipeHolder::value).toList());
-        registration.addRecipes(EngineeringRecipeCategory.RECIPE_TYPE,
-                recipeManager.getAllRecipesFor(ModRecipes.ENGINEERING_TYPE.get()).stream().map(RecipeHolder::value).toList());
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        var recipeRegistry = level.registryAccess().lookupOrThrow(Registries.RECIPE);
+
+        List<AssemblyRecipe> assemblyRecipes = recipeRegistry.listElements()
+                .map(holder -> (Recipe<?>) holder.value())
+                .filter(recipe -> recipe.getType() == ModRecipes.ASSEMBLY_TYPE.get())
+                .map(recipe -> (AssemblyRecipe) recipe)
+                .toList();
+        registration.addRecipes(AssemblyRecipeCategory.TYPE, assemblyRecipes);
+
+        List<EngineeringRecipe> engineeringRecipes = recipeRegistry.listElements()
+                .map(holder -> (Recipe<?>) holder.value())
+                .filter(recipe -> recipe.getType() == ModRecipes.ENGINEERING_TYPE.get())
+                .map(recipe -> (EngineeringRecipe) recipe)
+                .toList();
+        registration.addRecipes(EngineeringRecipeCategory.TYPE, engineeringRecipes);
     }
 }

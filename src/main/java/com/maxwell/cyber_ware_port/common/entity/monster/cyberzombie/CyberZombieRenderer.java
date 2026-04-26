@@ -38,6 +38,5 @@ public class CyberZombieRenderer extends MobRenderer<CyberZombieEntity, CyberZom
     public void extractRenderState(CyberZombieEntity entity, CyberZombieRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.isAggressive = entity.isAggressive();
-        state.isUnhalted = entity.isUnhalted();
     }
 }

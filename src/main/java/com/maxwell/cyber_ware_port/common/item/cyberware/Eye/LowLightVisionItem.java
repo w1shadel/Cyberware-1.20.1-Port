@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class LowLightVisionItem extends CyberwareItem {
-    public LowLightVisionItem() {
-        super(new Builder(2, RobosurgeonBlockEntity.SLOT_EYES)
+    public LowLightVisionItem(Properties p) {
+        super(new Builder(p,2, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .energy(2, 0, 0, StackingRule.STATIC)
                 .requires(ModItems.CYBER_EYE)

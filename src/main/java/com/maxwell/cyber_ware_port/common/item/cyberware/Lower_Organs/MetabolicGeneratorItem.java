@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class MetabolicGeneratorItem extends CyberwareItem {
-    public MetabolicGeneratorItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH)
+    public MetabolicGeneratorItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(2)
                 .energy(0, 200, 200, StackingRule.LINEAR));
     }

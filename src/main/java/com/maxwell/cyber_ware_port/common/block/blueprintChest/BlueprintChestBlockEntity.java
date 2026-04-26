@@ -59,11 +59,13 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
         super.loadAdditional(input);
         this.itemHandler.deserialize(input.childOrEmpty("inventory"));
     }
-
+    private ItemStack getStack(int slot) {
+        return itemHandler.getResource(slot).toStack((int) itemHandler.getAmountAsLong(slot));
+    }
     public void drops() {
         if (this.level == null) return;
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            ItemStack stack = itemHandler.getStackInSlot(i);
+        for (int i = 0; i < itemHandler.size(); i++) {
+            ItemStack stack = getStack(i);
             if (!stack.isEmpty()) {
                 Containers.dropItemStack(this.level, this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), stack);
             }

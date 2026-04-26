@@ -12,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 public class CardiomechanicPumpItem extends CyberwareItem {
-    public CardiomechanicPumpItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_HEART)
+    public CardiomechanicPumpItem(Properties properties) {
+        super(new Builder(properties, 5, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .bodyPart(BodyPartType.HEART)
                 .incompatible(ModItems.HUMAN_HEART)

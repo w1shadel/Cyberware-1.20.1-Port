@@ -9,8 +9,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 
 public class MyomerMuscleReplacementItem extends CyberwareItem {
-    public MyomerMuscleReplacementItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_MUSCLE)
+    public MyomerMuscleReplacementItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_MUSCLE)
                 .maxInstall(10)
                 .energy(6, 0, 0, StackingRule.LINEAR)
                 .incompatible(ModItems.HUMAN_MUSCLE)

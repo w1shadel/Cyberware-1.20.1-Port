@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.item;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +33,10 @@ public class BlueprintItem extends Item {
         if (customData != null) {
             CompoundTag tag = customData.copyTag();
             if (tag.contains("targetItem")) {
-                return BuiltInRegistries.ITEM.get(Identifier.parse(tag.getString("targetItem")));
+
+                return BuiltInRegistries.ITEM.get(Identifier.parse(tag.getStringOr("targetItem","")))
+                        .map(Holder::value)
+                        .orElse(null);
             }
         }
         return null;

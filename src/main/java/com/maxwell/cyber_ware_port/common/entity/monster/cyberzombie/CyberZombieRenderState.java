@@ -4,9 +4,8 @@ import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+
 public class CyberZombieRenderState extends ZombieRenderState {
-    public boolean isUnhalted;
 
     public CyberZombieRenderState() {
     }

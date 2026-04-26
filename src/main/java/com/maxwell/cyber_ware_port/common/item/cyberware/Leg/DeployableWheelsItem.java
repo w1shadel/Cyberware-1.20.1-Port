@@ -8,8 +8,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 
 public class DeployableWheelsItem extends CyberwareItem {
-    public DeployableWheelsItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_BOOTS)
+    public DeployableWheelsItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_BOOTS)
                 .maxInstall(1)
                 .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT)
                 .energy(2, 0, 0, StackingRule.LINEAR)

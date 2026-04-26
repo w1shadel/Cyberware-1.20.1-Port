@@ -8,8 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 public class FallBracersItem extends CyberwareItem {
-    public FallBracersItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_LEGS)
+    public FallBracersItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_LEGS)
                 .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT).maxInstall(1));
 
     }

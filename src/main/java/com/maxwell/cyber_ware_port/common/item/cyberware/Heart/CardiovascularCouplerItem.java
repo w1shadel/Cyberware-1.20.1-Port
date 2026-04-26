@@ -4,8 +4,8 @@ import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEnti
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 
 public class CardiovascularCouplerItem extends CyberwareItem {
-    public CardiovascularCouplerItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_HEART)
+    public CardiovascularCouplerItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .energy(0, 95, 0, StackingRule.STATIC));
 

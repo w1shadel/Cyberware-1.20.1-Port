@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 public class NeuropozyneItem extends Item {
     private static final int DURATION = 24000;
 
-    public NeuropozyneItem() {
-        super(new Item.Properties().stacksTo(16));
+    public NeuropozyneItem(Properties p) {
+        super(p);
     }
 
     @Override

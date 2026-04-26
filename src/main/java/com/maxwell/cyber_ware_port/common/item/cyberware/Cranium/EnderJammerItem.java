@@ -8,8 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
 public class EnderJammerItem extends CyberwareItem {
-    public EnderJammerItem() {
-        super(new Builder(10, RobosurgeonBlockEntity.SLOT_BRAIN)
+    public EnderJammerItem(Properties p) {
+        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
                 .energy(5, 0, 0, StackingRule.LINEAR)
                 .eventCost(200));

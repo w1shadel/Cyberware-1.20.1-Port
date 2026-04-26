@@ -4,8 +4,8 @@ import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEnti
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 
 public class TargetedImmunosuppressantItem extends CyberwareItem {
-    public TargetedImmunosuppressantItem() {
-        super(new Builder(-25, RobosurgeonBlockEntity.SLOT_SKIN)
+    public TargetedImmunosuppressantItem(Properties p) {
+        super(new Builder(p,-25, RobosurgeonBlockEntity.SLOT_SKIN)
                 .maxInstall(8)
                 .energy(3, 0, 0, StackingRule.LINEAR));
 

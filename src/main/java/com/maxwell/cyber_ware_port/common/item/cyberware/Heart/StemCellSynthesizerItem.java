@@ -8,8 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class StemCellSynthesizerItem extends CyberwareItem {
-    public StemCellSynthesizerItem() {
-        super(new Builder(10, RobosurgeonBlockEntity.SLOT_HEART)
+    public StemCellSynthesizerItem(Properties p) {
+        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .energy(50, 0, 0, StackingRule.STATIC));
     }

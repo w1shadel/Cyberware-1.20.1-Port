@@ -6,8 +6,8 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.item.ItemStack;
 
 public class HudjackItem extends CyberwareItem {
-    public HudjackItem() {
-        super(new Builder(1, RobosurgeonBlockEntity.SLOT_EYES)
+    public HudjackItem(Properties p) {
+        super(new Builder(p,1, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .requires(ModItems.CYBER_EYE)
         );

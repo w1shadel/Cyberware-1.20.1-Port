@@ -32,7 +32,7 @@ public class SurgeryChamberRenderer implements BlockEntityRenderer<SurgeryChambe
     }
 
     @Override
-    public void extractRenderState(SurgeryChamberBlockEntity blockEntity, SurgeryChamberRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+    public void extractRenderState(SurgeryChamberBlockEntity blockEntity, SurgeryChamberRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderState.extractBase(blockEntity, state, breakProgress);
         state.half = blockEntity.getBlockState().getValue(SurgeryChamberBlock.HALF);
         state.facing = blockEntity.getBlockState().getValue(SurgeryChamberBlock.FACING);

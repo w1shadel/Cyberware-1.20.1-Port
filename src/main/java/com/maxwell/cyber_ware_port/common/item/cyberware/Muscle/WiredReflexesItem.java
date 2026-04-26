@@ -12,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 public class WiredReflexesItem extends CyberwareItem {
-    public WiredReflexesItem() {
-        super(new Builder(10, RobosurgeonBlockEntity.SLOT_MUSCLE)
+    public WiredReflexesItem(Properties p) {
+        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_MUSCLE)
                 .maxInstall(3)
                 .energy(2, 0, 0, StackingRule.LINEAR)
                 .addAttribute(Attributes.ATTACK_SPEED,

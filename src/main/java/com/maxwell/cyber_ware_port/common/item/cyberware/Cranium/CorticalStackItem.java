@@ -12,15 +12,15 @@ import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 public class CorticalStackItem extends CyberwareItem {
-    public CorticalStackItem() {
-        super(new Builder(10, RobosurgeonBlockEntity.SLOT_BRAIN)
+    public CorticalStackItem(Properties p) {
+        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
                 .incompatible(ModItems.CONSCIOUSNESS_TRANSMITTER));
     }
 
     @Override
     public void onLivingDeath(LivingDeathEvent event, ItemStack stack, LivingEntity wearer) {
-        if (wearer instanceof Player player && !player.level().isClientSide) {
+        if (wearer instanceof Player player && !player.level().isClientSide()) {
             int totalXp = getTotalXp(player);
             if (totalXp > 0) {
                 ItemStack capsule = new ItemStack(ModItems.EXP_CAPSULE.get());

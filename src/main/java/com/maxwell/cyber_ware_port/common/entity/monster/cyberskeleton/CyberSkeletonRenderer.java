@@ -1,6 +1,8 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cyberskeleton;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonModel;
+import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonRenderState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -8,11 +10,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 
 @SuppressWarnings("removal")
-public class CyberSkeletonRenderer extends MobRenderer<CyberSkeletonEntity, CyberSkeletonRenderState, CyberSkeletonModel> {
+public class CyberSkeletonRenderer extends MobRenderer<CyberSkeletonEntity, CyberSkeletonRenderState, CyberSkeletonModel<CyberSkeletonRenderState>> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_skeleton.png");
 
     public CyberSkeletonRenderer(EntityRendererProvider.Context context) {
-        super(context, new CyberSkeletonModel(context.bakeLayer(CyberSkeletonModel.LAYER_LOCATION)), 0.5F);
+        super(context, new CyberSkeletonModel<>(context.bakeLayer(CyberSkeletonModel.LAYER_LOCATION)), 0.5F);
     }
 
     @Override

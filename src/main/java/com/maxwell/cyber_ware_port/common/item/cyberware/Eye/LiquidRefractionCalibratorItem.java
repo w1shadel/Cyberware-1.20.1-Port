@@ -6,8 +6,8 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.item.ItemStack;
 
 public class LiquidRefractionCalibratorItem extends CyberwareItem {
-    public LiquidRefractionCalibratorItem() {
-        super(new Builder(2, RobosurgeonBlockEntity.SLOT_EYES)
+    public LiquidRefractionCalibratorItem(Properties p) {
+        super(new Builder(p,2, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .requires(ModItems.CYBER_EYE)
         );

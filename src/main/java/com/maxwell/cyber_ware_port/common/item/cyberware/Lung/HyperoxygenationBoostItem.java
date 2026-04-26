@@ -10,8 +10,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class HyperoxygenationBoostItem extends CyberwareItem {
-    public HyperoxygenationBoostItem() {
-        super(new Builder(4, RobosurgeonBlockEntity.SLOT_LUNGS)
+    public HyperoxygenationBoostItem(Properties p) {
+        super(new Builder(p,4, RobosurgeonBlockEntity.SLOT_LUNGS)
                 .maxInstall(3)
                 .energy(2, 0, 0, StackingRule.LINEAR));
     }

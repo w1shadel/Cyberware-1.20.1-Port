@@ -22,7 +22,7 @@ public class ClientPacketHandler {
         maxProgress = 100;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static void handleSyncPacket(SyncCyberwareDataPacket msg, IPayloadContext ctx) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
@@ -31,7 +31,7 @@ public class ClientPacketHandler {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    
     public static void handleProgressPacket(SyncSurgeryProgressPacket msg, IPayloadContext ctx) {
         update(msg.progress(), msg.maxProgress());
     }

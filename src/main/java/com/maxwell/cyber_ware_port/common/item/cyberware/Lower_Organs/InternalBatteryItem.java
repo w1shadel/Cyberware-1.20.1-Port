@@ -4,8 +4,8 @@ import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEnti
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 
 public class InternalBatteryItem extends CyberwareItem {
-    public InternalBatteryItem() {
-        super(new Builder(2, RobosurgeonBlockEntity.SLOT_STOMACH)
+    public InternalBatteryItem(Properties p) {
+        super(new Builder(p,2, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(4)
                 .energy(0, 0, 3000, StackingRule.LINEAR));
 

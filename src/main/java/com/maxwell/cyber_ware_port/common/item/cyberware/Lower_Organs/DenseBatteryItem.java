@@ -5,8 +5,8 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import net.minecraft.world.item.Rarity;
 
 public class DenseBatteryItem extends CyberwareItem {
-    public DenseBatteryItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH)
+    public DenseBatteryItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(1)
                 .energy(0, 0, 60000, StackingRule.STATIC)
                 .rarity(Rarity.RARE));

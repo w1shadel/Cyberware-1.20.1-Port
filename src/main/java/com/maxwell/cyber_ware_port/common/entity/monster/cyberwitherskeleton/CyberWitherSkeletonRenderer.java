@@ -8,12 +8,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 
 @SuppressWarnings("removal")
-public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity, CyberWitherSkeletonRenderState, CyberWitherSkeletonModel> {
+public class CyberWitherSkeletonRenderer extends MobRenderer<CyberWitherSkeletonEntity, CyberWitherSkeletonRenderState, CyberWitherSkeletonModel<CyberWitherSkeletonRenderState>> {
     private static final Identifier NORMAL_TEXTURE =
             Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
 
     public CyberWitherSkeletonRenderer(EntityRendererProvider.Context pContext) {
-        super(pContext, new CyberWitherSkeletonModel(pContext.bakeLayer(CyberWitherSkeletonModel.LAYER_LOCATION)), 0.5F);
+        super(pContext, new CyberWitherSkeletonModel<>(pContext.bakeLayer(CyberWitherSkeletonModel.LAYER_LOCATION)), 0.5F);
     }
 
     @Override

@@ -7,8 +7,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 public class CitrateEnhancementItem extends CyberwareItem {
-    public CitrateEnhancementItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_BONES)
+    public CitrateEnhancementItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_BONES)
                 .maxInstall(1));
     }
 

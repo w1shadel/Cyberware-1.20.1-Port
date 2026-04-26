@@ -27,7 +27,9 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    maven {
+        url "https://cursemaven.com"
+    }
 }
 
 base {
@@ -113,7 +115,7 @@ configurations {
 }
 
 dependencies {
-    implementation "curse.maven:jei-238222:7920926"
+    compileOnly "curse.maven:jei-238222:7920926"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

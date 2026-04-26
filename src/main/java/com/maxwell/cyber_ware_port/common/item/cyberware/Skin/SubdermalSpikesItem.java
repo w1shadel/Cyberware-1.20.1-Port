@@ -7,8 +7,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 public class SubdermalSpikesItem extends CyberwareItem {
-    public SubdermalSpikesItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_SKIN).maxInstall(1));
+    public SubdermalSpikesItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_SKIN).maxInstall(1));
     }
 
     @Override

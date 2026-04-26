@@ -14,8 +14,7 @@ public class ComponentBoxScreen extends AbstractContainerScreen<ComponentBoxMenu
             Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box_normal.png");
 
     public ComponentBoxScreen(ComponentBoxMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        this.imageHeight = 150;
+        super(menu, inventory, title, 176, 150);
         this.inventoryLabelY = this.imageHeight - 94;
     }
 

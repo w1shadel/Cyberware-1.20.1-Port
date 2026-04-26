@@ -15,8 +15,8 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class InternalDefibrillatorItem extends CyberwareItem {
-    public InternalDefibrillatorItem() {
-        super(new Builder(10, RobosurgeonBlockEntity.SLOT_HEART)
+    public InternalDefibrillatorItem(Properties p) {
+        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .requires(ModItems.CARDIOMECHANIC_PUMP)
                 .energy(0, 0, 0, StackingRule.STATIC)

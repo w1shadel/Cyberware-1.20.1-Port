@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+
 public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperRenderState, CyberCreeperModel> {
     private static final Identifier POWER_LOCATION = Identifier.withDefaultNamespace("textures/entity/creeper/creeper_armor.png");
     private final CyberCreeperModel model;

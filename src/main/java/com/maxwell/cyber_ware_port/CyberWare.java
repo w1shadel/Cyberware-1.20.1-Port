@@ -21,8 +21,8 @@ public class CyberWare {
 
     public CyberWare(IEventBus modEventBus, ModContainer modContainer) {
         ModDataComponents.register(modEventBus);
-        ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModItems.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
         ModRecipes.register(modEventBus);

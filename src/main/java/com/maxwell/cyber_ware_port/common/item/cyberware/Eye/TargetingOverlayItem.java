@@ -14,8 +14,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.List;
 
 public class TargetingOverlayItem extends CyberwareItem {
-    public TargetingOverlayItem() {
-        super(new Builder(3, RobosurgeonBlockEntity.SLOT_EYES)
+    public TargetingOverlayItem(Properties p) {
+        super(new Builder(p,3, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .energy(1, 0, 0, StackingRule.STATIC)
                 .requires(ModItems.CYBER_EYE)
@@ -34,7 +34,7 @@ public class TargetingOverlayItem extends CyberwareItem {
 
     @Override
     public void onPlayerTick(PlayerTickEvent.Post event, ItemStack stack, LivingEntity wearer) {
-        if (!isActive(stack) || wearer.level().isClientSide) return;
+        if (!isActive(stack) || wearer.level().isClientSide()) return;
         if (wearer instanceof Player player) {
             double range = 32.0;
             AABB area = player.getBoundingBox().inflate(range);

@@ -7,8 +7,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class AquaticPropulsionSystemItem extends CyberwareItem {
-    public AquaticPropulsionSystemItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_BOOTS)
+    public AquaticPropulsionSystemItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_BOOTS)
                 .maxInstall(1)
                 .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT)
                 .energy(1, 0, 0, StackingRule.LINEAR)

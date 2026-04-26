@@ -6,9 +6,9 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class CyberLegItem extends CyberwareItem {
-    public CyberLegItem(int slotId, DeferredHolder<Item, CyberwareItem> incompatibleHumanPart,
+    public CyberLegItem(Properties p,int slotId, DeferredHolder<Item, CyberwareItem> incompatibleHumanPart,
                         BodyPartType bodyPartType) {
-        super(new Builder(7, slotId)
+        super(new Builder(p,7, slotId)
                 .maxInstall(1)
                 .incompatible(incompatibleHumanPart)
                 .bodyPart(bodyPartType)

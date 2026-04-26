@@ -1,9 +1,11 @@
 package com.maxwell.cyber_ware_port.common.block.radio.tower;
 
+import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
@@ -53,22 +55,26 @@ public class RadioTowerFenceBlock extends FenceBlock {
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pLevel.isClientSide() && pState.getValue(FORMED) && !pState.is(pNewState.getBlock())) {
-            BlockPos.MutableBlockPos searchPos = new BlockPos.MutableBlockPos();
-            for (int y = 1; y <= MAX_SEARCH_HEIGHT; y++) {
-                for (int x = -1; x <= 1; x++) {
-                    for (int z = -1; z <= 1; z++) {
-                        searchPos.set(pPos.getX() + x, pPos.getY() + y, pPos.getZ() + z);
-                        BlockEntity be = pLevel.getBlockEntity(searchPos);
-                        if (be instanceof RadioTowerCoreBlockEntity core) {
-                            core.deformStructure();
+    public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
+        if (level instanceof Level pLevel && !pLevel.isClientSide()) {
+            if (!oldState.is(newState.getBlock())) {
+                if (oldState.hasProperty(FORMED) && oldState.getValue(FORMED)) {
+                    BlockPos.MutableBlockPos searchPos = new BlockPos.MutableBlockPos();
+                    for (int y = 1; y <= MAX_SEARCH_HEIGHT; y++) {
+                        for (int x = -1; x <= 1; x++) {
+                            for (int z = -1; z <= 1; z++) {
+                                searchPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+                                BlockEntity be = pLevel.getBlockEntity(searchPos);
+
+                                if (be instanceof RadioTowerCoreBlockEntity core) {
+                                    core.deformStructure();
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-
+        super.onBlockStateChange(level, pos, oldState, newState);
     }
 }

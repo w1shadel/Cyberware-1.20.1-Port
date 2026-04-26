@@ -173,7 +173,7 @@ public class CyberwareItem extends Item implements ICyberware {
     }
 
     public static class Builder {
-        private final Properties properties = new Properties();
+        private final Properties properties;
         private final int essenceCost;
         private final int slotId;
         private final Set<Supplier<? extends Item>> prerequisites = new HashSet<>();
@@ -189,7 +189,8 @@ public class CyberwareItem extends Item implements ICyberware {
         private StackingRule stackingRule = StackingRule.LINEAR;
         private BodyPartType bodyPartType = BodyPartType.NONE;
 
-        public Builder(int essenceCost, int slotId) {
+        public Builder(Properties properties, int essenceCost, int slotId) {
+            this.properties = properties;
             this.essenceCost = essenceCost;
             this.slotId = slotId;
         }

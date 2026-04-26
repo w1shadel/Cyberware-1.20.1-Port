@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class CybereyesItem extends CyberwareItem {
-    public CybereyesItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_EYES)
+    public CybereyesItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .bodyPart(BodyPartType.EYES)
                 .incompatible(ModItems.HUMAN_EYES)

@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 
 public class RapidFireFlywheelItem extends CyberwareItem {
-    public RapidFireFlywheelItem() {
-        super(new Builder(8, RobosurgeonBlockEntity.SLOT_ARMS).maxInstall(1));
+    public RapidFireFlywheelItem(Properties properties) {
+        super(new Builder(properties,8, RobosurgeonBlockEntity.SLOT_ARMS).maxInstall(1));
     }
 
     @Override

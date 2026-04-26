@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 public class LiverFilterItem extends CyberwareItem {
-    public LiverFilterItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_STOMACH).maxInstall(1));
+    public LiverFilterItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH).maxInstall(1));
     }
 
     @Override

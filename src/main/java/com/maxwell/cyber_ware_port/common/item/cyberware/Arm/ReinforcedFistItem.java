@@ -8,8 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class ReinforcedFistItem extends CyberwareItem {
-    public ReinforcedFistItem() {
-        super(new Builder(5, RobosurgeonBlockEntity.SLOT_HANDS).requires(ModItems.CYBER_ARM_LEFT, ModItems.CYBER_ARM_RIGHT).maxInstall(1));
+    public ReinforcedFistItem(Properties p) {
+        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_HANDS).requires(ModItems.CYBER_ARM_LEFT, ModItems.CYBER_ARM_RIGHT).maxInstall(1));
 
     }
 

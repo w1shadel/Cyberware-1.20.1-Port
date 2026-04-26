@@ -72,7 +72,7 @@ public class ModClientEvents {
         event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION, CyberWitherSkeletonModel::createBodyLayer);
         event.registerLayerDefinition(CyberSkeletonModel.LAYER_LOCATION, CyberSkeletonModel::createBodyLayer);
         event.registerLayerDefinition(SkeletonDisplayModel.LAYER_LOCATION, SkeletonDisplayModel::createBodyLayer);
-        event.registerLayerDefinition(CyberZombieModel.LAYER_LOCATION, CyberZombieModel::createBodyLayer);
+        event.registerLayerDefinition(CyberZombieRenderer.CYBER_ZOMBIE_LAYER, CyberZombieModel::createBodyLayer);
         event.registerLayerDefinition(CyberCreeperModel.LAYER_LOCATION, CyberCreeperModel::createBodyLayer);
         event.registerLayerDefinition(CyberWitherModel.LAYER_LOCATION, CyberWitherModel::createBodyLayer);
         event.registerLayerDefinition(CYBER_SKULL_LAYER, SkullModel::createMobHeadLayer);
