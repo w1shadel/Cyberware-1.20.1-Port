@@ -9,12 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import java.util.List;
 import java.util.Map;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = CyberWare.MODID)
 public class MobSpawnerEvents {
     private static final double RADIO_KIT_BOOST = 0.3;
     private static final double RADIO_TOWER_BOOST = 0.15;
@@ -34,7 +34,7 @@ public class MobSpawnerEvents {
         if (!(event.getLevel() instanceof ServerLevel level) || event.loadedFromDisk()) {
             return;
         }
-        if (!level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
+        if (!level.getGameRules().get(GameRules.SPAWN_MOBS)) {
             return;
         }
         Entity entity = event.getEntity();
@@ -85,12 +85,11 @@ public class MobSpawnerEvents {
 
     private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType, double chance) {
         if (level.getRandom().nextFloat() < chance) {
-            Entity spawned = newType.create(level);
+            Entity spawned = newType.create(level, EntitySpawnReason.CONVERSION);
             if (spawned instanceof Mob customMob) {
-                customMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), original.getXRot());
                 customMob.yBodyRot = original.yBodyRot;
                 customMob.yHeadRot = original.yHeadRot;
-                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), MobSpawnType.CONVERSION, null);
+                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), EntitySpawnReason.CONVERSION, null);
                 level.addFreshEntity(customMob);
                 event.setCanceled(true);
             }

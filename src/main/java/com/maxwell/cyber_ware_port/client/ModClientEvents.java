@@ -29,23 +29,18 @@ import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.Cyb
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonRenderer;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie.CyberZombieModel;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberzombie.CyberZombieRenderer;
-import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.CyberSkullType;
-import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
-import com.maxwell.cyber_ware_port.init.*;
+import com.maxwell.cyber_ware_port.init.ModBlockEntities;
+import com.maxwell.cyber_ware_port.init.ModEntities;
+import com.maxwell.cyber_ware_port.init.ModMenuTypes;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.object.skull.SkullModel;
-import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.PlayerSkin;
-import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class ModClientEvents {
@@ -95,7 +90,6 @@ public class ModClientEvents {
         );
     }
 
-
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.ROBO_SURGEON_MENU.get(), RobosurgeonScreen::new);
@@ -105,10 +99,8 @@ public class ModClientEvents {
         event.register(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), BlueprintChestScreen::new);
     }
 
-
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
-        // 1.21.2仕様: PlayerModelType をループして AvatarRenderer を取得
         for (net.minecraft.world.entity.player.PlayerModelType skinModel : event.getSkins()) {
             var renderer = event.getPlayerRenderer(skinModel);
             if (renderer != null) {

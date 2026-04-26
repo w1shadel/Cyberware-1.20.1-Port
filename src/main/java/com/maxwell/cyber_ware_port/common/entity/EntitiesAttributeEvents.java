@@ -4,18 +4,18 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
 import com.maxwell.cyber_ware_port.init.ModEntities;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CyberWare.MODID)
 public class EntitiesAttributeEvents {
     @SubscribeEvent
     public static void entityAttributeEvent(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.CYBER_ZOMBIE.get(), Monster.createMonsterAttributes()
+        event.put(ModEntities.CYBER_ZOMBIE.get(), Zombie.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 30.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)

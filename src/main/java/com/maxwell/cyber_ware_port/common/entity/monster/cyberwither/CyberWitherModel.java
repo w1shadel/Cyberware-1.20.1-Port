@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cyberwither;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -9,7 +9,7 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
-public class CyberWitherModel extends HierarchicalModel<CyberWitherBoss> {
+public class CyberWitherModel extends EntityModel<CyberWitherRenderState> {
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_wither"), "main");
     private final ModelPart root;
@@ -20,6 +20,7 @@ public class CyberWitherModel extends HierarchicalModel<CyberWitherBoss> {
     private final ModelPart tail;
 
     public CyberWitherModel(ModelPart pRoot) {
+        super(pRoot);
         this.root = pRoot;
         this.ribcage = pRoot.getChild("ribcage");
         this.tail = pRoot.getChild("tail");
@@ -42,29 +43,26 @@ public class CyberWitherModel extends HierarchicalModel<CyberWitherBoss> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
+    private static void setupHeadRotation(CyberWitherRenderState state, ModelPart head, int headIndex) {
+        head.yRot = (state.yHeadRots[headIndex] - state.bodyRot) * ((float) Math.PI / 180F);
+        head.xRot = state.xHeadRots[headIndex] * ((float) Math.PI / 180F);
+    }
+
     private void setupHeadRotation(CyberWitherBoss pWither, ModelPart pPart, int pHead) {
         pPart.yRot = (pWither.getHeadYRot(pHead) - pWither.yBodyRot) * ((float) Math.PI / 180F);
         pPart.xRot = pWither.getHeadXRot(pHead) * ((float) Math.PI / 180F);
     }
 
     @Override
-    public ModelPart root() {
-        return this.root;
-    }
-
-    @Override
-    public void setupAnim(CyberWitherBoss pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        float f = Mth.cos(pAgeInTicks * 0.1F);
+    public void setupAnim(CyberWitherRenderState state) {
+        setupHeadRotation(state, this.rightHead, 0);
+        setupHeadRotation(state, this.leftHead, 1);
+        float f = Mth.cos(state.ageInTicks * 0.1F);
         this.ribcage.xRot = (0.065F + 0.05F * f) * (float) Math.PI;
         this.tail.setPos(-2.0F, 6.9F + Mth.cos(this.ribcage.xRot) * 10.0F, -0.5F + Mth.sin(this.ribcage.xRot) * 10.0F);
         this.tail.xRot = (0.265F + 0.1F * f) * (float) Math.PI;
-        this.centerHead.yRot = pNetHeadYaw * ((float) Math.PI / 180F);
-        this.centerHead.xRot = pHeadPitch * ((float) Math.PI / 180F);
+        this.centerHead.yRot = state.yRot * ((float) Math.PI / 180F);
+        this.centerHead.xRot = state.xRot * ((float) Math.PI / 180F);
     }
 
-    @Override
-    public void prepareMobModel(CyberWitherBoss pEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick) {
-        this.setupHeadRotation(pEntity, this.rightHead, 1);
-        this.setupHeadRotation(pEntity, this.leftHead, 2);
-    }
 }

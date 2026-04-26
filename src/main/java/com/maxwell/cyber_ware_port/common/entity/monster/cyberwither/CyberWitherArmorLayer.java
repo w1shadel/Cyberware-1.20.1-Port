@@ -1,37 +1,35 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cyberwither;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EnergySwirlLayer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
-public class CyberWitherArmorLayer extends EnergySwirlLayer<CyberWitherBoss, CyberWitherModel> {
-    private static final Identifier WITHER_ARMOR_LOCATION = Identifier.withDefaultNamespace("textures/entity/wither/wither_armor.png");
+public class CyberWitherArmorLayer extends EnergySwirlLayer<CyberWitherRenderState, CyberWitherModel> {
+    private static final Identifier POWER_LOCATION = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/wither_armor.png");
     private final CyberWitherModel model;
 
-    public CyberWitherArmorLayer(RenderLayerParent<CyberWitherBoss, CyberWitherModel> pRenderer, EntityModelSet pModelSet) {
-        super(pRenderer);
-        this.model = new CyberWitherModel(pModelSet.bakeLayer(ModelLayers.WITHER_ARMOR));
+    public CyberWitherArmorLayer(RenderLayerParent<CyberWitherRenderState, CyberWitherModel> renderer, EntityModelSet modelSet) {
+        super(renderer);
+        this.model = new CyberWitherModel(modelSet.bakeLayer(ModelLayers.CREEPER_ARMOR));
     }
 
-    @Override
-    protected float xOffset(float pTickCount) {
-        return Mth.cos(pTickCount * 0.02F) * 3.0F;
+    protected boolean isPowered(CyberWitherRenderState state) {
+        return state.isPowered;
     }
 
-    @Override
+    protected float xOffset(float t) {
+        return t * 0.01F;
+    }
+
     protected Identifier getTextureLocation() {
-        return WITHER_ARMOR_LOCATION;
+        return POWER_LOCATION;
     }
 
-    @Override
-    protected EntityModel<CyberWitherBoss> model() {
+    protected CyberWitherModel model() {
         return this.model;
-
     }
 }

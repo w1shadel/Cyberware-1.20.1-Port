@@ -9,7 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = CyberWare.MODID)
 public class CyberwareAttributeHandler {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {

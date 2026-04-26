@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -26,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements EntityBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
     public static final MapCodec<RadioTowerCoreBlock> CODEC = simpleCodec(RadioTowerCoreBlock::new);
     public static final Map<ResourceKey<Level>, Long> LAST_TOWER_ACTIVE_TIME = new ConcurrentHashMap<>();
@@ -110,7 +111,7 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
     @Override
     public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
         super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             BlockEntity be = pLevel.getBlockEntity(pPos);
             if (be instanceof RadioTowerCoreBlockEntity core) {
                 core.tryToFormStructure();
@@ -119,16 +120,12 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            if (!pLevel.isClientSide && pState.getValue(FORMED)) {
-                BlockEntity be = pLevel.getBlockEntity(pPos);
-                if (be instanceof RadioTowerCoreBlockEntity core) {
-                    core.deformFencesOnly();
-                }
-            }
+    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof RadioTowerCoreBlockEntity tile) {
+            tile.deformFencesOnly();
         }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        super.destroy(level, pos, state);
     }
 
     @Override
@@ -146,7 +143,7 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
                                                                   BlockEntityType<T> pBlockEntityType) {
-        if (pLevel.isClientSide)
+        if (pLevel.isClientSide())
             return null;
         if (pBlockEntityType == ModBlockEntities.RADIO_TOWER_CORE.get()) {
             return (lvl, pos, st, be) -> {

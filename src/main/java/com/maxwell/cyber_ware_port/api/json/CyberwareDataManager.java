@@ -4,11 +4,13 @@ import com.google.gson.*;
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.BodyRegionEnum;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -22,19 +24,23 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public CyberwareDataManager() {
-        super(GSON, "cyberware");
+        super(ExtraCodecs.JSON, FileToIdConverter.json("cyberware"));
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    @SuppressWarnings("unchecked")
+    protected void apply(Object o, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         DYNAMIC_CYBERWARE.clear();
-        pObject.forEach((location, element) -> {
+        Map<Identifier, JsonElement> prepared = (Map<Identifier, JsonElement>) o;
+        prepared.forEach((location, element) -> {
             try {
                 JsonObject json = element.getAsJsonObject();
                 if (!json.has("item")) return;
                 Identifier itemId = Identifier.parse(json.get("item").getAsString());
-                Item item = BuiltInRegistries.ITEM.get(itemId);
-                if (item != null && item != BuiltInRegistries.ITEM.get(BuiltInRegistries.ITEM.getDefaultKey())) {
+                Item item = BuiltInRegistries.ITEM.get(itemId)
+                        .map(Holder.Reference::value)
+                        .orElse(null);
+                if (item != null) {
                     if (!json.has("slot")) return;
                     CyberwareData data = new CyberwareData();
                     String slotStr = json.get("slot").getAsString().toUpperCase();
@@ -46,21 +52,25 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                         for (JsonElement attrElement : attrs) {
                             JsonObject attrObj = attrElement.getAsJsonObject();
                             Identifier attrId = Identifier.parse(attrObj.get("attribute").getAsString());
-                            Attribute attr = BuiltInRegistries.ATTRIBUTE.get(attrId);
+                            Attribute attr = BuiltInRegistries.ATTRIBUTE.get(attrId)
+                                    .map(Holder.Reference::value)
+                                    .orElse(null);
                             if (attr != null) {
                                 double amount = attrObj.get("amount").getAsDouble();
                                 AttributeModifier.Operation op = AttributeModifier.Operation.valueOf(attrObj.get("operation").getAsString().toUpperCase());
                                 Identifier modId = Identifier.fromNamespaceAndPath(CyberWare.MODID, "dynamic_" + location.getPath().replace("/", "_"));
-                                data.attributeModifiers.put(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attr), new AttributeModifier(modId, amount, op));
+                                data.attributeModifiers.put(
+                                        BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attr),
+                                        new AttributeModifier(modId, amount, op)
+                                );
                             }
                         }
                     }
                     if (json.has("incompatible")) {
                         for (JsonElement e : json.getAsJsonArray("incompatible")) {
-                            Item incomp = BuiltInRegistries.ITEM.get(Identifier.parse(e.getAsString()));
-                            if (incomp != BuiltInRegistries.ITEM.get(BuiltInRegistries.ITEM.getDefaultKey())) {
-                                data.incompatibleItems.add(incomp);
-                            }
+                            BuiltInRegistries.ITEM.get(Identifier.parse(e.getAsString()))
+                                    .map(Holder.Reference::value)
+                                    .ifPresent(data.incompatibleItems::add);
                         }
                     }
                     if (json.has("stacking")) {

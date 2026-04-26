@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -60,7 +61,7 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
 
     @Override
     public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.MODEL;
     }
 
     @Override
@@ -101,7 +102,7 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
                 throw new IllegalStateException("Our Container provider is missing!");
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
@@ -111,13 +112,11 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof CyberwareWorkbenchBlockEntity workbench) {
-                workbench.drops();
-            }
+    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof CyberwareWorkbenchBlockEntity tile) {
+            tile.drops();
         }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        super.destroy(level, pos, state);
     }
 }

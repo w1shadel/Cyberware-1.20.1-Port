@@ -1,24 +1,22 @@
 package com.maxwell.cyber_ware_port.common.block.cwb;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("removal")
-public class CyberWareWorkBenchModel extends Model {
+public class CyberWareWorkBenchModel extends Model.Simple {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyberwareworkbenchmodel"), "main");
     private final ModelPart root;
     private final ModelPart hammer;
 
     public CyberWareWorkBenchModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutout);
         this.root = root.getChild("root");
         this.hammer = this.root.getChild("hammer");
 
@@ -56,10 +54,5 @@ public class CyberWareWorkBenchModel extends Model {
         }
         this.hammer.y = initialY + currentOffset;
 
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
-        root.render(poseStack, vertexConsumer, i, i1, i2);
     }
 }

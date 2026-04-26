@@ -15,9 +15,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -30,17 +33,40 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergyStorage {
+public class CyberwareUserData extends SnapshotJournal<Integer> implements EnergyHandler, ValueIOSerializable {
+    public static final StreamCodec<RegistryFriendlyByteBuf, CyberwareUserData> STREAM_CODEC = StreamCodec.of(
+            (buf, data) -> {
+                TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, buf.registryAccess());
+                data.serialize(output);
+                buf.writeNbt(output.buildResult());
+            },
+            buf -> {
+                CompoundTag tag = buf.readNbt();
+                CyberwareUserData data = new CyberwareUserData();
+                if (tag != null) {
+                    var input = TagValueInput.create(ProblemReporter.DISCARDING, buf.registryAccess(), tag);
+                    data.deserialize(input);
+                }
+                return data;
+            }
+    );
     public boolean hasCyberLeftArm = false;
     public boolean hasCyberRightArm = false;
     public boolean hasCyberLeftLeg = false;
@@ -56,19 +82,23 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     private int lastProduction = 0;
     private int lastConsumption = 0;
 
+    public CyberwareUserData() {
+        super();
+        this.currentEnergy = 0;
+    }
+
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
+        ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, provider, tag);
+        this.deserialize(input);
+    }
+
     public void applyImmunity(int ticks) {
         this.toleranceImmunityTime = Math.max(this.toleranceImmunityTime, ticks);
     }
 
     public boolean hasCyberLeftArm() {
         return this.hasCyberLeftArm;
-    }    private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            updateBodyStatus();
-            needsCapacityUpdate = true;
-        }
-    };
+    }
 
     public boolean hasCyberRightArm() {
         return this.hasCyberRightArm;
@@ -88,7 +118,13 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     public int getLastConsumption() {
         return this.lastConsumption;
-    }
+    }    private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            updateBodyStatus();
+            needsCapacityUpdate = true;
+        }
+    };
 
     public int getMaxTolerance(LivingEntity entity) {
         CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
@@ -190,7 +226,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, 1, false, false));
         if (status.getLegCount() == 0) {
             player.setForcedPose(Pose.SWIMMING);
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 2, false, false));
         } else player.setForcedPose(null);
     }
 
@@ -211,8 +247,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
             if (player.tickCount % 100 == 0) {
                 player.setHealth(player.getHealth() - 2.0f);
             }
-            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0, false, false));
-            player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 60, 1, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 1, false, false));
             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false));
             if (player.getRandom().nextFloat() < 0.01f && !player.getMainHandItem().isEmpty()) {
                 ItemStack stackToDrop = player.getMainHandItem().copy();
@@ -223,8 +259,8 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     }
 
     private void processPowerTick(ServerPlayer player) {
-        if (maxEnergy <= 0) {
-            lastProduction = lastConsumption = 0;
+        if (this.maxEnergy <= 0) {
+            this.lastProduction = this.lastConsumption = 0;
             return;
         }
         int prod = 0, cons = 0;
@@ -238,17 +274,23 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
                 cons += rule.calculate(cw.getEnergyConsumption(stack), count);
             }
         }
-        lastProduction = prod;
-        lastConsumption = cons;
-        receiveEnergy(prod, false);
-        boolean currentlyPowered = currentEnergy >= cons;
-        if (cons > 0) {
-            if (currentlyPowered) extractEnergy(cons, false);
-            else currentEnergy = 0;
-        }
-        if (isPowered != currentlyPowered) {
-            isPowered = currentlyPowered;
-            recalculateCapacity(player);
+        this.lastProduction = prod;
+        this.lastConsumption = cons;
+        try (Transaction tx = Transaction.openRoot()) {
+            this.insert(prod, tx);
+            boolean currentlyPowered = (this.getAmountAsLong() >= cons);
+            if (cons > 0) {
+                if (currentlyPowered) {
+                    this.extract(cons, tx);
+                } else {
+                    this.extract(this.getAmountAsInt(), tx);
+                }
+            }
+            if (this.isPowered != currentlyPowered) {
+                this.isPowered = currentlyPowered;
+                recalculateCapacity(player);
+            }
+            tx.commit();
         }
         syncToClient(player);
     }
@@ -267,8 +309,11 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
 
     public void syncToClient(ServerPlayer player) {
         if (player == null) return;
-        CompoundTag tag = this.serializeNBT(player.registryAccess());
-        tag.putInt("MaxTolerance", getTolerance(player) + (maxTolerance - getTolerance(player)));
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.registryAccess());
+        this.serialize(output);
+        CompoundTag tag = output.buildResult();
+        int effectiveMax = getTolerance(player) + (maxTolerance - getTolerance(player));
+        tag.putInt("MaxTolerance", effectiveMax);
         PacketDistributor.sendToPlayer(player, new SyncCyberwareDataPacket(tag));
     }
 
@@ -335,40 +380,6 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         this.isInitialized = other.isInitialized;
     }
 
-    @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
-        int received = Math.min(maxEnergy - currentEnergy, maxReceive);
-        if (!simulate) currentEnergy += received;
-        return received;
-    }
-
-    @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        int extracted = Math.min(currentEnergy, maxExtract);
-        if (!simulate) currentEnergy -= extracted;
-        return extracted;
-    }
-
-    @Override
-    public int getEnergyStored() {
-        return currentEnergy;
-    }
-
-    @Override
-    public int getMaxEnergyStored() {
-        return maxEnergy;
-    }
-
-    @Override
-    public boolean canExtract() {
-        return maxEnergy > 0;
-    }
-
-    @Override
-    public boolean canReceive() {
-        return maxEnergy > 0;
-    }
-
     public boolean isInitialized() {
         return isInitialized;
     }
@@ -388,32 +399,80 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        tag.put("InstalledCyberware", installedCyberware.serializeNBT(provider));
-        tag.putInt("MaxTolerance", maxTolerance);
-        tag.putBoolean("IsInitialized", isInitialized);
-        tag.putInt("ImmunityTime", toleranceImmunityTime);
-        tag.putInt("MaxEnergy", maxEnergy);
-        tag.putInt("CurrentEnergy", currentEnergy);
-        tag.putInt("LastProd", lastProduction);
-        tag.putInt("LastCons", lastConsumption);
-        return tag;
+    public void serialize(ValueOutput output) {
+        this.installedCyberware.serialize(output);
+        output.putInt("MaxTolerance", maxTolerance);
+        output.putBoolean("IsInitialized", isInitialized);
+        output.putInt("ImmunityTime", toleranceImmunityTime);
+        output.putInt("MaxEnergy", maxEnergy);
+        output.putInt("CurrentEnergy", currentEnergy);
+        output.putInt("LastProd", lastProduction);
+        output.putInt("LastCons", lastConsumption);
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        if (nbt.contains("InstalledCyberware"))
-            installedCyberware.deserializeNBT(provider, nbt.getCompound("InstalledCyberware"));
-        this.maxTolerance = nbt.contains("MaxTolerance") ? nbt.getInt("MaxTolerance") : CyberwareConfig.MAX_TOLERANCE.get();
-        isInitialized = nbt.getBoolean("IsInitialized");
-        maxEnergy = nbt.getInt("MaxEnergy");
-        currentEnergy = nbt.getInt("CurrentEnergy");
-        lastProduction = nbt.getInt("LastProd");
-        lastConsumption = nbt.getInt("LastCons");
-        toleranceImmunityTime = nbt.getInt("ImmunityTime");
+    public void deserialize(ValueInput input) {
+        this.installedCyberware.deserialize(input);
+        this.maxTolerance = input.getIntOr("MaxTolerance", 100);
+        this.isInitialized = input.getBooleanOr("IsInitialized", false);
+        this.toleranceImmunityTime = input.getIntOr("ImmunityTime", 0);
+        this.maxEnergy = input.getIntOr("MaxEnergy", 0);
+        this.currentEnergy = input.getIntOr("CurrentEnergy", 0);
+        this.lastProduction = input.getIntOr("LastProd", 0);
+        this.lastConsumption = input.getIntOr("LastCons", 0);
         updateBodyStatus();
     }
+
+    @Override
+    public long getAmountAsLong() {
+        return (long) this.currentEnergy;
+    }
+
+    @Override
+    public long getCapacityAsLong() {
+        return (long) this.maxEnergy;
+    }
+
+    @Override
+    public int insert(int amount, TransactionContext transaction) {
+        if (amount <= 0) return 0;
+        int inserted = Math.min(amount, this.maxEnergy - this.currentEnergy);
+        if (inserted > 0) {
+            this.updateSnapshots(transaction);
+            this.currentEnergy += inserted;
+        }
+        return inserted;
+    }
+
+    @Override
+    public int extract(int amount, TransactionContext transaction) {
+        if (amount <= 0) return 0;
+        int extracted = Math.min(this.currentEnergy, amount);
+        if (extracted > 0) {
+            this.updateSnapshots(transaction);
+            this.currentEnergy -= extracted;
+        }
+        return extracted;
+    }
+
+    @Override
+    protected Integer createSnapshot() {
+        return this.currentEnergy;
+    }
+
+    @Override
+    protected void revertToSnapshot(Integer snapshot) {
+        this.currentEnergy = snapshot;
+    }
+
+    public int getEnergyStored() {
+        return currentEnergy;
+    }
+
+    public int getMaxEnergyStored() {
+        return maxEnergy;
+    }
+
 
 
 }

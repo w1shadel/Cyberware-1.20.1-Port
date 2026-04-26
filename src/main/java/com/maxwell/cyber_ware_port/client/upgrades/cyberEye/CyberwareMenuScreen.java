@@ -9,8 +9,6 @@ import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.ToggleCyberwarePacket;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,17 +16,13 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +105,7 @@ public class CyberwareMenuScreen extends Screen {
     }
 
     private void updateKey(KeyMapping keyMapping) {
-       Window window = Minecraft.getInstance().getWindow();
+        Window window = Minecraft.getInstance().getWindow();
         InputConstants.Key key = keyMapping.getKey();
         boolean isDown = InputConstants.isKeyDown(window, key.getValue());
         keyMapping.setDown(isDown);
@@ -119,60 +113,44 @@ public class CyberwareMenuScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        // 1. イベントからキー情報を抽出
         int keyCode = event.key();
-        // 必要であれば scanCode や modifiers も event.scancode(), event.modifiers() で取れます
-
         if (this.isColorSettingsOpen && this.hexInput.isFocused()) {
-            // 2. EditBox も KeyEvent を受け取るように変更されている
             if (this.hexInput.keyPressed(event)) return true;
-
             if (keyCode == InputConstants.KEY_ESCAPE) {
                 toggleColorSettings();
                 return true;
             }
         }
-
         if (this.isHudMoveMode) {
-            // インベントリキーの判定なども keyCode を使用
             if (keyCode == InputConstants.KEY_ESCAPE || keyCode == this.minecraft.options.keyInventory.getKey().getValue()) {
                 this.isHudMoveMode = false;
                 return true;
             }
         }
-
         return super.keyPressed(event);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(g, mouseX, mouseY, partialTick);
-
         int centerX = width / 2;
         int centerY = height / 2;
-
         if (isColorSettingsOpen || isHudMoveMode) {
-            // fillGradient の引数順序に注意 (oo.txt 167行目)
             g.fillGradient(0, 0, width, height, 0x80000000, 0x80000000);
         }
-
         if (!isColorSettingsOpen && !isHudMoveMode) {
             renderRadialMenu(g, centerX, centerY, mouseX, mouseY);
         }
-
         renderHudPreview(g, mouseX, mouseY);
-
         if (!isHudMoveMode) {
             renderIconButton(g, HUD_COLOR_ICON, POS_BTN_X, POS_BTN_Y + 20, mouseX, mouseY, "HUD Color Settings");
             if (!isColorSettingsOpen) {
                 renderIconButton(g, HUD_POS_ICON, POS_BTN_X, POS_BTN_Y, mouseX, mouseY, "Move HUD Position");
             }
         }
-
         if (isColorSettingsOpen) {
             renderColorSettings(g, centerX, centerY, mouseX, mouseY);
         }
-
         if (isHudMoveMode) {
             g.centeredText(this.font, Component.literal("HUD MOVE MODE"), centerX, 40, 0xFF00FF00);
             g.centeredText(this.font, Component.literal("Drag HUD to move / Press ESC to finish"), centerX, 55, 0xFFFFFFFF);
@@ -181,11 +159,8 @@ public class CyberwareMenuScreen extends Screen {
 
     private void renderIconButton(GuiGraphicsExtractor g, Identifier texture, int x, int y, int mouseX, int mouseY, String tooltip) {
         float[] rgba = ClientCyberwareSettings.getColorFloats();
-        int color = ARGB.color((int)(rgba[3]*255), (int)(rgba[0]*255), (int)(rgba[1]*255), (int)(rgba[2]*255));
-
-        // blit の新しい形式 (oo.txt 189行目)
+        int color = ARGB.color((int) (rgba[3] * 255), (int) (rgba[0] * 255), (int) (rgba[1] * 255), (int) (rgba[2] * 255));
         g.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE, color);
-
         if (mouseX >= x && mouseX <= x + BTN_SIZE && mouseY >= y && mouseY <= y + BTN_SIZE) {
             g.outline(x - 1, y - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
             if (!isColorSettingsOpen && !isHudMoveMode) {
@@ -195,7 +170,6 @@ public class CyberwareMenuScreen extends Screen {
     }
 
     private void renderRadialMenu(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
-
         if (!parts.isEmpty()) {
             double angleStep = 2 * Math.PI / parts.size();
             for (int i = 0; i < parts.size(); i++) {
@@ -203,21 +177,15 @@ public class CyberwareMenuScreen extends Screen {
                 double itemAngle = i * angleStep - Math.PI / 2;
                 int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
                 int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
-
                 boolean isActive = part.item.isActive(part.stack);
                 boolean isHovered = (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12);
-
                 if (isHovered) {
                     Component statusText = isActive ? Component.translatable("cyberware.gui.active") : Component.translatable("cyberware.gui.inactive");
                     g.centeredText(this.font, statusText, x, y - 20, 0xFFFFFF00);
                 }
-
-                // renderItem -> item (oo.txt 442行目)
                 g.item(part.stack, x - 8, y - 8);
-
                 int outlineColor = isActive ? 0xFF00FF00 : 0xFFFF0000;
                 g.outline(x - 10, y - 10, 20, 20, outlineColor);
-
                 if (isHovered) {
                     g.setTooltipForNextFrame(this.font, part.stack, mouseX, mouseY);
                 }
@@ -226,22 +194,17 @@ public class CyberwareMenuScreen extends Screen {
     }
 
     private void renderColorSettings(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
-        // hexInput の位置更新
         this.hexInput.setPosition(centerX - 40, centerY + 15);
         this.hexInput.setVisible(true);
-
         int swatchSize = 20, gap = 4;
         int totalWidth = (swatchSize * PRESET_COLORS.length) + (gap * (PRESET_COLORS.length - 1));
         int startX = centerX - totalWidth / 2;
-
         for (int i = 0; i < PRESET_COLORS.length; i++) {
             int color = PRESET_COLORS[i];
             int x = startX + (swatchSize + gap) * i;
             int y = centerY - 15;
-
             g.fill(x, y, x + swatchSize, y + swatchSize, color);
             g.outline(x, y, swatchSize, swatchSize, 0xFF888888);
-
             if (mouseX >= x && mouseX <= x + swatchSize && mouseY >= y && mouseY <= y + swatchSize) {
                 g.outline(x - 1, y - 1, swatchSize + 2, swatchSize + 2, 0xFFFFFFFF);
             }
@@ -250,49 +213,35 @@ public class CyberwareMenuScreen extends Screen {
 
     private void renderHudPreview(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         if (this.minecraft.player == null) return;
-
         int hudX = ClientCyberwareSettings.hudX;
         int hudY = ClientCyberwareSettings.hudY;
-
         if (isHudMoveMode) {
-            // 1. renderOutline -> outline (oo.txt 161行目)
             g.outline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
-
-            // 2. drawCenteredString -> centeredText (oo.txt 179行目)
             g.centeredText(this.font, Component.literal("DRAG TO MOVE"), hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
-
             if (isDraggingHud || (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT)) {
                 g.outline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
             }
-
             int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
             int resetBtnY = hudY + HUD_HEIGHT + 5;
-
-            // 3. 色の計算 (float[] -> ARGB int)
             float[] rgba = ClientCyberwareSettings.getColorFloats();
             int iconColor = net.minecraft.util.ARGB.color(
-                    (int)(rgba[3] * 255), // Alpha
-                    (int)(rgba[0] * 255), // Red
-                    (int)(rgba[1] * 255), // Green
-                    (int)(rgba[2] * 255)  // Blue
+                    (int) (rgba[3] * 255),
+                    (int) (rgba[0] * 255),
+                    (int) (rgba[1] * 255),
+                    (int) (rgba[2] * 255)
             );
-
-            // 4. g.setColor は使わず、blit の引数に色を渡す (oo.txt 189行目)
             g.blit(
                     net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
                     HUD_RESET_ICON,
                     resetBtnX,
                     resetBtnY,
-                    0.0F, 0.0F,          // U, V
-                    BTN_SIZE, BTN_SIZE,  // Width, Height
-                    BTN_SIZE, BTN_SIZE,  // TextureWidth, TextureHeight
-                    iconColor            // ここで色を指定
+                    0.0F, 0.0F,
+                    BTN_SIZE, BTN_SIZE,
+                    BTN_SIZE, BTN_SIZE,
+                    iconColor
             );
-
             if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
                 g.outline(resetBtnX - 1, resetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
-
-                // 5. renderTooltip -> setTooltipForNextFrame (oo.txt 583行目)
                 g.setTooltipForNextFrame(Component.literal("Reset Position"), mouseX, mouseY);
             }
         }
@@ -300,15 +249,12 @@ public class CyberwareMenuScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        // 1. イベントから各値を取り出す
         double mouseX = event.x();
         double mouseY = event.y();
         int button = event.button();
-
         if (button == 0) {
             int centerX = width / 2;
             int centerY = height / 2;
-
             if (!isHudMoveMode) {
                 if (mouseX >= POS_BTN_X && mouseX <= POS_BTN_X + BTN_SIZE && mouseY >= POS_BTN_Y + 21 && mouseY <= POS_BTN_Y + 21 + BTN_SIZE) {
                     toggleColorSettings();
@@ -324,7 +270,6 @@ public class CyberwareMenuScreen extends Screen {
                 }
             }
             if (isColorSettingsOpen) {
-                // 2. ウィジェットへは event オブジェクトをそのまま渡す
                 if (this.hexInput.mouseClicked(event, false)) {
                     this.setFocused(this.hexInput);
                     return true;
@@ -377,6 +322,7 @@ public class CyberwareMenuScreen extends Screen {
         }
         return super.mouseClicked(event, doubleClick);
     }
+
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         if (isHudMoveMode && isDraggingHud && event.button() == 0) {
@@ -386,6 +332,7 @@ public class CyberwareMenuScreen extends Screen {
         }
         return super.mouseDragged(event, dx, dy);
     }
+
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         if (event.button() == 0 && isDraggingHud) {
@@ -394,6 +341,7 @@ public class CyberwareMenuScreen extends Screen {
         }
         return super.mouseReleased(event);
     }
+
     private void toggleColorSettings() {
         isColorSettingsOpen = !isColorSettingsOpen;
         this.hexInput.setVisible(isColorSettingsOpen);
@@ -406,8 +354,6 @@ public class CyberwareMenuScreen extends Screen {
     private void playClickSound() {
         Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
-
-
 
     @Override
     public boolean isPauseScreen() {

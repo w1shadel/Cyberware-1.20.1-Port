@@ -5,27 +5,37 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 
 @SuppressWarnings("removal")
-public class CyberSkeletonRenderer extends MobRenderer<CyberSkeletonEntity, CyberSkeletonModel> {
+public class CyberSkeletonRenderer extends MobRenderer<CyberSkeletonEntity, CyberSkeletonRenderState, CyberSkeletonModel> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_skeleton.png");
 
     public CyberSkeletonRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberSkeletonModel(context.bakeLayer(CyberSkeletonModel.LAYER_LOCATION)), 0.5F);
-
     }
 
     @Override
-    public Identifier getTextureLocation(CyberSkeletonEntity entity) {
+    public Identifier getTextureLocation(CyberSkeletonRenderState state) {
         return TEXTURE;
-
     }
 
     @Override
-    protected void scale(CyberSkeletonEntity entity, PoseStack poseStack, float partialTickTime) {
-        if (entity.isBaby()) {
+    protected void scale(CyberSkeletonRenderState state, PoseStack poseStack) {
+        if (state.isBaby) {
             poseStack.scale(0.7F, 0.7F, 0.7F);
         }
-        super.scale(entity, poseStack, partialTickTime);
+    }
+
+    @Override
+    public CyberSkeletonRenderState createRenderState() {
+        return new CyberSkeletonRenderState();
+    }
+
+    @Override
+    public void extractRenderState(CyberSkeletonEntity entity, CyberSkeletonRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.isAggressive = entity.isAggressive();
+        state.isHoldingBow = entity.getMainHandItem().is(Items.BOW);
     }
 }

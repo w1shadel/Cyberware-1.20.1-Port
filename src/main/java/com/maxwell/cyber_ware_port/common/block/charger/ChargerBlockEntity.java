@@ -1,161 +1,140 @@
 package com.maxwell.cyber_ware_port.common.block.charger;
 
-import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.List;
 
 public class ChargerBlockEntity extends BlockEntity {
-    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(1000000, 10000);
+    private final CustomEnergyHandler energyStorage = new CustomEnergyHandler(1000000);
     private boolean isDrainMode = false;
 
     public ChargerBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CHARGER.get(), pPos, pBlockState);
     }
 
-    public void tick(Level level, BlockPos pos, BlockState state) {
-        if (level.isClientSide) return;
-        handlePlayerEnergyTransfer(level, pos);
-        if (isDrainMode && energyStorage.getEnergyStored() > 0) {
-            distributeEnergy(level, pos);
-        }
-    }
-
     private void handlePlayerEnergyTransfer(Level level, BlockPos pos) {
         AABB area = new AABB(pos).inflate(0.2, 1.0, 0.2);
         List<Player> players = level.getEntitiesOfClass(Player.class, area);
         for (Player player : players) {
-            CyberwareEvents.Recharge event = new CyberwareEvents.Recharge(player, this, isDrainMode);
-            NeoForge.EVENT_BUS.post(event);
-            if (((ICancellableEvent) event).isCanceled()) {
-                continue;
-            }
-            IEnergyStorage userData = player.getCapability(Capabilities.EnergyStorage.ENTITY, null);
-            if (userData != null) {
-                int maxTransfer = 10000;
-                if (isDrainMode) {
-                    int extracted = userData.extractEnergy(maxTransfer, true);
-                    int space = energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored();
-                    int toReceive = Math.min(extracted, space);
-                    if (toReceive > 0) {
-                        userData.extractEnergy(toReceive, false);
-                        modifyEnergy(toReceive);
-                    }
-                } else {
-                    int available = energyStorage.getEnergyStored();
-                    int received = userData.receiveEnergy(Math.min(available, maxTransfer), true);
-                    if (received > 0) {
-                        modifyEnergy(-received);
-                        userData.receiveEnergy(received, false);
+            try (Transaction tx = Transaction.openRoot()) {
+                EnergyHandler playerEnergy = Capabilities.Energy.ENTITY.getCapability(player, null);
+                if (playerEnergy != null) {
+                    int maxTransfer = 10000;
+                    if (isDrainMode) {
+                        int extracted = playerEnergy.extract(maxTransfer, tx);
+                        this.energyStorage.insert(extracted, tx);
+                    } else {
+                        int available = (int) this.energyStorage.getAmountAsLong();
+                        int toSend = Math.min(available, maxTransfer);
+                        int accepted = playerEnergy.insert(toSend, tx);
+                        this.energyStorage.extract(accepted, tx);
                     }
                 }
+                tx.commit();
             }
         }
-    }
-
-    private void distributeEnergy(Level level, BlockPos pos) {
-        for (Direction direction : Direction.values()) {
-            if (this.energyStorage.getEnergyStored() <= 0) break;
-            BlockPos targetPos = pos.relative(direction);
-            IEnergyStorage targetStorage = level.getCapability(Capabilities.EnergyStorage.BLOCK, targetPos, direction.getOpposite());
-            if (targetStorage != null && targetStorage.canReceive()) {
-                int extracted = this.energyStorage.extractEnergy(10000, true);
-                int received = targetStorage.receiveEnergy(extracted, false);
-                this.energyStorage.extractEnergy(received, false);
-            }
-        }
-    }
-
-    private void modifyEnergy(int amount) {
-        int current = energyStorage.getEnergyStored();
-        int capacity = energyStorage.getMaxEnergyStored();
-        int next = Math.max(0, Math.min(current + amount, capacity));
-        energyStorage.setEnergyInternal(next);
-        setChanged();
     }
 
     public void toggleMode(Player player) {
         this.isDrainMode = !this.isDrainMode;
         if (level != null) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-            level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
         }
-        if (this.isDrainMode) {
-            player.sendSystemMessage(Component.literal("Charger Mode: DRAIN (Player -> Network)"));
-        } else {
-            player.sendSystemMessage(Component.literal("Charger Mode: CHARGE (Network -> Player)"));
-        }
+        player.sendSystemMessage(Component.literal("Charger Mode: " + (isDrainMode ? "DRAIN" : "CHARGE")));
         setChanged();
     }
 
-    public IEnergyStorage getEnergyStorage() {
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putLong("energy", this.energyStorage.getAmountAsLong());
+        output.putBoolean("isDrainMode", isDrainMode);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.energyStorage.setEnergyDirectly(input.getLongOr("energy", 0));
+        this.isDrainMode = input.getBooleanOr("isDrainMode", false);
+    }
+
+    public void tick(Level level, BlockPos pos, BlockState state) {
+        if (level.isClientSide()) return;
+        handlePlayerEnergyTransfer(level, pos);
+    }
+
+    public EnergyHandler getEnergyStorage() {
         return energyStorage;
     }
 
-    @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.saveAdditional(pTag, pRegistries);
-        pTag.put("Energy", energyStorage.serializeNBT(pRegistries));
-        pTag.putBoolean("IsDrainMode", isDrainMode);
-    }
+    private class CustomEnergyHandler extends SnapshotJournal<Long> implements EnergyHandler {
+        private final long capacity;
+        private long energy = 0;
 
-    @Override
-    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        if (pTag.contains("Energy")) {
-            energyStorage.deserializeNBT(pRegistries, pTag.get("Energy"));
-        }
-        this.isDrainMode = pTag.getBoolean("IsDrainMode");
-    }
-
-    private class CustomEnergyStorage extends EnergyStorage {
-        public CustomEnergyStorage(int capacity, int maxTransfer) {
-            super(capacity, maxTransfer);
+        public CustomEnergyHandler(long capacity) {
+            this.capacity = capacity;
         }
 
-        public void setEnergyInternal(int energy) {
-            this.energy = energy;
+        public void setEnergyDirectly(long val) {
+            this.energy = val;
         }
 
         @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            if (isDrainMode) return 0;
-            int ret = super.receiveEnergy(maxReceive, simulate);
-            if (ret > 0 && !simulate) ChargerBlockEntity.this.setChanged();
-            return ret;
+        public long getAmountAsLong() {
+            return energy;
         }
 
         @Override
-        public int extractEnergy(int maxExtract, boolean simulate) {
-            if (!isDrainMode) return 0;
-            int ret = super.extractEnergy(maxExtract, simulate);
-            if (ret > 0 && !simulate) ChargerBlockEntity.this.setChanged();
-            return ret;
+        public long getCapacityAsLong() {
+            return capacity;
         }
 
         @Override
-        public boolean canReceive() {
-            return !isDrainMode;
+        public int insert(int amount, TransactionContext tx) {
+            if (isDrainMode || amount <= 0) return 0;
+            int inserted = (int) Math.min(amount, capacity - energy);
+            if (inserted > 0) {
+                this.updateSnapshots(tx);
+                this.energy += inserted;
+                ChargerBlockEntity.this.setChanged();
+            }
+            return inserted;
         }
 
         @Override
-        public boolean canExtract() {
-            return isDrainMode;
+        public int extract(int amount, TransactionContext tx) {
+            if (!isDrainMode || amount <= 0) return 0;
+            int extracted = (int) Math.min(amount, energy);
+            if (extracted > 0) {
+                this.updateSnapshots(tx);
+                this.energy -= extracted;
+                ChargerBlockEntity.this.setChanged();
+            }
+            return extracted;
+        }
+
+        @Override
+        protected Long createSnapshot() {
+            return energy;
+        }
+
+        @Override
+        protected void revertToSnapshot(Long snapshot) {
+            this.energy = snapshot;
         }
     }
 }

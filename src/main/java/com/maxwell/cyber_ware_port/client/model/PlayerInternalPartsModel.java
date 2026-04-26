@@ -1,21 +1,17 @@
 package com.maxwell.cyber_ware_port.client.model;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("removal")
 public class PlayerInternalPartsModel extends Model.Simple {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "playerinternalpartsmodel"), "main");
-
     private final ModelPart root;
     private final ModelPart bone;
     private final ModelPart muscal;
@@ -23,7 +19,6 @@ public class PlayerInternalPartsModel extends Model.Simple {
 
     public PlayerInternalPartsModel(ModelPart root) {
         super(root, RenderTypes::entityCutout);
-
         this.root = root;
         this.bone = root.getChild("root").getChild("bone");
         this.muscal = root.getChild("root").getChild("muscal");
@@ -34,11 +29,9 @@ public class PlayerInternalPartsModel extends Model.Simple {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
         PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
-
         root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -4.0F, 0.0F));
         root.addOrReplaceChild("muscal", CubeListBuilder.create().texOffs(0, 12).addBox(-5.0F, -4.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
         root.addOrReplaceChild("skin", CubeListBuilder.create().texOffs(0, 24).addBox(-5.0F, -2.0F, -5.0F, 10.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
-
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 

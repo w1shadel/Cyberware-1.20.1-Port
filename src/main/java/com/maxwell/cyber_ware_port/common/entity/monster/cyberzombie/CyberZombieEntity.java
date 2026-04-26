@@ -4,7 +4,7 @@ import com.maxwell.cyber_ware_port.common.entity.ICyberwareMob;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
@@ -30,6 +30,10 @@ public class CyberZombieEntity extends Zombie implements ICyberwareMob {
         );
     }
 
+    protected boolean isSunSensitive() {
+        return false;
+    }
+
     @Override
     public List<Item> getForbiddenDrops() {
         return Arrays.asList(
@@ -39,8 +43,4 @@ public class CyberZombieEntity extends Zombie implements ICyberwareMob {
         );
     }
 
-    @Override
-    protected boolean isSunBurnTick() {
-        return false;
-    }
 }

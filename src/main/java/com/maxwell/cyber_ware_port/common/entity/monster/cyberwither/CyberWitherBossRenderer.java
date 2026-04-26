@@ -4,168 +4,99 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
-@SuppressWarnings("removal")
-public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberWitherModel> {
-    private static final Identifier WITHER_LOCATION =
-            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
-    private static final Identifier WITHER_INVULNERABLE_LOCATION =
-            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
+public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberWitherRenderState, CyberWitherModel> {
     private static final Identifier BEAM_LOCATION = Identifier.withDefaultNamespace("textures/entity/guardian_beam.png");
+    private static final Identifier TEXTURE_A = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither.png");
+    private static final Identifier TEXTURE_B = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/wither/cyber_wither_invulnerable.png");
 
     public CyberWitherBossRenderer(EntityRendererProvider.Context context) {
         super(context, new CyberWitherModel(context.bakeLayer(CyberWitherModel.LAYER_LOCATION)), 1.0F);
         this.addLayer(new CyberWitherArmorLayer(this, context.getModelSet()));
-
     }
 
     @Override
-    public void render(CyberWitherBoss pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        super.render(pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
-        renderChains(pEntity, pPartialTicks, pPoseStack, pBuffer);
-
+    public CyberWitherRenderState createRenderState() {
+        return new CyberWitherRenderState();
     }
 
-    private void renderChains(CyberWitherBoss wither, float partialTick, PoseStack poseStack, MultiBufferSource buffer) {
-        for (int i = 1;
-             i <= 3;
-             i++) {
-            int entityId = wither.getMinionId(i);
-            if (entityId != -1) {
-                Entity minion = wither.level().getEntity(entityId);
-                if (minion != null) {
-                    renderSingleChain(wither, minion, partialTick, poseStack, buffer);
-
+    @Override
+    public void extractRenderState(CyberWitherBoss entity, CyberWitherRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.invulnerableTicks = entity.getInvulnerableTicks();
+        state.isPowered = entity.isPowered();
+        state.eyeHeight = entity.getEyeHeight();
+        state.minionOffsets.clear();
+        Vec3 bossPos = entity.getPosition(partialTick);
+        for (int i = 1; i <= 3; i++) {
+            int minionId = entity.getMinionId(i);
+            if (minionId != -1) {
+                net.minecraft.world.entity.Entity minion = entity.level().getEntity(minionId);
+                if (minion != null && minion.isAlive()) {
+                    Vec3 minionPos = minion.getPosition(partialTick);
+                    double dy = (minionPos.y + minion.getEyeHeight() * 0.5) - (bossPos.y + entity.getEyeHeight() * 0.5);
+                    state.minionOffsets.add(new Vec3(minionPos.x - bossPos.x, dy, minionPos.z - bossPos.z));
                 }
             }
         }
     }
 
-    private void renderSingleChain(CyberWitherBoss wither, Entity minion, float partialTick, PoseStack poseStack, MultiBufferSource buffer) {
-        double witherX = Mth.lerp(partialTick, wither.xo, wither.getX());
-        double witherY = Mth.lerp(partialTick, wither.yo, wither.getY());
-        double witherZ = Mth.lerp(partialTick, wither.zo, wither.getZ());
-        double minionX = Mth.lerp(partialTick, minion.xo, minion.getX());
-        double minionY = Mth.lerp(partialTick, minion.yo, minion.getY());
-        double minionZ = Mth.lerp(partialTick, minion.zo, minion.getZ());
-        float dx = (float) (minionX - witherX);
-        float dy = (float) ((minionY + minion.getEyeHeight() * 0.5) - (witherY + wither.getEyeHeight() * 0.5));
-        float dz = (float) (minionZ - witherZ);
-        float distH = Mth.sqrt(dx * dx + dz * dz);
-        float distTotal = Mth.sqrt(dx * dx + dy * dy + dz * dz);
-        poseStack.pushPose();
-        poseStack.translate(0.0D, wither.getEyeHeight() * 0.5D, 0.0D);
-        poseStack.mulPose(Axis.YP.rotation((float) (Math.PI / 2.0D - Math.atan2(dz, dx))));
-        poseStack.mulPose(Axis.XP.rotation((float) -Math.atan2(dy, distH)));
-        VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(BEAM_LOCATION));
-        float beamWidth = 0.15F;
-        float vScale = distTotal * 0.5F;
-        float age = wither.tickCount + partialTick;
-        float vOffset = age * 0.05F * -1.0F;
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix4f = pose.pose();
-        Matrix3f matrix3f = pose.normal();
-        drawVertex(vertexconsumer, matrix4f, matrix3f, distTotal, beamWidth, 0.0F, 1.0F, 0.5F, 1.0F, vOffset, vScale);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
-        pose = poseStack.last();
-        matrix4f = pose.pose();
-        matrix3f = pose.normal();
-        drawVertex(vertexconsumer, matrix4f, matrix3f, distTotal, beamWidth, 0.0F, 1.0F, 0.5F, 1.0F, vOffset, vScale);
-        poseStack.popPose();
-
-    }
-
-    private void drawVertex(VertexConsumer consumer, Matrix4f pose, Matrix3f normal, float length, float width, float r, float g, float b, float alpha, float vOffset, float vScale) {
-        consumer.addVertex(pose, -width, 0, 0).setColor(r, g, b, alpha).setUv(0, vOffset).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880, 0).setNormal(0, 1, 0);
-        consumer.addVertex(pose, width, 0, 0).setColor(r, g, b, alpha).setUv(1, vOffset).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880, 0).setNormal(0, 1, 0);
-        consumer.addVertex(pose, width, 0, length).setColor(r, g, b, alpha).setUv(1, vOffset + vScale).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880, 0).setNormal(0, 1, 0);
-        consumer.addVertex(pose, -width, 0, length).setColor(r, g, b, alpha).setUv(0, vOffset + vScale).setOverlay(OverlayTexture.NO_OVERLAY).setUv2(15728880, 0).setNormal(0, 1, 0);
-
+    @Override
+    public void submit(CyberWitherRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        super.submit(state, poseStack, collector, camera);
+        for (Vec3 offset : state.minionOffsets) {
+            float dx = (float) offset.x;
+            float dy = (float) offset.y;
+            float dz = (float) offset.z;
+            float distH = Mth.sqrt(dx * dx + dz * dz);
+            float distTotal = Mth.sqrt(dx * dx + dy * dy + dz * dz);
+            poseStack.pushPose();
+            poseStack.translate(0.0D, state.eyeHeight * 0.5D, 0.0D);
+            poseStack.mulPose(Axis.YP.rotation((float) (Math.PI / 2.0D - Math.atan2(dz, dx))));
+            poseStack.mulPose(Axis.XP.rotation((float) -Math.atan2(dy, distH)));
+            SubmitNodeCollector.CustomGeometryRenderer beamRenderer = (pose, consumer) -> {
+                float beamWidth = 0.15F;
+                float vScale = distTotal * 0.5F;
+                float vOffset = state.ageInTicks * 0.05F * -1.0F;
+                this.drawBeamQuad(consumer, pose, distTotal, beamWidth, vOffset, vScale);
+            };
+            collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(BEAM_LOCATION), beamRenderer);
+            poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
+            collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(BEAM_LOCATION), beamRenderer);
+            poseStack.popPose();
+        }
     }
 
     @Override
-    protected int getBlockLightLevel(CyberWitherBoss pEntity, BlockPos pPos) {
-        return 15;
-
+    public Identifier getTextureLocation(CyberWitherRenderState state) {
+        if (state.isPowered) {
+            return TEXTURE_B;
+        }
+        return TEXTURE_A;
     }
 
-    @Override
-    public boolean shouldRender(CyberWitherBoss pEntity, Frustum pCamera, double pCamX, double pCamY, double pCamZ) {
-        if (super.shouldRender(pEntity, pCamera, pCamX, pCamY, pCamZ)) {
-            return true;
-
-        }
-        for (int i = 1;
-             i <= 3;
-             i++) {
-            int entityId = pEntity.getMinionId(i);
-            if (entityId != -1) {
-                Entity minion = pEntity.level().getEntity(entityId);
-                if (minion != null) {
-                    Vec3 start = pEntity.position();
-                    Vec3 end = minion.position();
-                    if (pCamera.isVisible(new AABB(start.x, start.y, start.z, end.x, end.y, end.z))) {
-                        return true;
-
-                    }
-                }
-            }
-        }
-        return false;
-
+    private void drawBeamQuad(VertexConsumer consumer, PoseStack.Pose pose, float length, float width, float vOffset, float vScale) {
+        this.vertex(consumer, pose, -width, 0, 0, 0, vOffset);
+        this.vertex(consumer, pose, width, 0, 0, 1, vOffset);
+        this.vertex(consumer, pose, width, 0, length, 1, vOffset + vScale);
+        this.vertex(consumer, pose, -width, 0, length, 0, vOffset + vScale);
     }
 
-    @Override
-    public Identifier getTextureLocation(CyberWitherBoss pEntity) {
-        int invulTicks = pEntity.getInvulnerableTicks();
-        if (invulTicks > 0) {
-            return WITHER_LOCATION;
-
-        }
-        return pEntity.isPowered() ? WITHER_INVULNERABLE_LOCATION : WITHER_LOCATION;
-
-    }
-
-    @Override
-    protected float getWhiteOverlayProgress(CyberWitherBoss pEntity, float pPartialTicks) {
-        int invulTicks = pEntity.getInvulnerableTicks();
-        if (invulTicks > 0) {
-            float progress = 1.0F - ((float) invulTicks - pPartialTicks) / 220.0F;
-            if (invulTicks < 10) {
-                return 1.0F;
-
-            }
-            float flash = Mth.sin(progress * progress * 20.0F * (float) Math.PI);
-            return Mth.clamp(flash, 0.0F, 0.6F);
-
-        }
-        return super.getWhiteOverlayProgress(pEntity, pPartialTicks);
-
-    }
-
-    @Override
-    protected void scale(CyberWitherBoss pLivingEntity, PoseStack pPoseStack, float pPartialTickTime) {
-        float f = 2.0F;
-        int i = pLivingEntity.getInvulnerableTicks();
-        if (i > 0) {
-            f -= ((float) i - pPartialTickTime) / 220.0F * 0.5F;
-
-        }
-        pPoseStack.scale(f, f, f);
-
+    private void vertex(VertexConsumer c, PoseStack.Pose p, float x, float y, float z, float u, float v) {
+        c.addVertex(p.pose(), x, y, z)
+                .setColor(255, 255, 255, 255)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setUv2(15728880, 15728880)
+                .setNormal(p, 0, 1, 0);
     }
 }

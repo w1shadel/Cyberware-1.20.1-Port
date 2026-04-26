@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 @SuppressWarnings("removal")
-public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
+public class CyberCreeperModel extends EntityModel<CyberCreeperRenderState> {
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_creeper"), "main");
     public static final ModelLayerLocation ARMOR_LOCATION =
@@ -23,6 +23,7 @@ public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
     private final ModelPart leg3;
 
     public CyberCreeperModel(ModelPart root) {
+        super(root);
         this.body = root.getChild("body");
         this.head = this.body.getChild("head");
         this.leg0 = this.body.getChild("leg0");
@@ -52,17 +53,14 @@ public class CyberCreeperModel extends HierarchicalModel<CyberCreeperEntity> {
     }
 
     @Override
-    public ModelPart root() {
-        return body;
-    }
-
-    @Override
-    public void setupAnim(CyberCreeperEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.head.yRot = netHeadYaw * ((float) Math.PI / 180F);
-        this.head.xRot = headPitch * ((float) Math.PI / 180F);
-        this.leg0.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        this.leg1.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-        this.leg2.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-        this.leg3.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+    public void setupAnim(CyberCreeperRenderState state) {
+        this.head.yRot = state.yRot * ((float) Math.PI / 180F);
+        this.head.xRot = state.xRot * ((float) Math.PI / 180F);
+        float animationSpeed = state.walkAnimationSpeed;
+        float animationPos = state.walkAnimationPos;
+        this.leg0.xRot = Mth.cos((double) (animationPos * 0.6662F)) * 1.4F * animationSpeed;
+        this.leg1.xRot = Mth.cos((double) (animationPos * 0.6662F + (float) Math.PI)) * 1.4F * animationSpeed;
+        this.leg2.xRot = Mth.cos((double) (animationPos * 0.6662F + (float) Math.PI)) * 1.4F * animationSpeed;
+        this.leg3.xRot = Mth.cos((double) (animationPos * 0.6662F)) * 1.4F * animationSpeed;
     }
 }

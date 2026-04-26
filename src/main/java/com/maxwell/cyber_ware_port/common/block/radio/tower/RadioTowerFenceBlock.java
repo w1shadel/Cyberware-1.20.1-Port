@@ -54,7 +54,7 @@ public class RadioTowerFenceBlock extends FenceBlock {
 
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pLevel.isClientSide && pState.getValue(FORMED) && !pState.is(pNewState.getBlock())) {
+        if (!pLevel.isClientSide() && pState.getValue(FORMED) && !pState.is(pNewState.getBlock())) {
             BlockPos.MutableBlockPos searchPos = new BlockPos.MutableBlockPos();
             for (int y = 1; y <= MAX_SEARCH_HEIGHT; y++) {
                 for (int x = -1; x <= 1; x++) {

@@ -15,7 +15,6 @@ public class KeyInit {
     public static final KeyMapping.Category CYBERWARE_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath(CyberWare.MODID, "main")
     );
-
     public static final KeyMapping MENU_KEY = new KeyMapping(
             "key.cyber_ware_port.menu",
             InputConstants.Type.KEYSYM,

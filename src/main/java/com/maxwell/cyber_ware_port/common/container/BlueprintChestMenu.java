@@ -12,7 +12,9 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class BlueprintChestMenu extends AbstractContainerMenu {
@@ -27,9 +29,10 @@ public class BlueprintChestMenu extends AbstractContainerMenu {
         super(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), pContainerId);
         this.blockEntity = (BlueprintChestBlockEntity) entity;
         var handler = this.blockEntity.getItemHandler();
+        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new SlotItemHandler(handler, col + row * 9, 8 + col * 18, 18 + row * 18) {
+                this.addSlot(new ResourceHandlerSlot(handler, modifier, col + row * 9, 8 + col * 18, 18 + row * 18) {
                     @Override
                     public boolean mayPlace(@NotNull ItemStack stack) {
                         return stack.getItem() instanceof BlueprintItem;

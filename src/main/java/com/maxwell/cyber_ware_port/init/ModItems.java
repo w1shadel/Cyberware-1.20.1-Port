@@ -2,7 +2,6 @@ package com.maxwell.cyber_ware_port.init;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.CyberwareTabState;
-import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullItemRenderer;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.ExpCapsuleItem;
@@ -28,18 +27,14 @@ import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SolarskinItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SubdermalSpikesItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.skin.SyntheticSkinItem;
 import com.maxwell.cyber_ware_port.common.item.cyberware.skin.TargetedImmunosuppressantItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.util.function.Consumer;
 
 public class ModItems {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CyberWare.MODID);
@@ -114,13 +109,13 @@ public class ModItems {
     public static final DeferredHolder<Item, TargetedImmunosuppressantItem> TARGETED_IMMUNOSUPPRESSANT = ITEMS.register("skin_upgrades_immuno", TargetedImmunosuppressantItem::new);
     public static final DeferredHolder<Item, WiredReflexesItem> WIRED_REFLEXES = ITEMS.register("muscle_upgrades_wired_reflexes", WiredReflexesItem::new);
     public static final DeferredHolder<Item, BonelacingItem> BONELACING = ITEMS.register("bone_upgrades_bonelacing", BonelacingItem::new);
-    public static final DeferredHolder<Item, CitrateEnhancementItem> CITRATE_ENHANCEMENT = ITEMS.register("bone_upgrades_boneflex", CitrateEnhancementItem::new);    public static final DeferredHolder<Item, CorticalStackItem> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
+    public static final DeferredHolder<Item, CitrateEnhancementItem> CITRATE_ENHANCEMENT = ITEMS.register("bone_upgrades_boneflex", CitrateEnhancementItem::new);
     public static final DeferredHolder<Item, DenseBatteryItem> DENSE_BATTERY = ITEMS.register("dense_battery", DenseBatteryItem::new);
     public static final DeferredHolder<Item, MarrowBatteryItem> MARROW_BATTERY = ITEMS.register("bone_upgrades_bonebattery", MarrowBatteryItem::new);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_BRAIN = registerHumanPart("body_part_brain", RobosurgeonBlockEntity.SLOT_BRAIN, 1, BodyPartType.BRAIN);
     public static final DeferredHolder<Item, RapidFireFlywheelItem> RAPID_FIRE_FLYWHEEL = ITEMS.register("arm_upgrades_bow", RapidFireFlywheelItem::new);
     public static final DeferredHolder<Item, ImplantedSpursItem> IMPLANTED_SPURS = ITEMS.register("foot_upgrades_spurs", ImplantedSpursItem::new);
-    public static final DeferredHolder<Item, FineManipulatorsItem> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands", FineManipulatorsItem::new);    public static final DeferredHolder<Item, ConsciousnessTransmitterItem> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
+    public static final DeferredHolder<Item, FineManipulatorsItem> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands", FineManipulatorsItem::new);    public static final DeferredHolder<Item, CorticalStackItem> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_HEART = registerHumanPart("body_part_heart", RobosurgeonBlockEntity.SLOT_HEART, 1, BodyPartType.HEART);
     public static final DeferredHolder<Item, CardiomechanicPumpItem> CARDIOMECHANIC_PUMP = ITEMS.register("cyberheart", CardiomechanicPumpItem::new);
     public static final DeferredHolder<Item, InternalDefibrillatorItem> INTERNAL_DEFIBRILLATOR = ITEMS.register("heart_upgrades_defibrillator", InternalDefibrillatorItem::new);
@@ -132,7 +127,7 @@ public class ModItems {
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_MUSCLE = registerHumanPart("body_part_muscles", RobosurgeonBlockEntity.SLOT_MUSCLE, 1, BodyPartType.MUSCLE);
     public static final DeferredHolder<Item, MyomerMuscleReplacementItem> MYOMER_MUSCLE = ITEMS.register("muscle_upgrades_muscle_replacements", MyomerMuscleReplacementItem::new);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_BONE = registerHumanPart("body_part_bones", RobosurgeonBlockEntity.SLOT_BONES, 1, BodyPartType.BONES);
-    public static final DeferredHolder<Item, CyberwareItem> HUMAN_EYES = registerHumanPart("body_part_eyes", RobosurgeonBlockEntity.SLOT_EYES, 1, BodyPartType.EYES);
+    public static final DeferredHolder<Item, CyberwareItem> HUMAN_EYES = registerHumanPart("body_part_eyes", RobosurgeonBlockEntity.SLOT_EYES, 1, BodyPartType.EYES);    public static final DeferredHolder<Item, ConsciousnessTransmitterItem> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
     public static final DeferredHolder<Item, CybereyesItem> CYBER_EYE = ITEMS.register("cybereyes", CybereyesItem::new);
     public static final DeferredHolder<Item, LowLightVisionItem> LOW_LIGHT_VISION = ITEMS.register("cybereye_upgrades_night_vision", LowLightVisionItem::new);
     public static final DeferredHolder<Item, LiquidRefractionCalibratorItem> LIQUID_REFRACTION = ITEMS.register("cybereye_upgrades_underwater_vision", LiquidRefractionCalibratorItem::new);
@@ -165,7 +160,6 @@ public class ModItems {
                     .icon(() -> new ItemStack(ModBlocks.SURGERY_CHAMBER.get()))
                     .displayItems((enabledFeatures, entries) -> {
                         int page = CyberwareTabState.currentPage;
-
                         for (DeferredHolder<Item, ? extends Item> holder : ITEMS.getEntries()) {
                             Item item = holder.get();
                             if (item instanceof CyberwareItem cw) {
@@ -194,6 +188,7 @@ public class ModItems {
         ITEMS.register(eventBus);
         TABS.register(eventBus);
     }
+
 
 
 

@@ -164,7 +164,7 @@ public class CyberwareItem extends Item implements ICyberware {
     @Override
     public Component getName(ItemStack stack) {
         ChatFormatting style = isPristine(stack) ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY;
-        return Component.translatable(this.getDescriptionId(stack)).withStyle(style);
+        return Component.translatable(this.getDescriptionId()).withStyle(style);
     }
 
     public static class Builder {

@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 
 public class CyberwareSideTabButton extends Button {
-
     public CyberwareSideTabButton(int x, int y, int width, int height, OnPress onPress) {
         super(x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION);
     }

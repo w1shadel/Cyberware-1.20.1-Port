@@ -15,8 +15,6 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -29,12 +27,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -185,30 +181,22 @@ public class ForgeClientEvents {
         int entityId = state.id;
         var model = event.getRenderer().getModel();
         Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-
         if (entity instanceof Player player) {
             CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-
             if (hasSkinUpgrade(data)) return;
-
             state.showLeftSleeve = true;
             state.showRightSleeve = true;
             state.showLeftPants = true;
             state.showRightPants = true;
-
-            // Cyberwareの状態を適用
             if (data.hasCyberLeftArm()) {
                 state.showLeftSleeve = false;
             }
-
             if (data.hasCyberRightArm()) {
                 state.showRightSleeve = false;
             }
-
             if (data.hasCyberLeftLeg()) {
                 state.showLeftPants = false;
             }
-
             if (data.hasCyberRightLeg()) {
                 state.showRightPants = false;
             }

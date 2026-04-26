@@ -1,9 +1,6 @@
 package com.maxwell.cyber_ware_port.client.model;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -25,7 +22,7 @@ public class SkeletonDisplayModel extends Model.Simple {
     public final ModelPart leftLeg;
 
     public SkeletonDisplayModel(ModelPart root) {
-        super(root,RenderTypes::entityCutout);
+        super(root, RenderTypes::entityCutout);
         this.root = root;
         this.head = root.getChild("head");
         this.hat = root.getChild("hat");

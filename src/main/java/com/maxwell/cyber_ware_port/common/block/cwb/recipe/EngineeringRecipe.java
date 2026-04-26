@@ -4,8 +4,6 @@ import com.maxwell.cyber_ware_port.init.ModRecipes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -18,6 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
+    public static final MapCodec<EngineeringRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            Ingredient.CODEC.fieldOf("input").forGetter(EngineeringRecipe::input),
+            OutputEntry.CODEC.codec().listOf().fieldOf("outputs").forGetter(EngineeringRecipe::outputs),
+            Codec.FLOAT.optionalFieldOf("blueprint_chance", 0.5f).forGetter(EngineeringRecipe::blueprintChance)
+    ).apply(inst, EngineeringRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, EngineeringRecipe> STREAM_CODEC = StreamCodec.composite(
+            Ingredient.CONTENTS_STREAM_CODEC, EngineeringRecipe::input,
+            OutputEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), EngineeringRecipe::outputs,
+            ByteBufCodecs.FLOAT, EngineeringRecipe::blueprintChance,
+            EngineeringRecipe::new
+    );
     private final Ingredient input;
     private final List<OutputEntry> outputs;
     private final float blueprintChance;
@@ -26,6 +35,46 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
         this.input = input;
         this.outputs = outputs;
         this.blueprintChance = blueprintChance;
+    }
+
+    @Override
+    public boolean matches(SingleRecipeInput pInput, Level pLevel) {
+        return input.test(pInput.item());
+    }
+
+    @Override
+    public ItemStack assemble(SingleRecipeInput singleRecipeInput) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean showNotification() {
+        return true;
+    }
+
+    @Override
+    public String group() {
+        return "";
+    }
+
+    @Override
+    public RecipeSerializer<? extends EngineeringRecipe> getSerializer() {
+        return ModRecipes.ENGINEERING_SERIALIZER.get();
+    }
+
+    @Override
+    public RecipeType<? extends Recipe<SingleRecipeInput>> getType() {
+        return ModRecipes.ENGINEERING_TYPE.get();
+    }
+
+    @Override
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.create(this.input);
+    }
+
+    @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
     }
 
     public Ingredient input() {
@@ -40,22 +89,6 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
         return blueprintChance;
     }
 
-    @Override
-    public NonNullList<Ingredient> getIngredients() {
-        NonNullList<Ingredient> list = NonNullList.create();
-        list.add(this.input);
-        return list;
-    }
-
-    public float getBlueprintChance() {
-        return blueprintChance;
-    }
-
-    @Override
-    public boolean matches(SingleRecipeInput pInput, Level pLevel) {
-        return input.test(pInput.item());
-    }
-
     public List<ItemStack> rollOutputs(RandomSource random) {
         List<ItemStack> results = new ArrayList<>();
         for (OutputEntry entry : outputs) {
@@ -64,33 +97,6 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
             }
         }
         return results;
-    }
-
-    @Override
-    public ItemStack assemble(SingleRecipeInput pInput, HolderLookup.Provider pRegistries) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean canCraftInDimensions(int pWidth, int pHeight) {
-        return true;
-    }
-
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
-        if (!outputs.isEmpty()) {
-            return outputs.get(0).stack();
-        }
-        return ItemStack.EMPTY;
-    }
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.ENGINEERING_SERIALIZER.get();
-    }
-
-    @Override
-    public RecipeType<?> getType() {
-        return ModRecipes.ENGINEERING_TYPE.get();
     }
 
     public record OutputEntry(ItemStack stack, float chance) {
@@ -103,31 +109,5 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
                 ByteBufCodecs.FLOAT, OutputEntry::chance,
                 OutputEntry::new
         );
-    }
-
-    public static class Serializer implements RecipeSerializer<EngineeringRecipe> {
-        public static final Serializer INSTANCE = new Serializer();
-        private static final MapCodec<EngineeringRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                Ingredient.CODEC.fieldOf("input").forGetter(EngineeringRecipe::input),
-                OutputEntry.CODEC.codec().listOf().fieldOf("outputs").forGetter(EngineeringRecipe::outputs),
-                Codec.FLOAT.optionalFieldOf("blueprint_chance", 0.5f).forGetter(EngineeringRecipe::blueprintChance)
-        ).apply(inst, EngineeringRecipe::new));
-        private static final StreamCodec<RegistryFriendlyByteBuf, EngineeringRecipe> STREAM_CODEC = StreamCodec.composite(
-                Ingredient.CONTENTS_STREAM_CODEC, EngineeringRecipe::input,
-                OutputEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), EngineeringRecipe::outputs,
-                ByteBufCodecs.FLOAT, EngineeringRecipe::blueprintChance,
-                EngineeringRecipe::new
-        );
-
-        @Override
-        public MapCodec<EngineeringRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, EngineeringRecipe> streamCodec() {
-            return STREAM_CODEC;
-        }
-
     }
 }

@@ -9,7 +9,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 public class ScannerMenu extends AbstractContainerMenu {
     public final ScannerBlockEntity blockEntity;
@@ -24,9 +26,10 @@ public class ScannerMenu extends AbstractContainerMenu {
         this.blockEntity = (ScannerBlockEntity) entity;
         this.data = data;
         var handler = this.blockEntity.getItemHandler();
-        this.addSlot(new SlotItemHandler(handler, ScannerBlockEntity.SLOT_INPUT, 35, 53));
-        this.addSlot(new SlotItemHandler(handler, ScannerBlockEntity.SLOT_PAPER, 15, 53));
-        this.addSlot(new SlotItemHandler(handler, ScannerBlockEntity.SLOT_OUTPUT, 137, 53));
+        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
+        this.addSlot(new ResourceHandlerSlot(handler, modifier, ScannerBlockEntity.SLOT_INPUT, 35, 53));
+        this.addSlot(new ResourceHandlerSlot(handler, modifier, ScannerBlockEntity.SLOT_PAPER, 15, 53));
+        this.addSlot(new ResourceHandlerSlot(handler, modifier, ScannerBlockEntity.SLOT_OUTPUT, 137, 53));
         checkContainerDataCount(data, 2);
         addDataSlots(data);
         addPlayerInventory(inv);

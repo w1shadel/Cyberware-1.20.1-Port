@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -15,13 +16,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BlueprintChestBlock extends HorizontalDirectionalBlock implements EntityBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final MapCodec<BlueprintChestBlock> CODEC = simpleCodec(BlueprintChestBlock::new);
 
     public BlueprintChestBlock(Properties pProperties) {
@@ -47,7 +48,7 @@ public class BlueprintChestBlock extends HorizontalDirectionalBlock implements E
 
     @Override
     protected @NotNull InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (entity instanceof BlueprintChestBlockEntity be) {
                 pPlayer.openMenu(be, pPos);
@@ -55,7 +56,7 @@ public class BlueprintChestBlock extends HorizontalDirectionalBlock implements E
                 throw new IllegalStateException("Our Container provider is missing!");
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
@@ -65,14 +66,12 @@ public class BlueprintChestBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof BlueprintChestBlockEntity chest) {
-                chest.drops();
-            }
+    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof BlueprintChestBlockEntity tile) {
+            tile.drops();
         }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        super.destroy(level, pos, state);
     }
 
     @Override

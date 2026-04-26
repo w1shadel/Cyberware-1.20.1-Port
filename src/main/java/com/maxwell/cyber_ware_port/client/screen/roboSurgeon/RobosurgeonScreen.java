@@ -9,33 +9,24 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import com.maxwell.cyber_ware_port.common.network.SurgeryGhostTogglePacket;
 import com.maxwell.cyber_ware_port.common.risk.SurgeryAlert;
 import com.maxwell.cyber_ware_port.common.risk.SurgeryAnalyzer;
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 import java.lang.reflect.Field;
@@ -55,7 +46,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private static final int GUI_WIDTH = 175;
     private static final int TOP_HEIGHT = 131;
     private static final int BOTTOM_HEIGHT = 91;
-    private static final int TEXTURE_INVENTORY_START_Y = 131;
     private static final float BASE_SCALE = 45f;
     private static final Field slotX, slotY;
 
@@ -65,11 +55,12 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             slotX.setAccessible(true);
             slotY = Slot.class.getDeclaredField("y");
             slotY.setAccessible(true);
-        } catch (NoSuchFieldException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private final Lighting lightingInstance = new Lighting();
     private PlayerInternalPartsModel internalPartsModel;
     private BodyPart selectedPart = BodyPart.NONE;
     private TargetMarker selectedMarker = null;
@@ -86,84 +77,36 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private float currentOffsetY = 0f;
     private boolean hideName = false;
 
-    public RobosurgeonScreen(RobosurgeonMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
-        super(pMenu, pPlayerInventory, pTitle);
-        this.imageWidth = GUI_WIDTH;
-        this.imageHeight = TOP_HEIGHT + BOTTOM_HEIGHT;
+    public RobosurgeonScreen(RobosurgeonMenu menu, Inventory inventory, Component title) {
+        super(menu, inventory, title, GUI_WIDTH, TOP_HEIGHT + BOTTOM_HEIGHT);
         this.inventoryLabelY = this.imageHeight - 94;
         this.titleLabelY = 6;
     }
 
-    public static void renderEntityWithRotation(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw, LivingEntity pEntity) {
-        pGuiGraphics.pose().pushPose();
-        pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
-        pGuiGraphics.pose().mulPose((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
-        Quaternionf quaternionf = Axis.ZP.rotationDegrees(180.0F);
-        Quaternionf rotation = Axis.YP.rotationDegrees(rotationYaw + 180.0F);
-        quaternionf.mul(rotation);
-        pGuiGraphics.pose().mulPose(quaternionf);
-        float f2 = pEntity.yBodyRot;
-        float f3 = pEntity.getYRot();
-        float f4 = pEntity.getXRot();
-        float f5 = pEntity.yHeadRotO;
-        float f6 = pEntity.yHeadRot;
-        pEntity.yBodyRot = 0;
-        pEntity.setYRot(0);
-        pEntity.setXRot(0);
-        pEntity.yHeadRot = 0;
-        pEntity.yHeadRotO = 0;
-        float originalLimbSwingAmount = pEntity.walkAnimation.speed();
-        pEntity.walkAnimation.setSpeed(0.0f);
-        pEntity.attackAnim = 0.0f;
-        Lighting.setupForEntityInInventory();
-        EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        rotation.conjugate();
-        entityrenderdispatcher.overrideCameraOrientation(rotation);
-        entityrenderdispatcher.setRenderShadow(false);
-        entityrenderdispatcher.render(pEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, pGuiGraphics.pose(), pGuiGraphics.bufferSource(), 15728880);
-        pGuiGraphics.flush();
-        entityrenderdispatcher.setRenderShadow(true);
-        pEntity.yBodyRot = f2;
-        pEntity.setYRot(f3);
-        pEntity.setXRot(f4);
-        pEntity.yHeadRotO = f5;
-        pEntity.yHeadRot = f6;
-        pEntity.walkAnimation.setSpeed(originalLimbSwingAmount);
-        pGuiGraphics.pose().popPose();
-        Lighting.setupFor3DItems();
-    }
-
     private static int[] slots(int start) {
-        int[] slots = new int[9];
-        for (int i = 0; i < 9; i++) {
-            slots[i] = start + i;
-        }
-        return slots;
+        int[] s = new int[9];
+        for (int i = 0; i < 9; i++) s[i] = start + i;
+        return s;
     }
 
-    public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw, Model pModel, Identifier texture) {
-        pGuiGraphics.pose().pushPose();
-        pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
-        pGuiGraphics.pose().mulPose((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
-        Quaternionf quaternionf = Axis.ZP.rotationDegrees(180.0F);
-        Quaternionf rotation = Axis.YP.rotationDegrees(rotationYaw + 180.0F);
-        quaternionf.mul(rotation);
-        pGuiGraphics.pose().mulPose(quaternionf);
-        Lighting.setupForEntityInInventory();
-        VertexConsumer vertexConsumer = pGuiGraphics.bufferSource().getBuffer(pModel.renderType(texture));
-        pModel.renderToBuffer(pGuiGraphics.pose(), vertexConsumer, 15728880, OverlayTexture.NO_OVERLAY);
-        pGuiGraphics.flush();
-        pGuiGraphics.pose().popPose();
-        Lighting.setupFor3DItems();
-    }
-
-    private void setSlotPos(Slot slot, int x, int y) {
-        try {
-            slotX.set(slot, x);
-            slotY.set(slot, y);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public void renderCustomModel(GuiGraphicsExtractor graphics, int pX, int pY, int pScale, float rotationYaw, Model pModel, Identifier texture) {
+        graphics.pose().pushMatrix();
+        graphics.pose().translate((float) pX, (float) pY);
+        graphics.pose().scale((float) pScale, (float) pScale);
+        Quaternionf tilt = Axis.ZP.rotationDegrees(180.0F);
+        Quaternionf rot = Axis.YP.rotationDegrees(rotationYaw + 180.0F);
+        tilt.mul(rot);
+        var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        this.lightingInstance.setupFor(Lighting.Entry.ENTITY_IN_UI);
+        com.mojang.blaze3d.vertex.PoseStack poseStack = new com.mojang.blaze3d.vertex.PoseStack();
+        poseStack.mulPose(tilt);
+        pModel.renderToBuffer(poseStack,
+                bufferSource.getBuffer(pModel.renderType(texture)),
+                15728880,
+                OverlayTexture.NO_OVERLAY);
+        bufferSource.endBatch();
+        graphics.pose().popMatrix();
+        this.lightingInstance.setupFor(Lighting.Entry.ITEMS_3D);
     }
 
     @Override
@@ -174,399 +117,157 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             this.internalPartsModel = new PlayerInternalPartsModel(this.minecraft.getEntityModels().bakeLayer(PlayerInternalPartsModel.LAYER_LOCATION));
         }
         this.startTime = System.currentTimeMillis();
-        int listBtnX = this.leftPos + 158;
-        int listBtnY = this.topPos + 4;
-        this.installedListButton = new AbstractWidget(listBtnX, listBtnY, 10, 10, Component.empty()) {
+        this.installedListButton = new AbstractWidget(this.leftPos + 158, this.topPos + 4, 10, 10, Component.empty()) {
             @Override
-            public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-                guiGraphics.blit(TEXTURE, this.getX(), this.getY(), 176, 122, 10, 10, 256, 256);
-                if (this.isHovered()) {
-                    guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);
-                    guiGraphics.renderTooltip(font, Component.translatable("gui.cyber_ware_port.button.view_installed"), mouseX, mouseY);
+            protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 176, 122, 10, 10, 256, 256);
+                if (this.isHovered) {
+                    graphics.fill(0, 0, 10, 10, 0x50FFFFFF);
+                    graphics.setTooltipForNextFrame(Minecraft.getInstance().font,
+                            List.of(Component.translatable("gui.cyber_ware_port.button.view_installed")),
+                            null, ItemStack.EMPTY, mouseX, mouseY, null);
                 }
             }
 
             @Override
-            public void onClick(double mouseX, double mouseY) {
-                Minecraft.getInstance().setScreen(new InstalledCyberwareScreen(RobosurgeonScreen.this));
+            protected void updateWidgetNarration(@NotNull NarrationElementOutput narration) {
+                this.defaultButtonNarrationText(narration);
             }
 
             @Override
-            protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
-                this.defaultButtonNarrationText(narrationElementOutput);
+            public void onClick(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+                Minecraft.getInstance().setScreen(new InstalledCyberwareScreen(RobosurgeonScreen.this));
             }
         };
         this.addRenderableWidget(this.installedListButton);
     }
 
     @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        long elapsedTime = System.currentTimeMillis() - this.startTime;
-        if (elapsedTime < ANIMATION_DURATION) {
-            return super.mouseClicked(pMouseX, pMouseY, pButton);
-        }
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         updateSlotPositions();
-        if (!this.menu.getCarried().isEmpty()) {
-            return super.mouseClicked(pMouseX, pMouseY, pButton);
-        }
-        if (pButton == 0 || pButton == 1) {
-            if (this.selectedMarker != null) {
-                Slot hoveredSlot = null;
-                for (Slot slot : this.menu.slots) {
-                    if (slot.x > 10000 || slot.y > 10000) continue;
-                    int slotLeft = this.leftPos + slot.x;
-                    int slotTop = this.topPos + slot.y;
-                    if (pMouseX >= slotLeft && pMouseX < slotLeft + 16 && pMouseY >= slotTop && pMouseY < slotTop + 16) {
-                        hoveredSlot = slot;
-                        break;
-                    }
-                }
-                if (hoveredSlot != null && hoveredSlot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) {
-                    if (hoveredSlot.hasItem() && hoveredSlot.getItem().getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
-                        PacketDistributor.sendToServer(new SurgeryGhostTogglePacket(this.menu.blockEntity.getBlockPos(), hoveredSlot.index));
-                        hoveredSlot.set(ItemStack.EMPTY);
-                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
-                        return true;
-                    } else if (!hoveredSlot.hasItem()) {
-                        PacketDistributor.sendToServer(new SurgeryGhostTogglePacket(this.menu.blockEntity.getBlockPos(), hoveredSlot.index));
-                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
-                        return true;
-                    }
-                }
-            }
-        }
-        if (pButton == 0) {
-            if (this.selectedPart != BodyPart.NONE && this.selectedMarker == null) {
-                int modelCenterX = (int) (this.leftPos + 88 + currentOffsetX);
-                int modelCenterY = (int) (this.topPos + TOP_HEIGHT - 15 + currentOffsetY);
-                if (this.selectedPart == BodyPart.INTERNAL) {
-                    modelCenterX -= 48;
-                    modelCenterY += 26;
-                }
-                float radRot = (float) Math.toRadians(this.viewRotation);
-                float sin = (float) Math.sin(radRot);
-                float cos = (float) Math.cos(radRot);
-                float scaleFactor = currentScale * 0.065f;
-                for (TargetMarker marker : this.selectedPart.markers) {
-                    float screenOffsetX = (marker.modelX() * cos) - (marker.modelZ() * sin);
-                    int markerX = modelCenterX + (int) (screenOffsetX * scaleFactor) - 8;
-                    int markerY = modelCenterY - (int) (marker.modelY() * scaleFactor) - 8;
-                    if (pMouseX >= markerX && pMouseX < markerX + 16 && pMouseY >= markerY && pMouseY < markerY + 16) {
-                        this.selectedMarker = marker;
-                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.2F));
-                        return true;
-                    }
-                }
-            }
-            if (this.selectedPart == BodyPart.NONE) {
-                int x = (this.width - this.imageWidth) / 2;
-                int y = (this.height - this.imageHeight) / 2;
-                int subBaseX = x + 40;
-                int subBaseY = y + TOP_HEIGHT - 55;
-                if (pMouseX >= subBaseX - 18.5 && pMouseX <= subBaseX + 18.5 && pMouseY >= subBaseY - 18.5 && pMouseY <= subBaseY + 18.5) {
-                    this.selectedPart = BodyPart.INTERNAL;
-                    this.hideName = true;
-                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
-                    return true;
-                }
-            }
-            if (this.menu.getCarried().isEmpty() && this.getSlotUnderMouse() == null) {
-                if (pMouseX >= this.leftPos && pMouseX < this.leftPos + this.imageWidth && pMouseY >= this.topPos && pMouseY < this.topPos + TOP_HEIGHT) {
-                    this.potentialDrag = true;
-                    this.dragStartX = pMouseX;
-                    return true;
-                }
-            }
-        }
-        return super.mouseClicked(pMouseX, pMouseY, pButton);
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+        drawAbsoluteOverlays(graphics, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
-        if (this.potentialDrag && pButton == 0) {
-            if (!this.isDraggingModel) {
-                this.isDraggingModel = true;
-                this.rotationStart = this.viewRotation;
-            }
-            this.viewRotation = this.rotationStart + (float) (pMouseX - this.dragStartX);
-            return true;
-        }
-        return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0, 0, GUI_WIDTH, TOP_HEIGHT, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, TOP_HEIGHT, 0, 131, GUI_WIDTH, BOTTOM_HEIGHT, 256, 256);
+        drawRelativeModels(graphics);
+        super.extractContents(graphics, mouseX, mouseY, a);
     }
 
     @Override
-    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
-        if (pButton != 0) return super.mouseReleased(pMouseX, pMouseY, pButton);
-        if (this.isDraggingModel) {
-            this.isDraggingModel = false;
-            this.potentialDrag = false;
-            return true;
-        }
-        if (this.potentialDrag) {
-            boolean partClicked = false;
-            if (this.selectedPart == BodyPart.NONE) {
-                int entityX = this.leftPos + 88;
-                int entityY = this.topPos + TOP_HEIGHT - 15;
-                for (BodyPart part : BodyPart.values()) {
-                    if (part == BodyPart.NONE) continue;
-                    if (pMouseX >= entityX + part.hitX - (part.hitW / 2.0) && pMouseX <= entityX + part.hitX + (part.hitW / 2.0) &&
-                            pMouseY >= entityY + part.hitY - (part.hitH / 2.0) && pMouseY <= entityY + part.hitY + (part.hitH / 2.0)) {
-                        this.selectedPart = part;
-                        this.hideName = true;
-                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
-                        partClicked = true;
-                        break;
-                    }
-                }
-            }
-            if (!partClicked && this.selectedPart != BodyPart.NONE) {
-                this.selectedPart = BodyPart.NONE;
-                this.selectedMarker = null;
-                this.hideName = false;
-            }
-            this.potentialDrag = false;
-            return true;
-        }
-        return super.mouseReleased(pMouseX, pMouseY, pButton);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        if (this.minecraft.player == null) return;
+        CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+        int maxTolerance = data.getMaxTolerance(this.minecraft.player);
+        int currentCost = calculateTotalEssenceCost();
+        int remaining = maxTolerance - currentCost;
+        int color = (remaining < 0) ? 0xFFAA0000 : (remaining < 25 ? 0xFFFF5555 : 0xFF00FFFF);
+        graphics.text(this.font, Component.literal(remaining + " / " + maxTolerance), 18, 6, color, true);
+        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
     }
 
-    @Override
-    public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        updateSlotPositions();
-        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        int maxTolerance = 100;
-        if (this.minecraft != null && this.minecraft.player != null) {
-            maxTolerance = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get()).getMaxTolerance(this.minecraft.player);
-        }
-        SurgeryAlert alert = SurgeryAnalyzer.check(this.menu.slots, maxTolerance);
-        if (alert != null) {
-            int iconX = this.leftPos + 155;
-            int iconY = this.topPos + 20;
-            pGuiGraphics.blit(ALERT_ICON, iconX, iconY, 0, 0, 16, 16, 16, 16);
-            if (pMouseX >= iconX && pMouseX < iconX + 16 && pMouseY >= iconY && pMouseY < iconY + 16) {
-                pGuiGraphics.renderTooltip(this.font, alert.message(), pMouseX, pMouseY);
-            }
-        }
+    private void drawAbsoluteOverlays(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (this.selectedPart != BodyPart.NONE && this.selectedMarker == null) {
-            pGuiGraphics.pose().pushPose();
-            pGuiGraphics.pose().translate(0, 0, 100);
-            int modelCenterX = (int) (this.leftPos + 88 + currentOffsetX);
-            int modelCenterY = (int) (this.topPos + TOP_HEIGHT - 15 + currentOffsetY);
-            if (this.selectedPart == BodyPart.INTERNAL) {
-                modelCenterX -= 48;
-                modelCenterY += 26;
-            }
+            float scaleFactor = currentScale * 0.065f;
             float radRot = (float) Math.toRadians(this.viewRotation);
             float sin = (float) Math.sin(radRot);
             float cos = (float) Math.cos(radRot);
-            float scaleFactor = currentScale * 0.065f;
-            RenderSystem.enableBlend();
-            pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.8F);
+            int modelCenterX = (int) (this.leftPos + 88 + currentOffsetX);
+            int modelCenterY = (int) (this.topPos + TOP_HEIGHT - 15 + currentOffsetY);
             for (TargetMarker marker : this.selectedPart.markers) {
                 float screenOffsetX = (marker.modelX() * cos) - (marker.modelZ() * sin);
                 int markerX = modelCenterX + (int) (screenOffsetX * scaleFactor) - 8;
                 int markerY = modelCenterY - (int) (marker.modelY() * scaleFactor) - 8;
-                pGuiGraphics.blit(MARKER_TEXTURE, markerX, markerY, 0, 0, 16, 16, 16, 16);
-                if (pMouseX >= markerX && pMouseX < markerX + 16 && pMouseY >= markerY && pMouseY < markerY + 16) {
-                    pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-                    pGuiGraphics.renderTooltip(this.font, marker.name(), pMouseX, pMouseY);
-                    pGuiGraphics.fill(markerX, markerY, markerX + 16, markerY + 16, 0x50FFFFFF);
-                    pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.8F);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, MARKER_TEXTURE, markerX, markerY, 0, 0, 16, 16, 16, 16);
+                if (mouseX >= markerX && mouseX < markerX + 16 && mouseY >= markerY && mouseY < markerY + 16) {
+                    graphics.setTooltipForNextFrame(this.font, List.of(marker.name()), null, ItemStack.EMPTY, mouseX, mouseY, null);
                 }
             }
-            pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.disableBlend();
-            pGuiGraphics.pose().popPose();
         }
-        if (this.selectedMarker != null) {
-            pGuiGraphics.pose().pushPose();
-            pGuiGraphics.pose().translate(0, 0, 100);
-            int slotCount = this.selectedMarker.relatedSlots().length;
-            int uiWidth = (SLOT_SIZE * slotCount) + (SLOT_SPACING * (slotCount - 1));
-            int uiX = this.leftPos + (this.imageWidth - uiWidth) / 2;
-            int installedY = this.topPos + 80;
-            int stagingY = this.topPos + 105;
-            RenderSystem.enableBlend();
-            for (int i = 0; i < slotCount; i++) {
-                int slotX = uiX + (i * (SLOT_SIZE + SLOT_SPACING));
-                pGuiGraphics.blit(BLUE_SLOT_TEXTURE, slotX - 1, stagingY - 1, 0, 0, 18, 18, 18, 18);
-                pGuiGraphics.blit(RED_SLOT_TEXTURE, slotX - 1, installedY - 1, 0, 0, 18, 18, 18, 18);
+        SurgeryAlert alert = SurgeryAnalyzer.check(this.menu.slots, 100);
+        if (alert != null) {
+            int iconX = this.leftPos + 155;
+            int iconY = this.topPos + 20;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ALERT_ICON, iconX, iconY, 0, 0, 16, 16, 16, 16);
+            if (mouseX >= iconX && mouseX < iconX + 16 && mouseY >= iconY && mouseY < iconY + 16) {
+                graphics.setTooltipForNextFrame(this.font, List.of(alert.message()), null, ItemStack.EMPTY, mouseX, mouseY, null);
             }
-            RenderSystem.disableBlend();
-            if (this.minecraft != null && this.minecraft.player != null) {
-                CyberwareUserData cyberware = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-                IItemHandler installed = cyberware.getInstalledCyberware();
-                for (int i = 0; i < slotCount; i++) {
-                    int slotId = this.selectedMarker.relatedSlots()[i];
-                    int itemX = uiX + (i * (SLOT_SIZE + SLOT_SPACING)) + 1;
-                    if (slotId < installed.getSlots()) {
-                        ItemStack installedStack = installed.getStackInSlot(slotId);
-                        pGuiGraphics.renderItem(installedStack, itemX, installedY + 1);
-                        pGuiGraphics.renderItemDecorations(this.font, installedStack, itemX, installedY + 1);
-                        if (this.menu.getSlot(slotId).getItem().isEmpty() && !installedStack.isEmpty()) {
-                            pGuiGraphics.pose().pushPose();
-                            pGuiGraphics.pose().translate(0, 0, 150);
-                            pGuiGraphics.renderItem(installedStack, itemX, stagingY + 1);
-                            pGuiGraphics.fill(itemX, stagingY + 1, itemX + 16, stagingY + 17, 0x80000000);
-                            pGuiGraphics.pose().popPose();
-                        }
-                    }
-                }
-            }
-            renderGhostConflict(pGuiGraphics, slotCount, uiX, stagingY, installedY);
-            pGuiGraphics.pose().popPose();
         }
-        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
-    @Override
-    protected void renderBg(@NotNull GuiGraphics g, float partial, int mouseX, int mouseY) {
-        int x = this.leftPos;
-        int y = this.topPos;
-        g.blit(TEXTURE, x, y, 0, 0, GUI_WIDTH, TOP_HEIGHT);
-        g.blit(TEXTURE, x, y + TOP_HEIGHT, 0, TEXTURE_INVENTORY_START_Y, GUI_WIDTH, BOTTOM_HEIGHT);
-        int maxEssence = 100, currentEssence = 0;
-        if (this.minecraft.player != null) {
-            CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-            maxEssence = data.getMaxTolerance(this.minecraft.player);
-            currentEssence = data.getTolerance(this.minecraft.player);
-        }
-        int projectedCost = 0;
-        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-            ItemStack stack = this.menu.getSlot(i).getItem();
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) projectedCost += cw.getEssenceCost(stack) * stack.getCount();
-        }
-        int projectedEssence = maxEssence - projectedCost;
-        int barX = x + 5, barY = y + 4, barW = 8, barH = 48;
-        g.blit(TEXTURE, barX, barY, 211, 61, barW, barH);
-        drawEssenceBar(g, projectedEssence, maxEssence, barX, barY, barW, barH);
-        if (currentEssence > projectedEssence) {
-            float time = (System.currentTimeMillis() % 1000) / 1000f;
-            g.setColor(1f, 1f, 1f, 0.45f + 0.25f * (float) Math.sin(time * 2 * Math.PI));
-            drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
-            g.setColor(1f, 1f, 1f, 1f);
-        }
+    private void drawRelativeModels(GuiGraphicsExtractor graphics) {
+        int maxEssence = this.minecraft.player != null ?
+                this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get()).getMaxTolerance(this.minecraft.player) : 100;
+        int projectedEssence = maxEssence - calculateTotalEssenceCost();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 5, 4, 211, 61, 8, 48, 256, 256);
+        drawEssenceBar(graphics, projectedEssence, maxEssence, 5, 4, 8, 48);
         float spd = 0.05f;
         currentScale += ((selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale) - currentScale) * spd;
         currentOffsetX += ((selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX) - currentOffsetX) * spd;
         currentOffsetY += ((selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetY) - currentOffsetY) * spd;
-        int drawX = (int) (x + 88 + currentOffsetX), drawY = (int) (y + TOP_HEIGHT - 15 + currentOffsetY);
+        int drawX = (int) (88 + currentOffsetX);
+        int drawY = (int) (TOP_HEIGHT - 15 + currentOffsetY);
         if (!this.hideName && this.minecraft.player != null) {
             String name = "_" + this.minecraft.player.getName().getString().toUpperCase();
-            g.drawString(this.font, name, drawX - this.font.width(name) / 2, drawY, 0x00FFFF, true);
+            graphics.text(this.font, Component.literal(name), drawX - this.font.width(name) / 2, drawY, 0xFF00FFFF, true);
         }
         long elapsed = System.currentTimeMillis() - startTime;
         float ease = (elapsed < ANIMATION_DURATION) ? (1f - (float) Math.pow(1f - Math.min(elapsed / ANIMATION_DURATION, 1f), 3)) : 1.0f;
         float currentRotation = isDraggingModel ? this.viewRotation : ease * 360f;
-        if (this.internalPartsModel != null && this.selectedPart != BodyPart.ARM_LEFT && this.selectedPart != BodyPart.ARM_RIGHT && this.selectedPart != BodyPart.LEG_LEFT && this.selectedPart != BodyPart.LEG_RIGHT && this.selectedPart != BodyPart.HEAD && this.selectedPart != BodyPart.TORSO) {
-            int subX = (this.selectedPart == BodyPart.INTERNAL) ? drawX - 48 : x + 40;
-            int subY = (this.selectedPart == BodyPart.INTERNAL) ? drawY : y + TOP_HEIGHT - 21;
-            int subScale = (this.selectedPart == BodyPart.INTERNAL) ? (int) currentScale : 40;
-            if (this.selectedPart == BodyPart.NONE) {
-                int boxX = subX - 18, boxY = subY - 52;
-                g.renderOutline(boxX, boxY, 37, 37, 0xFF00FFFF);
-                g.fill(boxX + 28, boxY + 18, drawX, boxY + 19, 0xFF00FFFF);
-            }
-            for (int i = 0; i < 3; i++) {
-                this.internalPartsModel.setVisibleLayer(i);
-                int renderY = subY + (this.selectedPart == BodyPart.NONE ? 17 : 0);
-                renderCustomModel(g, subX, renderY, subScale, currentRotation, this.internalPartsModel, INTERNAL_PARTS_TEXTURE);
-            }
-        }
-        if (this.selectedPart != BodyPart.INTERNAL) {
-            double guiScale = this.minecraft.getWindow().getGuiScale();
-            int modelH = 115;
-            int scan = (int) (modelH * ease);
-            if (!isAnimating(elapsed)) {
-                if (skeletonModel != null) {
-                    RenderSystem.enableScissor((int) ((x + 5) * guiScale), (int) ((this.height - (y + TOP_HEIGHT)) * guiScale), (int) ((GUI_WIDTH - 10) * guiScale), (int) ((TOP_HEIGHT - 10) * guiScale));
-                    renderCustomModel(g, drawX, drawY, (int) (currentScale * 0.933f) + 5, currentRotation, skeletonModel, SKELETON_TEXTURE);
-                    RenderSystem.disableScissor();
-                }
-            } else if (this.minecraft.player != null) {
-                int scX = (int) ((drawX - 50) * guiScale), scW = (int) (100 * guiScale), scFeet = (int) ((this.height - drawY) * guiScale);
-                if (modelH - scan > 0) {
-                    RenderSystem.enableScissor(scX, scFeet, scW, (int) ((modelH - scan) * guiScale));
-                    renderEntityWithRotation(g, drawX, drawY, 50, currentRotation, this.minecraft.player);
-                    RenderSystem.disableScissor();
-                }
-                if (skeletonModel != null && scan > 0) {
-                    RenderSystem.enableScissor(scX, scFeet + (int) ((modelH - scan) * guiScale), scW, (int) (scan * guiScale));
-                    renderCustomModel(g, drawX, drawY, 47, currentRotation, skeletonModel, SKELETON_TEXTURE);
-                    RenderSystem.disableScissor();
-                }
-                g.blit(TEXTURE, drawX - 40, (drawY - modelH) + scan, 176, 110, 80, 1);
-            }
+        if (skeletonModel != null) {
+            graphics.enableScissor(this.leftPos + 5, this.topPos + 5, this.leftPos + GUI_WIDTH - 5, this.topPos + TOP_HEIGHT - 10);
+            renderCustomModel(graphics, drawX, drawY, (int) (currentScale * 0.933f), currentRotation, skeletonModel, SKELETON_TEXTURE);
+            graphics.disableScissor();
         }
     }
 
-    private boolean isAnimating(long elapsed) {
-        return elapsed < ANIMATION_DURATION;
-    }
-
-    @Override
-    protected void renderLabels(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
-        if (this.minecraft == null || this.minecraft.player == null) return;
-        CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        int maxTolerance = data.getMaxTolerance(this.minecraft.player), currentCost = 0;
+    private int calculateTotalEssenceCost() {
+        int cost = 0;
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
             ItemStack stack = this.menu.getSlot(i).getItem();
             ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) currentCost += cw.getEssenceCost(stack) * stack.getCount();
+            if (cw != null) cost += cw.getEssenceCost(stack) * stack.getCount();
         }
-        int remaining = maxTolerance - currentCost;
-        pGuiGraphics.drawString(this.font, remaining + " / " + maxTolerance, 18, 6, (remaining < 0) ? 0xAA0000 : (remaining < 25 ? 0xFF5555 : 0x00FFFF), true);
+        return cost;
+    }
+
+    private void drawEssenceBar(GuiGraphicsExtractor graphics, int essence, int maxEssence, int x, int y, int w, int h) {
+        int danger = (int) (maxEssence * 0.25f);
+        int rH = (int) (h * ((float) Math.min(Math.max(0, essence), danger) / maxEssence));
+        int bH = (int) (h * ((float) Math.max(0, essence - danger) / maxEssence));
+        if (rH > 0)
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y + (h - rH), 220, 61 + (48 - rH), w, rH, 256, 256);
+        if (bH > 0)
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y + (h - rH - bH), 176, 61 + (48 - (rH + bH)), w, bH, 256, 256);
     }
 
     private void updateSlotPositions() {
-        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-            if (i < this.menu.slots.size()) setSlotPos(this.menu.slots.get(i), 20000, 20000);
+        for (Slot slot : this.menu.slots) {
+            setSlotPos(slot, 20000, 20000);
         }
         if (this.selectedMarker != null) {
             int[] targets = this.selectedMarker.relatedSlots();
             int uiWidth = (SLOT_SIZE * targets.length) + (SLOT_SPACING * (targets.length - 1));
-            int uiX = (this.width - uiWidth) / 2;
+            int uiX = (this.imageWidth - uiWidth) / 2;
             for (int i = 0; i < targets.length; i++) {
-                if (targets[i] < this.menu.slots.size())
-                    setSlotPos(this.menu.slots.get(targets[i]), uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING)) + 1, 106);
-            }
-        }
-    }
-
-    private void renderGhostConflict(GuiGraphics g, int slotCount, int uiX, int stagingY, int installedY) {
-        ItemStack carried = this.menu.getCarried();
-        if (carried.isEmpty()) return;
-        ICyberware carriedCw = CyberwareAPI.getCyberware(carried);
-        if (carriedCw == null) return;
-        IItemHandler installed = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get()).getInstalledCyberware();
-        int[] related = this.selectedMarker.relatedSlots();
-        for (int j = 0; j < slotCount; j++) {
-            int targetId = related[j];
-            ItemStack other = this.menu.getSlot(targetId).getItem();
-            boolean isStaging = !other.isEmpty();
-            if (other.isEmpty() && targetId < installed.getSlots()) other = installed.getStackInSlot(targetId);
-            if (!other.isEmpty()) {
-                ICyberware otherCw = CyberwareAPI.getCyberware(other);
-                if (otherCw != null && ((carriedCw.getBodyPartType(carried) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE && carriedCw.getBodyPartType(carried) == otherCw.getBodyPartType(other)) || carriedCw.isIncompatible(carried, other) || otherCw.isIncompatible(other, carried))) {
-                    int x = uiX + (j * (SLOT_SIZE + SLOT_SPACING)), y = isStaging ? stagingY : installedY;
-                    g.pose().pushPose();
-                    g.pose().translate(0, 0, 400);
-                    g.fill(x, y, x + 18, y + 18, 0x80FF0000);
-                    g.renderOutline(x - 1, y - 1, 20, 20, 0xFFFF0000);
-                    g.drawString(this.font, "!", x + 6, y + 4, 0xFFFF0000, true);
-                    g.pose().popPose();
+                int slotIndex = targets[i];
+                if (slotIndex < this.menu.slots.size()) {
+                    setSlotPos(this.menu.slots.get(slotIndex), uiX + (i * (SLOT_SIZE + SLOT_SPACING)) + 1, 106);
                 }
             }
         }
     }
 
-    private void drawEssenceBar(GuiGraphics g, int essence, int maxEssence, int x, int y, int w, int h) {
-        int danger = (int) (maxEssence * 0.25f);
-        int rH = (int) (h * ((float) Math.min(Math.max(0, essence), danger) / maxEssence)), bH = (int) (h * ((float) Math.max(0, essence - danger) / maxEssence));
-        if (rH > 0) g.blit(TEXTURE, x, y + (h - rH), w, rH, 220, 61 + (48 - rH), w, rH, 256, 256);
-        if (bH > 0) g.blit(TEXTURE, x, y + (h - rH - bH), w, bH, 176, 61 + (48 - (rH + bH)), w, bH, 256, 256);
+    private void setSlotPos(Slot slot, int x, int y) {
+        try {
+            slotX.set(slot, x);
+            slotY.set(slot, y);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private enum BodyPart {

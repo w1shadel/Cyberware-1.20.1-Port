@@ -2,9 +2,7 @@ package com.maxwell.cyber_ware_port.client.screen.robosurgeon;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.network.ClientPacketHandler;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -34,17 +32,11 @@ public class SurgeryOverlay {
         }
     }
 
-    private static void renderBlackout(GuiGraphics g, float alpha) {
-        Minecraft mc = Minecraft.getInstance();
-        int width = mc.getWindow().getGuiScaledWidth();
-        int height = mc.getWindow().getGuiScaledHeight();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        g.pose().pushPose();
-        g.pose().translate(0, 0, 2000);
-        int color = ((int) (alpha * 255) << 24);
+    private static void renderBlackout(GuiGraphicsExtractor g, float alpha) {
+        int width = g.guiWidth();
+        int height = g.guiHeight();
+        int a = (int) (alpha * 255.0F);
+        int color = (a << 24);
         g.fill(0, 0, width, height, color);
-        g.pose().popPose();
-        RenderSystem.disableBlend();
     }
 }

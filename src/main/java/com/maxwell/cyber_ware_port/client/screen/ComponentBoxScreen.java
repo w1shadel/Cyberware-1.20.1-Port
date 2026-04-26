@@ -2,9 +2,9 @@ package com.maxwell.cyber_ware_port.client.screen;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.container.ComponentBoxMenu;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,17 +20,17 @@ public class ComponentBoxScreen extends AbstractContainerScreen<ComponentBoxMenu
     }
 
     @Override
-    protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        int x = (width - imageWidth) / 2;
-        int y = (height - imageHeight) / 2;
-        g.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
-    }
-
-    @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        renderBackground(g, mouseX, mouseY, partialTick);
-        super.render(g, mouseX, mouseY, partialTick);
-        renderTooltip(g, mouseX, mouseY);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        graphics.blit(
+                RenderPipelines.GUI_TEXTURED,
+                TEXTURE,
+                this.leftPos,
+                this.topPos,
+                0.0F, 0.0F,
+                this.imageWidth,
+                this.imageHeight,
+                256, 256
+        );
+        super.extractContents(graphics, mouseX, mouseY, a);
     }
 }

@@ -26,7 +26,7 @@ public record DoubleJumpPacket() implements CustomPacketPayload {
             if (ctx.player() instanceof ServerPlayer player) {
                 CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
                 if (data.isCyberwareInstalled(ModItems.LINEAR_ACTUATORS.get())
-                        && !player.getPersistentData().getBoolean("cyberware_double_jumped")) {
+                        && !player.getPersistentData().getBooleanOr("cyberware_double_jumped", false)) {
                     LinearActuatorsItem.performDoubleJump(player);
                     player.hurtMarked = true;
                 }

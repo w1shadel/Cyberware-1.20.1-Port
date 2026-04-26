@@ -7,13 +7,16 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentBoxMenu extends AbstractContainerMenu {
@@ -24,18 +27,18 @@ public class ComponentBoxMenu extends AbstractContainerMenu {
         super(ModMenuTypes.COMPONENT_BOX_MENU.get(), id);
         boolean mainHand = extraData.readBoolean();
         this.lockedStack = playerInv.player.getItemInHand(mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-        this.lockedSlotIndex = mainHand ? playerInv.selected : 40;
-        IItemHandler handler = lockedStack.getCapability(Capabilities.ItemHandler.ITEM);
-        addBoxSlots(handler != null ? handler : new ItemStackHandler(18));
+        this.lockedSlotIndex = mainHand ? playerInv.getSelectedSlot() : 40;
+        ResourceHandler<ItemResource> handler = lockedStack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(lockedStack));
+        addBoxSlots(handler != null ? handler : new ItemStacksResourceHandler(18));
         addPlayerInventory(playerInv);
     }
 
     public ComponentBoxMenu(int id, Inventory playerInv, ItemStack boxStack) {
         super(ModMenuTypes.COMPONENT_BOX_MENU.get(), id);
         this.lockedStack = boxStack;
-        this.lockedSlotIndex = (playerInv.player.getMainHandItem() == boxStack) ? playerInv.selected : 40;
-        IItemHandler handler = boxStack.getCapability(Capabilities.ItemHandler.ITEM);
-        addBoxSlots(handler != null ? handler : new ItemStackHandler(18));
+        this.lockedSlotIndex = (playerInv.player.getMainHandItem() == boxStack) ? playerInv.getSelectedSlot() : 40;
+        ResourceHandler<ItemResource> handler = boxStack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(boxStack));
+        addBoxSlots(handler != null ? handler : new ItemStacksResourceHandler(18));
         addPlayerInventory(playerInv);
     }
 
@@ -47,10 +50,11 @@ public class ComponentBoxMenu extends AbstractContainerMenu {
         addPlayerInventory(playerInv);
     }
 
-    private void addBoxSlots(IItemHandler handler) {
+    private void addBoxSlots(ResourceHandler<ItemResource> handler) {
+        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new SlotItemHandler(handler, col + row * 9, 8 + col * 18, 18 + row * 18));
+                this.addSlot(new ResourceHandlerSlot(handler, modifier, col + row * 9, 8 + col * 18, 18 + row * 18));
             }
         }
     }
@@ -73,12 +77,12 @@ public class ComponentBoxMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, @NotNull ClickType clickType, @NotNull Player player) {
+    public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
         if (lockedSlotIndex >= 0) {
-            if (slotId >= 0 && slotId < slots.size() && slots.get(slotId).getItem() == lockedStack) return;
-            if (clickType == ClickType.SWAP && button == lockedSlotIndex) return;
+            if (slotIndex >= 0 && slotIndex < slots.size() && slots.get(slotIndex).getItem() == lockedStack) return;
+            if (containerInput == ContainerInput.SWAP && buttonNum == lockedSlotIndex) return;
         }
-        super.clicked(slotId, button, clickType, player);
+        super.clicked(slotIndex, buttonNum, containerInput, player);
     }
 
     @Override

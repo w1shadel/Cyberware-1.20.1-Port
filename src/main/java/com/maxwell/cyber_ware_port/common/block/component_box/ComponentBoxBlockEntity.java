@@ -5,10 +5,9 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 import com.maxwell.cyber_ware_port.common.item.componentbox.ComponentBoxItem;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,19 +17,22 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentBoxBlockEntity extends BlockEntity implements MenuProvider {
-    public final ItemStackHandler itemHandler = new ItemStackHandler(18) {
+    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(18) {
         @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return isComponent(stack);
+        public boolean isValid(int index, ItemResource resource) {
+            return isComponent(resource.toStack());
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
+        protected void onContentsChanged(int index, ItemStack previousContents) {
             setChanged();
         }
     };
@@ -67,26 +69,22 @@ public class ComponentBoxBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        if (pTag.contains("Inventory")) {
-            itemHandler.deserializeNBT(pRegistries, pTag.getCompound("Inventory"));
-        }
-        if (pTag.contains("CustomName")) {
-            this.customName = Component.Serializer.fromJson(pTag.getString("CustomName"), pRegistries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        this.itemHandler.serialize(output.child("Inventory"));
+        if (this.customName != null) {
+            output.store("CustomName", ComponentSerialization.CODEC, this.customName);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.saveAdditional(pTag, pRegistries);
-        pTag.put("Inventory", itemHandler.serializeNBT(pRegistries));
-        if (this.customName != null) {
-            pTag.putString("CustomName", Component.Serializer.toJson(this.customName, pRegistries));
-        }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.itemHandler.deserialize(input.childOrEmpty("Inventory"));
+        this.customName = input.read("CustomName", ComponentSerialization.CODEC).orElse(null);
     }
 
-    public ItemStackHandler getItemHandler() {
+    public ItemStacksResourceHandler getItemHandler() {
         return itemHandler;
     }
 }

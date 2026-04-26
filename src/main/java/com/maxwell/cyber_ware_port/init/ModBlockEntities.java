@@ -19,14 +19,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, CyberWare.MODID);
-
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberSkullBlockEntity>> CYBER_SKULL =
             BLOCK_ENTITIES.register("cyber_wither_skeleton_skull",
-                    () -> new BlockEntityType<>( // Builder ではなくコンストラクタを直接呼ぶ
+                    () -> new BlockEntityType<>(
                             CyberSkullBlockEntity::new,
                             ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
                             ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get()
                     ));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }
@@ -37,7 +37,6 @@ public class ModBlockEntities {
                             SurgeryChamberBlockEntity::new,
                             ModBlocks.SURGERY_CHAMBER.get()
                     ));
-
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RobosurgeonBlockEntity>> ROBO_SURGEON =
             BLOCK_ENTITIES.register("robo_surgeon",
                     () -> new BlockEntityType<>(

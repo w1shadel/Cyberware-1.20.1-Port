@@ -12,13 +12,17 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CyberWare.MODID)
 public class CyberwareCapabilityProvider {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, CyberWare.MODID);
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<CyberwareUserData>> CYBERWARE_DATA =
             ATTACHMENT_TYPES.register("cyberware_data", () -> AttachmentType.serializable(CyberwareUserData::new)
                     .copyOnDeath()
+                    .sync(
+                            (holder, player) -> holder == player,
+                            CyberwareUserData.STREAM_CODEC
+                    )
                     .build());
 
     public static void register(IEventBus eventBus) {
@@ -28,15 +32,21 @@ public class CyberwareCapabilityProvider {
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerEntity(
-                Capabilities.EnergyStorage.ENTITY,
+                Capabilities.Energy.ENTITY,
                 net.minecraft.world.entity.EntityType.PLAYER,
                 (player, side) -> player.getData(CYBERWARE_DATA.get())
         );
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SCANNER.get(), (be, side) -> be.getExposedHandler());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.ROBO_SURGEON.get(), (be, side) -> be.getItemHandler());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.COMPONENT_BOX.get(), (be, side) -> be.getItemHandler());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.BLUEPRINT_CHEST.get(), (be, side) -> be.getItemHandler());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CYBERWARE_WORKBENCH.get(), (be, side) -> be.getItemHandler());
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.CHARGER.get(), (be, side) -> be.getEnergyStorage());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SCANNER.get(),
+                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ROBO_SURGEON.get(),
+                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.COMPONENT_BOX.get(),
+                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.BLUEPRINT_CHEST.get(),
+                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.CYBERWARE_WORKBENCH.get(),
+                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.Energy.BLOCK, ModBlockEntities.CHARGER.get(),
+                (be, side) -> be.getEnergyStorage());
     }
 }

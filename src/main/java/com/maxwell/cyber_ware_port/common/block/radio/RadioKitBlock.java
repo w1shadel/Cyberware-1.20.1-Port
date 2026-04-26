@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -96,7 +97,7 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
 
     @Override
     public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             boolean isPowered = pLevel.hasNeighborSignal(pPos);
             if (isPowered) {
                 pLevel.scheduleTick(pPos, this, 20);
@@ -105,9 +106,8 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos,
-                                boolean pIsMoving) {
-        if (!pLevel.isClientSide) {
+    protected void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, @org.jspecify.annotations.Nullable Orientation orientation, boolean movedByPiston) {
+        if (!pLevel.isClientSide()) {
             boolean isPoweredNow = pLevel.hasNeighborSignal(pPos);
             boolean wasPowered = pState.getValue(POWERED);
             if (isPoweredNow != wasPowered) {

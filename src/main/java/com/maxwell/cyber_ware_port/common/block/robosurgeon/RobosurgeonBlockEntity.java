@@ -14,8 +14,6 @@ import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.SyncSurgeryProgressPacket;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -33,10 +31,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +62,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     public static final int SLOT_HANDS = BodyRegionEnum.HANDS.getStartSlot();
     public static final int SLOT_LEGS = BodyRegionEnum.LEGS.getStartSlot();
     public static final int SLOT_BOOTS = BodyRegionEnum.BOOTS.getStartSlot();
-    private final ItemStackHandler itemHandler = createItemHandler();
+    private final ItemStacksResourceHandler itemHandler = createItemHandler();
     private final ContainerData data;
     private int progress = 0;
     private int maxProgress = 100;
@@ -71,7 +73,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, RobosurgeonBlockEntity entity) {
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
         BlockPos chamberPos = entity.findChamberPos();
         if (chamberPos == null) {
             entity.resetProgress();
@@ -125,6 +127,10 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         }
     }
 
+    private ItemStack getStack(int slot) {
+        return itemHandler.getResource(slot).toStack((int) itemHandler.getAmountAsLong(slot));
+    }
+
     public void performSurgery(ServerPlayer player) {
         if (!checkRequirements(player)) return;
         CyberwareSurgeryEvent.Pre preEvent = new CyberwareSurgeryEvent.Pre(player, this);
@@ -154,7 +160,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         Map<net.minecraft.world.item.Item, Integer> futureCounts = new HashMap<>();
         List<ItemStack> futureBody = new ArrayList<>();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
-            ItemStack table = itemHandler.getStackInSlot(i);
+            ItemStack table = getStack(i);
             ItemStack finalStack = SurgeryManager.isGhost(table) ? playerBody.getStackInSlot(i) : table;
             if (!finalStack.isEmpty()) {
                 futureBody.add(finalStack);
@@ -180,13 +186,19 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         return CyberwareAPI.getCyberware(stack);
     }
 
-    private ItemStackHandler createItemHandler() {
-        return new ItemStackHandler(TOTAL_SLOTS) {
+    private ItemStacksResourceHandler createItemHandler() {
+        return new ItemStacksResourceHandler(TOTAL_SLOTS) {
             @Override
-            public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            public boolean isValid(int index, ItemResource resource) {
+                ItemStack stack = resource.toStack();
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (cw == null) return false;
-                return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(slot);
+                return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(index);
+            }
+
+            @Override
+            protected void onContentsChanged(int index, ItemStack previousContents) {
+                setChanged();
             }
         };
     }
@@ -195,7 +207,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         ItemStackHandler playerBody = data.getInstalledCyberware();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
-            ItemStack table = itemHandler.getStackInSlot(i);
+            ItemStack table = getStack(i);
             if (SurgeryManager.isGhost(table)) continue;
             if (!ItemStack.matches(table, playerBody.getStackInSlot(i))) return true;
         }
@@ -236,24 +248,24 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        tag.put("inventory", itemHandler.serializeNBT(provider));
-        tag.putInt("progress", progress);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        this.itemHandler.serialize(output.child("inventory"));
+        output.putInt("progress", this.progress);
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
-        itemHandler.deserializeNBT(provider, tag.getCompound("inventory"));
-        progress = tag.getInt("progress");
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.itemHandler.deserialize(input.childOrEmpty("inventory"));
+        this.progress = input.getIntOr("progress", 0);
     }
 
     public void drops() {
         if (level == null) return;
         SimpleContainer inv = new SimpleContainer(TOTAL_SLOTS);
         for (int i = 0; i < TOTAL_SLOTS; i++) {
-            ItemStack stack = itemHandler.getStackInSlot(i);
+            ItemStack stack = getStack(i);
             if (!stack.isEmpty() && !isGhost(stack)) inv.setItem(i, stack);
         }
         Containers.dropContents(level, worldPosition, inv);
@@ -279,7 +291,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         };
     }
 
-    public ItemStackHandler getItemHandler() {
+    public ItemStacksResourceHandler getItemHandler() {
         return itemHandler;
     }
 }

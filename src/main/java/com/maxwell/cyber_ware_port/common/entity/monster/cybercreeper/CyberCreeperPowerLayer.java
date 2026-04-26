@@ -1,42 +1,36 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper;
 
-import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EnergySwirlLayer;
 import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperEntity, CyberCreeperModel> {
-    private static final Identifier POWER_LOCATION =
-            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/creeper/creeper_armor.png");
+@OnlyIn(Dist.CLIENT)
+public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperRenderState, CyberCreeperModel> {
+    private static final Identifier POWER_LOCATION = Identifier.withDefaultNamespace("textures/entity/creeper/creeper_armor.png");
     private final CyberCreeperModel model;
 
-    public CyberCreeperPowerLayer(RenderLayerParent<CyberCreeperEntity, CyberCreeperModel> pRenderer, EntityModelSet pModelSet) {
-        super(pRenderer);
-        this.model = new CyberCreeperModel(pModelSet.bakeLayer(CyberCreeperModel.ARMOR_LOCATION));
+    public CyberCreeperPowerLayer(RenderLayerParent<CyberCreeperRenderState, CyberCreeperModel> renderer, EntityModelSet modelSet) {
+        super(renderer);
+        this.model = new CyberCreeperModel(modelSet.bakeLayer(ModelLayers.CREEPER_ARMOR));
     }
 
-    @Override
-    public void render(PoseStack poseStack, net.minecraft.client.renderer.MultiBufferSource buffer, int packedLight, CyberCreeperEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entity.isPowered()) {
-            super.render(poseStack, buffer, packedLight, entity, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
-        }
+    protected boolean isPowered(CyberCreeperRenderState state) {
+        return state.isPowered;
     }
 
-    @Override
-    protected float xOffset(float pTickCount) {
-        return pTickCount * 0.01F;
+    protected float xOffset(float t) {
+        return t * 0.01F;
     }
 
-    @Override
     protected Identifier getTextureLocation() {
         return POWER_LOCATION;
     }
 
-    @Override
-    protected EntityModel<CyberCreeperEntity> model() {
+    protected CyberCreeperModel model() {
         return this.model;
     }
 }

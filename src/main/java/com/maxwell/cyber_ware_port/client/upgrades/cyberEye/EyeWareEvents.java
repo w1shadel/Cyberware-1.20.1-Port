@@ -20,7 +20,6 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class EyeWareEvents {
-
     private static boolean isFeatureActive(Player player, Item item) {
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         if (data == null) return false;

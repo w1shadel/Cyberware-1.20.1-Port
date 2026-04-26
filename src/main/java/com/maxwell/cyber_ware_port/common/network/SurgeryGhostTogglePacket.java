@@ -15,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements CustomPacketPayload {
     public static final Type<SurgeryGhostTogglePacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(CyberWare.MODID, "surgery_ghost_toggle"));
@@ -34,11 +36,11 @@ public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements Cust
             if (ctx.player() instanceof ServerPlayer player && player.level().isLoaded(pos)) {
                 BlockEntity be = player.level().getBlockEntity(pos);
                 if (be instanceof RobosurgeonBlockEntity tile) {
-                    ItemStackHandler itemHandler = tile.getItemHandler();
-                    ItemStack currentStack = itemHandler.getStackInSlot(slotId);
+                    ItemStacksResourceHandler itemHandler = tile.getItemHandler();
+                    ItemStack currentStack = itemHandler.getResource(slotId).toStack(itemHandler.getAmountAsInt(slotId));
                     boolean changed = false;
-                    if (!currentStack.isEmpty() && currentStack.getOrDefault(CyberWare.GHOST_COMPONENT, false)) {
-                        itemHandler.setStackInSlot(slotId, ItemStack.EMPTY);
+                    if (!currentStack.isEmpty() && currentStack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                        itemHandler.set(slotId, ItemResource.EMPTY, 0);
                         changed = true;
                     } else if (currentStack.isEmpty()) {
                         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
@@ -46,8 +48,8 @@ public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements Cust
                         ItemStack installed = body.getStackInSlot(slotId);
                         if (!installed.isEmpty()) {
                             ItemStack ghost = installed.copy();
-                            ghost.set(CyberWare.GHOST_COMPONENT, true);
-                            itemHandler.setStackInSlot(slotId, ghost);
+                            ghost.set(CyberWare.GHOST_COMPONENT.get(), true);
+                            itemHandler.set(slotId, ItemResource.of(ghost), ghost.getCount());
                             changed = true;
                         }
                     }

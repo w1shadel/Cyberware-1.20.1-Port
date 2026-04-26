@@ -16,22 +16,20 @@ public class ModRecipes {
     public static final DeferredRegister<RecipeType<?>> TYPES =
             DeferredRegister.create(Registries.RECIPE_TYPE, CyberWare.MODID);
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EngineeringRecipe>> ENGINEERING_SERIALIZER =
-            SERIALIZERS.register("engineering", () -> EngineeringRecipe.Serializer.INSTANCE);
+            SERIALIZERS.register("engineering", () -> new RecipeSerializer<>(
+                    EngineeringRecipe.CODEC,
+                    EngineeringRecipe.STREAM_CODEC
+            ));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AssemblyRecipe>> ASSEMBLY_SERIALIZER =
+            SERIALIZERS.register("assembly", () -> new RecipeSerializer<>(
+                    AssemblyRecipe.CODEC,
+                    AssemblyRecipe.STREAM_CODEC
+            ));
     public static final DeferredHolder<RecipeType<?>, RecipeType<EngineeringRecipe>> ENGINEERING_TYPE =
             TYPES.register("engineering", () -> new RecipeType<EngineeringRecipe>() {
-                @Override
-                public String toString() {
-                    return CyberWare.MODID + ":engineering";
-                }
             });
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AssemblyRecipe>> ASSEMBLY_SERIALIZER =
-            SERIALIZERS.register("assembly", () -> AssemblyRecipe.Serializer.INSTANCE);
     public static final DeferredHolder<RecipeType<?>, RecipeType<AssemblyRecipe>> ASSEMBLY_TYPE =
             TYPES.register("assembly", () -> new RecipeType<AssemblyRecipe>() {
-                @Override
-                public String toString() {
-                    return CyberWare.MODID + ":assembly";
-                }
             });
 
     public static void register(IEventBus eventBus) {

@@ -37,13 +37,13 @@ public class ChargerBlock extends Block implements EntityBlock {
 
     @Override
     protected @NotNull InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             BlockEntity be = pLevel.getBlockEntity(pPos);
             if (be instanceof ChargerBlockEntity charger) {
                 charger.toggleMode(pPlayer);
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
@@ -55,7 +55,7 @@ public class ChargerBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (pLevel.isClientSide) return null;
+        if (pLevel.isClientSide()) return null;
         return (lvl, pos, st, be) -> {
             if (be instanceof ChargerBlockEntity charger) {
                 charger.tick(lvl, pos, st);

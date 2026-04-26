@@ -1,9 +1,6 @@
 package com.maxwell.cyber_ware_port.client.upgrades;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -12,7 +9,6 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.LivingEntity;
 
 public class CyberLimbModel<S extends HumanoidRenderState> extends HumanoidModel<S> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_limbs"), "main");
@@ -50,6 +46,7 @@ public class CyberLimbModel<S extends HumanoidRenderState> extends HumanoidModel
                 PartPose.offset(1.9F, 12.0F, 0.0F));
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
+
     @Override
     public void setupAnim(S state) {
         super.setupAnim(state);

@@ -15,6 +15,15 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class AssemblyRecipe implements Recipe<RecipeInput> {
+    public static final MapCodec<AssemblyRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            SizedIngredient.CODEC.codec().listOf().fieldOf("inputs").forGetter(r -> r.inputs),
+            ItemStack.CODEC.fieldOf("output").forGetter(r -> r.output)
+    ).apply(inst, AssemblyRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> STREAM_CODEC = StreamCodec.composite(
+            SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.inputs,
+            ItemStack.STREAM_CODEC, r -> r.output,
+            AssemblyRecipe::new
+    );
     private final List<SizedIngredient> inputs;
     private final ItemStack output;
 
@@ -33,28 +42,42 @@ public class AssemblyRecipe implements Recipe<RecipeInput> {
     }
 
     @Override
-    public ItemStack assemble(RecipeInput pInput, HolderLookup.Provider pRegistries) {
+    public ItemStack assemble(RecipeInput recipeInput) {
         return output.copy();
     }
 
-    @Override
-    public boolean canCraftInDimensions(int pWidth, int pHeight) {
-        return true;
-    }
-
-    @Override
     public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
         return output;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public boolean showNotification() {
+        return true;
+    }
+
+    @Override
+    public String group() {
+        return "";
+    }
+
+    @Override
+    public RecipeSerializer<? extends AssemblyRecipe> getSerializer() {
         return ModRecipes.ASSEMBLY_SERIALIZER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends Recipe<RecipeInput>> getType() {
         return ModRecipes.ASSEMBLY_TYPE.get();
+    }
+
+    @Override
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.create(inputs.stream().map(SizedIngredient::ingredient).toList());
+    }
+
+    @Override
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
     }
 
     public record SizedIngredient(Ingredient ingredient, int count) {
@@ -71,24 +94,15 @@ public class AssemblyRecipe implements Recipe<RecipeInput> {
 
     public static class Serializer implements RecipeSerializer<AssemblyRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        private static final MapCodec<AssemblyRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                SizedIngredient.CODEC.codec().listOf().fieldOf("inputs").forGetter(r -> r.inputs),
-                ItemStack.CODEC.fieldOf("output").forGetter(r -> r.output)
-        ).apply(inst, AssemblyRecipe::new));
-        private static final StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> STREAM_CODEC = StreamCodec.composite(
-                SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.inputs,
-                ItemStack.STREAM_CODEC, r -> r.output,
-                AssemblyRecipe::new
-        );
 
         @Override
         public MapCodec<AssemblyRecipe> codec() {
-            return CODEC;
+            return AssemblyRecipe.CODEC;
         }
 
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> streamCodec() {
-            return STREAM_CODEC;
+            return AssemblyRecipe.STREAM_CODEC;
         }
     }
 }

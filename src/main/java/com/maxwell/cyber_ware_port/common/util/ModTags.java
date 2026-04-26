@@ -2,14 +2,13 @@ package com.maxwell.cyber_ware_port.common.util;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
 public class ModTags {
     public static class Items {
         public static final TagKey<Item> CYBERWARE = create("cyberware");
-
         public static final TagKey<Item> CYBERWARE_EYES = create("cyberware/eyes");
         public static final TagKey<Item> CYBERWARE_BRAIN = create("cyberware/brain");
         public static final TagKey<Item> CYBERWARE_HEART = create("cyberware/heart");
@@ -24,7 +23,7 @@ public class ModTags {
         public static final TagKey<Item> CYBERWARE_BOOTS = create("cyberware/boots");
 
         private static TagKey<Item> create(String name) {
-            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(CyberWare.MODID, name));
+            return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(CyberWare.MODID, name));
         }
     }
 }

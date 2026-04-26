@@ -1,25 +1,23 @@
 package com.maxwell.cyber_ware_port.common.block.surgerychamber;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("removal")
-public class SurgeryChamberModel extends Model {
+public class SurgeryChamberModel extends Model.Simple {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "surgery_chamber"), "main");
     private final ModelPart root;
     private final ModelPart door_left;
     private final ModelPart door_right;
 
     public SurgeryChamberModel(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
+        super(root, RenderTypes::entityCutout);
         this.root = root.getChild("root");
         this.door_left = this.root.getChild("door_left");
         this.door_right = this.root.getChild("door_right");
@@ -47,10 +45,5 @@ public class SurgeryChamberModel extends Model {
         this.door_left.xScale = scale;
         this.door_right.xScale = scale;
 
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int i1, int i2) {
-        root.render(poseStack, vertexConsumer, i, i1, i2);
     }
 }

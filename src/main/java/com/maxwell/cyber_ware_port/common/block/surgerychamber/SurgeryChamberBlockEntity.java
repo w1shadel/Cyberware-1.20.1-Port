@@ -12,6 +12,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +51,7 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
     }
 
     public void setDoorState(boolean open) {
-        if (this.level == null || this.level.isClientSide) return;
+        if (this.level == null || this.level.isClientSide()) return;
         BlockState currentState = this.getBlockState();
         if (currentState.getValue(SurgeryChamberBlock.OPEN) != open) {
             this.level.setBlock(this.worldPosition, currentState.setValue(SurgeryChamberBlock.OPEN, open), 3);
@@ -69,18 +71,16 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.saveAdditional(pTag, pRegistries);
-        pTag.putFloat("AnimationProgress", this.animationProgress);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putFloat("AnimationProgress", this.animationProgress);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        if (pTag.contains("AnimationProgress")) {
-            this.animationProgress = pTag.getFloat("AnimationProgress");
-            this.prevAnimationProgress = this.animationProgress;
-        }
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.animationProgress = input.getFloatOr("AnimationProgress", 0);
+        this.prevAnimationProgress = this.animationProgress;
     }
 
     @Override

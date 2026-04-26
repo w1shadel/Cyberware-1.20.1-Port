@@ -4,6 +4,7 @@ import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,7 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -97,7 +99,7 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
 
     @Override
     protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        if (pLevel.isClientSide) return InteractionResult.SUCCESS;
+        if (pLevel.isClientSide()) return InteractionResult.SUCCESS;
         BlockPos targetPos = pState.getValue(HALF) == DoubleBlockHalf.UPPER ? pPos.below() : pPos;
         BlockEntity blockEntity = pLevel.getBlockEntity(targetPos);
         if (blockEntity instanceof SurgeryChamberBlockEntity chamberEntity) {
@@ -109,7 +111,7 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
 
     @Override
     public BlockState playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
-        if (!pLevel.isClientSide && pPlayer.isCreative()) {
+        if (!pLevel.isClientSide() && pPlayer.isCreative()) {
             DoubleBlockHalf half = pState.getValue(HALF);
             if (half == DoubleBlockHalf.UPPER) {
                 BlockPos blockpos = pPos.below();
@@ -125,7 +127,7 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
+    protected BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess ticks, BlockPos pos, Direction pFacing, BlockPos pCurrentPos, BlockState pFacingState, RandomSource random) {
         DoubleBlockHalf half = pState.getValue(HALF);
         if (pFacing.getAxis() == Direction.Axis.Y && half == DoubleBlockHalf.LOWER == (pFacing == Direction.UP)) {
             return pFacingState.is(this) ? pState : Blocks.AIR.defaultBlockState();
@@ -133,7 +135,7 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
         if (half == DoubleBlockHalf.LOWER && pFacing == Direction.DOWN && !pState.canSurvive(pLevel, pCurrentPos)) {
             return Blocks.AIR.defaultBlockState();
         }
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+        return super.updateShape(pState, pLevel, ticks, pos, pFacing, pCurrentPos, pFacingState, random);
     }
 
     @Override
@@ -166,7 +168,7 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         BlockPos pos = pContext.getClickedPos();
         Level level = pContext.getLevel();
-        if (pos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(pos.above()).canBeReplaced(pContext)) {
+        if (pos.getY() < level.getMaxY() - 1 && level.getBlockState(pos.above()).canBeReplaced(pContext)) {
             return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
         }
         return null;

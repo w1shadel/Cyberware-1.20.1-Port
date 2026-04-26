@@ -8,7 +8,6 @@ import com.maxwell.cyber_ware_port.init.ModEntities;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -25,7 +24,10 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -37,17 +39,20 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.WitherSkull;
+import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class CyberWitherBoss extends Monster implements PowerableMob, RangedAttackMob, ICyberwareMob {
+public class CyberWitherBoss extends Monster implements RangedAttackMob, ICyberwareMob {
     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.defineId(CyberWitherBoss.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_B = SynchedEntityData.defineId(CyberWitherBoss.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_C = SynchedEntityData.defineId(CyberWitherBoss.class, EntityDataSerializers.INT);
@@ -61,7 +66,7 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     private final float[] yRotHeads = new float[2];
     private final float[] xRotOHeads = new float[2];
     private final float[] yRotOHeads = new float[2];
-    private final ServerBossEvent bossEvent = (ServerBossEvent) (new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
+    private final ServerBossEvent bossEvent;
     private boolean hasSummonedMinions = false;
     private int shieldTimer = 0;
     private int empCooldown = 200;
@@ -69,6 +74,13 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
 
     public CyberWitherBoss(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.bossEvent = new ServerBossEvent(
+                this.getUUID(),
+                this.getDisplayName(),
+                BossEvent.BossBarColor.RED,
+                BossEvent.BossBarOverlay.PROGRESS
+        );
+        this.bossEvent.setDarkenScreen(true);
         this.moveControl = new FlyingMoveControl(this, 10, false);
         this.setHealth(this.getMaxHealth());
         this.xpReward = 100;
@@ -111,7 +123,6 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
         FlyingPathNavigation nav = new FlyingPathNavigation(this, pLevel);
         nav.setCanOpenDoors(false);
         nav.setCanFloat(true);
-        nav.setCanPassDoors(true);
         return nav;
     }
 
@@ -128,7 +139,14 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, LIVING_ENTITY_SELECTOR));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(
+                this,
+                LivingEntity.class,
+                0,
+                false,
+                false,
+                (target, level) -> LIVING_ENTITY_SELECTOR.test(target)
+        ));
     }
 
     @Override
@@ -146,7 +164,7 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     @Override
     public void aiStep() {
         Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D);
-        if (!this.level().isClientSide && this.getAlternativeTarget(0) > 0) {
+        if (!this.level().isClientSide() && this.getAlternativeTarget(0) > 0) {
             Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
             if (entity != null) {
                 double d0 = vec3.y;
@@ -199,7 +217,7 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
             double d10 = this.getHeadY(l);
             double d2 = this.getHeadZ(l);
             this.level().addParticle(ParticleTypes.SMOKE, d8 + this.random.nextGaussian() * 0.3D, d10 + this.random.nextGaussian() * 0.3D, d2 + this.random.nextGaussian() * 0.3D, 0.0D, 0.0D, 0.0D);
-            if (flag && this.level().random.nextInt(4) == 0) {
+            if (flag && this.level().getRandom().nextInt(4) == 0) {
                 this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.7F, 0.7F, 0.5F), d8 + this.random.nextGaussian() * 0.3D, d10 + this.random.nextGaussian() * 0.3D, d2 + this.random.nextGaussian() * 0.3D, 0.0D, 0.0D, 0.0D);
             }
         }
@@ -208,14 +226,14 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
                 this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.7F, 0.7F, 0.9F), this.getX() + this.random.nextGaussian(), this.getY() + (double) (this.random.nextFloat() * 3.3F), this.getZ() + this.random.nextGaussian(), 0.0D, 0.0D, 0.0D);
             }
         }
-        if (!this.level().isClientSide) {
-            this.customServerAiStep();
+        if (!this.level().isClientSide()) {
+            this.customServerAiStep((ServerLevel) this.level());
         }
     }
 
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         if (this.getInvulnerableTicks() > 0) {
             int k1 = this.getInvulnerableTicks() - 1;
             this.bossEvent.setProgress(1.0F - (float) k1 / 220.0F);
@@ -289,10 +307,10 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
 
     private void spawnMinion(EntityDataAccessor<Integer> dataAccessor, double offsetX, double offsetZ) {
         if (this.level() instanceof ServerLevel serverLevel) {
-            CyberWitherSkeletonEntity minion = ModEntities.CYBER_WITHER_SKELETON.get().create(serverLevel);
+            CyberWitherSkeletonEntity minion = ModEntities.CYBER_WITHER_SKELETON.get().create(serverLevel, EntitySpawnReason.MOB_SUMMONED);
             if (minion != null) {
-                minion.moveTo(this.getX() + offsetX, this.getY(), this.getZ() + offsetZ, this.getYRot(), 0.0F);
-                minion.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                minion.snapTo(this.getX() + offsetX, this.getY(), this.getZ() + offsetZ, this.getYRot(), 0.0F);
+                minion.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
                 if (this.getTarget() != null) {
                     minion.setTarget(this.getTarget());
                 }
@@ -326,9 +344,12 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
             if (player instanceof ServerPlayer serverPlayer) {
                 CyberwareUserData data = serverPlayer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
                 if (data.getEnergyStored() > 0) {
-                    data.extractEnergy(5000, false);
+                    try (Transaction tx = Transaction.openRoot()) {
+                        data.extract(5000, tx);
+                        tx.commit();
+                    }
                     serverPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
-                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
+                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 200, 0));
                     serverPlayer.sendSystemMessage(Component.literal("§cWARNING: EMP SURGE DETECTED - SYSTEMS OFFLINE"));
                 }
                 hitAny = true;
@@ -341,17 +362,17 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     }
 
     @Override
-    public boolean hurt(DamageSource pSource, float pAmount) {
-        if (pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            return super.hurt(pSource, pAmount);
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return super.hurtServer(level, source, damage);
         }
         if (this.getInvulnerableTicks() > 0 || this.shieldTimer > 0) {
             return false;
         }
-        if (pSource.getEntity() instanceof CyberWitherBoss) {
+        if (source.getEntity() instanceof CyberWitherBoss) {
             return false;
         }
-        return super.hurt(pSource, pAmount);
+        return super.hurtServer(level, source, damage);
     }
 
     private double getHeadX(int pHead) {
@@ -378,29 +399,29 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putInt("Invul", this.getInvulnerableTicks());
-        pCompound.putBoolean("PhaseTwoUsed", hasSummonedMinions);
-        pCompound.putInt("ShieldTimer", shieldTimer);
-        pCompound.putBoolean("HalfHealthExploded", hasExplodedAtHalfHealth);
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Invul", this.getInvulnerableTicks());
+        output.putBoolean("PhaseTwoUsed", this.hasSummonedMinions);
+        output.putInt("ShieldTimer", this.shieldTimer);
+        output.putBoolean("HalfHealthExploded", this.hasExplodedAtHalfHealth);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setInvulnerableTicks(input.getIntOr("Invul", 0));
+        this.hasSummonedMinions = input.getBooleanOr("PhaseTwoUsed", false);
+        this.shieldTimer = input.getIntOr("ShieldTimer", 0);
+        this.hasExplodedAtHalfHealth = input.getBooleanOr("HalfHealthExploded", false);
+        if (this.hasCustomName()) {
+            this.bossEvent.setName(this.getDisplayName());
+        }
     }
 
     @Override
     public boolean isNoGravity() {
         return true;
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        this.setInvulnerableTicks(pCompound.getInt("Invul"));
-        this.hasSummonedMinions = pCompound.getBoolean("PhaseTwoUsed");
-        this.shieldTimer = pCompound.getInt("ShieldTimer");
-        this.hasExplodedAtHalfHealth = pCompound.getBoolean("HalfHealthExploded");
-        if (this.hasCustomName()) {
-            this.bossEvent.setName(this.getDisplayName());
-        }
     }
 
     public int getMinionId(int index) {
@@ -458,7 +479,6 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
         this.level().addFreshEntity(witherskull);
     }
 
-    @Override
     public boolean isPowered() {
         return this.getHealth() <= this.getMaxHealth() / 2.0F;
     }
@@ -503,13 +523,8 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
     }
 
     @Override
-    public boolean canChangeDimensions(Level pOldLevel, Level pNewLevel) {
-        return false;
-    }
-
-    @Override
     public void checkDespawn() {
-        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+        if (this.level().getDifficulty() == Difficulty.PEACEFUL) {
             this.discard();
         } else {
             this.noActionTime = 0;

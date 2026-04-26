@@ -5,9 +5,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -34,7 +34,7 @@ public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<Cyberware
         float rotationDegrees = facing.getOpposite().toYRot();
         pPoseStack.mulPose(Axis.YP.rotationDegrees(rotationDegrees + 180.0f));
         this.model.setupAnim(pBlockEntity, pPartialTick);
-        VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer vertexConsumer = pBufferSource.getBuffer(RenderTypes.entityCutout(TEXTURE));
         this.model.renderToBuffer(pPoseStack, vertexConsumer, pPackedLight, pPackedOverlay, -1);
         pPoseStack.popPose();
 

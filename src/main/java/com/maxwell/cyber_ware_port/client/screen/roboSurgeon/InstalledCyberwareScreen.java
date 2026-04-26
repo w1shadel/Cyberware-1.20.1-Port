@@ -2,7 +2,7 @@ package com.maxwell.cyber_ware_port.client.screen.robosurgeon;
 
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -31,44 +31,52 @@ public class InstalledCyberwareScreen extends Screen {
             this.onClose();
         }).bounds(this.width / 2 - 100, this.height - 28, 200, 20).build());
         if (this.minecraft != null && this.minecraft.player != null) {
+            this.installedCyberware.clear();
             CyberwareUserData cyberware = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             ItemStackHandler installed = cyberware.getInstalledCyberware();
             for (int i = 0; i < installed.getSlots(); i++) {
                 ItemStack stack = installed.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    this.installedCyberware.add(stack);
+                    this.installedCyberware.add(stack.copy());
                 }
             }
         }
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractRenderState(graphics, mouseX, mouseY, a);
         int listTop = 32;
         int listBottom = this.height - 36;
         int listLeft = this.width / 2 - 120;
         int listRight = this.width / 2 + 120;
-        guiGraphics.fill(listLeft, listTop, listRight, listBottom, 0x80000000);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
-        guiGraphics.enableScissor(listLeft, listTop, listRight, listBottom);
+        graphics.fill(listLeft, listTop, listRight, listBottom, 0x80000000);
+        int titleWidth = this.font.width(this.title);
+        graphics.text(this.font, this.title, (this.width - titleWidth) / 2, 15, 0xFFFFFFFF, false);
         int currentY = listTop + 4 - (int) this.scrollOffset;
         for (ItemStack stack : this.installedCyberware) {
-            guiGraphics.renderItem(stack, listLeft + 5, currentY);
-            guiGraphics.drawString(this.font, stack.getHoverName(), listLeft + 28, currentY + 5, 0xFFFFFF);
-            if (mouseY >= listTop && mouseY < listBottom && isMouseOver(mouseX, mouseY, listLeft + 5, currentY, 16, 16)) {
-                guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY);
+            if (currentY + ITEM_HEIGHT > listTop && currentY < listBottom) {
+                graphics.item(stack, listLeft + 5, currentY);
+                graphics.text(this.font, stack.getHoverName(), listLeft + 28, currentY + 5, 0xFFFFFFFF, false);
+                if (mouseX >= listLeft && mouseX <= listRight && mouseY >= currentY && mouseY <= currentY + ITEM_HEIGHT) {
+                    graphics.setTooltipForNextFrame(
+                            this.font,
+                            getTooltipFromItem(this.minecraft, stack),
+                            stack.getTooltipImage(),
+                            stack,
+                            mouseX, mouseY,
+                            null
+                    );
+                }
             }
             currentY += ITEM_HEIGHT;
         }
-        guiGraphics.disableScissor();
         int listHeight = listBottom - listTop;
         int contentHeight = this.installedCyberware.size() * ITEM_HEIGHT;
         if (contentHeight > listHeight) {
             int scrollBarHeight = (int) ((float) listHeight / contentHeight * listHeight);
             int scrollBarY = listTop + (int) (((float) this.scrollOffset / (contentHeight - listHeight)) * (listHeight - scrollBarHeight));
-            guiGraphics.fill(listRight - SCROLL_BAR_WIDTH - 1, scrollBarY, listRight - 1, scrollBarY + scrollBarHeight, 0xFFFFFFFF);
+            graphics.fill(listRight - SCROLL_BAR_WIDTH - 1, scrollBarY, listRight - 1, scrollBarY + scrollBarHeight, 0xFFFFFFFF);
         }
     }
 
@@ -78,12 +86,8 @@ public class InstalledCyberwareScreen extends Screen {
         int contentHeight = this.installedCyberware.size() * ITEM_HEIGHT;
         int maxScroll = Math.max(0, contentHeight - listHeight);
         this.scrollOffset -= scrollY * 10.0;
-        this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, maxScroll));
+        this.scrollOffset = Math.max(0, Math.min(this.scrollOffset, (double) maxScroll));
         return true;
-    }
-
-    private boolean isMouseOver(double mouseX, double mouseY, int x, int y, int width, int height) {
-        return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
     @Override

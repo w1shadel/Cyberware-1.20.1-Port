@@ -13,8 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class RobosurgeonMenu extends AbstractContainerMenu {
@@ -31,9 +33,10 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
         this.blockEntity = (RobosurgeonBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(entity.getLevel(), entity.getBlockPos());
         addDataSlots(data);
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        ResourceHandler<ItemResource> handler = this.blockEntity.getItemHandler();
+        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-            this.addSlot(new SlotItemHandler(handler, i, -10000, -10000) {
+            this.addSlot(new ResourceHandlerSlot(handler, modifier, i, -10000, -10000) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     if (!super.mayPlace(stack)) return false;
@@ -41,7 +44,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     if (myCw == null) return true;
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
                         if (j == this.getSlotIndex()) continue;
-                        ItemStack other = handler.getStackInSlot(j);
+                        ItemStack other = handler.getResource(j).toStack(handler.getAmountAsInt(j));
                         if (other.isEmpty() || other.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) continue;
                         ICyberware otherCw = CyberwareAPI.getCyberware(other);
                         if (otherCw == null) continue;
@@ -50,7 +53,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     int currentCount = stack.getCount();
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
                         if (j == this.getSlotIndex()) continue;
-                        ItemStack other = handler.getStackInSlot(j);
+                        ItemStack other = handler.getResource(j).toStack(handler.getAmountAsInt(j));
                         if (!other.isEmpty() && other.is(stack.getItem())) {
                             if (other.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) continue;
                             currentCount += other.getCount();
@@ -60,7 +63,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                 }
             });
         }
-        if (!inv.player.level().isClientSide && inv.player instanceof ServerPlayer serverPlayer) {
+        if (!inv.player.level().isClientSide() && inv.player instanceof ServerPlayer serverPlayer) {
             this.blockEntity.populateGhostItems(serverPlayer);
         }
         addPlayerInventory(inv);
@@ -68,7 +71,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, @NotNull ClickType clickType, @NotNull Player player) {
+    public void clicked(int slotId, int buttonNum, ContainerInput containerInput, Player player) {
         if (slotId >= 0 && slotId < RobosurgeonBlockEntity.TOTAL_SLOTS) {
             Slot slot = this.getSlot(slotId);
             if (slot.hasItem() && slot.getItem().getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
@@ -78,9 +81,10 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
             if (!carried.isEmpty()) {
                 ICyberware newCw = CyberwareAPI.getCyberware(carried);
                 if (newCw != null) {
-                    IItemHandler handler = this.blockEntity.getItemHandler();
+                    ResourceHandler<ItemResource> handler = this.blockEntity.getItemHandler();
                     for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-                        ItemStack existing = handler.getStackInSlot(i);
+                        ItemStack existing = handler.getResource(i).toStack(handler.getAmountAsInt(i));
+                        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
                         if (!existing.isEmpty() && existing.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
                             boolean shouldEject = (i == slotId);
                             if (!shouldEject) {
@@ -90,7 +94,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                                 }
                             }
                             if (shouldEject) {
-                                this.blockEntity.getItemHandler().setStackInSlot(i, ItemStack.EMPTY);
+                                modifier.set(i, ItemResource.EMPTY, 0);
                             }
                         }
                     }
@@ -98,7 +102,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
             }
             this.blockEntity.setChanged();
         }
-        super.clicked(slotId, button, clickType, player);
+        super.clicked(slotId, buttonNum, containerInput, player);
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -47,7 +48,7 @@ public class RobosurgeonBlock extends HorizontalDirectionalBlock implements Enti
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        if (pLevel.isClientSide) return null;
+        if (pLevel.isClientSide()) return null;
         return pBlockEntityType == ModBlockEntities.ROBO_SURGEON.get() ? (lvl, pos, st, be) -> RobosurgeonBlockEntity.tick(lvl, pos, st, (RobosurgeonBlockEntity) be) : null;
     }
 
@@ -58,7 +59,7 @@ public class RobosurgeonBlock extends HorizontalDirectionalBlock implements Enti
 
     @Override
     protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             BlockEntity be = pLevel.getBlockEntity(pPos);
             if (be instanceof RobosurgeonBlockEntity robosurgeon) {
                 pPlayer.openMenu(robosurgeon, pPos);
@@ -66,17 +67,15 @@ public class RobosurgeonBlock extends HorizontalDirectionalBlock implements Enti
                 throw new IllegalStateException("Our Container provider is missing!");
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof RobosurgeonBlockEntity robosurgeon) {
-                robosurgeon.drops();
-            }
+    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof RobosurgeonBlockEntity tile) {
+            tile.drops();
         }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+        super.destroy(level, pos, state);
     }
 }

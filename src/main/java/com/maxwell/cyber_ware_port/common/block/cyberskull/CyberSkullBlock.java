@@ -7,6 +7,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -33,10 +34,10 @@ public class CyberSkullBlock extends SkullBlock {
     }
 
     public static void checkSpawn(Level level, BlockPos pos, SkullBlockEntity skull) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockState blockstate = skull.getBlockState();
             boolean isBase = blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get()) || blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get());
-            if (isBase && pos.getY() >= level.getMinBuildHeight() && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL) {
+            if (isBase && pos.getY() >= level.getMinY() && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL) {
                 BlockPattern pattern = getOrCreateWitherFull();
                 BlockPattern.BlockPatternMatch match = pattern.find(level, pos);
                 if (match != null) {
@@ -52,10 +53,10 @@ public class CyberSkullBlock extends SkullBlock {
 
                         }
                     }
-                    CyberWitherBoss boss = ModEntities.CYBER_WITHER.get().create(level);
+                    CyberWitherBoss boss = ModEntities.CYBER_WITHER.get().create(level, EntitySpawnReason.MOB_SUMMONED);
                     if (boss != null) {
                         BlockPos blockpos = match.getBlock(1, 2, 0).getPos();
-                        boss.moveTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.55D, (double) blockpos.getZ() + 0.5D, match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
+                        boss.snapTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.55D, (double) blockpos.getZ() + 0.5D, match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
                         boss.yBodyRot = match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
                         for (ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, boss.getBoundingBox().inflate(50.0D))) {
                             CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, boss);
@@ -68,8 +69,7 @@ public class CyberSkullBlock extends SkullBlock {
                             for (int l = 0;
                                  l < pattern.getHeight();
                                  ++l) {
-                                level.blockUpdated(match.getBlock(k, l, 0).getPos(), Blocks.AIR);
-
+                                level.blockEntityChanged(match.getBlock(k, l, 0).getPos());
                             }
                         }
                     }

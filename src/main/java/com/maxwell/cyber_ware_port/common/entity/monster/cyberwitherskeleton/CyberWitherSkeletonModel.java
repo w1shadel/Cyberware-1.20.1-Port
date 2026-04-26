@@ -1,17 +1,16 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.Items;
 
 @SuppressWarnings("removal")
-public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkeletonEntity> {
+public class CyberWitherSkeletonModel<S extends CyberWitherSkeletonRenderState> extends HumanoidModel<S> {
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_witherskeleton"), "main");
     private final ModelPart waist;
@@ -26,6 +25,7 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
     private final ModelPart leftLeg;
 
     public CyberWitherSkeletonModel(ModelPart root) {
+        super(root);
         this.waist = root.getChild("waist");
         this.body = this.waist.getChild("body");
         this.head = this.body.getChild("head");
@@ -59,44 +59,31 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
     }
 
     @Override
-    public ModelPart root() {
-        return waist;
-
-    }
-
-    @Override
-    public void setupAnim(CyberWitherSkeletonEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entity == null) {
-            this.head.yRot = netHeadYaw * ((float) Math.PI / 180F);
-            this.head.xRot = headPitch * ((float) Math.PI / 180F);
-            return;
-
-        }
-        this.head.yRot = netHeadYaw * ((float) Math.PI / 180F);
-        this.head.xRot = headPitch * ((float) Math.PI / 180F);
+    public void setupAnim(CyberWitherSkeletonRenderState state) {
+        this.head.yRot = state.yRot * ((float) Math.PI / 180F);
+        this.head.xRot = state.xRot * ((float) Math.PI / 180F);
         this.rightArm.xRot = 0.0F;
         this.rightArm.yRot = 0.0F;
         this.rightArm.zRot = 0.0F;
         this.leftArm.xRot = 0.0F;
         this.leftArm.yRot = 0.0F;
         this.leftArm.zRot = 0.0F;
+        float limbSwing = state.walkAnimationPos;
+        float limbSwingAmount = state.walkAnimationSpeed;
         this.rightArm.xRot += Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 2.0F * limbSwingAmount * 0.5F;
         this.leftArm.xRot += Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F;
         this.rightLeg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
         this.leftLeg.xRot = Mth.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-        boolean isAggressive = entity.isAggressive();
-        boolean holdingBow = entity.getMainHandItem().is(Items.BOW);
-        if (isAggressive) {
-            if (holdingBow) {
+        if (state.isAggressive) {
+            if (state.isHoldingBow) {
                 this.rightArm.yRot = this.head.yRot - 0.1F;
                 this.leftArm.yRot = this.head.yRot + 0.1F;
                 this.rightArm.xRot = (-(float) Math.PI / 2F) + this.head.xRot;
                 this.leftArm.xRot = (-(float) Math.PI / 2F) + this.head.xRot;
                 this.leftArm.xRot -= 0.05F;
                 this.leftArm.yRot += 0.3F;
-
             } else {
-                float attackTime = entity.getAttackAnim(ageInTicks);
+                float attackTime = state.attackTime;
                 float sin1 = Mth.sin(attackTime * (float) Math.PI);
                 float sin2 = Mth.sin((1.0F - (1.0F - attackTime) * (1.0F - attackTime)) * (float) Math.PI);
                 this.rightArm.zRot = 0.0F;
@@ -107,15 +94,14 @@ public class CyberWitherSkeletonModel extends HierarchicalModel<CyberWitherSkele
                 this.leftArm.xRot = (-(float) Math.PI / 2F);
                 this.rightArm.xRot -= sin1 * 1.2F - sin2 * 0.4F;
                 this.leftArm.xRot -= sin1 * 1.2F - sin2 * 0.4F;
-
             }
         }
-        if (!isAggressive) {
-            this.rightArm.zRot += Mth.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-            this.leftArm.zRot -= Mth.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-            this.rightArm.xRot += Mth.sin(ageInTicks * 0.067F) * 0.05F;
-            this.leftArm.xRot -= Mth.sin(ageInTicks * 0.067F) * 0.05F;
-
+        if (!state.isAggressive) {
+            float age = state.ageInTicks;
+            this.rightArm.zRot += Mth.cos(age * 0.09F) * 0.05F + 0.05F;
+            this.leftArm.zRot -= Mth.cos(age * 0.09F) * 0.05F + 0.05F;
+            this.rightArm.xRot += Mth.sin(age * 0.067F) * 0.05F;
+            this.leftArm.xRot -= Mth.sin(age * 0.067F) * 0.05F;
         }
     }
 }

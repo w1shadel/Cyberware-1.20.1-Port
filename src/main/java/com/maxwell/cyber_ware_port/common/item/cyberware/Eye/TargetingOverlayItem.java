@@ -35,12 +35,10 @@ public class TargetingOverlayItem extends CyberwareItem {
     @Override
     public void onPlayerTick(PlayerTickEvent.Post event, ItemStack stack, LivingEntity wearer) {
         if (!isActive(stack) || wearer.level().isClientSide) return;
-
         if (wearer instanceof Player player) {
             double range = 32.0;
             AABB area = player.getBoundingBox().inflate(range);
             List<LivingEntity> entities = player.level().getEntitiesOfClass(LivingEntity.class, area, e -> e != player && e.isAlive());
-
             for (LivingEntity target : entities) {
                 target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, true, false));
             }

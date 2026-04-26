@@ -29,23 +29,14 @@ public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerM
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
                        AvatarRenderState state, float yRot, float xRot) {
-
-        // 1. プレイヤー実体の取得
         Entity entity = Minecraft.getInstance().level.getEntity(state.id);
         if (!(entity instanceof Player player)) return;
-
-        // 2. データの取得
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) {
             return;
         }
-
-        // 3. アニメーション同期
         this.cyberLimbModel.setupAnim(state);
-
         var renderType = RenderTypes.entityCutout(CYBER_SKIN_TEXTURE);
-
-
         if (data.hasCyberRightArm() && state.showRightSleeve) {
             submitNodeCollector.submitModelPart(
                     this.cyberLimbModel.rightArm,
@@ -53,10 +44,9 @@ public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerM
                     renderType,
                     packedLight,
                     OverlayTexture.NO_OVERLAY,
-                    null // Sprite は通常 null で OK
+                    null
             );
         }
-
         if (data.hasCyberLeftArm() && state.showLeftSleeve) {
             submitNodeCollector.submitModelPart(
                     this.cyberLimbModel.leftArm,
@@ -67,7 +57,6 @@ public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerM
                     null
             );
         }
-
         if (data.hasCyberRightLeg() && state.showRightPants) {
             submitNodeCollector.submitModelPart(
                     this.cyberLimbModel.rightLeg,
@@ -78,7 +67,6 @@ public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerM
                     null
             );
         }
-
         if (data.hasCyberLeftLeg() && state.showLeftPants) {
             submitNodeCollector.submitModelPart(
                     this.cyberLimbModel.leftLeg,

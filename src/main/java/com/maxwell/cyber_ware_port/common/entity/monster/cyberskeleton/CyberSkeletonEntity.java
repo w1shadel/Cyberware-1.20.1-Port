@@ -8,11 +8,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -28,6 +28,14 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
 
     public CyberSkeletonEntity(EntityType<? extends Skeleton> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    public boolean is(net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>> tag) {
+        if (tag == net.minecraft.tags.EntityTypeTags.BURN_IN_DAYLIGHT) {
+            return false;
+        }
+        return super.is(tag);
     }
 
     @Override
@@ -60,11 +68,6 @@ public class CyberSkeletonEntity extends Skeleton implements ICyberwareMob {
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
-    }
-
-    @Override
-    protected boolean isSunBurnTick() {
-        return false;
     }
 
     @Override

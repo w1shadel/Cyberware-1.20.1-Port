@@ -9,6 +9,7 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -16,8 +17,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -147,32 +148,30 @@ public class EntitiesItemDropEvents {
                 return;
             }
             event.setCanceled(true);
-            Level level = event.getLevel();
-            if (level.isClientSide) {
-                return;
+            if (event.getLevel() instanceof ServerLevel level) {
+                boolean mobGriefing = level.getGameRules().get(GameRules.MOB_GRIEFING);
+                Level.ExplosionInteraction interaction = mobGriefing
+                        ? Level.ExplosionInteraction.BLOCK
+                        : Level.ExplosionInteraction.NONE;
+                creeper.setCausingCustomExplosion(true);
+                float baseRadius = creeper.isPowered() ? 6.0F : 3.0F;
+                float finalRadius = baseRadius + 1.0F;
+                long time = level.getGameTime() % 24000;
+                if (time >= 0 && time < 13000) {
+                    finalRadius *= 1.5F;
+                }
+                level.explode(
+                        creeper,
+                        null,
+                        null,
+                        creeper.getX(),
+                        creeper.getY(),
+                        creeper.getZ(),
+                        finalRadius,
+                        false,
+                        interaction);
+                creeper.discard();
             }
-            boolean mobGriefing = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-            Level.ExplosionInteraction interaction = mobGriefing
-                    ? Level.ExplosionInteraction.BLOCK
-                    : Level.ExplosionInteraction.NONE;
-            creeper.setCausingCustomExplosion(true);
-            float baseRadius = creeper.isPowered() ? 6.0F : 3.0F;
-            float finalRadius = baseRadius + 1.0F;
-            long time = level.getDayTime() % 24000;
-            if (time >= 0 && time < 13000) {
-                finalRadius *= 1.5F;
-            }
-            level.explode(
-                    creeper,
-                    null,
-                    null,
-                    creeper.getX(),
-                    creeper.getY(),
-                    creeper.getZ(),
-                    finalRadius,
-                    false,
-                    interaction);
-            creeper.discard();
         }
     }
 }

@@ -9,8 +9,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class BlueprintItem extends Item {
     public BlueprintItem(Properties pProperties) {
@@ -38,13 +39,13 @@ public class BlueprintItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        Item target = getTargetItem(pStack);
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
+        Item target = getTargetItem(itemStack);
         if (target != null) {
-            pTooltipComponents.add(Component.literal("Schematic for: ").append(target.getDescription()));
+            builder.accept(Component.literal("Schematic for: ").append(target.getDescriptionId()));
         } else {
-            pTooltipComponents.add(Component.literal("Blank Schematic"));
+            builder.accept(Component.literal("Blank Schematic"));
         }
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
+        super.appendHoverText(itemStack, context, display, builder, tooltipFlag);
     }
 }

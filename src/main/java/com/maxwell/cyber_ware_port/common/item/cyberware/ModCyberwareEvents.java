@@ -7,6 +7,7 @@ import com.maxwell.cyber_ware_port.api.json.MobDataManager;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +16,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.*;
@@ -27,12 +28,18 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-@EventBusSubscriber(modid = CyberWare.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = CyberWare.MODID)
 public class ModCyberwareEvents {
     @SubscribeEvent
-    public static void onRegisterReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(new CyberwareDataManager());
-        event.addListener(new MobDataManager());
+    public static void onRegisterReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(
+                Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyberware_data"),
+                new CyberwareDataManager()
+        );
+        event.addListener(
+                Identifier.fromNamespaceAndPath(CyberWare.MODID, "mob_data"),
+                new MobDataManager()
+        );
     }
 
     private static void dispatch(LivingEntity entity, BiConsumer<ICyberware, ItemStack> action) {
