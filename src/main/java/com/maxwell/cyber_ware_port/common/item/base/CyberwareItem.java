@@ -13,6 +13,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -128,16 +130,19 @@ public class CyberwareItem extends Item implements ICyberware {
         return isPristine(stack) ? base : base / 2;
     }
 
-    public boolean tryConsumeEventEnergy(IEnergyStorage energyStorage, ItemStack stack) {
+    public boolean tryConsumeEventEnergy(EnergyHandler energyHandler, ItemStack stack) {
         int cost = this.getEventConsumption(stack);
         if (cost <= 0) return true;
-        if (energyStorage.extractEnergy(cost, true) == cost) {
-            energyStorage.extractEnergy(cost, false);
-            return true;
+
+        try (Transaction tx = Transaction.openRoot()) {
+            int extracted = energyHandler.extract(cost, tx);
+            if (extracted == cost) {
+                tx.commit();
+                return true;
+            }
         }
         return false;
     }
-
     @Override
     public StackingRule getStackingEnergyRule(ItemStack stack) {
         return this.stackingRule;

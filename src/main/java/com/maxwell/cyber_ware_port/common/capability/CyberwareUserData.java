@@ -118,6 +118,12 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
 
     public int getLastConsumption() {
         return this.lastConsumption;
+    }
+
+    public int getMaxTolerance(LivingEntity entity) {
+        CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getNewTolerance();
     }    private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -125,12 +131,6 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
             needsCapacityUpdate = true;
         }
     };
-
-    public int getMaxTolerance(LivingEntity entity) {
-        CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
-        NeoForge.EVENT_BUS.post(event);
-        return event.getNewTolerance();
-    }
 
     public void recalculateCapacity(ServerPlayer player) {
         float oldMaxHealth = player.getHealth();
@@ -473,6 +473,38 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         return maxEnergy;
     }
 
-
-
+    public boolean consumeEnergy(int amount) {
+        if (amount <= 0) return true;
+        try (Transaction tx = Transaction.openRoot()) {
+            int extracted = this.extract(amount, tx);
+            if (extracted >= amount) {
+                tx.commit();
+                return true;
+            }
+        }
+        return false;
+    }
+    public int extractEnergy(int amount, boolean simulate) {
+        if (simulate) {
+            return Math.min(this.currentEnergy, amount);
+        } else {
+            try (Transaction tx = Transaction.openRoot()) {
+                int extracted = this.extract(amount, tx);
+                tx.commit();
+                return extracted;
+            }
+        }
+    }
+    public int receiveEnergy(int amount, boolean simulate) {
+        if (amount <= 0) return 0;
+        if (simulate) {
+            return Math.min(amount, this.maxEnergy - this.currentEnergy);
+        } else {
+            try (Transaction tx = Transaction.openRoot()) {
+                int inserted = this.insert(amount, tx);
+                tx.commit();
+                return inserted;
+            }
+        }
+    }
 }

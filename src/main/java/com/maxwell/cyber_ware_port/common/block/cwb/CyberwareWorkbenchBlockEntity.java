@@ -90,6 +90,10 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
                 pBlockEntity.resetCrafting();
             }
         }
+    }
+
+    private ItemStack getStack(int slot) {
+        return itemHandler.getResource(slot).toStack((int) itemHandler.getAmountAsLong(slot));
     }    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int index, ItemStack previousContents) {
@@ -124,10 +128,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             return super.insert(slot, resource, amount, tx);
         }
     };
-
-    private ItemStack getStack(int slot) {
-        return itemHandler.getResource(slot).toStack((int) itemHandler.getAmountAsLong(slot));
-    }
 
     public void drops() {
         if (this.level == null) return;

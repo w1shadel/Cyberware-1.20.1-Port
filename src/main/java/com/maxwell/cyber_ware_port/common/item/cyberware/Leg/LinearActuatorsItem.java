@@ -51,7 +51,7 @@ public class LinearActuatorsItem extends CyberwareItem {
         if (!(wearer instanceof Player player)) return;
         CompoundTag tag = player.getPersistentData();
         if (player.isCrouching() && player.onGround()) {
-            int time = tag.getInt(NBT_CROUCH_TIME);
+            int time = tag.getIntOr(NBT_CROUCH_TIME, 0);
             if (time < 60) {
                 time++;
                 tag.putInt(NBT_CROUCH_TIME, time);
@@ -103,7 +103,7 @@ public class LinearActuatorsItem extends CyberwareItem {
         if (wearer.level().isClientSide()) return;
         if (!(wearer instanceof ServerPlayer player)) return;
         CompoundTag tag = player.getPersistentData();
-        if (tag.getBoolean(NBT_JUMP_READY)) {
+        if (tag.getBooleanOr(NBT_JUMP_READY, false)) {
             CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             if (tryConsumeEventEnergy(data, stack)) {
                 Vec3 look = wearer.getLookAngle();

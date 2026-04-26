@@ -24,7 +24,7 @@ public class HyperoxygenationBoostItem extends CyberwareItem {
             int cost = this.getEnergyConsumption(stack) * count;
             if (data.getEnergyStored() >= cost) {
                 data.extractEnergy(cost, false);
-                wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 25, count - 1, false, false, false));
+                wearer.addEffect(new MobEffectInstance(MobEffects.SPEED, 25, count - 1, false, false, false));
             }
         }
     }

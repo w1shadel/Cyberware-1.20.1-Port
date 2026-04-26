@@ -18,17 +18,19 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +40,9 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
     private static final Identifier COMPONENT_BOX_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box.png");
     private static final Identifier BLUEPRINT_PANEL_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest.png");
-
     private ItemStack cachedBlueprint = ItemStack.EMPTY;
     private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;
     private float slideProgress = 1.0f;
-
     private Button toggleButton, prevButton, nextButton, prevBlueprintBtn, nextBlueprintBtn;
 
     public CyberwareWorkbenchScreen(CyberwareWorkbenchMenu menu, Inventory inventory, Component title) {
@@ -54,37 +54,30 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
     @Override
     protected void init() {
         super.init();
-
         this.prevButton = Button.builder(Component.literal("<"), (btn) -> ClientPacketDistributor.sendToServer(new ComponentChangePagePacket(-1, 0))).bounds(0, 0, 15, 20).build();
         this.nextButton = Button.builder(Component.literal(">"), (btn) -> ClientPacketDistributor.sendToServer(new ComponentChangePagePacket(1, 0))).bounds(0, 0, 15, 20).build();
         this.prevBlueprintBtn = Button.builder(Component.literal("<"), (btn) -> ClientPacketDistributor.sendToServer(new ComponentChangePagePacket(-1, 1))).bounds(0, 0, 15, 20).build();
         this.nextBlueprintBtn = Button.builder(Component.literal(">"), (btn) -> ClientPacketDistributor.sendToServer(new ComponentChangePagePacket(1, 1))).bounds(0, 0, 15, 20).build();
-
         this.addRenderableWidget(prevButton);
         this.addRenderableWidget(nextButton);
         this.addRenderableWidget(prevBlueprintBtn);
         this.addRenderableWidget(nextBlueprintBtn);
-
         this.toggleButton = Button.builder(Component.literal("≡"), (btn) -> {
             boolean newState = !this.menu.isExtendedOpen;
             ClientPacketDistributor.sendToServer(new ComponentToggleExtendTabPacket(newState));
             this.menu.isExtendedOpen = newState;
         }).bounds(this.leftPos + 5, this.topPos - 10, 12, 12).build();
-
         if (!this.menu.hasExtendedInventory && !this.menu.hasBlueprintLibrary) this.toggleButton.visible = false;
         this.addRenderableWidget(toggleButton);
-
         this.addRenderableWidget(new AbstractWidget(this.leftPos + 40, this.topPos + 35, 18, 18, Component.empty()) {
             @Override
             protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
                 ItemStack inputStack = menu.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();
                 ItemStack blueprintStack = menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
                 ItemStack paperStack = menu.getSlot(CyberwareWorkbenchBlockEntity.PAPER_SLOT).getItem();
-
                 if (this.isHovered && !inputStack.isEmpty()) {
                     graphics.fill(0, 0, this.width, this.height, 0x50FFFFFF);
                 }
-
                 if (this.isHovered) {
                     List<Component> tooltip = new ArrayList<>();
                     if (!blueprintStack.isEmpty()) {
@@ -92,8 +85,18 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
                     } else if (!inputStack.isEmpty()) {
                         tooltip.add(Component.translatable("gui.cyber_ware_port.deconstruct").withStyle(ChatFormatting.BOLD, ChatFormatting.RED));
                         if (minecraft != null && minecraft.level != null) {
-                            Optional<RecipeHolder<EngineeringRecipe>> recipeOpt = minecraft.level.getRecipeManager()
-                                    .getRecipeFor(ModRecipes.ENGINEERING_TYPE.get(), new SingleRecipeInput(inputStack), minecraft.level);
+                            var recipeRegistry = minecraft.level.registryAccess().lookupOrThrow(Registries.RECIPE);
+                            Optional<RecipeHolder<EngineeringRecipe>> recipeOpt = recipeRegistry.listElements()
+                                    .filter(holder -> {
+                                        Recipe<?> recipe = holder.value();
+                                        return recipe instanceof EngineeringRecipe engineeringRecipe &&
+                                                engineeringRecipe.getType() == ModRecipes.ENGINEERING_TYPE.get() &&
+                                                engineeringRecipe.matches(new SingleRecipeInput(inputStack), minecraft.level);
+                                    })
+                                    .map(holder -> {
+                                        return new RecipeHolder<>((ResourceKey<Recipe<?>>) holder.key(), (EngineeringRecipe) holder.value());
+                                    })
+                                    .findFirst();
                             if (recipeOpt.isPresent()) {
                                 float chance = paperStack.is(Items.PAPER) ? recipeOpt.get().value().blueprintChance() : 0.0f;
                                 tooltip.add(Component.translatable("gui.cyber_ware_port.blueprint_chance", String.format("%.0f", chance * 100)).withStyle(ChatFormatting.GRAY));
@@ -116,7 +119,6 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
                 this.defaultButtonNarrationText(output);
             }
         });
-
         updateButtons();
     }
 
@@ -126,21 +128,16 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
      */
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-
         if (this.menu.hasExtendedInventory && slideProgress > 0.01f) {
             int drawX = -(int) (61 * slideProgress) + 2;
             graphics.blit(RenderPipelines.GUI_TEXTURED, COMPONENT_BOX_TEXTURE, drawX, 0, 0, 0, 61, 141, 256, 256);
         }
-
         if (this.menu.hasBlueprintLibrary && slideProgress > 0.01f) {
             int drawX = 176 - 61 + (int) (61 * slideProgress);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, BLUEPRINT_PANEL_TEXTURE , drawX, 0, 0, 0, 61, 141, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, BLUEPRINT_PANEL_TEXTURE, drawX, 0, 0, 0, 61, 141, 256, 256);
         }
-
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
-
         renderBlueprintGhosts(graphics);
-
         super.extractContents(graphics, mouseX, mouseY, a);
     }
 
@@ -149,14 +146,12 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
      */
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        super.extractLabels(graphics, mouseX, mouseY); 
-
+        super.extractLabels(graphics, mouseX, mouseY);
         if (this.menu.hasExtendedInventory && slideProgress > 0.8f && this.menu.getMaxPages() > 1) {
             int drawX = -(int) (61 * slideProgress) + 2 + 32;
             String text = (this.menu.getCurrentPage() + 1) + "/" + this.menu.getMaxPages();
             graphics.centeredText(this.font, text, drawX, 129, 0xFFFFFFFF);
         }
-
         if (this.menu.hasBlueprintLibrary && slideProgress > 0.8f && this.menu.getBlueprintMaxPages() > 1) {
             int drawX = 176 - 61 + (int) (61 * slideProgress) + 32;
             String text = (this.menu.getBlueprintCurrentPage() + 1) + "/" + this.menu.getBlueprintMaxPages();
@@ -171,41 +166,38 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
             cachedIngredients = null;
             return;
         }
-
         if (!ItemStack.isSameItemSameComponents(cachedBlueprint, currentBlueprint) || cachedIngredients == null) {
             cachedBlueprint = currentBlueprint.copy();
             Item targetItem = BlueprintItem.getTargetItem(currentBlueprint);
-            if (targetItem != null && this.minecraft.level != null) {
-                for (RecipeHolder<AssemblyRecipe> holder : this.minecraft.level.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get())) {
-                    if (holder.value().getResultItem(this.minecraft.level.registryAccess()).is(targetItem)) {
-                        cachedIngredients = holder.value().getInputs();
-                        break;
-                    }
-                }
+            if (targetItem != null && this.minecraft != null && this.minecraft.level != null) {
+                var recipeRegistry = this.minecraft.level.registryAccess().lookupOrThrow(Registries.RECIPE);
+                this.cachedIngredients = recipeRegistry.listElements()
+                        .map(holder -> (Recipe<?>) holder.value())
+                        .filter(recipe ->
+                                recipe instanceof AssemblyRecipe assemblyRecipe &&
+                                        assemblyRecipe.getType() == ModRecipes.ASSEMBLY_TYPE.get() &&
+                                        assemblyRecipe.getResultItem(this.minecraft.level.registryAccess()).is(targetItem)
+                        )
+                        .map(recipe -> ((AssemblyRecipe) recipe).getInputs())
+                        .findFirst()
+                        .orElse(null);
             }
         }
-
         if (cachedIngredients != null) {
             for (int i = 0; i < Math.min(cachedIngredients.size(), 6); i++) {
                 AssemblyRecipe.SizedIngredient req = cachedIngredients.get(i);
-                ItemStack[] items = req.ingredient().getItems();
-                if (items.length == 0) continue;
-
+                var items = req.ingredient().items();
+                if (items.findAny().isEmpty()) continue;
+                ItemStack displayStack = new ItemStack(req.ingredient().items().findFirst().get());
                 Slot targetSlot = this.menu.getSlot(3 + i);
                 int x = targetSlot.x;
                 int y = targetSlot.y;
                 ItemStack stackInSlot = targetSlot.getItem();
-
                 if (stackInSlot.isEmpty() || !req.ingredient().test(stackInSlot) || stackInSlot.getCount() < req.count()) {
-
-                    graphics.item(items[0], x, y);
-
+                    graphics.item(displayStack, x, y);
+                    graphics.nextStratum();
                     graphics.fill(x, y, x + 16, y + 16, 0x80000000);
-
-                    graphics.pose().pushMatrix();
-                    graphics.pose().translate(0, 0, 200);
                     graphics.text(this.font, String.valueOf(req.count()), x + 10, y + 10, 0xFFFF5555, true);
-                    graphics.pose().popMatrix();
                 }
             }
         }
@@ -222,7 +214,6 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
 
     private void updateButtons() {
         boolean isPanelVisible = this.menu.isExtendedOpen;
-
         boolean showLeft = isPanelVisible && this.menu.hasExtendedInventory && this.menu.getMaxPages() > 1;
         this.prevButton.visible = showLeft;
         this.nextButton.visible = showLeft;
@@ -233,7 +224,6 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
             this.prevButton.setPosition(this.leftPos + ox + 5, this.topPos + 137);
             this.nextButton.setPosition(this.leftPos + ox + 47, this.topPos + 137);
         }
-
         boolean showRight = isPanelVisible && this.menu.hasBlueprintLibrary && this.menu.getBlueprintMaxPages() > 1;
         this.prevBlueprintBtn.visible = showRight;
         this.nextBlueprintBtn.visible = showRight;

@@ -19,8 +19,7 @@ public class LiverEvents {
                 CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
                 if (data.isCyberwareInstalled(ModItems.LIVER_FILTER.get())) {
                     int cost = 50;
-                    if (data.getEnergyStored() >= cost) {
-                        data.extractEnergy(cost, false);
+                    if (data.consumeEnergy(cost)) {
                         event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
                     }
                 }

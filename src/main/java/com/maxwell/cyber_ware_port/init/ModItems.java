@@ -115,8 +115,8 @@ public class ModItems {
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_BRAIN = registerHumanPart("body_part_brain", RobosurgeonBlockEntity.SLOT_BRAIN, 1, BodyPartType.BRAIN);
     public static final DeferredHolder<Item, RapidFireFlywheelItem> RAPID_FIRE_FLYWHEEL = ITEMS.register("arm_upgrades_bow", RapidFireFlywheelItem::new);
     public static final DeferredHolder<Item, ImplantedSpursItem> IMPLANTED_SPURS = ITEMS.register("foot_upgrades_spurs", ImplantedSpursItem::new);
-    public static final DeferredHolder<Item, FineManipulatorsItem> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands", FineManipulatorsItem::new);    public static final DeferredHolder<Item, CorticalStackItem> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
-    public static final DeferredHolder<Item, CyberwareItem> HUMAN_HEART = registerHumanPart("body_part_heart", RobosurgeonBlockEntity.SLOT_HEART, 1, BodyPartType.HEART);
+    public static final DeferredHolder<Item, FineManipulatorsItem> FINE_MANIPULATORS = ITEMS.register("hand_upgrades_craft_hands", FineManipulatorsItem::new);
+    public static final DeferredHolder<Item, CyberwareItem> HUMAN_HEART = registerHumanPart("body_part_heart", RobosurgeonBlockEntity.SLOT_HEART, 1, BodyPartType.HEART);    public static final DeferredHolder<Item, CorticalStackItem> CORTICAL_STACK = ITEMS.register("brain_upgrades_cortical_stack", CorticalStackItem::new);
     public static final DeferredHolder<Item, CardiomechanicPumpItem> CARDIOMECHANIC_PUMP = ITEMS.register("cyberheart", CardiomechanicPumpItem::new);
     public static final DeferredHolder<Item, InternalDefibrillatorItem> INTERNAL_DEFIBRILLATOR = ITEMS.register("heart_upgrades_defibrillator", InternalDefibrillatorItem::new);
     public static final DeferredHolder<Item, PlateletDispatcherItem> PLATELET_DISPATCHER = ITEMS.register("heart_upgrades_platelets", PlateletDispatcherItem::new);
@@ -127,9 +127,9 @@ public class ModItems {
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_MUSCLE = registerHumanPart("body_part_muscles", RobosurgeonBlockEntity.SLOT_MUSCLE, 1, BodyPartType.MUSCLE);
     public static final DeferredHolder<Item, MyomerMuscleReplacementItem> MYOMER_MUSCLE = ITEMS.register("muscle_upgrades_muscle_replacements", MyomerMuscleReplacementItem::new);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_BONE = registerHumanPart("body_part_bones", RobosurgeonBlockEntity.SLOT_BONES, 1, BodyPartType.BONES);
-    public static final DeferredHolder<Item, CyberwareItem> HUMAN_EYES = registerHumanPart("body_part_eyes", RobosurgeonBlockEntity.SLOT_EYES, 1, BodyPartType.EYES);    public static final DeferredHolder<Item, ConsciousnessTransmitterItem> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
+    public static final DeferredHolder<Item, CyberwareItem> HUMAN_EYES = registerHumanPart("body_part_eyes", RobosurgeonBlockEntity.SLOT_EYES, 1, BodyPartType.EYES);
     public static final DeferredHolder<Item, CybereyesItem> CYBER_EYE = ITEMS.register("cybereyes", CybereyesItem::new);
-    public static final DeferredHolder<Item, LowLightVisionItem> LOW_LIGHT_VISION = ITEMS.register("cybereye_upgrades_night_vision", LowLightVisionItem::new);
+    public static final DeferredHolder<Item, LowLightVisionItem> LOW_LIGHT_VISION = ITEMS.register("cybereye_upgrades_night_vision", LowLightVisionItem::new);    public static final DeferredHolder<Item, ConsciousnessTransmitterItem> CONSCIOUSNESS_TRANSMITTER = ITEMS.register("brain_upgrades_consciousness_transmitter", ConsciousnessTransmitterItem::new);
     public static final DeferredHolder<Item, LiquidRefractionCalibratorItem> LIQUID_REFRACTION = ITEMS.register("cybereye_upgrades_underwater_vision", LiquidRefractionCalibratorItem::new);
     public static final DeferredHolder<Item, HudjackItem> HUDJACK = ITEMS.register("cybereye_upgrades_hudjack", HudjackItem::new);
     public static final DeferredHolder<Item, TargetingOverlayItem> TARGETING_OVERLAY = ITEMS.register("cybereye_upgrades_targeting", TargetingOverlayItem::new);

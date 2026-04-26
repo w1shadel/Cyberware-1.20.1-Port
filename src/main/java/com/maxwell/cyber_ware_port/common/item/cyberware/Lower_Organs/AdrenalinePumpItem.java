@@ -19,11 +19,11 @@ public class AdrenalinePumpItem extends CyberwareItem {
 
     @Override
     public void onSystemTick(LivingEntity wearer, ItemStack stack) {
-        if (wearer.getHealth() < wearer.getMaxHealth() * 0.3f && !wearer.hasEffect(MobEffects.DAMAGE_BOOST)) {
+        if (wearer.getHealth() < wearer.getMaxHealth() * 0.3f && !wearer.hasEffect(MobEffects.STRENGTH)) {
             CyberwareUserData data = wearer.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             if (tryConsumeEventEnergy(data, stack)) {
-                wearer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 400, 0, false, false));
-                wearer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 400, 1, false, false));
+                wearer.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 400, 0, false, false));
+                wearer.addEffect(new MobEffectInstance(MobEffects.SPEED, 400, 1, false, false));
             }
         }
     }

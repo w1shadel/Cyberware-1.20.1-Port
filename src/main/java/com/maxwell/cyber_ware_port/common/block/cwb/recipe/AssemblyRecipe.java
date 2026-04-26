@@ -91,18 +91,4 @@ public class AssemblyRecipe implements Recipe<RecipeInput> {
                 SizedIngredient::new
         );
     }
-
-    public static class Serializer implements RecipeSerializer<AssemblyRecipe> {
-        public static final Serializer INSTANCE = new Serializer();
-
-        @Override
-        public MapCodec<AssemblyRecipe> codec() {
-            return AssemblyRecipe.CODEC;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, AssemblyRecipe> streamCodec() {
-            return AssemblyRecipe.STREAM_CODEC;
-        }
-    }
 }
