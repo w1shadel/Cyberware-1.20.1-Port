@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 public class LiverFilterItem extends CyberwareItem {
     public LiverFilterItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH).maxInstall(1));
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_STOMACH).maxInstall(1));
     }
 
     @Override

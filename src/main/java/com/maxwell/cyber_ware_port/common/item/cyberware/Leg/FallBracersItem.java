@@ -9,7 +9,7 @@ import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 public class FallBracersItem extends CyberwareItem {
     public FallBracersItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_LEGS)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_LEGS)
                 .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT).maxInstall(1));
 
     }

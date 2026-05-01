@@ -1,5 +1,8 @@
 {
   "textures": {
-    "particle": "cyber_ware_port:entity/cyber_wither_skeleton"
+    "particle": "cyber_ware_port:block/goddamnsun",
+    "top": "cyber_ware_port:block/goddamnsun",
+    "bottom": "cyber_ware_port:block/goddamnsun",
+    "side": "cyber_ware_port:block/goddamnsun"
   }
 }

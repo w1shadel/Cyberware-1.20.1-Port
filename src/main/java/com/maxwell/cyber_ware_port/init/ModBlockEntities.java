@@ -19,7 +19,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, CyberWare.MODID);
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberSkullBlockEntity>> CYBER_SKULL =
+
+    public static void register(IEventBus eventBus) {
+        BLOCK_ENTITIES.register(eventBus);
+    }    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberSkullBlockEntity>> CYBER_SKULL =
             BLOCK_ENTITIES.register("cyber_wither_skeleton_skull",
                     () -> new BlockEntityType<>(
                             CyberSkullBlockEntity::new,
@@ -27,9 +30,7 @@ public class ModBlockEntities {
                             ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get()
                     ));
 
-    public static void register(IEventBus eventBus) {
-        BLOCK_ENTITIES.register(eventBus);
-    }
+
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
             BLOCK_ENTITIES.register("surgery_chamber",

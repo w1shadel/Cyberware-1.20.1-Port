@@ -2,6 +2,7 @@ package com.maxwell.cyber_ware_port.common.block.cwb;
 
 import com.maxwell.cyber_ware_port.api.event.CyberwareEvents;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
+import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
 import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
 import com.maxwell.cyber_ware_port.common.container.CyberwareWorkbenchMenu;
@@ -78,7 +79,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             if (pLevel.hasNeighborSignal(pPos)) pBlockEntity.startCrafting();
             if (pBlockEntity.cooldown == 0 && pBlockEntity.isCrafting) {
                 pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.5F, 1.2F);
-                pBlockEntity.cooldown = 3;
+                pBlockEntity.cooldown = 10;
                 pBlockEntity.craftItem();
             }
             if (pBlockEntity.isCrafting && pLevel.getGameTime() % 40 == 0) {
@@ -92,42 +93,13 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         }
     }
 
+    public boolean isCrafting() {
+        return isCrafting;
+    }
+
     private ItemStack getStack(int slot) {
         return itemHandler.getResource(slot).toStack((int) itemHandler.getAmountAsLong(slot));
-    }    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(INVENTORY_SIZE) {
-        @Override
-        protected void onContentsChanged(int index, ItemStack previousContents) {
-            setChanged();
-            if (index == BLUEPRINT_SLOT) {
-                cachedRecipe = null;
-            }
-        }
-
-        @Override
-        public boolean isValid(int slot, ItemResource resource) {
-            ItemStack stack = resource.toStack();
-            if (slot >= OUTPUT_SLOT_START) return true;
-            return switch (slot) {
-                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack);
-                case PAPER_SLOT -> stack.is(Items.PAPER);
-                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
-                default -> false;
-            };
-        }
-
-        @Override
-        public int insert(int slot, ItemResource resource, int amount, TransactionContext tx) {
-            ItemStack stack = resource.toStack();
-            if (slot == PAPER_SLOT && !stack.is(Items.PAPER)) return 0;
-            if (slot == BLUEPRINT_SLOT && !(stack.getItem() instanceof BlueprintItem)) return 0;
-            if (slot == INPUT_SLOT && !CyberwareAPI.isCyberware(stack)) return 0;
-            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
-                AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-                if (activeRecipe == null || !isItemNeededForRecipe(activeRecipe, stack)) return 0;
-            }
-            return super.insert(slot, resource, amount, tx);
-        }
-    };
+    }
 
     public void drops() {
         if (this.level == null) return;
@@ -300,6 +272,23 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             remaining -= inserted;
             if (remaining <= 0) return ItemStack.EMPTY;
         }
+        BlockPos center = this.worldPosition;
+        for (int x = -3; x <= 3; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -3; z <= 3; z++) {
+                    if (x == 0 && y == 0 && z == 0) continue;
+                    BlockPos pos = center.offset(x, y, z);
+                    if (level.getBlockEntity(pos) instanceof ComponentBoxBlockEntity box) {
+                        var handler = box.getItemHandler();
+                        for (int i = 0; i < handler.size(); i++) {
+                            int inserted = handler.insert(i, resource, remaining, tx);
+                            remaining -= inserted;
+                            if (remaining <= 0) return ItemStack.EMPTY;
+                        }
+                    }
+                }
+            }
+        }
         return stack.copyWithCount(remaining);
     }
 
@@ -307,7 +296,40 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         if (stack.isEmpty()) return false;
         for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) if (input.ingredient().test(stack)) return true;
         return false;
-    }
+    }    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(INVENTORY_SIZE) {
+        @Override
+        protected void onContentsChanged(int index, ItemStack previousContents) {
+            setChanged();
+            if (index == BLUEPRINT_SLOT) {
+                cachedRecipe = null;
+            }
+        }
+
+        @Override
+        public boolean isValid(int slot, ItemResource resource) {
+            ItemStack stack = resource.toStack();
+            if (slot >= OUTPUT_SLOT_START) return true;
+            return switch (slot) {
+                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack);
+                case PAPER_SLOT -> stack.is(Items.PAPER);
+                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
+                default -> false;
+            };
+        }
+
+        @Override
+        public int insert(int slot, ItemResource resource, int amount, TransactionContext tx) {
+            ItemStack stack = resource.toStack();
+            if (slot == PAPER_SLOT && !stack.is(Items.PAPER)) return 0;
+            if (slot == BLUEPRINT_SLOT && !(stack.getItem() instanceof BlueprintItem)) return 0;
+            if (slot == INPUT_SLOT && !CyberwareAPI.isCyberware(stack)) return 0;
+            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
+                AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
+                if (activeRecipe != null && !isItemNeededForRecipe(activeRecipe, stack)) return 0;
+            }
+            return super.insert(slot, resource, amount, tx);
+        }
+    };
 
     @Override
     public @NotNull Component getDisplayName() {

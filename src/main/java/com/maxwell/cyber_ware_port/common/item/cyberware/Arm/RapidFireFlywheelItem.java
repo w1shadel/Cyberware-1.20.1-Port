@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 
 public class RapidFireFlywheelItem extends CyberwareItem {
     public RapidFireFlywheelItem(Properties properties) {
-        super(new Builder(properties,8, RobosurgeonBlockEntity.SLOT_ARMS).maxInstall(1));
+        super(new Builder(properties, 8, RobosurgeonBlockEntity.SLOT_ARMS).maxInstall(1));
     }
 
     @Override

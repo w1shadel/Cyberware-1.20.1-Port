@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.api.json;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.maxwell.cyber_ware_port.CyberWare;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.FileToIdConverter;
@@ -34,7 +35,10 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
         map.forEach((location, element) -> {
             try {
                 JsonObject json = element.getAsJsonObject();
-                if (!json.has("mob")) return;
+                if (!json.has("mob")) {
+
+                    return;
+                }
                 Identifier mobId = Identifier.parse(json.get("mob").getAsString());
                 EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(mobId)
                         .map(Holder.Reference::value)
@@ -67,8 +71,8 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
                     }
                     MOB_DATA.put(entityType, data);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            }catch (Exception e) {
+                CyberWare.LOGGER.error("Failed to parse cyberware mob data at {}: {}", location, e.getMessage());
             }
         });
     }

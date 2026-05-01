@@ -5,7 +5,7 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 
 public class MarrowBatteryItem extends CyberwareItem {
     public MarrowBatteryItem(Properties p) {
-        super(new Builder(p,2, RobosurgeonBlockEntity.SLOT_BONES)
+        super(new Builder(p, 2, RobosurgeonBlockEntity.SLOT_BONES)
                 .maxInstall(1)
                 .energy(0, 0, 1000, StackingRule.STATIC));
 

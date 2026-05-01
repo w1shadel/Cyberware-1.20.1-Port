@@ -5,7 +5,7 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 
 public class CardiovascularCouplerItem extends CyberwareItem {
     public CardiovascularCouplerItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_HEART)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .energy(0, 95, 0, StackingRule.STATIC));
 

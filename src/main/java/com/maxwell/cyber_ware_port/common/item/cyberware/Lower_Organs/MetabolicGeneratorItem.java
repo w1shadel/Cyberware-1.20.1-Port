@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class MetabolicGeneratorItem extends CyberwareItem {
     public MetabolicGeneratorItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(2)
                 .energy(0, 200, 200, StackingRule.LINEAR));
     }

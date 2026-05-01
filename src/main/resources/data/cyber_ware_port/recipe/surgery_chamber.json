@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "tag": "minecraft:beds"
-    },
-    "D": {
-      "item": "minecraft:iron_trapdoor"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    }
+    "B": "#minecraft:beds",
+    "D": "minecraft:iron_trapdoor",
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone"
   },
   "pattern": [
     "IDI",

@@ -6,18 +6,10 @@
     "III"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "G": {
-      "item": "minecraft:glass_pane"
-    },
-    "R": {
-      "item": "minecraft:redstone_block"
-    },
-    "g": {
-      "item": "minecraft:gold_ingot"
-    }
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone_block",
+    "g": "minecraft:gold_ingot"
   },
   "result": {
     "id": "cyber_ware_port:charger",

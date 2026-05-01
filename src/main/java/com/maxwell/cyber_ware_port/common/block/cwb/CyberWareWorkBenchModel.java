@@ -1,6 +1,8 @@
 package com.maxwell.cyber_ware_port.common.block.cwb;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -9,7 +11,6 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
-@SuppressWarnings("removal")
 public class CyberWareWorkBenchModel extends Model.Simple {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyberwareworkbenchmodel"), "main");
     private final ModelPart root;
@@ -34,9 +35,7 @@ public class CyberWareWorkBenchModel extends Model.Simple {
 
     }
 
-    public void setupAnim(CyberwareWorkbenchBlockEntity pBlockEntity, float pPartialTick) {
-        if (pBlockEntity == null) return;
-        float progress = pBlockEntity.getRenderProgress(pPartialTick);
+    public void setupFromRenderState(float progress) {
         float initialY = -23.5F;
         float t1 = 0.1668F;
         float t2 = 0.6668F;
@@ -50,9 +49,10 @@ public class CyberWareWorkBenchModel extends Model.Simple {
         } else {
             float t = (progress - t2) / (1.0F - t2);
             currentOffset = targetOffset + (0.0F - targetOffset) * t;
-
         }
         this.hammer.y = initialY + currentOffset;
+    }
 
+    public void renderToBuffer(PoseStack.Pose pose, VertexConsumer vertexConsumer, int lightCoords, int noOverlay, int color) {
     }
 }

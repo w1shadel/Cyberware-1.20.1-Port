@@ -9,6 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
@@ -16,17 +17,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
-    public static final MapCodec<EngineeringRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            Ingredient.CODEC.fieldOf("input").forGetter(EngineeringRecipe::input),
-            OutputEntry.CODEC.codec().listOf().fieldOf("outputs").forGetter(EngineeringRecipe::outputs),
-            Codec.FLOAT.optionalFieldOf("blueprint_chance", 0.5f).forGetter(EngineeringRecipe::blueprintChance)
-    ).apply(inst, EngineeringRecipe::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, EngineeringRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC, EngineeringRecipe::input,
-            OutputEntry.STREAM_CODEC.apply(ByteBufCodecs.list()), EngineeringRecipe::outputs,
+            ByteBufCodecs.collection(java.util.ArrayList::new, OutputEntry.STREAM_CODEC), EngineeringRecipe::outputs,
             ByteBufCodecs.FLOAT, EngineeringRecipe::blueprintChance,
             EngineeringRecipe::new
     );
+    private static final Codec<Ingredient> FLEXIBLE_INGREDIENT_CODEC = Codec.either(
+            Ingredient.CODEC,
+            RecordCodecBuilder.<Ingredient>create(i -> i.group(
+                    net.minecraft.core.registries.BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(ing -> null)
+            ).apply(i, Ingredient::of))
+    ).xmap(
+            either -> either.map(java.util.function.Function.identity(), java.util.function.Function.identity()),
+            com.mojang.datafixers.util.Either::left
+    );
+    public static final MapCodec<EngineeringRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            FLEXIBLE_INGREDIENT_CODEC.fieldOf("input").forGetter(EngineeringRecipe::input),
+            OutputEntry.CODEC.codec().listOf().fieldOf("outputs").forGetter(EngineeringRecipe::outputs),
+            Codec.FLOAT.optionalFieldOf("blueprint_chance", 0.5f).forGetter(EngineeringRecipe::blueprintChance)
+    ).apply(inst, EngineeringRecipe::new));
     private final Ingredient input;
     private final List<OutputEntry> outputs;
     private final float blueprintChance;
@@ -43,18 +53,18 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
     }
 
     @Override
-    public ItemStack assemble(SingleRecipeInput singleRecipeInput) {
+    public ItemStack assemble(SingleRecipeInput pInput) {
         return ItemStack.EMPTY;
     }
 
     @Override
     public boolean showNotification() {
-        return true;
+        return false;
     }
 
     @Override
     public String group() {
-        return "";
+        return "cyberware";
     }
 
     @Override
@@ -93,19 +103,19 @@ public class EngineeringRecipe implements Recipe<SingleRecipeInput> {
         List<ItemStack> results = new ArrayList<>();
         for (OutputEntry entry : outputs) {
             if (random.nextFloat() < entry.chance()) {
-                results.add(entry.stack().copy());
+                results.add(entry.template().create());
             }
         }
         return results;
     }
 
-    public record OutputEntry(ItemStack stack, float chance) {
+    public record OutputEntry(ItemStackTemplate template, float chance) {
         public static final MapCodec<OutputEntry> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                ItemStack.CODEC.fieldOf("stack").forGetter(OutputEntry::stack),
+                ItemStackTemplate.CODEC.fieldOf("stack").forGetter(OutputEntry::template),
                 Codec.FLOAT.fieldOf("chance").forGetter(OutputEntry::chance)
         ).apply(inst, OutputEntry::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, OutputEntry> STREAM_CODEC = StreamCodec.composite(
-                ItemStack.STREAM_CODEC, OutputEntry::stack,
+                ItemStackTemplate.STREAM_CODEC, OutputEntry::template,
                 ByteBufCodecs.FLOAT, OutputEntry::chance,
                 OutputEntry::new
         );

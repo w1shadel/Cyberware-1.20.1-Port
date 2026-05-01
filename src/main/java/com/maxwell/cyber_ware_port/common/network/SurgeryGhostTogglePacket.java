@@ -13,7 +13,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
@@ -44,8 +43,8 @@ public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements Cust
                         changed = true;
                     } else if (currentStack.isEmpty()) {
                         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-                        ItemStackHandler body = data.getInstalledCyberware();
-                        ItemStack installed = body.getStackInSlot(slotId);
+                        ItemStacksResourceHandler body = data.getInstalledCyberware();
+                        ItemStack installed = body.getResource(slotId).toStack(body.getAmountAsInt(slotId));
                         if (!installed.isEmpty()) {
                             ItemStack ghost = installed.copy();
                             ghost.set(CyberWare.GHOST_COMPONENT.get(), true);

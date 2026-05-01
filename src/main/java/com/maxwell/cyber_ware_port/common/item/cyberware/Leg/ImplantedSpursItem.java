@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class ImplantedSpursItem extends CyberwareItem {
     public ImplantedSpursItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_BOOTS)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_BOOTS)
                 .maxInstall(4)
                 .addAttribute(Attributes.MOVEMENT_SPEED,
                         "c0a9b8e0-1234-4567-89ab-cdef01234567",

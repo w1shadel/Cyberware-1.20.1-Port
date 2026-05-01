@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
-@SuppressWarnings("removal")
 public class CyberCreeperRenderer extends MobRenderer<CyberCreeperEntity, CyberCreeperRenderState, CyberCreeperModel> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_creeper.png");
 

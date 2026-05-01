@@ -30,7 +30,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -167,9 +167,9 @@ public class ForgeClientEvents {
     }
 
     private static ItemStack getInstalledStack(CyberwareUserData data, Item item) {
-        ItemStackHandler handler = data.getInstalledCyberware();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        ItemStacksResourceHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             if (stack.is(item)) return stack;
         }
         return ItemStack.EMPTY;
@@ -178,9 +178,7 @@ public class ForgeClientEvents {
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         if (!(event.getRenderState() instanceof AvatarRenderState state)) return;
-        int entityId = state.id;
-        var model = event.getRenderer().getModel();
-        Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+        Entity entity = Minecraft.getInstance().level.getEntity(state.id);
         if (entity instanceof Player player) {
             CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             if (hasSkinUpgrade(data)) return;
@@ -188,25 +186,17 @@ public class ForgeClientEvents {
             state.showRightSleeve = true;
             state.showLeftPants = true;
             state.showRightPants = true;
-            if (data.hasCyberLeftArm()) {
-                state.showLeftSleeve = false;
-            }
-            if (data.hasCyberRightArm()) {
-                state.showRightSleeve = false;
-            }
-            if (data.hasCyberLeftLeg()) {
-                state.showLeftPants = false;
-            }
-            if (data.hasCyberRightLeg()) {
-                state.showRightPants = false;
-            }
+            if (data.hasCyberLeftArm()) state.showLeftSleeve = false;
+            if (data.hasCyberRightArm()) state.showRightSleeve = false;
+            if (data.hasCyberLeftLeg()) state.showLeftPants = false;
+            if (data.hasCyberRightLeg()) state.showRightPants = false;
         }
     }
 
     private static boolean hasSkinUpgrade(CyberwareUserData data) {
-        ItemStackHandler handler = data.getInstalledCyberware();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        ItemStacksResourceHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             ICyberware cw = CyberwareAPI.getCyberware(stack);
             if (cw != null && cw.getBodyPartType(stack) == BodyPartType.SKIN) return true;
         }

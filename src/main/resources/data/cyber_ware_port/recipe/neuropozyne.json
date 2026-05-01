@@ -2,15 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:spider_eye"
-    },
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "minecraft:iron_nugget"
-    }
+    "minecraft:spider_eye", "minecraft:sugar", "minecraft:iron_nugget"
   ],
   "result": {
     "count": 1,

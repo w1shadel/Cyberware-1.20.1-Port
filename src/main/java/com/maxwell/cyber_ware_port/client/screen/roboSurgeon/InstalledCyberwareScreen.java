@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +33,9 @@ public class InstalledCyberwareScreen extends Screen {
         if (this.minecraft != null && this.minecraft.player != null) {
             this.installedCyberware.clear();
             CyberwareUserData cyberware = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-            ItemStackHandler installed = cyberware.getInstalledCyberware();
-            for (int i = 0; i < installed.getSlots(); i++) {
-                ItemStack stack = installed.getStackInSlot(i);
+            ItemStacksResourceHandler installed = cyberware.getInstalledCyberware();
+            for (int i = 0; i < installed.size(); i++) {
+                ItemStack stack = installed.getResource(i).toStack(installed.getAmountAsInt(i));
                 if (!stack.isEmpty()) {
                     this.installedCyberware.add(stack.copy());
                 }

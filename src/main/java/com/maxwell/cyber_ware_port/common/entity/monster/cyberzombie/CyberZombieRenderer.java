@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-@SuppressWarnings("removal")
 public class CyberZombieRenderer extends MobRenderer<CyberZombieEntity, CyberZombieRenderState, CyberZombieModel<CyberZombieRenderState>> {
     public static final ModelLayerLocation CYBER_ZOMBIE_LAYER =
             new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_zombie"), "main");

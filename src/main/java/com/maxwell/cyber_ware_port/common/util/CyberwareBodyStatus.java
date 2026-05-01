@@ -6,7 +6,7 @@ import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -18,9 +18,9 @@ public class CyberwareBodyStatus {
     private int cyberArmCount = 0;
     private int cyberLegCount = 0;
 
-    public CyberwareBodyStatus(ItemStackHandler handler) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+    public CyberwareBodyStatus(ItemStacksResourceHandler handler) {
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             if (stack.isEmpty()) {
                 continue;
             }

@@ -22,7 +22,7 @@ public class LinearActuatorsItem extends CyberwareItem {
     private static final String NBT_JUMP_READY = "cyberware_jump_ready";
 
     public LinearActuatorsItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_LEGS)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_LEGS)
                 .requires(ModItems.CYBER_LEG_RIGHT, ModItems.CYBER_LEG_LEFT)
                 .maxInstall(1)
                 .eventCost(0)

@@ -6,8 +6,8 @@
     64
   ],
   "textures": {
-    "0": "cyber_ware_port:item/component_box",
-    "particle": "cyber_ware_port:item/component_box"
+    "0": "cyber_ware_port:block/component_box",
+    "particle": "cyber_ware_port:block/component_box"
   },
   "elements": [
     {

@@ -2,52 +2,47 @@ package com.maxwell.cyber_ware_port.client.screen.robosurgeon;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
-import com.maxwell.cyber_ware_port.client.model.PlayerInternalPartsModel;
-import com.maxwell.cyber_ware_port.client.model.SkeletonDisplayModel;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
-import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.container.RobosurgeonMenu;
+import com.maxwell.cyber_ware_port.common.entity.misc.PlayerTempModelState;
+import com.maxwell.cyber_ware_port.common.entity.misc.SkeletonPreviewState;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import com.maxwell.cyber_ware_port.common.risk.SurgeryAlert;
-import com.maxwell.cyber_ware_port.common.risk.SurgeryAnalyzer;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.math.Axis;
+import com.maxwell.cyber_ware_port.common.network.SurgeryGhostTogglePacket;
+import com.maxwell.cyber_ware_port.init.ModEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> {
-    private static final Identifier INTERNAL_PARTS_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/player_internal_part.png");
-    private static final Identifier SKELETON_TEXTURE = Identifier.withDefaultNamespace("textures/entity/skeleton/skeleton.png");
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/surgery.png");
     private static final Identifier MARKER_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/marker.png");
     private static final Identifier RED_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/red_slot.png");
     private static final Identifier BLUE_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blue_slot.png");
-    private static final Identifier ALERT_ICON = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/risk_icons.png");
     private static final float ANIMATION_DURATION = 2000f;
-    private static final int SLOT_SIZE = 18;
-    private static final int SLOT_SPACING = 2;
     private static final int GUI_WIDTH = 175;
     private static final int TOP_HEIGHT = 131;
-    private static final int BOTTOM_HEIGHT = 91;
     private static final float BASE_SCALE = 45f;
     private static final Field slotX, slotY;
+    private boolean rotationInterrupted = false;
 
     static {
         try {
@@ -60,203 +55,437 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         }
     }
 
-    private final Lighting lightingInstance = new Lighting();
-    private PlayerInternalPartsModel internalPartsModel;
+    private final PlayerTempModelState internalPartsPreview = new PlayerTempModelState();
+    private final SkeletonPreviewState skeletonPreview = new SkeletonPreviewState();
+    private BodyPart draggingPart = null;
+    private TargetMarker draggingMarker = null;
+    private boolean isDebugMoving = false;
     private BodyPart selectedPart = BodyPart.NONE;
     private TargetMarker selectedMarker = null;
-    private SkeletonDisplayModel skeletonModel;
     private boolean isDraggingModel = false;
     private float viewRotation = 0f;
     private double dragStartX = 0;
     private float rotationStart = 0f;
     private boolean potentialDrag = false;
     private long startTime;
-    private AbstractWidget installedListButton;
     private float currentScale = 45;
     private float currentOffsetX = 0f;
     private float currentOffsetY = 0f;
-    private boolean hideName = false;
 
     public RobosurgeonScreen(RobosurgeonMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title, GUI_WIDTH, TOP_HEIGHT + BOTTOM_HEIGHT);
-        this.inventoryLabelY = this.imageHeight - 94;
-        this.titleLabelY = 6;
+        super(menu, inventory, title, GUI_WIDTH, TOP_HEIGHT + 91);
+        this.titleLabelX = -1000;
     }
 
     private static int[] slots(int start) {
-        int[] s = new int[9];
-        for (int i = 0; i < 9; i++) s[i] = start + i;
-        return s;
+        int[] slots = new int[9];
+        for (int i = 0; i < 9; i++) slots[i] = start + i;
+        return slots;
     }
 
-    public void renderCustomModel(GuiGraphicsExtractor graphics, int pX, int pY, int pScale, float rotationYaw, Model pModel, Identifier texture) {
-        graphics.pose().pushMatrix();
-        graphics.pose().translate((float) pX, (float) pY);
-        graphics.pose().scale((float) pScale, (float) pScale);
-        Quaternionf tilt = Axis.ZP.rotationDegrees(180.0F);
-        Quaternionf rot = Axis.YP.rotationDegrees(rotationYaw + 180.0F);
-        tilt.mul(rot);
-        var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        this.lightingInstance.setupFor(Lighting.Entry.ENTITY_IN_UI);
-        com.mojang.blaze3d.vertex.PoseStack poseStack = new com.mojang.blaze3d.vertex.PoseStack();
-        poseStack.mulPose(tilt);
-        pModel.renderToBuffer(poseStack,
-                bufferSource.getBuffer(pModel.renderType(texture)),
-                15728880,
-                OverlayTexture.NO_OVERLAY);
-        bufferSource.endBatch();
-        graphics.pose().popMatrix();
-        this.lightingInstance.setupFor(Lighting.Entry.ITEMS_3D);
+    private int getModelBaseX() {
+        return this.leftPos + 88 + (int) currentOffsetX;
+    }
+
+    private int getModelBaseY() {
+        return this.topPos + 120 + (int) currentOffsetY;
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        float spd = 0.15f;
+        float targetScale = (selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale);
+        float targetOffsetX = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX);
+        float targetOffsetY = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetY);
+        currentScale += (targetScale - currentScale) * spd;
+        currentOffsetX += (targetOffsetX - currentOffsetX) * spd;
+        currentOffsetY += (targetOffsetY - currentOffsetY) * spd;
+        updateSlotPositions();
     }
 
     @Override
     protected void init() {
         super.init();
-        if (this.minecraft != null) {
-            this.skeletonModel = new SkeletonDisplayModel(this.minecraft.getEntityModels().bakeLayer(SkeletonDisplayModel.LAYER_LOCATION));
-            this.internalPartsModel = new PlayerInternalPartsModel(this.minecraft.getEntityModels().bakeLayer(PlayerInternalPartsModel.LAYER_LOCATION));
-        }
+        this.skeletonPreview.entityType = EntityType.SKELETON;
+        this.internalPartsPreview.entityType = ModEntities.PLAYER_INTERNAL_PARTS.get();
         this.startTime = System.currentTimeMillis();
-        this.installedListButton = new AbstractWidget(this.leftPos + 158, this.topPos + 4, 10, 10, Component.empty()) {
+        this.addRenderableWidget(new AbstractWidget(this.leftPos + 158, this.topPos + 6, 12, 10, Component.empty()) {
             @Override
             protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-                graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 176, 122, 10, 10, 256, 256);
+                int color = this.isHovered ? 0xFFFFFFFF : 0xFF00FFFF;
+                int x = this.getX();
+                int y = this.getY();
+                graphics.fill(x, y + 1, x + 12, y + 2, color);
+                graphics.fill(x, y + 4, x + 12, y + 5, color);
+                graphics.fill(x, y + 7, x + 12, y + 8, color);
                 if (this.isHovered) {
-                    graphics.fill(0, 0, 10, 10, 0x50FFFFFF);
-                    graphics.setTooltipForNextFrame(Minecraft.getInstance().font,
-                            List.of(Component.translatable("gui.cyber_ware_port.button.view_installed")),
-                            null, ItemStack.EMPTY, mouseX, mouseY, null);
+                    graphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font,
+                            List.of(Component.translatable("gui.cyber_ware_port.button.view_installed")), mouseX, mouseY);
                 }
             }
 
             @Override
-            protected void updateWidgetNarration(@NotNull NarrationElementOutput narration) {
-                this.defaultButtonNarrationText(narration);
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                Minecraft.getInstance().setScreen(new InstalledCyberwareScreen(RobosurgeonScreen.this));
             }
 
             @Override
-            public void onClick(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
-                Minecraft.getInstance().setScreen(new InstalledCyberwareScreen(RobosurgeonScreen.this));
+            protected void updateWidgetNarration(NarrationElementOutput narration) {
             }
-        };
-        this.addRenderableWidget(this.installedListButton);
+        });
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        updateSlotPositions();
+        long elapsed = System.currentTimeMillis() - startTime;
+        if (!rotationInterrupted && elapsed < ANIMATION_DURATION && !isDraggingModel) {
+            float ease = 1f - (float) Math.pow(1f - (elapsed / ANIMATION_DURATION), 3);
+            this.viewRotation = ease * 360f;
+        } else {
+            rotationInterrupted = true;
+        }
+        this.skeletonPreview.yRot = this.viewRotation;
+        this.internalPartsPreview.yRot = this.viewRotation;
         super.extractRenderState(graphics, mouseX, mouseY, a);
-        drawAbsoluteOverlays(graphics, mouseX, mouseY);
     }
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0, 0, GUI_WIDTH, TOP_HEIGHT, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, TOP_HEIGHT, 0, 131, GUI_WIDTH, BOTTOM_HEIGHT, 256, 256);
-        drawRelativeModels(graphics);
-        super.extractContents(graphics, mouseX, mouseY, a);
-    }
-
-    @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        if (this.minecraft.player == null) return;
-        CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        int maxTolerance = data.getMaxTolerance(this.minecraft.player);
-        int currentCost = calculateTotalEssenceCost();
-        int remaining = maxTolerance - currentCost;
-        int color = (remaining < 0) ? 0xFFAA0000 : (remaining < 25 ? 0xFFFF5555 : 0xFF00FFFF);
-        graphics.text(this.font, Component.literal(remaining + " / " + maxTolerance), 18, 6, color, true);
-        graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
-    }
-
-    private void drawAbsoluteOverlays(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        if (this.selectedPart != BodyPart.NONE && this.selectedMarker == null) {
-            float scaleFactor = currentScale * 0.065f;
-            float radRot = (float) Math.toRadians(this.viewRotation);
-            float sin = (float) Math.sin(radRot);
-            float cos = (float) Math.cos(radRot);
-            int modelCenterX = (int) (this.leftPos + 88 + currentOffsetX);
-            int modelCenterY = (int) (this.topPos + TOP_HEIGHT - 15 + currentOffsetY);
-            for (TargetMarker marker : this.selectedPart.markers) {
-                float screenOffsetX = (marker.modelX() * cos) - (marker.modelZ() * sin);
-                int markerX = modelCenterX + (int) (screenOffsetX * scaleFactor) - 8;
-                int markerY = modelCenterY - (int) (marker.modelY() * scaleFactor) - 8;
-                graphics.blit(RenderPipelines.GUI_TEXTURED, MARKER_TEXTURE, markerX, markerY, 0, 0, 16, 16, 16, 16);
-                if (mouseX >= markerX && mouseX < markerX + 16 && mouseY >= markerY && mouseY < markerY + 16) {
-                    graphics.setTooltipForNextFrame(this.font, List.of(marker.name()), null, ItemStack.EMPTY, mouseX, mouseY, null);
-                }
-            }
+        int guiX = this.leftPos, guiY = this.topPos;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX, guiY, 0, 0, GUI_WIDTH, TOP_HEIGHT, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX, guiY + TOP_HEIGHT, 0, 131, GUI_WIDTH, 91, 256, 256);
+        graphics.nextStratum();
+        drawEssenceLogic(graphics, guiX, guiY);
+        int centerX = guiX + 88;
+        int y0 = guiY + 5;
+        int y1 = guiY + TOP_HEIGHT - 10;
+        float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
+        float sin = (float) Math.sin(radRot), cos = (float) Math.cos(radRot);
+        float ratio = currentScale / BASE_SCALE;
+        float transX = currentOffsetX / currentScale;
+        float transY = 1.1F + (currentOffsetY / currentScale);
+        Vector3f dynamicTranslation = new Vector3f(transX, transY, 0.0F);
+        Quaternionf rotation = new Quaternionf().rotationXYZ(0, (float) Math.toRadians(this.viewRotation) + (float) Math.PI, (float) Math.PI);
+        if (this.selectedPart != BodyPart.INTERNAL) {
+            graphics.entity(this.skeletonPreview, currentScale, dynamicTranslation, rotation, null,
+                    centerX - 70, y0, centerX + 70, y1);
         }
-        SurgeryAlert alert = SurgeryAnalyzer.check(this.menu.slots, 100);
-        if (alert != null) {
-            int iconX = this.leftPos + 155;
-            int iconY = this.topPos + 20;
-            graphics.blit(RenderPipelines.GUI_TEXTURED, ALERT_ICON, iconX, iconY, 0, 0, 16, 16, 16, 16);
-            if (mouseX >= iconX && mouseX < iconX + 16 && mouseY >= iconY && mouseY < iconY + 16) {
-                graphics.setTooltipForNextFrame(this.font, List.of(alert.message()), null, ItemStack.EMPTY, mouseX, mouseY, null);
+        boolean showInternal = (this.selectedPart == BodyPart.NONE || this.selectedPart == BodyPart.INTERNAL);
+        if (showInternal) {
+            boolean isInternalZoom = (this.selectedPart == BodyPart.INTERNAL);
+            int intX0, intY0, intX1, intY1;
+            float intScale;
+            Vector3f intTrans;
+            BodyPart iPart = BodyPart.INTERNAL;
+            float rotX = (iPart.hitX * cos) - (iPart.hitZ * sin);
+            int intVisualX = (centerX + (int) currentOffsetX) + (int) (rotX * ratio);
+            int intVisualY = (getModelBaseY() + (int) currentOffsetY) + (int) (iPart.hitY * ratio);
+            if (isInternalZoom) {
+                intX0 = centerX - 70;
+                intY0 = y0;
+                intX1 = centerX + 70;
+                intY1 = y1;
+                intScale = currentScale;
+                intTrans = new Vector3f(0.0F, 0.2F, 0.0F);
+            } else {
+                int boxSize = 100;
+                intX0 = intVisualX - boxSize;
+                intY0 = intVisualY - boxSize - 20;
+                intX1 = intVisualX + boxSize;
+                intY1 = intVisualY + boxSize - 20;
+                intScale = 40f;
+                intTrans = new Vector3f(0.0F, 0.7F, 0.0F);
             }
+            graphics.entity(this.internalPartsPreview, intScale, intTrans, rotation, null, intX0, intY0, intX1, intY1);
         }
-    }
-
-    private void drawRelativeModels(GuiGraphicsExtractor graphics) {
-        int maxEssence = this.minecraft.player != null ?
-                this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get()).getMaxTolerance(this.minecraft.player) : 100;
-        int projectedEssence = maxEssence - calculateTotalEssenceCost();
-        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 5, 4, 211, 61, 8, 48, 256, 256);
-        drawEssenceBar(graphics, projectedEssence, maxEssence, 5, 4, 8, 48);
-        float spd = 0.05f;
-        currentScale += ((selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale) - currentScale) * spd;
-        currentOffsetX += ((selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX) - currentOffsetX) * spd;
-        currentOffsetY += ((selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetY) - currentOffsetY) * spd;
-        int drawX = (int) (88 + currentOffsetX);
-        int drawY = (int) (TOP_HEIGHT - 15 + currentOffsetY);
-        if (!this.hideName && this.minecraft.player != null) {
+        graphics.nextStratum();
+        drawScanLine(graphics, guiY);
+        if (this.selectedPart == BodyPart.NONE && this.minecraft.player != null) {
             String name = "_" + this.minecraft.player.getName().getString().toUpperCase();
-            graphics.text(this.font, Component.literal(name), drawX - this.font.width(name) / 2, drawY, 0xFF00FFFF, true);
+            graphics.text(this.font, Component.literal(name), getModelBaseX() + (int) currentOffsetX - this.font.width(name) / 2, guiY + TOP_HEIGHT - 25, 0xFF00FFFF, true);
         }
-        long elapsed = System.currentTimeMillis() - startTime;
-        float ease = (elapsed < ANIMATION_DURATION) ? (1f - (float) Math.pow(1f - Math.min(elapsed / ANIMATION_DURATION, 1f), 3)) : 1.0f;
-        float currentRotation = isDraggingModel ? this.viewRotation : ease * 360f;
-        if (skeletonModel != null) {
-            graphics.enableScissor(this.leftPos + 5, this.topPos + 5, this.leftPos + GUI_WIDTH - 5, this.topPos + TOP_HEIGHT - 10);
-            renderCustomModel(graphics, drawX, drawY, (int) (currentScale * 0.933f), currentRotation, skeletonModel, SKELETON_TEXTURE);
-            graphics.disableScissor();
-        }
+        drawMarkersAndAlerts(graphics, guiX, guiY, mouseX, mouseY);
+        drawMarkerSlotBackgrounds(graphics);
+        super.extractContents(graphics, mouseX, mouseY, a);
     }
 
     private int calculateTotalEssenceCost() {
         int cost = 0;
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
             ItemStack stack = this.menu.getSlot(i).getItem();
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) cost += cw.getEssenceCost(stack) * stack.getCount();
+            if (!stack.isEmpty()) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw != null) {
+                    cost += cw.getEssenceCost(stack) * stack.getCount();
+                }
+            }
         }
         return cost;
     }
 
+    private void drawEssenceLogic(GuiGraphicsExtractor graphics, int guiX, int guiY) {
+        if (this.minecraft.player == null) return;
+        var data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+        int maxTolerance = data.getMaxTolerance(this.minecraft.player);
+        int currentTolerance = data.getTolerance(this.minecraft.player);
+        int projectedCost = calculateTotalEssenceCost();
+        int projectedEssence = maxTolerance - projectedCost;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX + 5, guiY + 4, 211, 61, 8, 48, 256, 256);
+        drawEssenceBar(graphics, projectedEssence, maxTolerance, guiX + 5, guiY + 4, 8, 48);
+        int color = (projectedEssence < 0) ? 0xFFAA0000 : (projectedEssence < 20 ? 0xFFFF5555 : 0xFF00FFFF);
+        String toleranceText = projectedEssence + " / " + maxTolerance;
+        graphics.text(this.font, toleranceText, guiX + 18, guiY + 6, color, true);
+        if (currentTolerance > projectedEssence) {
+            float time = (System.currentTimeMillis() % 1000) / 1000f;
+            if (Math.sin(time * 2 * Math.PI) > 0) {
+                drawEssenceBar(graphics, currentTolerance, maxTolerance, guiX + 5, guiY + 4, 8, 48);
+            }
+        }
+    }
+
     private void drawEssenceBar(GuiGraphicsExtractor graphics, int essence, int maxEssence, int x, int y, int w, int h) {
+        int val = Math.max(0, essence);
         int danger = (int) (maxEssence * 0.25f);
-        int rH = (int) (h * ((float) Math.min(Math.max(0, essence), danger) / maxEssence));
-        int bH = (int) (h * ((float) Math.max(0, essence - danger) / maxEssence));
+        int rH = (int) (h * ((float) Math.min(val, danger) / maxEssence));
+        int bH = (int) (h * ((float) Math.max(0, val - danger) / maxEssence));
         if (rH > 0)
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y + (h - rH), 220, 61 + (48 - rH), w, rH, 256, 256);
         if (bH > 0)
             graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y + (h - rH - bH), 176, 61 + (48 - (rH + bH)), w, bH, 256, 256);
     }
 
+    private void drawScanLine(GuiGraphicsExtractor graphics, int guiY) {
+        long elapsed = System.currentTimeMillis() - startTime;
+        if (elapsed < ANIMATION_DURATION) {
+            float r = Math.min(elapsed / ANIMATION_DURATION, 1f);
+            float ease = 1f - (float) Math.pow(1f - r, 3);
+            int scanY = (guiY + 15) + (int) (100 * ease);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos + 48, scanY, 176, 110, 80, 1, 256, 256);
+        }
+    }
+
+    private void drawMarkersAndAlerts(GuiGraphicsExtractor graphics, int guiX, int guiY, int mouseX, int mouseY) {
+        if (this.selectedPart != BodyPart.NONE && this.selectedMarker == null) {
+            float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
+            float sin = (float) Math.sin(radRot), cos = (float) Math.cos(radRot);
+            float scaleFactor = currentScale / 16f;
+            int baseX = getModelBaseX(), baseY = getModelBaseY();
+            if (this.selectedPart == BodyPart.INTERNAL) {
+                baseX = guiX + 88;
+                baseY = guiY + 65;
+            }
+            for (TargetMarker marker : this.selectedPart.markers) {
+                float screenX = (marker.modelX() * cos) - (marker.modelZ() * sin);
+                int markerX = baseX + (int) (screenX * scaleFactor) - 8;
+                int markerY = baseY - (int) (marker.modelY() * scaleFactor) - 8;
+                graphics.blit(RenderPipelines.GUI_TEXTURED, MARKER_TEXTURE, markerX, markerY, 0, 0, 16, 16, 16, 16, 0xCCFFFFFF);
+                if (mouseX >= markerX && mouseX < markerX + 16 && mouseY >= markerY && mouseY < markerY + 16) {
+                    graphics.outline(markerX - 1, markerY - 1, 18, 18, 0xFFFFFFFF);
+                    graphics.setTooltipForNextFrame(marker.name(), mouseX, mouseY);
+                }
+            }
+        }
+    }
+
+    private void drawMarkerSlotBackgrounds(GuiGraphicsExtractor graphics) {
+        if (this.selectedMarker != null) {
+            int slotCount = this.selectedMarker.relatedSlots().length;
+            int uiWidth = (18 * slotCount) + (2 * (slotCount - 1));
+            int uiX = this.leftPos + (GUI_WIDTH - uiWidth) / 2;
+            for (int i = 0; i < slotCount; i++) {
+                int slotX = uiX + (i * 20);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, BLUE_SLOT_TEXTURE, slotX - 1, this.topPos + 104, 0, 0, 18, 18, 18, 18);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, RED_SLOT_TEXTURE, slotX - 1, this.topPos + 79, 0, 0, 18, 18, 18, 18);
+            }
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (super.mouseClicked(event, doubleClick)) return true;
+        double mx = event.x();
+        double my = event.y();
+        if (event.button() == 0) {
+            for (Slot slot : this.menu.slots) {
+                if (mx >= this.leftPos + slot.x && mx < this.leftPos + slot.x + 16 &&
+                        my >= this.topPos + slot.y && my < this.topPos + slot.y + 16) {
+                    if (slot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) {
+                        ClientPacketDistributor.sendToServer(new SurgeryGhostTogglePacket(this.menu.blockEntity.getBlockPos(), slot.index));
+                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    }
+                    return super.mouseClicked(event, doubleClick);
+                }
+            }
+            if (this.selectedPart != BodyPart.NONE && this.selectedMarker == null) {
+                if (checkMarkerClick(mx, my)) {
+                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.2F));
+                    return true;
+                }
+            }
+            if (mx >= this.leftPos && mx < this.leftPos + GUI_WIDTH &&
+                    my >= this.topPos && my < this.topPos + TOP_HEIGHT) {
+                this.potentialDrag = true;
+                this.dragStartX = mx;
+                this.rotationStart = this.viewRotation;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkMarkerClick(double mx, double my) {
+        float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
+        float sin = (float) Math.sin(radRot), cos = (float) Math.cos(radRot);
+        float scaleFactor = currentScale / 16f;
+        int baseX = getModelBaseX(), baseY = getModelBaseY();
+        if (this.selectedPart == BodyPart.INTERNAL) {
+            baseX = this.leftPos + 88;
+            baseY = this.topPos + 65;
+        }
+        for (TargetMarker marker : this.selectedPart.markers) {
+            float screenX = (marker.modelX() * cos) - (marker.modelZ() * sin);
+            int markerX = baseX + (int) (screenX * scaleFactor) - 8;
+            int markerY = baseY - (int) (marker.modelY() * scaleFactor) - 8;
+            if (mx >= markerX && mx < markerX + 16 && my >= markerY && my < markerY + 16) {
+                this.selectedMarker = marker;
+                updateSlotPositions();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //    @Override
+//    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+//        if (this.isDebugMoving) {
+//            double mx = event.x();
+//            double my = event.y();
+//            float ratio = currentScale / BASE_SCALE;
+//            if (this.draggingPart != null) {
+//                int newHitX = (int) ((mx - getModelBaseX()) / ratio);
+//                int newHitY = (int) ((my - getModelBaseY() + 60) / ratio);
+//                System.out.println("Moving Part " + draggingPart.name() + " -> hitX: " + newHitX + ", hitY: " + newHitY);
+//            }
+//            if (this.draggingMarker != null) {
+//                float scaleFactor = currentScale / 16f;
+//                int baseX = getModelBaseX();
+//                int baseY = getModelBaseY();
+//                if (this.selectedPart == BodyPart.INTERNAL) {
+//                    baseX -= 48;
+//                    baseY += 26;
+//                }
+//                float newModelY = (float) ((baseY - my - 8) / scaleFactor);
+//                float newModelX = (float) ((mx - baseX + 8) / scaleFactor);
+//                System.out.println("Moving Marker " + draggingMarker.name().getString() + " -> modelX: " + newModelX + ", modelY: " + newModelY);
+//            }
+//            return true;
+//        }
+//        if (this.potentialDrag && event.button() == 0) {
+//            this.viewRotation = this.rotationStart - (float) (event.x() - this.dragStartX);
+//            this.isDraggingModel = true;
+//            return true;
+//        }
+//        return super.mouseDragged(event, dx, dy);
+//    }
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        if (this.potentialDrag && event.button() == 0) {
+            this.viewRotation -= (float) dx;
+            this.isDraggingModel = true;
+            this.rotationInterrupted = true;
+            return true;
+        }
+        return super.mouseDragged(event, dx, dy);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (this.isDebugMoving) {
+            if (this.draggingPart != null) {
+                float ratio = currentScale / BASE_SCALE;
+                int fX = (int) ((event.x() - getModelBaseX()) / ratio);
+                int fY = (int) ((event.y() - getModelBaseY() + 60) / ratio);
+                System.out.println("=== COPY THIS TO BodyPart Enum ===");
+                System.out.printf("%s(%d, %d, %d, %d, 0, 0, 120f, List.of(...))\n",
+                        draggingPart.name(), fX, fY, draggingPart.hitW, draggingPart.hitH);
+            }
+            if (this.draggingMarker != null) {
+                float scaleFactor = currentScale / 16f;
+                int baseX = getModelBaseX();
+                int baseY = getModelBaseY();
+                if (this.selectedPart == BodyPart.INTERNAL) {
+                    baseX -= 48;
+                    baseY += 26;
+                }
+                float fY = (float) ((baseY - event.y() - 8) / scaleFactor);
+                float fX = (float) ((event.x() - baseX + 8) / scaleFactor);
+                System.out.println("=== DEBUG Marker Result (Face front [Rot=0] for accurate X) ===");
+                System.out.printf("new TargetMarker(Component.literal(\"%s\"), %.2ff, %.2ff, %.2ff, slots(...))\n",
+                        draggingMarker.name().getString(), fX, fY, draggingMarker.modelZ());
+            }
+            this.isDebugMoving = false;
+            this.draggingPart = null;
+            this.draggingMarker = null;
+            return true;
+        }
+        if (event.button() == 0) {
+            if (this.isDraggingModel) {
+                this.isDraggingModel = false;
+                this.potentialDrag = false;
+                return true;
+            } else if (this.potentialDrag) {
+                if (this.selectedPart == BodyPart.NONE) {
+                    handlePartSelection(event.x(), event.y());
+                } else {
+                    this.selectedPart = BodyPart.NONE;
+                    this.selectedMarker = null;
+                    updateSlotPositions();
+                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 0.8F));
+                }
+                this.potentialDrag = false;
+                return true;
+            }
+        }
+        return super.mouseReleased(event);
+    }
+
+    private boolean handlePartSelection(double mouseX, double mouseY) {
+        float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
+        float sin = (float) Math.sin(radRot);
+        float cos = (float) Math.cos(radRot);
+        float scaleFactor = currentScale / 45f;
+        int baseX = getModelBaseX() + (int) currentOffsetX;
+        int baseY = getModelBaseY() + (int) currentOffsetY;
+        for (BodyPart part : BodyPart.values()) {
+            if (part == BodyPart.NONE) continue;
+            float rotatedX = (part.hitX * cos) - (part.hitZ * sin);
+            int hX = baseX + (int) (rotatedX * scaleFactor);
+            int hY = baseY + (int) (part.hitY * scaleFactor);
+            int halfW = (int) ((part.hitW / 2.0) * (currentScale / BASE_SCALE));
+            int halfH = (int) ((part.hitH / 2.0) * (currentScale / BASE_SCALE));
+            if (mouseX >= (hX - halfW) && mouseX <= (hX + halfW) &&
+                    mouseY >= (hY - halfH) && mouseY <= (hY + halfH)) {
+                this.selectedPart = part;
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                updateSlotPositions();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void updateSlotPositions() {
-        for (Slot slot : this.menu.slots) {
-            setSlotPos(slot, 20000, 20000);
+        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
+            if (i < this.menu.slots.size()) setSlotPos(this.menu.getSlot(i), 20000, 20000);
         }
         if (this.selectedMarker != null) {
-            int[] targets = this.selectedMarker.relatedSlots();
-            int uiWidth = (SLOT_SIZE * targets.length) + (SLOT_SPACING * (targets.length - 1));
+            int slotCount = this.selectedMarker.relatedSlots().length;
+            int uiWidth = (18 * slotCount) + (2 * (slotCount - 1));
             int uiX = (this.imageWidth - uiWidth) / 2;
-            for (int i = 0; i < targets.length; i++) {
-                int slotIndex = targets[i];
-                if (slotIndex < this.menu.slots.size()) {
-                    setSlotPos(this.menu.slots.get(slotIndex), uiX + (i * (SLOT_SIZE + SLOT_SPACING)) + 1, 106);
-                }
+            for (int i = 0; i < slotCount; i++) {
+                int slotId = this.selectedMarker.relatedSlots()[i];
+                if (slotId < this.menu.slots.size()) setSlotPos(this.menu.getSlot(slotId), uiX + (i * 20), 105);
             }
         }
     }
@@ -266,26 +495,42 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             slotX.set(slot, x);
             slotY.set(slot, y);
         } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
     private enum BodyPart {
-        HEAD(0, -80, 32, 32, 0, 160, 120f, List.of(new TargetMarker(Component.literal("Left Eye"), 2, 25.5f, -3.4f, slots(RobosurgeonBlockEntity.SLOT_EYES)), new TargetMarker(Component.literal("Right Eye"), -2f, 25.5f, -3.4f, slots(RobosurgeonBlockEntity.SLOT_EYES)), new TargetMarker(Component.literal("Brain"), -0.13f, 27.56f, 1.52f, slots(RobosurgeonBlockEntity.SLOT_BRAIN)))),
-        TORSO(0, -54, 26, 32, 0, 120, 120f, List.of(new TargetMarker(Component.literal("Heart"), 0f, 21f, -0.5f, slots(RobosurgeonBlockEntity.SLOT_HEART)), new TargetMarker(Component.literal("Left Lung"), 2.3f, 20f, 0, slots(RobosurgeonBlockEntity.SLOT_LUNGS)), new TargetMarker(Component.literal("Stomach"), 0.0f, 16f, -1.5f, slots(RobosurgeonBlockEntity.SLOT_STOMACH)), new TargetMarker(Component.literal("Right Lung"), -2.3f, 20f, 0f, slots(RobosurgeonBlockEntity.SLOT_LUNGS)))),
-        ARM_LEFT(18, -54, 12, 34, -60, 120, 120f, List.of(new TargetMarker(Component.literal("Left Arm"), 4.7f, 21.0f, -0, slots(RobosurgeonBlockEntity.SLOT_ARMS)), new TargetMarker(Component.literal("Left Hand"), 5.8f, 14f, 0f, slots(RobosurgeonBlockEntity.SLOT_HANDS)))),
-        ARM_RIGHT(-18, -54, 12, 34, 60, 120, 120f, List.of(new TargetMarker(Component.literal("Right Arm"), -4.7f, 21.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_ARMS)), new TargetMarker(Component.literal("Right Hand"), -5.8f, 14f, 0f, slots(RobosurgeonBlockEntity.SLOT_HANDS)))),
-        LEG_LEFT(5, -19, 12, 38, -50, 20, 120f, List.of(new TargetMarker(Component.literal("Left Leg"), 2f, 10.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)), new TargetMarker(Component.literal("Left Foot"), 2.1f, 3.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS)))),
-        LEG_RIGHT(-5, -19, 12, 38, 50, 20, 120f, List.of(new TargetMarker(Component.literal("Right Leg"), -2f, 10.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)), new TargetMarker(Component.literal("Right Foot"), -2.1f, 3.9f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS)))),
-        INTERNAL(0, 0, 40, 50, 48, 130, 150f, List.of(new TargetMarker(Component.literal("Skin"), -3.0f, 24.6f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_SKIN)), new TargetMarker(Component.literal("Muscle"), -0, 22.7f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_MUSCLE)), new TargetMarker(Component.literal("Bone"), 3.0f, 20.8f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_BONES)))),
-        NONE(0, 0, 0, 0, 0, 0, 45f, List.of());
-        final int hitX, hitY, hitW, hitH, zoomOffsetX, zoomOffsetY;
+        HEAD(0, -85, 0, 30, 30, 0, 80, 120f, List.of(
+                new TargetMarker(Component.literal("Left Eye"), 2f, 17.5f, -3.4f, slots(RobosurgeonBlockEntity.SLOT_EYES)),
+                new TargetMarker(Component.literal("Right Eye"), -2f, 17.5f, -3.4f, slots(RobosurgeonBlockEntity.SLOT_EYES)),
+                new TargetMarker(Component.literal("Brain"), -0.13f, 19.56f, 1.52f, slots(RobosurgeonBlockEntity.SLOT_BRAIN)))),
+        TORSO(0, -54, 0, 24, 32, 0, 20, 120f, List.of(
+                new TargetMarker(Component.literal("Heart"), 0f, 12f, -0.5f, slots(RobosurgeonBlockEntity.SLOT_HEART)),
+                new TargetMarker(Component.literal("Stomach"), 0.0f, 6f, -1.5f, slots(RobosurgeonBlockEntity.SLOT_STOMACH)))),
+        ARM_LEFT(25, -54, 0, 20, 34, 60, 30, 120f, List.of(
+                new TargetMarker(Component.literal("Left Arm"), 5.5f, 14.0f, 0, slots(RobosurgeonBlockEntity.SLOT_ARMS)),
+                new TargetMarker(Component.literal("Left Hand"), 5.5f, 6.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_HANDS)))),
+        ARM_RIGHT(-25, -54, 0, 20, 34, -60, 30, 120f, List.of(
+                new TargetMarker(Component.literal("Right Arm"), -5.5f, 14.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_ARMS)),
+                new TargetMarker(Component.literal("Right Hand"), -5.5f, 6.0f, 0f, slots(RobosurgeonBlockEntity.SLOT_HANDS)))),
+        LEG_LEFT(10, -20, 0, 14, 40, 40, -50, 120f, List.of(
+                new TargetMarker(Component.literal("Left Leg"), 2f, 2.5f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)),
+                new TargetMarker(Component.literal("Left Foot"), 2f, -2.5f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS)))),
+        LEG_RIGHT(-10, -20, 0, 14, 40, -40, -50, 120f, List.of(
+                new TargetMarker(Component.literal("Right Leg"), -2f, 2.5f, 0f, slots(RobosurgeonBlockEntity.SLOT_LEGS)),
+                new TargetMarker(Component.literal("Right Foot"), -2f, -2.5f, 0f, slots(RobosurgeonBlockEntity.SLOT_BOOTS)))),
+        INTERNAL(60, -40, 0, 35, 35, 0, 0, 150f, List.of(
+                new TargetMarker(Component.literal("Skin"), -3.0f, 1.9f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_SKIN)),
+                new TargetMarker(Component.literal("Muscle"), -0, 0.0f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_MUSCLE)),
+                new TargetMarker(Component.literal("Bone"), 3.0f, -2.0f, -5.5f, slots(RobosurgeonBlockEntity.SLOT_BONES)))),
+        NONE(0, 0, 0, 0, 0, 0, 0, 45f, List.of());
+        final int hitX, hitY, hitZ, hitW, hitH, zoomOffsetX, zoomOffsetY;
         final float zoomScale;
         final List<TargetMarker> markers;
 
-        BodyPart(int hX, int hY, int hW, int hH, int zX, int zY, float zS, List<TargetMarker> m) {
+        BodyPart(int hX, int hY, int hZ, int hW, int hH, int zX, int zY, float zS, List<TargetMarker> m) {
             this.hitX = hX;
             this.hitY = hY;
+            this.hitZ = hZ;
             this.hitW = hW;
             this.hitH = hH;
             this.zoomOffsetX = zX;

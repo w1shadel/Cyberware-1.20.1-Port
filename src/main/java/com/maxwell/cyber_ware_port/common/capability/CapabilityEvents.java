@@ -19,7 +19,8 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -68,11 +69,11 @@ public class CapabilityEvents {
                 newData.ensureEssentialPartsAfterDeath();
             } else {
                 newData.resetToHuman();
-                ItemStackHandler handler = newData.getInstalledCyberware();
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    ItemStack stack = handler.getStackInSlot(i);
-                    if (!stack.isEmpty() && stack.getOrDefault(CyberWare.GHOST_COMPONENT, false)) {
-                        handler.setStackInSlot(i, ItemStack.EMPTY);
+                ItemStacksResourceHandler handler = newData.getInstalledCyberware();
+                for (int i = 0; i < handler.size(); i++) {
+                    ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
+                    if (!stack.isEmpty() && stack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                        handler.set(i, ItemResource.EMPTY, 0);
                     }
                 }
             }

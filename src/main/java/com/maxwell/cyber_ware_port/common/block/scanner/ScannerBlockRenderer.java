@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -43,10 +44,15 @@ public class ScannerBlockRenderer implements BlockEntityRenderer<ScannerBlockEnt
         pPoseStack.translate(0.5D, 1.5D, 0.5D);
         pPoseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
         pPoseStack.mulPose(Axis.YP.rotationDegrees(state.facing.getOpposite().toYRot()));
-        collector.submitCustomGeometry(pPoseStack, RenderTypes.entityCutout(TEXTURE), (pose, vertexConsumer) -> {
-            this.model.setupMovingParts(state.isWorking, state.animTime);
-            this.model.renderToBuffer(pPoseStack, vertexConsumer, state.lightCoords, 0, -1);
-        });
+        this.model.setupMovingParts(state.isWorking, state.animTime);
+        collector.submitModelPart(
+                this.model.root(),
+                pPoseStack,
+                RenderTypes.entityCutout(TEXTURE),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                null
+        );
         pPoseStack.popPose();
     }
 

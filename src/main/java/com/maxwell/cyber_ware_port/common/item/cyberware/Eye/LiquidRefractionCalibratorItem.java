@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class LiquidRefractionCalibratorItem extends CyberwareItem {
     public LiquidRefractionCalibratorItem(Properties p) {
-        super(new Builder(p,2, RobosurgeonBlockEntity.SLOT_EYES)
+        super(new Builder(p, 2, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .requires(ModItems.CYBER_EYE)
         );

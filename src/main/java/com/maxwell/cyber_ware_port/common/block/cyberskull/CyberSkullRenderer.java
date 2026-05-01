@@ -8,22 +8,17 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.WallSkullBlock;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-public class CyberSkullRenderer implements BlockEntityRenderer<SkullBlockEntity, SkullBlockRenderState> {
+public class CyberSkullRenderer implements BlockEntityRenderer<CyberSkullBlockEntity, SkullBlockRenderState> {
     private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_wither_skeleton.png");
+            Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/block/cyber_wither_skeleton.png");
     private final SkullModel model;
 
     public CyberSkullRenderer(BlockEntityRendererProvider.Context context) {
@@ -36,16 +31,17 @@ public class CyberSkullRenderer implements BlockEntityRenderer<SkullBlockEntity,
     }
 
     @Override
-    public void extractRenderState(SkullBlockEntity blockEntity, SkullBlockRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+    public void extractRenderState(CyberSkullBlockEntity blockEntity, SkullBlockRenderState state, float partialTicks, Vec3 cameraPosition, net.minecraft.client.renderer.feature.ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderState.extractBase(blockEntity, state, breakProgress);
         state.animationProgress = blockEntity.getAnimation(partialTicks);
         BlockState blockState = blockEntity.getBlockState();
-        if (blockState.getBlock() instanceof WallSkullBlock) {
-            Direction facing = blockState.getValue(WallSkullBlock.FACING);
-            state.transformation = SkullBlockRenderer.TRANSFORMATIONS.wallTransformation(facing);
+        state.skullType = ((com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullBlock) blockState.getBlock()).getType();
+        if (blockState.getBlock() instanceof net.minecraft.world.level.block.WallSkullBlock) {
+            state.transformation = SkullBlockRenderer.TRANSFORMATIONS.wallTransformation(blockState.getValue(net.minecraft.world.level.block.WallSkullBlock.FACING));
         } else {
-            state.transformation = SkullBlockRenderer.TRANSFORMATIONS.freeTransformations(blockState.getValue(SkullBlock.ROTATION));
+            state.transformation = SkullBlockRenderer.TRANSFORMATIONS.freeTransformations(blockState.getValue(net.minecraft.world.level.block.SkullBlock.ROTATION));
         }
-        state.renderType = RenderTypes.entityCutout(TEXTURE);
+        state.renderType = net.minecraft.client.renderer.rendertype.RenderTypes.entityCutout(TEXTURE);
     }
 
     @Override

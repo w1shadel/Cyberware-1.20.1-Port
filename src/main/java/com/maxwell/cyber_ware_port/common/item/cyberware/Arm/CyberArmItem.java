@@ -8,7 +8,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 public class CyberArmItem extends CyberwareItem {
     public CyberArmItem(Properties properties, int slotId, DeferredHolder<Item, CyberwareItem> incompatibleHumanPart,
                         BodyPartType bodyPartType) {
-        super(new Builder(properties,7, slotId)
+        super(new Builder(properties, 7, slotId)
                 .maxInstall(1)
                 .incompatible(incompatibleHumanPart)
                 .bodyPart(bodyPartType)

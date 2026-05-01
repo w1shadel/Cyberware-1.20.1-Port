@@ -13,9 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.transfer.IndexModifier;
-import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,10 +32,9 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
         this.blockEntity = (RobosurgeonBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(entity.getLevel(), entity.getBlockPos());
         addDataSlots(data);
-        ResourceHandler<ItemResource> handler = this.blockEntity.getItemHandler();
-        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
+        ItemStacksResourceHandler handler = this.blockEntity.getItemHandler();
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-            this.addSlot(new ResourceHandlerSlot(handler, modifier, i, -10000, -10000) {
+            this.addSlot(new ResourceHandlerSlot(handler, handler::set, i, -10000, -10000) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     if (!super.mayPlace(stack)) return false;
@@ -81,10 +79,9 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
             if (!carried.isEmpty()) {
                 ICyberware newCw = CyberwareAPI.getCyberware(carried);
                 if (newCw != null) {
-                    ResourceHandler<ItemResource> handler = this.blockEntity.getItemHandler();
+                    ItemStacksResourceHandler handler = this.blockEntity.getItemHandler();
                     for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
                         ItemStack existing = handler.getResource(i).toStack(handler.getAmountAsInt(i));
-                        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
                         if (!existing.isEmpty() && existing.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
                             boolean shouldEject = (i == slotId);
                             if (!shouldEject) {
@@ -94,7 +91,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                                 }
                             }
                             if (shouldEject) {
-                                modifier.set(i, ItemResource.EMPTY, 0);
+                                handler.set(i, ItemResource.EMPTY, 0);
                             }
                         }
                     }

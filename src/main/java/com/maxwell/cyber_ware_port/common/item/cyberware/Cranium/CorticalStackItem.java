@@ -13,7 +13,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 public class CorticalStackItem extends CyberwareItem {
     public CorticalStackItem(Properties p) {
-        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_BRAIN)
+        super(new Builder(p, 10, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
                 .incompatible(ModItems.CONSCIOUSNESS_TRANSMITTER));
     }

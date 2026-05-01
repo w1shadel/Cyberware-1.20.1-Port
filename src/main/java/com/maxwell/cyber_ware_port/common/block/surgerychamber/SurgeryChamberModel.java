@@ -9,7 +9,6 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
-@SuppressWarnings("removal")
 public class SurgeryChamberModel extends Model.Simple {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Identifier.fromNamespaceAndPath(CyberWare.MODID, "surgery_chamber"), "main");
     private final ModelPart root;
@@ -38,12 +37,10 @@ public class SurgeryChamberModel extends Model.Simple {
 
     }
 
-    public void setupAnim(SurgeryChamberBlockEntity entity, float partialTick) {
-        if (entity == null) return;
-        float progress = entity.prevAnimationProgress + (entity.animationProgress - entity.prevAnimationProgress) * partialTick;
+    public void setupFromProgress(float prevProgress, float currentProgress, float partialTick) {
+        float progress = prevProgress + (currentProgress - prevProgress) * partialTick;
         float scale = 1.0F - progress;
         this.door_left.xScale = scale;
         this.door_right.xScale = scale;
-
     }
 }

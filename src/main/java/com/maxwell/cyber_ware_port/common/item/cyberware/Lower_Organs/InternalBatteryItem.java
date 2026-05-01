@@ -5,7 +5,7 @@ import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
 
 public class InternalBatteryItem extends CyberwareItem {
     public InternalBatteryItem(Properties p) {
-        super(new Builder(p,2, RobosurgeonBlockEntity.SLOT_STOMACH)
+        super(new Builder(p, 2, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(4)
                 .energy(0, 0, 3000, StackingRule.LINEAR));
 

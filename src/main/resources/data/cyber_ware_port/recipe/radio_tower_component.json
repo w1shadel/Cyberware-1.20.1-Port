@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:iron_bars"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "X": {
-      "item": "minecraft:redstone"
-    }
+    "B": "minecraft:iron_bars",
+    "I": "minecraft:iron_ingot",
+    "X": "minecraft:redstone"
   },
   "pattern": [
     "I I",

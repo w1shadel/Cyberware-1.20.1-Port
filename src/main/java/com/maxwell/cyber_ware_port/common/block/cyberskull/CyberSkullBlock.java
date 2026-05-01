@@ -11,12 +11,9 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import net.minecraft.world.level.block.state.pattern.BlockPatternBuilder;
 
@@ -33,45 +30,26 @@ public class CyberSkullBlock extends SkullBlock {
 
     }
 
-    public static void checkSpawn(Level level, BlockPos pos, SkullBlockEntity skull) {
+    public static void checkSpawn(Level level, BlockPos pos, CyberSkullBlockEntity skull) {
         if (!level.isClientSide()) {
             BlockState blockstate = skull.getBlockState();
-            boolean isBase = blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get()) || blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get());
-            if (isBase && pos.getY() >= level.getMinY() && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL) {
+            boolean isSkull = blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_SKULL.get()) || blockstate.is(ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get());
+            if (isSkull && pos.getY() >= level.getMinY() && level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL) {
                 BlockPattern pattern = getOrCreateWitherFull();
                 BlockPattern.BlockPatternMatch match = pattern.find(level, pos);
                 if (match != null) {
-                    for (int i = 0;
-                         i < pattern.getWidth();
-                         ++i) {
-                        for (int j = 0;
-                             j < pattern.getHeight();
-                             ++j) {
-                            BlockInWorld blockinworld = match.getBlock(i, j, 0);
-                            level.setBlock(blockinworld.getPos(), Blocks.AIR.defaultBlockState(), 2);
-                            level.levelEvent(2001, blockinworld.getPos(), getId(blockinworld.getState()));
-
-                        }
-                    }
+                    net.minecraft.world.level.block.CarvedPumpkinBlock.clearPatternBlocks(level, match);
                     CyberWitherBoss boss = ModEntities.CYBER_WITHER.get().create(level, EntitySpawnReason.MOB_SUMMONED);
                     if (boss != null) {
                         BlockPos blockpos = match.getBlock(1, 2, 0).getPos();
-                        boss.snapTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.55D, (double) blockpos.getZ() + 0.5D, match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
-                        boss.yBodyRot = match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+                        boss.snapTo((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.55D, (double) blockpos.getZ() + 0.5D,
+                                match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
+                        boss.setYBodyRot(match.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F);
                         for (ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, boss.getBoundingBox().inflate(50.0D))) {
                             CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, boss);
-
                         }
                         level.addFreshEntity(boss);
-                        for (int k = 0;
-                             k < pattern.getWidth();
-                             ++k) {
-                            for (int l = 0;
-                                 l < pattern.getHeight();
-                                 ++l) {
-                                level.blockEntityChanged(match.getBlock(k, l, 0).getPos());
-                            }
-                        }
+                        net.minecraft.world.level.block.CarvedPumpkinBlock.updatePatternBlocks(level, match);
                     }
                 }
             }
@@ -95,15 +73,13 @@ public class CyberSkullBlock extends SkullBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
         BlockEntity blockentity = level.getBlockEntity(pos);
-        if (blockentity instanceof SkullBlockEntity) {
-            checkSpawn(level, pos, (SkullBlockEntity) blockentity);
-
+        if (blockentity instanceof CyberSkullBlockEntity cyberSkull) {
+            checkSpawn(level, pos, cyberSkull);
         }
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CyberSkullBlockEntity(pos, state);
-
     }
 }

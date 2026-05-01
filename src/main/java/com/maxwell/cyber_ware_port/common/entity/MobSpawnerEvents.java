@@ -34,18 +34,38 @@ public class MobSpawnerEvents {
         if (!(event.getLevel() instanceof ServerLevel level) || event.loadedFromDisk()) {
             return;
         }
-        if (!level.getGameRules().get(GameRules.SPAWN_MOBS)) {
-            return;
-        }
+
         Entity entity = event.getEntity();
-        if (!(entity instanceof Mob vanillaMob)) {
+        if (!(entity instanceof Mob vanillaMob)) return;
+        if (vanillaMob.getSpawnType() == EntitySpawnReason.CONVERSION) {
             return;
         }
-        double bonusChance = calculateBonusChance(level, vanillaMob.blockPosition());
         EntityType<?> type = entity.getType();
         var mobData = com.maxwell.cyber_ware_port.api.json.MobDataManager.MOB_DATA.get(type);
+
         if (mobData != null && mobData.replaceWith != null) {
-            tryReplaceMob(event, level, vanillaMob, mobData.replaceWith, mobData.chance + bonusChance);
+            double bonusChance = calculateBonusChance(level, vanillaMob.blockPosition());
+            double totalChance = mobData.chance + bonusChance;
+
+            if (level.getRandom().nextFloat() < totalChance) {
+                tryReplaceMob(event, level, vanillaMob, mobData.replaceWith);
+            }
+        }
+    }
+
+    private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType) {
+        try {
+            Entity spawned = newType.create(level, EntitySpawnReason.CONVERSION);
+            if (spawned instanceof Mob customMob) {
+                customMob.setPos(original.getX(), original.getY(), original.getZ());
+                customMob.yBodyRot = original.yBodyRot;
+                customMob.yHeadRot = original.yHeadRot;
+                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), EntitySpawnReason.CONVERSION, null);
+                level.addFreshEntity(customMob);
+                event.setCanceled(true);
+            }
+        } catch (Exception e) {
+            CyberWare.LOGGER.error("Failed to replace mob: {}", e.getMessage());
         }
     }
 
@@ -81,18 +101,5 @@ public class MobSpawnerEvents {
             return false;
         }
         return Math.abs(currentTime - lastActive) < ACTIVE_TIMEOUT;
-    }
-
-    private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType, double chance) {
-        if (level.getRandom().nextFloat() < chance) {
-            Entity spawned = newType.create(level, EntitySpawnReason.CONVERSION);
-            if (spawned instanceof Mob customMob) {
-                customMob.yBodyRot = original.yBodyRot;
-                customMob.yHeadRot = original.yHeadRot;
-                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), EntitySpawnReason.CONVERSION, null);
-                level.addFreshEntity(customMob);
-                event.setCanceled(true);
-            }
-        }
     }
 }

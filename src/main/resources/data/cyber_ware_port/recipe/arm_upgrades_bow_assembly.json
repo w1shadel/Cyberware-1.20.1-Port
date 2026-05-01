@@ -3,19 +3,13 @@
   "inputs": [
     {
       "count": 2,
-      "ingredient": {
-        "item": "cyber_ware_port:component_actuator"
-      }
+      "ingredient": "cyber_ware_port:component_actuator"
     },
     {
-      "ingredient": {
-        "item": "cyber_ware_port:component_plating"
-      }
+      "ingredient": "cyber_ware_port:component_plating"
     },
     {
-      "ingredient": {
-        "item": "minecraft:bow"
-      }
+      "ingredient": "minecraft:bow"
     }
   ],
   "output": {

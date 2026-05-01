@@ -1,17 +1,16 @@
 package com.maxwell.cyber_ware_port.client;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.maxwell.cyber_ware_port.client.model.PlayerInternalPartsModel;
-import com.maxwell.cyber_ware_port.client.model.SkeletonDisplayModel;
 import com.maxwell.cyber_ware_port.client.screen.BlueprintChestScreen;
 import com.maxwell.cyber_ware_port.client.screen.ComponentBoxScreen;
-import com.maxwell.cyber_ware_port.client.screen.cwb.CyberwareWorkbenchScreen;
+import com.maxwell.cyber_ware_port.client.screen.CyberwareWorkbenchScreen;
+import com.maxwell.cyber_ware_port.client.screen.ScannerScreen;
 import com.maxwell.cyber_ware_port.client.screen.robosurgeon.RobosurgeonScreen;
-import com.maxwell.cyber_ware_port.client.screen.scanner.ScannerScreen;
 import com.maxwell.cyber_ware_port.client.upgrades.CyberLimbModel;
 import com.maxwell.cyber_ware_port.client.upgrades.CyberwarePlayerLayer;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberWareWorkBenchModel;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchRenderer;
+import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullItemRenderer;
 import com.maxwell.cyber_ware_port.common.block.cyberskull.CyberSkullRenderer;
 import com.maxwell.cyber_ware_port.common.block.radio.tower.RadioTowerModel;
 import com.maxwell.cyber_ware_port.common.block.radio.tower.RadioTowerRenderer;
@@ -19,6 +18,8 @@ import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockModel;
 import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockRenderer;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberModel;
 import com.maxwell.cyber_ware_port.common.block.surgerychamber.SurgeryChamberRenderer;
+import com.maxwell.cyber_ware_port.common.entity.misc.PlayerTempModel;
+import com.maxwell.cyber_ware_port.common.entity.misc.PlayerTempRenderer;
 import com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper.CyberCreeperModel;
 import com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper.CyberCreeperRenderer;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberskeleton.CyberSkeletonModel;
@@ -41,6 +42,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class ModClientEvents {
@@ -55,6 +57,7 @@ public class ModClientEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.SCANNER.get(), ScannerBlockRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RADIO_TOWER_CORE.get(), RadioTowerRenderer::new);
         event.registerEntityRenderer(ModEntities.CYBER_ZOMBIE.get(), CyberZombieRenderer::new);
+        event.registerEntityRenderer(ModEntities.PLAYER_INTERNAL_PARTS.get(), PlayerTempRenderer::new);
         event.registerEntityRenderer(ModEntities.CYBER_SKELETON.get(), CyberSkeletonRenderer::new);
         event.registerEntityRenderer(ModEntities.CYBER_WITHER_SKELETON.get(), CyberWitherSkeletonRenderer::new);
         event.registerEntityRenderer(ModEntities.CYBER_CREEPER.get(), CyberCreeperRenderer::new);
@@ -65,19 +68,19 @@ public class ModClientEvents {
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(SurgeryChamberModel.LAYER_LOCATION, SurgeryChamberModel::createBodyLayer);
-        event.registerLayerDefinition(PlayerInternalPartsModel.LAYER_LOCATION, PlayerInternalPartsModel::createBodyLayer);
         event.registerLayerDefinition(CyberWareWorkBenchModel.LAYER_LOCATION, CyberWareWorkBenchModel::createBodyLayer);
         event.registerLayerDefinition(ScannerBlockModel.LAYER_LOCATION, ScannerBlockModel::createBodyLayer);
         event.registerLayerDefinition(RadioTowerModel.LAYER_LOCATION, RadioTowerModel::createBodyLayer);
         event.registerLayerDefinition(CyberWitherSkeletonModel.LAYER_LOCATION, CyberWitherSkeletonModel::createBodyLayer);
         event.registerLayerDefinition(CyberSkeletonModel.LAYER_LOCATION, CyberSkeletonModel::createBodyLayer);
-        event.registerLayerDefinition(SkeletonDisplayModel.LAYER_LOCATION, SkeletonDisplayModel::createBodyLayer);
         event.registerLayerDefinition(CyberZombieRenderer.CYBER_ZOMBIE_LAYER, CyberZombieModel::createBodyLayer);
         event.registerLayerDefinition(CyberCreeperModel.LAYER_LOCATION, CyberCreeperModel::createBodyLayer);
         event.registerLayerDefinition(CyberWitherModel.LAYER_LOCATION, CyberWitherModel::createBodyLayer);
         event.registerLayerDefinition(CYBER_SKULL_LAYER, SkullModel::createMobHeadLayer);
         event.registerLayerDefinition(CyberLimbModel.LAYER_LOCATION, CyberLimbModel::createBodyLayer);
+        event.registerLayerDefinition(PlayerTempModel.LAYER_LOCATION, PlayerTempModel::createBodyLayer);
         event.registerLayerDefinition(CyberCreeperModel.ARMOR_LOCATION, CyberCreeperModel::createArmorLayer);
+        event.registerLayerDefinition(CyberWitherModel.ARMOR_LOCATION, CyberWitherModel::createArmorLayer);
     }
 
     @SubscribeEvent
@@ -97,6 +100,14 @@ public class ModClientEvents {
         event.register(ModMenuTypes.SCANNER_MENU.get(), ScannerScreen::new);
         event.register(ModMenuTypes.COMPONENT_BOX_MENU.get(), ComponentBoxScreen::new);
         event.register(ModMenuTypes.BLUEPRINT_CHEST_MENU.get(), BlueprintChestScreen::new);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterSpecialModelRenderers(RegisterSpecialModelRendererEvent event) {
+        event.register(
+                Identifier.fromNamespaceAndPath(CyberWare.MODID, "cyber_skull"),
+                CyberSkullItemRenderer.Unbaked.MAP_CODEC
+        );
     }
 
     @SubscribeEvent

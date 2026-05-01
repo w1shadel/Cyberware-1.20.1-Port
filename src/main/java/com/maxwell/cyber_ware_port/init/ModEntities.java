@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.init;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.entity.misc.PlayerTempModelEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper.CyberCreeperEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberskeleton.CyberSkeletonEntity;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
@@ -41,6 +42,11 @@ public class ModEntities {
             ENTITIES.register("cyber_wither",
                     (key) -> EntityType.Builder.of(CyberWitherBoss::new, MobCategory.MONSTER)
                             .sized(0.7F, 2.4F)
+                            .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+    public static final DeferredHolder<EntityType<?>, EntityType<PlayerTempModelEntity>> PLAYER_INTERNAL_PARTS =
+            ENTITIES.register("player_temp_model",
+                    (key) -> EntityType.Builder.of(PlayerTempModelEntity::new, MobCategory.MISC)
+                            .sized(1.0F, 1.0F)
                             .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
 
     public static void register(IEventBus eventBus) {

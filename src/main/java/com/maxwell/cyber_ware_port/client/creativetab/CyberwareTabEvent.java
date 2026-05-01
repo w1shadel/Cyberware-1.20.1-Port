@@ -1,7 +1,7 @@
 package com.maxwell.cyber_ware_port.client.creativetab;
 
 import com.maxwell.cyber_ware_port.CyberWare;
-import com.maxwell.cyber_ware_port.common.CyberwareTabState;
+import com.maxwell.cyber_ware_port.common.util.CyberwareTabState;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;

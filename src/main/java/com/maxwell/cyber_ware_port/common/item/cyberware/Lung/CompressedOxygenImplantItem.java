@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class CompressedOxygenImplantItem extends CyberwareItem {
     public CompressedOxygenImplantItem(Properties p) {
-        super(new Builder(p,3, RobosurgeonBlockEntity.SLOT_LUNGS)
+        super(new Builder(p, 3, RobosurgeonBlockEntity.SLOT_LUNGS)
                 .maxInstall(3)
                 .requires(ModItems.HUMAN_LUNGS)
                 .energy(5, 0, 0, StackingRule.LINEAR));

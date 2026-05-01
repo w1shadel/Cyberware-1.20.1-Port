@@ -15,6 +15,5 @@ public class CyberWallSkullBlock extends WallSkullBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CyberSkullBlockEntity(pos, state);
-
     }
 }

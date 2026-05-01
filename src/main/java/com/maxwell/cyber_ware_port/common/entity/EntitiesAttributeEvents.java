@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.common.entity;
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.entity.monster.cyberwither.CyberWitherBoss;
 import com.maxwell.cyber_ware_port.init.ModEntities;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
@@ -36,7 +37,11 @@ public class EntitiesAttributeEvents {
                 .add(Attributes.MOVEMENT_SPEED, 0.30D)
                 .add(Attributes.ATTACK_DAMAGE, 8.0D)
                 .build());
-
+        event.put(ModEntities.PLAYER_INTERNAL_PARTS.get(), Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 50.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.30D)
+                .add(Attributes.ATTACK_DAMAGE, 8.0D)
+                .build());
     }
 
 }

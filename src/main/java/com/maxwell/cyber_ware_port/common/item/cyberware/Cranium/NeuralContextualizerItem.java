@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class NeuralContextualizerItem extends CyberwareItem {
     public NeuralContextualizerItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_BRAIN)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
                 .energy(1, 0, 0, StackingRule.STATIC));
 
@@ -25,18 +25,14 @@ public class NeuralContextualizerItem extends CyberwareItem {
     @Override
     public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event, ItemStack stack, LivingEntity wearer) {
         if (!(wearer instanceof Player player) || player.isCreative()) return;
-
         if (player instanceof ServerPlayer serverPlayer) {
             BlockState state = player.level().getBlockState(event.getPos());
             ItemStack currentStack = player.getMainHandItem();
-
             if (currentStack.getDestroySpeed(state) > 1.1f) {
                 return;
             }
-
             int bestSlot = -1;
             float bestSpeed = 1.1f;
-
             for (int i = 0; i < 9; i++) {
                 ItemStack invStack = player.getInventory().getItem(i);
                 float speed = invStack.getDestroySpeed(state);
@@ -45,7 +41,6 @@ public class NeuralContextualizerItem extends CyberwareItem {
                     bestSlot = i;
                 }
             }
-
             if (bestSlot != -1 && bestSlot != player.getInventory().getSelectedSlot()) {
                 player.getInventory().setSelectedSlot(bestSlot);
 

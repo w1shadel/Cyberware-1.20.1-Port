@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
@@ -45,9 +46,14 @@ public class RadioTowerRenderer implements BlockEntityRenderer<RadioTowerCoreBlo
         pPoseStack.translate(0.5D, -7.5D, 0.5D);
         pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         pPoseStack.translate(0.0D, 1.0D, 0.0D);
-        collector.submitCustomGeometry(pPoseStack, RenderTypes.entityCutout(TEXTURE), (pose, vertexConsumer) -> {
-            this.model.renderToBuffer(pPoseStack, vertexConsumer, state.lightCoords, 0, -1);
-        });
+        collector.submitModelPart(
+                this.model.root(),
+                pPoseStack,
+                RenderTypes.entityCutout(TEXTURE),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                null
+        );
         pPoseStack.popPose();
     }
 

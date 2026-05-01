@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class BonelacingItem extends CyberwareItem {
     public BonelacingItem(Properties p) {
-        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_BONES)
+        super(new Builder(p, 10, RobosurgeonBlockEntity.SLOT_BONES)
                 .maxInstall(8)
                 .addAttribute(Attributes.MAX_HEALTH, "bonelacing_health", 10.0, AttributeModifier.Operation.ADD_VALUE));
     }

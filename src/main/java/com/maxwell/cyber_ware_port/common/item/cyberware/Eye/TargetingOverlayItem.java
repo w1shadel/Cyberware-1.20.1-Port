@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TargetingOverlayItem extends CyberwareItem {
     public TargetingOverlayItem(Properties p) {
-        super(new Builder(p,3, RobosurgeonBlockEntity.SLOT_EYES)
+        super(new Builder(p, 3, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .energy(1, 0, 0, StackingRule.STATIC)
                 .requires(ModItems.CYBER_EYE)

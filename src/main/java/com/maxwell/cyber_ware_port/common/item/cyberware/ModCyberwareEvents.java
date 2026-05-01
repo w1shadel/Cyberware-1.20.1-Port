@@ -7,6 +7,7 @@ import com.maxwell.cyber_ware_port.api.json.MobDataManager;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,13 +18,14 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -41,16 +43,17 @@ public class ModCyberwareEvents {
                 new MobDataManager()
         );
     }
-
     private static void dispatch(LivingEntity entity, BiConsumer<ICyberware, ItemStack> action) {
         if (entity == null) return;
         CyberwareUserData data = entity.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        ItemStackHandler handler = data.getInstalledCyberware();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (!stack.isEmpty() && cw != null && cw.isActive(stack)) {
-                action.accept(cw, stack);
+        ItemStacksResourceHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
+            if (!stack.isEmpty()) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw != null && cw.isActive(stack)) {
+                    action.accept(cw, stack);
+                }
             }
         }
     }
@@ -149,5 +152,12 @@ public class ModCyberwareEvents {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
+    }
+
+    @SubscribeEvent
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        if (event.getPlayer() != null) {
+            event.sendRecipes(ModRecipes.ASSEMBLY_TYPE.get(), ModRecipes.ENGINEERING_TYPE.get());
+        }
     }
 }

@@ -19,7 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
@@ -42,13 +42,13 @@ public class CyberwareHudOverlay {
     }
 
     private static boolean isHudActive(CyberwareUserData data) {
-        IItemHandler handler = data.getInstalledCyberware();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        ItemStacksResourceHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             if (stack.isEmpty()) continue;
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null && stack.is(ModItems.HUDJACK.get())) {
-                if (cw.isActive(stack)) return true;
+            if (stack.is(ModItems.HUDJACK.get())) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw != null && cw.isActive(stack)) return true;
             }
         }
         return false;
@@ -61,7 +61,7 @@ public class CyberwareHudOverlay {
         int cons = data.getLastConsumption();
         int hudColor;
         int textColor;
-        if (current <= 0) {
+        if (current <= 0 && max > 0) {
             boolean flash = (System.currentTimeMillis() % 500) < 250;
             hudColor = flash ? 0xFFFF0000 : 0xFF880000;
             textColor = hudColor;
@@ -111,6 +111,7 @@ public class CyberwareHudOverlay {
         }
         int textX = x + frameWidth + 4;
         g.text(mc.font, current + " / " + max, textX, y + 4, textColor, true);
-        g.text(mc.font, "-" + cons + " / +" + prod, textX, y + 14, textColor, true);
+        String stats = "-" + cons + " / +" + prod;
+        g.text(mc.font, stats, textX, y + 14, textColor, true);
     }
 }

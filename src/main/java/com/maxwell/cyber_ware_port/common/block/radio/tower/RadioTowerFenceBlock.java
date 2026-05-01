@@ -1,11 +1,9 @@
 package com.maxwell.cyber_ware_port.common.block.radio.tower;
 
-import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
@@ -65,7 +63,6 @@ public class RadioTowerFenceBlock extends FenceBlock {
                             for (int z = -1; z <= 1; z++) {
                                 searchPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
                                 BlockEntity be = pLevel.getBlockEntity(searchPos);
-
                                 if (be instanceof RadioTowerCoreBlockEntity core) {
                                     core.deformStructure();
                                 }

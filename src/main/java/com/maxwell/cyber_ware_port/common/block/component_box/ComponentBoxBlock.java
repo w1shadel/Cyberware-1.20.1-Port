@@ -76,7 +76,10 @@ public class ComponentBoxBlock extends HorizontalDirectionalBlock implements Ent
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState pState, Level pLevel, @NotNull BlockPos pPos, @NotNull Player pPlayer, @NotNull BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             if (pLevel.getBlockEntity(pPos) instanceof ComponentBoxBlockEntity boxEntity) {
-                pPlayer.openMenu(boxEntity, pPos);
+                pPlayer.openMenu(boxEntity, buffer -> {
+                    buffer.writeBoolean(true);
+                    buffer.writeBlockPos(pPos);
+                });
             }
         }
         return InteractionResult.SUCCESS;

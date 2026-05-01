@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class PlateletDispatcherItem extends CyberwareItem {
     public PlateletDispatcherItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_HEART)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_HEART)
                 .maxInstall(1)
                 .energy(2, 0, 0, StackingRule.STATIC));
     }

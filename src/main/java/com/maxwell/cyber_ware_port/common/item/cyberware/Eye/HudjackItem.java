@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class HudjackItem extends CyberwareItem {
     public HudjackItem(Properties p) {
-        super(new Builder(p,1, RobosurgeonBlockEntity.SLOT_EYES)
+        super(new Builder(p, 1, RobosurgeonBlockEntity.SLOT_EYES)
                 .maxInstall(1)
                 .requires(ModItems.CYBER_EYE)
         );

@@ -32,16 +32,17 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
     protected void apply(Object o, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         DYNAMIC_CYBERWARE.clear();
         Map<Identifier, JsonElement> prepared = (Map<Identifier, JsonElement>) o;
+
         prepared.forEach((location, element) -> {
             try {
                 JsonObject json = element.getAsJsonObject();
-                if (!json.has("item")) return;
+                if (!json.has("item")) {return;}
                 Identifier itemId = Identifier.parse(json.get("item").getAsString());
                 Item item = BuiltInRegistries.ITEM.get(itemId)
                         .map(Holder.Reference::value)
                         .orElse(null);
                 if (item != null) {
-                    if (!json.has("slot")) return;
+                    if (!json.has("slot")) {return;}
                     CyberwareData data = new CyberwareData();
                     String slotStr = json.get("slot").getAsString().toUpperCase();
                     data.slotId = BodyRegionEnum.valueOf(slotStr).getStartSlot();

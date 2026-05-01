@@ -35,7 +35,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
@@ -101,9 +100,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                 level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
                 if (entity.progress % 40 == 0) {
                     level.playSound(null, pos, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.3F, 1.5F);
-                    if (entity.progress % 80 == 0) {
-                        level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.BLOCKS, 0.2F, 0.8F);
-                    }
                 }
             }
             if (entity.progress >= entity.maxProgress) {
@@ -127,8 +123,12 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         }
     }
 
+    private ItemStack getStackFrom(ItemStacksResourceHandler handler, int slot) {
+        return handler.getResource(slot).toStack(handler.getAmountAsInt(slot));
+    }
+
     private ItemStack getStack(int slot) {
-        return itemHandler.getResource(slot).toStack((int) itemHandler.getAmountAsLong(slot));
+        return getStackFrom(this.itemHandler, slot);
     }
 
     public void performSurgery(ServerPlayer player) {
@@ -156,12 +156,13 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
 
     private boolean checkRequirements(ServerPlayer player) {
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        ItemStackHandler playerBody = data.getInstalledCyberware();
+        ItemStacksResourceHandler playerBody = data.getInstalledCyberware();
         Map<net.minecraft.world.item.Item, Integer> futureCounts = new HashMap<>();
         List<ItemStack> futureBody = new ArrayList<>();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = getStack(i);
-            ItemStack finalStack = SurgeryManager.isGhost(table) ? playerBody.getStackInSlot(i) : table;
+            ItemStack playerPart = getStackFrom(playerBody, i);
+            ItemStack finalStack = SurgeryManager.isGhost(table) ? playerPart : table;
             if (!finalStack.isEmpty()) {
                 futureBody.add(finalStack);
                 futureCounts.put(finalStack.getItem(), futureCounts.getOrDefault(finalStack.getItem(), 0) + finalStack.getCount());
@@ -203,13 +204,23 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         };
     }
 
+    public void drops() {
+        if (level == null) return;
+        SimpleContainer inv = new SimpleContainer(TOTAL_SLOTS);
+        for (int i = 0; i < TOTAL_SLOTS; i++) {
+            ItemStack stack = getStack(i);
+            if (!stack.isEmpty() && !isGhost(stack)) inv.setItem(i, stack);
+        }
+        Containers.dropContents(level, worldPosition, inv);
+    }
+
     private boolean needsSurgery(ServerPlayer player) {
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        ItemStackHandler playerBody = data.getInstalledCyberware();
+        ItemStacksResourceHandler playerBody = data.getInstalledCyberware();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = getStack(i);
             if (SurgeryManager.isGhost(table)) continue;
-            if (!ItemStack.matches(table, playerBody.getStackInSlot(i))) return true;
+            if (!ItemStack.matches(table, getStackFrom(playerBody, i))) return true;
         }
         return false;
     }
@@ -259,16 +270,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         super.loadAdditional(input);
         this.itemHandler.deserialize(input.childOrEmpty("inventory"));
         this.progress = input.getIntOr("progress", 0);
-    }
-
-    public void drops() {
-        if (level == null) return;
-        SimpleContainer inv = new SimpleContainer(TOTAL_SLOTS);
-        for (int i = 0; i < TOTAL_SLOTS; i++) {
-            ItemStack stack = getStack(i);
-            if (!stack.isEmpty() && !isGhost(stack)) inv.setItem(i, stack);
-        }
-        Containers.dropContents(level, worldPosition, inv);
     }
 
     private ContainerData createContainerData() {

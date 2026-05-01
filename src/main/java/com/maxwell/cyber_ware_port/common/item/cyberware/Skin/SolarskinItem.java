@@ -12,7 +12,7 @@ public class SolarskinItem extends CyberwareItem {
     private static final int GENERATION_AMOUNT = 2;
 
     public SolarskinItem(Properties p) {
-        super(new Builder(p,4, RobosurgeonBlockEntity.SLOT_SKIN)
+        super(new Builder(p, 4, RobosurgeonBlockEntity.SLOT_SKIN)
                 .maxInstall(4)
                 .energy(0, GENERATION_AMOUNT, 0, StackingRule.LINEAR)
         );

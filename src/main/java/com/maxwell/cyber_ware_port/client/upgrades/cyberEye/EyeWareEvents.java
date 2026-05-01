@@ -16,16 +16,16 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class EyeWareEvents {
     private static boolean isFeatureActive(Player player, Item item) {
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         if (data == null) return false;
-        IItemHandler handler = data.getInstalledCyberware();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        ItemStacksResourceHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             if (stack.is(item)) {
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (cw != null && !cw.isActive(stack)) return false;

@@ -21,6 +21,7 @@ public record StartWorkbenchCraftingPacket() implements CustomPacketPayload {
     public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             if (ctx.player() instanceof ServerPlayer player && player.containerMenu instanceof CyberwareWorkbenchMenu menu) {
+                if (menu.blockEntity.isCrafting()) return;
                 menu.blockEntity.startCrafting();
             }
         });

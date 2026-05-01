@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "cyber_ware_port:radio_tower_component"
-    },
-    "D": {
-      "item": "minecraft:diamond"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    }
+    "C": "cyber_ware_port:radio_tower_component",
+    "D": "minecraft:diamond",
+    "I": "minecraft:iron_ingot"
   },
   "pattern": [
     "ICI",

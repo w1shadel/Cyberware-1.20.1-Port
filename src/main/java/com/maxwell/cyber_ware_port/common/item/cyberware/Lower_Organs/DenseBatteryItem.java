@@ -6,7 +6,7 @@ import net.minecraft.world.item.Rarity;
 
 public class DenseBatteryItem extends CyberwareItem {
     public DenseBatteryItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(1)
                 .energy(0, 0, 60000, StackingRule.STATIC)
                 .rarity(Rarity.RARE));

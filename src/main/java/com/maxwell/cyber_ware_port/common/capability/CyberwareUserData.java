@@ -39,9 +39,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -124,13 +125,19 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         CyberwareToleranceEvent event = new CyberwareToleranceEvent(entity, this.maxTolerance);
         NeoForge.EVENT_BUS.post(event);
         return event.getNewTolerance();
-    }    private final ItemStackHandler installedCyberware = new ItemStackHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            updateBodyStatus();
-            needsCapacityUpdate = true;
+    }
+
+    private ItemStack getStack(int slot) {
+        return installedCyberware.getResource(slot).toStack(installedCyberware.getAmountAsInt(slot));
+    }
+
+    private void setStack(int slot, ItemStack stack) {
+        if (stack.isEmpty()) {
+            installedCyberware.set(slot, ItemResource.EMPTY, 0);
+        } else {
+            installedCyberware.set(slot, ItemResource.of(stack), stack.getCount());
         }
-    };
+    }
 
     public void recalculateCapacity(ServerPlayer player) {
         float oldMaxHealth = player.getHealth();
@@ -147,8 +154,8 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
             toRemove.forEach(instance::removeModifier);
         }
         int totalCapacity = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
+        for (int i = 0; i < installedCyberware.size(); i++) {
+            ItemStack stack = getStack(i);
             ICyberware cyberware = CyberwareAPI.getCyberware(stack);
             if (cyberware != null) {
                 int count = stack.getCount();
@@ -186,8 +193,8 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         CyberwareBodyStatus status = new CyberwareBodyStatus(installedCyberware);
         checkSurvival(player, status);
         checkRejection(player);
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
+        for (int i = 0; i < installedCyberware.size(); i++) {
+            ItemStack stack = getStack(i);
             ICyberware cyberware = CyberwareAPI.getCyberware(stack);
             if (cyberware != null) {
                 cyberware.onSystemTick(player, stack);
@@ -264,8 +271,8 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
             return;
         }
         int prod = 0, cons = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
+        for (int i = 0; i < installedCyberware.size(); i++) {
+            ItemStack stack = getStack(i);
             ICyberware cw = CyberwareAPI.getCyberware(stack);
             if (cw != null && cw.hasEnergyProperties(stack)) {
                 int count = stack.getCount();
@@ -280,11 +287,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
             this.insert(prod, tx);
             boolean currentlyPowered = (this.getAmountAsLong() >= cons);
             if (cons > 0) {
-                if (currentlyPowered) {
-                    this.extract(cons, tx);
-                } else {
-                    this.extract(this.getAmountAsInt(), tx);
-                }
+                this.extract(currentlyPowered ? cons : (int) getAmountAsLong(), tx);
             }
             if (this.isPowered != currentlyPowered) {
                 this.isPowered = currentlyPowered;
@@ -297,8 +300,8 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
 
     public int getTolerance(LivingEntity entity) {
         int consumed = 0;
-        for (int i = 0; i < installedCyberware.getSlots(); i++) {
-            ItemStack stack = installedCyberware.getStackInSlot(i);
+        for (int i = 0; i < installedCyberware.size(); i++) {
+            ItemStack stack = getStack(i);
             ICyberware cyberware = CyberwareAPI.getCyberware(stack);
             if (cyberware != null) consumed += cyberware.getEssenceCost(stack) * stack.getCount();
         }
@@ -324,22 +327,22 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
 
     public void fillWithHumanParts() {
         if (isInitialized) return;
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_STOMACH, new ItemStack(ModItems.HUMAN_STOMACH.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_SKIN, new ItemStack(ModItems.HUMAN_SKIN.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_EYES, new ItemStack(ModItems.HUMAN_EYES.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LUNGS, new ItemStack(ModItems.HUMAN_LUNGS.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_ARMS, new ItemStack(ModItems.HUMAN_LEFT_ARM.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_ARMS + 1, new ItemStack(ModItems.HUMAN_RIGHT_ARM.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HANDS, new ItemStack(ModItems.HUMAN_RIGHT_HAND.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HANDS + 1, new ItemStack(ModItems.HUMAN_LEFT_HAND.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS, new ItemStack(ModItems.HUMAN_LEFT_LEG.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_LEGS + 1, new ItemStack(ModItems.HUMAN_RIGHT_LEG.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS, new ItemStack(ModItems.HUMAN_RIGHT_FOOT.get()));
-        installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BOOTS + 1, new ItemStack(ModItems.HUMAN_LEFT_FOOT.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_STOMACH, new ItemStack(ModItems.HUMAN_STOMACH.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_SKIN, new ItemStack(ModItems.HUMAN_SKIN.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_EYES, new ItemStack(ModItems.HUMAN_EYES.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_LUNGS, new ItemStack(ModItems.HUMAN_LUNGS.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_ARMS, new ItemStack(ModItems.HUMAN_LEFT_ARM.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_ARMS + 1, new ItemStack(ModItems.HUMAN_RIGHT_ARM.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_HANDS, new ItemStack(ModItems.HUMAN_RIGHT_HAND.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_HANDS + 1, new ItemStack(ModItems.HUMAN_LEFT_HAND.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_LEGS, new ItemStack(ModItems.HUMAN_LEFT_LEG.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_LEGS + 1, new ItemStack(ModItems.HUMAN_RIGHT_LEG.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_BOOTS, new ItemStack(ModItems.HUMAN_RIGHT_FOOT.get()));
+        setStack(RobosurgeonBlockEntity.SLOT_BOOTS + 1, new ItemStack(ModItems.HUMAN_LEFT_FOOT.get()));
         this.isInitialized = true;
         updateBodyStatus();
     }
@@ -355,25 +358,31 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
     public void ensureEssentialPartsAfterDeath() {
         CyberwareBodyStatus status = new CyberwareBodyStatus(installedCyberware);
         if (!status.hasPart(BodyPartType.BRAIN))
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
+            setStack(RobosurgeonBlockEntity.SLOT_BRAIN, new ItemStack(ModItems.HUMAN_BRAIN.get()));
         if (!status.hasPart(BodyPartType.HEART))
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
+            setStack(RobosurgeonBlockEntity.SLOT_HEART, new ItemStack(ModItems.HUMAN_HEART.get()));
         if (!status.hasPart(BodyPartType.MUSCLE))
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
+            setStack(RobosurgeonBlockEntity.SLOT_MUSCLE, new ItemStack(ModItems.HUMAN_MUSCLE.get()));
         if (!status.hasPart(BodyPartType.BONES))
-            installedCyberware.setStackInSlot(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
+            setStack(RobosurgeonBlockEntity.SLOT_BONES, new ItemStack(ModItems.HUMAN_BONE.get()));
     }
 
     public void resetToHuman() {
-        for (int i = 0; i < installedCyberware.getSlots(); i++) installedCyberware.setStackInSlot(i, ItemStack.EMPTY);
+        for (int i = 0; i < installedCyberware.size(); i++) setStack(i, ItemStack.EMPTY);
         this.isInitialized = false;
         currentEnergy = 0;
         fillWithHumanParts();
-    }
+    }    private final ItemStacksResourceHandler installedCyberware = new ItemStacksResourceHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
+        @Override
+        protected void onContentsChanged(int index, ItemStack previousContents) {
+            updateBodyStatus();
+            needsCapacityUpdate = true;
+        }
+    };
 
     public void copyFrom(CyberwareUserData other) {
-        for (int i = 0; i < this.installedCyberware.getSlots(); i++)
-            this.installedCyberware.setStackInSlot(i, other.installedCyberware.getStackInSlot(i).copy());
+        for (int i = 0; i < this.installedCyberware.size(); i++)
+            setStack(i, other.getStack(i).copy());
         this.maxTolerance = other.maxTolerance;
         this.currentEnergy = other.currentEnergy;
         this.maxEnergy = other.maxEnergy;
@@ -388,13 +397,13 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         this.respawnGracePeriod = ticks;
     }
 
-    public ItemStackHandler getInstalledCyberware() {
+    public ItemStacksResourceHandler getInstalledCyberware() {
         return installedCyberware;
     }
 
     public boolean isCyberwareInstalled(Item item) {
-        for (int i = 0; i < installedCyberware.getSlots(); i++)
-            if (installedCyberware.getStackInSlot(i).is(item)) return true;
+        for (int i = 0; i < installedCyberware.size(); i++)
+            if (getStack(i).is(item)) return true;
         return false;
     }
 
@@ -484,6 +493,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         }
         return false;
     }
+
     public int extractEnergy(int amount, boolean simulate) {
         if (simulate) {
             return Math.min(this.currentEnergy, amount);
@@ -495,6 +505,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
             }
         }
     }
+
     public int receiveEnergy(int amount, boolean simulate) {
         if (amount <= 0) return 0;
         if (simulate) {
@@ -507,4 +518,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
             }
         }
     }
+
+
+
 }

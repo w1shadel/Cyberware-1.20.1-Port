@@ -40,6 +40,7 @@ public class CyberSkullItemRenderer implements SpecialModelRenderer<CyberSkullIt
         poseStack.pushPose();
         poseStack.translate(0.5F, 0.0F, 0.5F);
         poseStack.scale(-1.0F, -1.0F, 1.0F);
+        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(180.0F));
         SkullBlockRenderer.submitSkull(
                 anim,
                 poseStack,

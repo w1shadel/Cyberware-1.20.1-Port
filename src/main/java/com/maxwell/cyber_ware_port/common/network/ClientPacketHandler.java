@@ -4,8 +4,6 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class ClientPacketHandler {
@@ -22,7 +20,6 @@ public class ClientPacketHandler {
         maxProgress = 100;
     }
 
-    
     public static void handleSyncPacket(SyncCyberwareDataPacket msg, IPayloadContext ctx) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
@@ -31,7 +28,6 @@ public class ClientPacketHandler {
         }
     }
 
-    
     public static void handleProgressPacket(SyncSurgeryProgressPacket msg, IPayloadContext ctx) {
         update(msg.progress(), msg.maxProgress());
     }

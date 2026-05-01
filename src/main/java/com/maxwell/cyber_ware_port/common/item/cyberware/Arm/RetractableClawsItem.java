@@ -9,7 +9,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 public class RetractableClawsItem extends CyberwareItem {
     public RetractableClawsItem(Properties p) {
-        super(new Builder(p,10, RobosurgeonBlockEntity.SLOT_HANDS)
+        super(new Builder(p, 10, RobosurgeonBlockEntity.SLOT_HANDS)
                 .maxInstall(4)
                 .requires(ModItems.CYBER_ARM_LEFT, ModItems.CYBER_ARM_RIGHT));
     }

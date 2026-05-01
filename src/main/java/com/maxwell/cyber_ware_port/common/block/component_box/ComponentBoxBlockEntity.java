@@ -1,8 +1,8 @@
 package com.maxwell.cyber_ware_port.common.block.component_box;
 
 import com.maxwell.cyber_ware_port.common.container.ComponentBoxMenu;
+import com.maxwell.cyber_ware_port.common.item.ComponentBoxItem;
 import com.maxwell.cyber_ware_port.common.item.base.CyberwareItem;
-import com.maxwell.cyber_ware_port.common.item.componentbox.ComponentBoxItem;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;

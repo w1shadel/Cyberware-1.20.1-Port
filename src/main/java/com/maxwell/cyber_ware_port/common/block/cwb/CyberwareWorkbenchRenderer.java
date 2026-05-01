@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -33,7 +34,7 @@ public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<Cyberware
     public void extractRenderState(CyberwareWorkbenchBlockEntity blockEntity, WorkbenchRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderState.extractBase(blockEntity, state, breakProgress);
         state.facing = blockEntity.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
-        state.partialTicks = partialTicks;
+        state.progress = blockEntity.getRenderProgress(partialTicks);
     }
 
     @Override
@@ -42,15 +43,20 @@ public class CyberwareWorkbenchRenderer implements BlockEntityRenderer<Cyberware
         pPoseStack.translate(0.5, 1.5, 0.5);
         pPoseStack.mulPose(Axis.XP.rotationDegrees(180));
         pPoseStack.mulPose(Axis.YP.rotationDegrees(state.facing.getOpposite().toYRot() + 180.0f));
-        collector.submitCustomGeometry(pPoseStack, RenderTypes.entityCutout(TEXTURE), (pose, vertexConsumer) -> {
-            this.model.setupAnim(null, state.partialTicks);
-            this.model.renderToBuffer(pPoseStack, vertexConsumer, state.lightCoords, 0, -1);
-        });
+        this.model.setupFromRenderState(state.progress);
+        collector.submitModelPart(
+                this.model.root(),
+                pPoseStack,
+                RenderTypes.entityCutout(TEXTURE),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                null
+        );
         pPoseStack.popPose();
     }
 
     public static class WorkbenchRenderState extends BlockEntityRenderState {
         public Direction facing;
-        public float partialTicks;
+        public float progress;
     }
 }

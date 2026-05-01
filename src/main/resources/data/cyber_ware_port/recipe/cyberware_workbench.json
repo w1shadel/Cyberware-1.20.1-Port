@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "minecraft:crafting_table"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "P": {
-      "item": "minecraft:paper"
-    }
+    "C":"minecraft:crafting_table",
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:paper"
   },
   "pattern": [
     "III",

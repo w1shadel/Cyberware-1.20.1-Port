@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 public class ThreatMatrixItem extends CyberwareItem {
     public ThreatMatrixItem(Properties p) {
-        super(new Builder(p,15, RobosurgeonBlockEntity.SLOT_BRAIN)
+        super(new Builder(p, 15, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
                 .energy(8, 0, 0, StackingRule.STATIC)
                 .eventCost(500));

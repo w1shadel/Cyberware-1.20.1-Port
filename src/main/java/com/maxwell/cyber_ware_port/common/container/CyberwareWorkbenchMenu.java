@@ -8,7 +8,6 @@ import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -17,10 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.IndexModifier;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,16 +95,15 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
         this.blockEntity = (CyberwareWorkbenchBlockEntity) entity;
         this.level = inv.player.level();
         var handler = this.blockEntity.getItemHandler();
-        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
-        this.addSlot(new ResourceHandlerSlot(handler, modifier, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
-        this.addSlot(new ResourceHandlerSlot(handler, modifier, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
-        this.addSlot(new ResourceHandlerSlot(handler, modifier, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT, 115, 53));
+        this.addSlot(new ResourceHandlerSlot(handler, handler::set, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
+        this.addSlot(new ResourceHandlerSlot(handler, handler::set, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
+        this.addSlot(new ResourceHandlerSlot(handler, handler::set, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT, 115, 53));
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 2; j++) {
-                this.addSlot(new ResourceHandlerSlot(handler, modifier, CyberwareWorkbenchBlockEntity.OUTPUT_SLOT_START + (i * 2 + j), 71 + j * 18, 17 + i * 18));
+                this.addSlot(new ResourceHandlerSlot(handler, handler::set, CyberwareWorkbenchBlockEntity.OUTPUT_SLOT_START + (i * 2 + j), 71 + j * 18, 17 + i * 18));
             }
         }
-        this.addSlot(new ResourceHandlerSlot(handler, modifier, CyberwareWorkbenchBlockEntity.SPECIAL_OUTPUT_SLOT, 141, 21));
+        this.addSlot(new ResourceHandlerSlot(handler, handler::set, CyberwareWorkbenchBlockEntity.SPECIAL_OUTPUT_SLOT, 141, 21));
         findAndAddExternalInventory();
         findAndAddBlueprintLibrary();
         addDataSlots(pageData);
@@ -125,22 +119,21 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
                 for (int z = -3; z <= 3; z++) {
                     if (x == 0 && y == 0 && z == 0) continue;
                     BlockPos pos = center.offset(x, y, z);
-                    ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, Direction.UP);
-                    if (level.getBlockEntity(pos) instanceof ComponentBoxBlockEntity && handler != null) {
+                    if (level.getBlockEntity(pos) instanceof ComponentBoxBlockEntity box) {
                         this.hasExtendedInventory = true;
+                        var handler = box.getItemHandler();
                         List<Slot> currentBoxSlots = new ArrayList<>();
-                        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
                         for (int i = 0; i < 18; i++) {
-                            Slot slot = new ResourceHandlerSlot(handler, modifier, i, -10000, -10000);
+                            Slot slot = new ResourceHandlerSlot(handler, handler::set, i, -10000, -10000);
                             this.addSlot(slot);
                             currentBoxSlots.add(slot);
                         }
                         pageSlots.add(currentBoxSlots);
                     }
                 }
-                this.maxPages = pageSlots.size();
             }
         }
+        this.maxPages = pageSlots.size();
     }
 
     private void findAndAddBlueprintLibrary() {
@@ -150,13 +143,12 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
                 for (int z = -3; z <= 3; z++) {
                     if (x == 0 && y == 0 && z == 0) continue;
                     BlockPos pos = center.offset(x, y, z);
-                    var handler = level.getCapability(Capabilities.Item.BLOCK, pos, Direction.UP);
-                    if (level.getBlockEntity(pos) instanceof BlueprintChestBlockEntity && handler != null) {
+                    if (level.getBlockEntity(pos) instanceof BlueprintChestBlockEntity chest) {
                         this.hasBlueprintLibrary = true;
+                        var handler = chest.getItemHandler();
                         List<Slot> currentChestSlots = new ArrayList<>();
                         for (int i = 0; i < 18; i++) {
-                            IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
-                            Slot slot = new ResourceHandlerSlot(handler, modifier, i, -10000, -10000) {
+                            Slot slot = new ResourceHandlerSlot(handler, handler::set, i, -10000, -10000) {
                                 @Override
                                 public boolean mayPlace(@NotNull ItemStack s) {
                                     return s.getItem() instanceof BlueprintItem;

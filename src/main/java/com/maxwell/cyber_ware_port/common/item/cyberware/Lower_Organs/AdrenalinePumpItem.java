@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class AdrenalinePumpItem extends CyberwareItem {
     public AdrenalinePumpItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_STOMACH)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_STOMACH)
                 .maxInstall(1)
                 .energy(0, 0, 0, StackingRule.STATIC)
                 .eventCost(500));

@@ -33,8 +33,7 @@ public class BlueprintItem extends Item {
         if (customData != null) {
             CompoundTag tag = customData.copyTag();
             if (tag.contains("targetItem")) {
-
-                return BuiltInRegistries.ITEM.get(Identifier.parse(tag.getStringOr("targetItem","")))
+                return BuiltInRegistries.ITEM.get(Identifier.parse(tag.getStringOr("targetItem", "")))
                         .map(Holder::value)
                         .orElse(null);
             }

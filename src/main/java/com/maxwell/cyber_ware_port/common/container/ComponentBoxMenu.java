@@ -2,6 +2,7 @@ package com.maxwell.cyber_ware_port.common.container;
 
 import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,10 +12,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.IndexModifier;
-import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
@@ -25,11 +23,31 @@ public class ComponentBoxMenu extends AbstractContainerMenu {
 
     public ComponentBoxMenu(int id, Inventory playerInv, RegistryFriendlyByteBuf extraData) {
         super(ModMenuTypes.COMPONENT_BOX_MENU.get(), id);
-        boolean mainHand = extraData.readBoolean();
-        this.lockedStack = playerInv.player.getItemInHand(mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-        this.lockedSlotIndex = mainHand ? playerInv.getSelectedSlot() : 40;
-        ResourceHandler<ItemResource> handler = lockedStack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(lockedStack));
-        addBoxSlots(handler != null ? handler : new ItemStacksResourceHandler(18));
+        boolean isBlock = extraData.readBoolean();
+        if (isBlock) {
+            this.lockedStack = ItemStack.EMPTY;
+            this.lockedSlotIndex = -1;
+            BlockPos pos = extraData.readBlockPos();
+            if (playerInv.player.level().getBlockEntity(pos) instanceof ComponentBoxBlockEntity box) {
+                addBoxSlots(box.getItemHandler());
+            } else {
+                addBoxSlots(new ItemStacksResourceHandler(18));
+            }
+        } else {
+            boolean mainHand = extraData.readBoolean();
+            this.lockedStack = playerInv.player.getItemInHand(mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+            this.lockedSlotIndex = mainHand ? playerInv.getSelectedSlot() : 40;
+            if (!lockedStack.isEmpty()) {
+                var handler = lockedStack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(lockedStack));
+                if (handler instanceof ItemStacksResourceHandler isrh) {
+                    addBoxSlots(isrh);
+                } else {
+                    addBoxSlots(new ItemStacksResourceHandler(18));
+                }
+            } else {
+                addBoxSlots(new ItemStacksResourceHandler(18));
+            }
+        }
         addPlayerInventory(playerInv);
     }
 
@@ -37,8 +55,12 @@ public class ComponentBoxMenu extends AbstractContainerMenu {
         super(ModMenuTypes.COMPONENT_BOX_MENU.get(), id);
         this.lockedStack = boxStack;
         this.lockedSlotIndex = (playerInv.player.getMainHandItem() == boxStack) ? playerInv.getSelectedSlot() : 40;
-        ResourceHandler<ItemResource> handler = boxStack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(boxStack));
-        addBoxSlots(handler != null ? handler : new ItemStacksResourceHandler(18));
+        var handler = boxStack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(boxStack));
+        if (handler instanceof ItemStacksResourceHandler isrh) {
+            addBoxSlots(isrh);
+        } else {
+            addBoxSlots(new ItemStacksResourceHandler(18));
+        }
         addPlayerInventory(playerInv);
     }
 
@@ -50,11 +72,10 @@ public class ComponentBoxMenu extends AbstractContainerMenu {
         addPlayerInventory(playerInv);
     }
 
-    private void addBoxSlots(ResourceHandler<ItemResource> handler) {
-        IndexModifier<ItemResource> modifier = (IndexModifier<ItemResource>) handler;
+    private void addBoxSlots(ItemStacksResourceHandler handler) {
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new ResourceHandlerSlot(handler, modifier, col + row * 9, 8 + col * 18, 18 + row * 18));
+                this.addSlot(new ResourceHandlerSlot(handler, handler::set, col + row * 9, 8 + col * 18, 18 + row * 18));
             }
         }
     }

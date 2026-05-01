@@ -20,12 +20,12 @@ public class CyberWare {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CyberWare(IEventBus modEventBus, ModContainer modContainer) {
+        ModRecipes.register(modEventBus);
         ModDataComponents.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
-        ModRecipes.register(modEventBus);
         ModEntities.register(modEventBus);
         CyberwareCapabilityProvider.register(modEventBus);
         A_PacketHandler.register(modEventBus);

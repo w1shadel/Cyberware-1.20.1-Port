@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class CranialBroadcasterItem extends CyberwareItem {
     public CranialBroadcasterItem(Properties p) {
-        super(new Builder(p,5, RobosurgeonBlockEntity.SLOT_BRAIN)
+        super(new Builder(p, 5, RobosurgeonBlockEntity.SLOT_BRAIN)
                 .maxInstall(1)
                 .energy(2, 0, 0, StackingRule.STATIC));
     }

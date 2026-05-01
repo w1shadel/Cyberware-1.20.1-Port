@@ -1,13 +1,9 @@
 package com.maxwell.cyber_ware_port.common.entity.monster.cybercreeper;
 
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EnergySwirlLayer;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-
 
 public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperRenderState, CyberCreeperModel> {
     private static final Identifier POWER_LOCATION = Identifier.withDefaultNamespace("textures/entity/creeper/creeper_armor.png");
@@ -15,7 +11,7 @@ public class CyberCreeperPowerLayer extends EnergySwirlLayer<CyberCreeperRenderS
 
     public CyberCreeperPowerLayer(RenderLayerParent<CyberCreeperRenderState, CyberCreeperModel> renderer, EntityModelSet modelSet) {
         super(renderer);
-        this.model = new CyberCreeperModel(modelSet.bakeLayer(ModelLayers.CREEPER_ARMOR));
+        this.model = new CyberCreeperModel(modelSet.bakeLayer(CyberCreeperModel.ARMOR_LOCATION));
     }
 
     protected boolean isPowered(CyberCreeperRenderState state) {

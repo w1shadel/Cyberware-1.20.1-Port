@@ -12,7 +12,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
@@ -133,7 +132,6 @@ public class CyberwareItem extends Item implements ICyberware {
     public boolean tryConsumeEventEnergy(EnergyHandler energyHandler, ItemStack stack) {
         int cost = this.getEventConsumption(stack);
         if (cost <= 0) return true;
-
         try (Transaction tx = Transaction.openRoot()) {
             int extracted = energyHandler.extract(cost, tx);
             if (extracted == cost) {
@@ -143,6 +141,7 @@ public class CyberwareItem extends Item implements ICyberware {
         }
         return false;
     }
+
     @Override
     public StackingRule getStackingEnergyRule(ItemStack stack) {
         return this.stackingRule;
