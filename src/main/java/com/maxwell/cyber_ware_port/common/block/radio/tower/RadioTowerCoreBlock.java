@@ -139,18 +139,14 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
         return new RadioTowerCoreBlockEntity(pPos, pState);
     }
 
-    @javax.annotation.Nullable
+    @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
-                                                                  BlockEntityType<T> pBlockEntityType) {
-        if (pLevel.isClientSide())
-            return null;
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        if (pLevel.isClientSide()) return null;
         if (pBlockEntityType == ModBlockEntities.RADIO_TOWER_CORE.get()) {
             return (lvl, pos, st, be) -> {
-                if (st.getValue(FORMED)) {
-                    if (lvl.getGameTime() % 20 == 0) {
-                        LAST_TOWER_ACTIVE_TIME.put(lvl.dimension(), lvl.getGameTime());
-                    }
+                if (be instanceof RadioTowerCoreBlockEntity core) {
+                    core.tick(lvl, pos, st);
                 }
             };
         }

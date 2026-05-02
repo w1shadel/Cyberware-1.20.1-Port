@@ -99,4 +99,11 @@ public class CyberWitherBossRenderer extends MobRenderer<CyberWitherBoss, CyberW
                 .setUv2(15728880, 15728880)
                 .setNormal(p, 0, 1, 0);
     }
+
+    @Override
+    protected void scale(CyberWitherRenderState state, PoseStack poseStack) {
+        float f = 1.5F;
+        poseStack.scale(f, f, f);
+        super.scale(state, poseStack);
+    }
 }

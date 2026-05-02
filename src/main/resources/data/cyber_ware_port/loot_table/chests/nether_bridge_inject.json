@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "cyber_ware_port:robo_surgeon",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 90
+        }
+      ]
+    }
+  ]
+}

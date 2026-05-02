@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.block.robosurgeon;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.event.CyberwareSurgeryEvent;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.surgeon.SurgeryManager;
@@ -38,6 +39,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,16 +188,20 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     private ICyberware getCyber(ItemStack stack) {
         return CyberwareAPI.getCyberware(stack);
     }
-
     private ItemStacksResourceHandler createItemHandler() {
         return new ItemStacksResourceHandler(TOTAL_SLOTS) {
             @Override
             public boolean isValid(int index, ItemResource resource) {
+                if (resource.isEmpty()) return true;
                 ItemStack stack = resource.toStack();
+                if (stack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) return true;
+
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (cw == null) return false;
+
                 return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(index);
             }
+
 
             @Override
             protected void onContentsChanged(int index, ItemStack previousContents) {
@@ -203,7 +209,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
             }
         };
     }
-
     public void drops() {
         if (level == null) return;
         SimpleContainer inv = new SimpleContainer(TOTAL_SLOTS);

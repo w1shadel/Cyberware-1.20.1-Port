@@ -37,16 +37,20 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
             this.addSlot(new ResourceHandlerSlot(handler, handler::set, i, -10000, -10000) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
+                    if (stack.isEmpty()) return true;
                     if (!super.mayPlace(stack)) return false;
+
                     ICyberware myCw = CyberwareAPI.getCyberware(stack);
-                    if (myCw == null) return true;
+                    if (myCw == null) return false;
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
                         if (j == this.getSlotIndex()) continue;
                         ItemStack other = handler.getResource(j).toStack(handler.getAmountAsInt(j));
                         if (other.isEmpty() || other.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) continue;
+
                         ICyberware otherCw = CyberwareAPI.getCyberware(other);
-                        if (otherCw == null) continue;
-                        if (myCw.isIncompatible(stack, other) || otherCw.isIncompatible(other, stack)) return false;
+                        if (otherCw != null) {
+                            if (myCw.isIncompatible(stack, other) || otherCw.isIncompatible(other, stack)) return false;
+                        }
                     }
                     int currentCount = stack.getCount();
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
@@ -58,6 +62,11 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                         }
                     }
                     return currentCount <= myCw.getMaxInstallAmount(stack);
+                }
+                @Override
+                public boolean mayPickup(Player playerIn) {
+                    ItemStack stack = this.getItem();
+                    return !stack.isEmpty() && !stack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false);
                 }
             });
         }
@@ -72,36 +81,24 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
     public void clicked(int slotId, int buttonNum, ContainerInput containerInput, Player player) {
         if (slotId >= 0 && slotId < RobosurgeonBlockEntity.TOTAL_SLOTS) {
             Slot slot = this.getSlot(slotId);
-            if (slot.hasItem() && slot.getItem().getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
-                slot.set(ItemStack.EMPTY);
-            }
+            ItemStack stackInSlot = slot.getItem();
+            boolean isGhost = stackInSlot.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false);
             ItemStack carried = getCarried();
-            if (!carried.isEmpty()) {
-                ICyberware newCw = CyberwareAPI.getCyberware(carried);
-                if (newCw != null) {
-                    ItemStacksResourceHandler handler = this.blockEntity.getItemHandler();
-                    for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-                        ItemStack existing = handler.getResource(i).toStack(handler.getAmountAsInt(i));
-                        if (!existing.isEmpty() && existing.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
-                            boolean shouldEject = (i == slotId);
-                            if (!shouldEject) {
-                                ICyberware existingCw = CyberwareAPI.getCyberware(existing);
-                                if (existingCw != null && (newCw.isIncompatible(carried, existing) || existingCw.isIncompatible(existing, carried))) {
-                                    shouldEject = true;
-                                }
-                            }
-                            if (shouldEject) {
-                                handler.set(i, ItemResource.EMPTY, 0);
-                            }
-                        }
-                    }
+
+            if (isGhost) {
+                slot.set(ItemStack.EMPTY);
+                if (carried.isEmpty()) {
+                    this.blockEntity.setChanged();
+                    return; // 拾わせない
                 }
             }
-            this.blockEntity.setChanged();
         }
         super.clicked(slotId, buttonNum, containerInput, player);
-    }
 
+        if (slotId >= 0 && slotId < RobosurgeonBlockEntity.TOTAL_SLOTS) {
+            this.blockEntity.setChanged();
+        }
+    }
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {

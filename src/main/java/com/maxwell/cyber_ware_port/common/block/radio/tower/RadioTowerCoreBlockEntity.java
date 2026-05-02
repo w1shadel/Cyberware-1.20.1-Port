@@ -58,7 +58,28 @@ public class RadioTowerCoreBlockEntity extends BlockEntity {
             }
         }
     }
+    private int checkDelay = 0;
+    public void tick(Level level, BlockPos pos, BlockState state) {
+        if (level.isClientSide()) return;
 
+        checkDelay++;
+        if (checkDelay >= 20) { // 1秒ごとにチェック
+            checkDelay = 0;
+            boolean currentlyValid = checkStructure();
+            boolean isFormed = state.getValue(RadioTowerCoreBlock.FORMED);
+
+            if (isFormed && !currentlyValid) {
+                deformStructure(); // 壊れたら解除
+            } else if (!isFormed && currentlyValid) {
+                tryToFormStructure(); // 揃ったら形成
+            }
+        }
+
+        // アクティブ時の時間更新
+        if (state.getValue(RadioTowerCoreBlock.FORMED)) {
+            RadioTowerCoreBlock.LAST_TOWER_ACTIVE_TIME.put(level.dimension(), level.getGameTime());
+        }
+    }
     private void updateFenceState(Level level, BlockPos pos, boolean formed) {
         BlockState state = level.getBlockState(pos);
         if (state.is(ModBlocks.RADIO_TOWER_COMPONENT.get()) && state.hasProperty(RadioTowerFenceBlock.FORMED)) {

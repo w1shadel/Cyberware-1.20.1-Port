@@ -11,30 +11,27 @@ public class SurgerySyncHelper {
         for (int i = 0; i < table.size(); i++) {
             ItemStack b = body.getResource(i).toStack(body.getAmountAsInt(i));
             ItemStack t = table.getResource(i).toStack(table.getAmountAsInt(i));
-            if (SurgeryManager.isGhost(t)) {
-                if (b.isEmpty()) {
+
+            if (!t.isEmpty() && !t.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                continue;
+            }
+
+            if (b.isEmpty()) {
+                if (!t.isEmpty()) {
                     table.set(i, ItemResource.EMPTY, 0);
                     changed = true;
-                } else {
-                    ItemStack ghost = createGhost(b);
-                    if (!ItemStack.matches(t, ghost)) {
-                        table.set(i, ItemResource.of(ghost), ghost.getCount());
-                        changed = true;
-                    }
                 }
-            } else if (t.isEmpty() && !b.isEmpty()) {
+            } else {
+                // 体内にアイテムがある場合、ゴーストを配置
                 ItemStack ghost = createGhost(b);
-                table.set(i, ItemResource.of(ghost), ghost.getCount());
-                changed = true;
-            } else if (!t.isEmpty() && !b.isEmpty() && ItemStack.matches(t, b)) {
-                ItemStack ghost = createGhost(b);
-                table.set(i, ItemResource.of(ghost), ghost.getCount());
-                changed = true;
+                if (!ItemStack.matches(t, ghost)) {
+                    table.set(i, ItemResource.of(ghost), ghost.getCount());
+                    changed = true;
+                }
             }
         }
         return changed;
     }
-
     private static ItemStack createGhost(ItemStack stack) {
         ItemStack ghost = stack.copy();
         ghost.set(CyberWare.GHOST_COMPONENT.get(), true);

@@ -51,27 +51,4 @@ public class RadioTowerFenceBlock extends FenceBlock {
         pBuilder.add(FORMED);
 
     }
-
-    @Override
-    public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
-        if (level instanceof Level pLevel && !pLevel.isClientSide()) {
-            if (!oldState.is(newState.getBlock())) {
-                if (oldState.hasProperty(FORMED) && oldState.getValue(FORMED)) {
-                    BlockPos.MutableBlockPos searchPos = new BlockPos.MutableBlockPos();
-                    for (int y = 1; y <= MAX_SEARCH_HEIGHT; y++) {
-                        for (int x = -1; x <= 1; x++) {
-                            for (int z = -1; z <= 1; z++) {
-                                searchPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
-                                BlockEntity be = pLevel.getBlockEntity(searchPos);
-                                if (be instanceof RadioTowerCoreBlockEntity core) {
-                                    core.deformStructure();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        super.onBlockStateChange(level, pos, oldState, newState);
-    }
 }

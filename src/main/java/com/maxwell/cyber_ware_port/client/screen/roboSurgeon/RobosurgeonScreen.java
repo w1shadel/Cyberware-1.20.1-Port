@@ -42,7 +42,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private static final int TOP_HEIGHT = 131;
     private static final float BASE_SCALE = 45f;
     private static final Field slotX, slotY;
-    private boolean rotationInterrupted = false;
 
     static {
         try {
@@ -57,9 +56,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
     private final PlayerTempModelState internalPartsPreview = new PlayerTempModelState();
     private final SkeletonPreviewState skeletonPreview = new SkeletonPreviewState();
-    private BodyPart draggingPart = null;
-    private TargetMarker draggingMarker = null;
-    private boolean isDebugMoving = false;
     private BodyPart selectedPart = BodyPart.NONE;
     private TargetMarker selectedMarker = null;
     private boolean isDraggingModel = false;
@@ -94,13 +90,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     @Override
     protected void containerTick() {
         super.containerTick();
-        float spd = 0.15f;
-        float targetScale = (selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale);
-        float targetOffsetX = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX);
-        float targetOffsetY = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetY);
-        currentScale += (targetScale - currentScale) * spd;
-        currentOffsetX += (targetOffsetX - currentOffsetX) * spd;
-        currentOffsetY += (targetOffsetY - currentOffsetY) * spd;
         updateSlotPositions();
     }
 
@@ -138,49 +127,50 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        updateSlotPositions();
         long elapsed = System.currentTimeMillis() - startTime;
-        if (!rotationInterrupted && elapsed < ANIMATION_DURATION && !isDraggingModel) {
+        if (elapsed < ANIMATION_DURATION && !isDraggingModel) {
             float ease = 1f - (float) Math.pow(1f - (elapsed / ANIMATION_DURATION), 3);
             this.viewRotation = ease * 360f;
-        } else {
-            rotationInterrupted = true;
         }
         this.skeletonPreview.yRot = this.viewRotation;
+        this.skeletonPreview.xRot = 0.0F;
         this.internalPartsPreview.yRot = this.viewRotation;
+        this.internalPartsPreview.xRot = 0.0F;
         super.extractRenderState(graphics, mouseX, mouseY, a);
     }
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int guiX = this.leftPos, guiY = this.topPos;
+
+        float spd = 0.1f;
+        float targetScale = (selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale);
+        float targetOffsetX = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX);
+        float targetOffsetY = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetY);
+        currentScale += (targetScale - currentScale) * spd;
+        currentOffsetX += (targetOffsetX - currentOffsetX) * spd;
+        currentOffsetY += (targetOffsetY - currentOffsetY) * spd;
+
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX, guiY, 0, 0, GUI_WIDTH, TOP_HEIGHT, 256, 256);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX, guiY + TOP_HEIGHT, 0, 131, GUI_WIDTH, 91, 256, 256);
+
         graphics.nextStratum();
         drawEssenceLogic(graphics, guiX, guiY);
+
         int centerX = guiX + 88;
         int y0 = guiY + 5;
         int y1 = guiY + TOP_HEIGHT - 10;
-        float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
-        float sin = (float) Math.sin(radRot), cos = (float) Math.cos(radRot);
-        float ratio = currentScale / BASE_SCALE;
-        float transX = currentOffsetX / currentScale;
-        float transY = 1.1F + (currentOffsetY / currentScale);
-        Vector3f dynamicTranslation = new Vector3f(transX, transY, 0.0F);
         Quaternionf rotation = new Quaternionf().rotationXYZ(0, (float) Math.toRadians(this.viewRotation) + (float) Math.PI, (float) Math.PI);
-        if (this.selectedPart != BodyPart.INTERNAL) {
-            graphics.entity(this.skeletonPreview, currentScale, dynamicTranslation, rotation, null,
-                    centerX - 70, y0, centerX + 70, y1);
-        }
+
         boolean showInternal = (this.selectedPart == BodyPart.NONE || this.selectedPart == BodyPart.INTERNAL);
         if (showInternal) {
+
             boolean isInternalZoom = (this.selectedPart == BodyPart.INTERNAL);
             int intX0, intY0, intX1, intY1;
             float intScale;
             Vector3f intTrans;
-            BodyPart iPart = BodyPart.INTERNAL;
-            float rotX = (iPart.hitX * cos) - (iPart.hitZ * sin);
-            int intVisualX = (centerX + (int) currentOffsetX) + (int) (rotX * ratio);
-            int intVisualY = (getModelBaseY() + (int) currentOffsetY) + (int) (iPart.hitY * ratio);
+
             if (isInternalZoom) {
                 intX0 = centerX - 70;
                 intY0 = y0;
@@ -189,22 +179,50 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 intScale = currentScale;
                 intTrans = new Vector3f(0.0F, 0.2F, 0.0F);
             } else {
-                int boxSize = 100;
-                intX0 = intVisualX - boxSize;
-                intY0 = intVisualY - boxSize - 20;
-                intX1 = intVisualX + boxSize;
-                intY1 = intVisualY + boxSize - 20;
+                int boxWidth = 80;
+                int leftOffset = -50;
+
                 intScale = 40f;
                 intTrans = new Vector3f(0.0F, 0.7F, 0.0F);
+
+                intX0 = centerX + leftOffset - (boxWidth / 2);
+                intX1 = centerX + leftOffset + (boxWidth / 2);
+
+                intY0 = guiY + 20;
+                intY1 = guiY + 100;
+
+                int color = 0xFF00FFFF;
+                // 体内パーツを囲むCyanのボックス
+                int bx = intX0 + 21;
+                int by = intY0 + 42;
+                int bw = 37;
+                int bh = 37;
+                graphics.outline(bx, by, bw, bh, color);
+                int targetX = centerX - 5;
+                int lx1 = bx + 8;
+                int ly1 = guiY + 50;
+                graphics.fill(lx1, ly1, lx1 + 1, by, color);
+                graphics.fill(lx1, ly1, targetX, ly1 + 1, color);
             }
             graphics.entity(this.internalPartsPreview, intScale, intTrans, rotation, null, intX0, intY0, intX1, intY1);
         }
+        if (this.selectedPart != BodyPart.INTERNAL) {
+            float transX = currentOffsetX / currentScale;
+            float transY = 1.1F + (currentOffsetY / currentScale);
+            Vector3f dynamicTranslation = new Vector3f(transX, transY, 0.0F);
+
+            graphics.entity(this.skeletonPreview, currentScale, dynamicTranslation, rotation, null,
+                    centerX - 70, y0, centerX + 70, y1);
+        }
+
         graphics.nextStratum();
         drawScanLine(graphics, guiY);
+
         if (this.selectedPart == BodyPart.NONE && this.minecraft.player != null) {
             String name = "_" + this.minecraft.player.getName().getString().toUpperCase();
-            graphics.text(this.font, Component.literal(name), getModelBaseX() + (int) currentOffsetX - this.font.width(name) / 2, guiY + TOP_HEIGHT - 25, 0xFF00FFFF, true);
+            graphics.text(this.font, Component.literal(name), getModelBaseX() - this.font.width(name) / 2, guiY + TOP_HEIGHT - 25, 0xFF00FFFF, true);
         }
+
         drawMarkersAndAlerts(graphics, guiX, guiY, mouseX, mouseY);
         drawMarkerSlotBackgrounds(graphics);
         super.extractContents(graphics, mouseX, mouseY, a);
@@ -223,6 +241,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         }
         return cost;
     }
+
 
     private void drawEssenceLogic(GuiGraphicsExtractor graphics, int guiX, int guiY) {
         if (this.minecraft.player == null) return;
@@ -303,16 +322,28 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (super.mouseClicked(event, doubleClick)) return true;
         double mx = event.x();
         double my = event.y();
+
+        // 1. 右上のボタン（Widget）の領域のみ super.mouseClicked を実行する
+        // 座標: x = leftPos + 158, y = topPos + 6, w = 12, h = 10
+        if (mx >= this.leftPos + 158 && mx < this.leftPos + 158 + 12 &&
+                my >= this.topPos + 6 && my < this.topPos + 6 + 10) {
+            if (super.mouseClicked(event, doubleClick)) return true;
+        }
+
         if (event.button() == 0) {
             for (Slot slot : this.menu.slots) {
                 if (mx >= this.leftPos + slot.x && mx < this.leftPos + slot.x + 16 &&
                         my >= this.topPos + slot.y && my < this.topPos + slot.y + 16) {
+
                     if (slot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) {
-                        ClientPacketDistributor.sendToServer(new SurgeryGhostTogglePacket(this.menu.blockEntity.getBlockPos(), slot.index));
-                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        ItemStack stack = slot.getItem();
+                        if (stack.isEmpty() || stack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                            ClientPacketDistributor.sendToServer(new SurgeryGhostTogglePacket(this.menu.blockEntity.getBlockPos(), slot.index));
+                            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                            return true;
+                        }
                     }
                     return super.mouseClicked(event, doubleClick);
                 }
@@ -323,6 +354,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     return true;
                 }
             }
+
             if (mx >= this.leftPos && mx < this.leftPos + GUI_WIDTH &&
                     my >= this.topPos && my < this.topPos + TOP_HEIGHT) {
                 this.potentialDrag = true;
@@ -331,9 +363,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 return true;
             }
         }
-        return false;
+        return super.mouseClicked(event, doubleClick);
     }
-
     private boolean checkMarkerClick(double mx, double my) {
         float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
         float sin = (float) Math.sin(radRot), cos = (float) Math.cos(radRot);
@@ -356,44 +387,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         return false;
     }
 
-    //    @Override
-//    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-//        if (this.isDebugMoving) {
-//            double mx = event.x();
-//            double my = event.y();
-//            float ratio = currentScale / BASE_SCALE;
-//            if (this.draggingPart != null) {
-//                int newHitX = (int) ((mx - getModelBaseX()) / ratio);
-//                int newHitY = (int) ((my - getModelBaseY() + 60) / ratio);
-//                System.out.println("Moving Part " + draggingPart.name() + " -> hitX: " + newHitX + ", hitY: " + newHitY);
-//            }
-//            if (this.draggingMarker != null) {
-//                float scaleFactor = currentScale / 16f;
-//                int baseX = getModelBaseX();
-//                int baseY = getModelBaseY();
-//                if (this.selectedPart == BodyPart.INTERNAL) {
-//                    baseX -= 48;
-//                    baseY += 26;
-//                }
-//                float newModelY = (float) ((baseY - my - 8) / scaleFactor);
-//                float newModelX = (float) ((mx - baseX + 8) / scaleFactor);
-//                System.out.println("Moving Marker " + draggingMarker.name().getString() + " -> modelX: " + newModelX + ", modelY: " + newModelY);
-//            }
-//            return true;
-//        }
-//        if (this.potentialDrag && event.button() == 0) {
-//            this.viewRotation = this.rotationStart - (float) (event.x() - this.dragStartX);
-//            this.isDraggingModel = true;
-//            return true;
-//        }
-//        return super.mouseDragged(event, dx, dy);
-//    }
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         if (this.potentialDrag && event.button() == 0) {
-            this.viewRotation -= (float) dx;
+            this.viewRotation = this.rotationStart - (float) (event.x() - this.dragStartX);
             this.isDraggingModel = true;
-            this.rotationInterrupted = true;
             return true;
         }
         return super.mouseDragged(event, dx, dy);
@@ -401,34 +399,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (this.isDebugMoving) {
-            if (this.draggingPart != null) {
-                float ratio = currentScale / BASE_SCALE;
-                int fX = (int) ((event.x() - getModelBaseX()) / ratio);
-                int fY = (int) ((event.y() - getModelBaseY() + 60) / ratio);
-                System.out.println("=== COPY THIS TO BodyPart Enum ===");
-                System.out.printf("%s(%d, %d, %d, %d, 0, 0, 120f, List.of(...))\n",
-                        draggingPart.name(), fX, fY, draggingPart.hitW, draggingPart.hitH);
-            }
-            if (this.draggingMarker != null) {
-                float scaleFactor = currentScale / 16f;
-                int baseX = getModelBaseX();
-                int baseY = getModelBaseY();
-                if (this.selectedPart == BodyPart.INTERNAL) {
-                    baseX -= 48;
-                    baseY += 26;
-                }
-                float fY = (float) ((baseY - event.y() - 8) / scaleFactor);
-                float fX = (float) ((event.x() - baseX + 8) / scaleFactor);
-                System.out.println("=== DEBUG Marker Result (Face front [Rot=0] for accurate X) ===");
-                System.out.printf("new TargetMarker(Component.literal(\"%s\"), %.2ff, %.2ff, %.2ff, slots(...))\n",
-                        draggingMarker.name().getString(), fX, fY, draggingMarker.modelZ());
-            }
-            this.isDebugMoving = false;
-            this.draggingPart = null;
-            this.draggingMarker = null;
-            return true;
-        }
         if (event.button() == 0) {
             if (this.isDraggingModel) {
                 this.isDraggingModel = false;
