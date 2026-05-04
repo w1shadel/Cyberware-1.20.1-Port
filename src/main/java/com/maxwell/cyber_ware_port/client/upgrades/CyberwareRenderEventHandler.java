@@ -17,9 +17,10 @@ public class CyberwareRenderEventHandler {
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         if (!(event.getEntity() instanceof AbstractClientPlayer player)) return;
+
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) return;
         PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
+
         if (data.hasCyberRightArm()) {
             model.rightArm.visible = false;
             model.rightSleeve.visible = false;

@@ -266,10 +266,11 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
     }
 
     public void syncToClient(ServerPlayer player) {
-        if (player == null) return;
+        if (player == null || player.level().isClientSide) return;
+
         CompoundTag tag = this.serializeNBT(player.registryAccess());
-        tag.putInt("MaxTolerance", getTolerance(player) + (maxTolerance - getTolerance(player)));
-        PacketDistributor.sendToPlayer(player, new SyncCyberwareDataPacket(tag));
+        SyncCyberwareDataPacket packet = new SyncCyberwareDataPacket(tag, player.getId());
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, packet);
     }
 
     private void killPlayer(ServerPlayer player, String suffix) {

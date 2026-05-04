@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.screen.cwb;
+package com.maxwell.cyber_ware_port.client.screen;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
