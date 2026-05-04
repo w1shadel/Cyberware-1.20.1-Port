@@ -530,11 +530,10 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             int uiX = (this.width - uiWidth) / 2;
             for (int i = 0; i < targets.length; i++) {
                 if (targets[i] < this.menu.slots.size())
-                    setSlotPos(this.menu.slots.get(targets[i]), uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING)) + 1, 106);
+                    setSlotPos(this.menu.slots.get(targets[i]), uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING)), 105);
             }
         }
     }
-
     private void renderGhostConflict(GuiGraphics g, int slotCount, int uiX, int stagingY, int installedY) {
         ItemStack carried = this.menu.getCarried();
         if (carried.isEmpty()) return;
