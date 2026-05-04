@@ -36,7 +36,6 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
             try {
                 JsonObject json = element.getAsJsonObject();
                 if (!json.has("mob")) {
-
                     return;
                 }
                 Identifier mobId = Identifier.parse(json.get("mob").getAsString());
@@ -71,7 +70,7 @@ public class MobDataManager extends SimpleJsonResourceReloadListener {
                     }
                     MOB_DATA.put(entityType, data);
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 CyberWare.LOGGER.error("Failed to parse cyberware mob data at {}: {}", location, e.getMessage());
             }
         });

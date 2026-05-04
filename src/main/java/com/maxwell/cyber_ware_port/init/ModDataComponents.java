@@ -15,6 +15,8 @@ public class ModDataComponents {
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, CyberWare.MODID);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> GHOST_COMPONENT =
             register("ghost", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL).persistent(com.mojang.serialization.Codec.BOOL));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> REMOVAL_COMPONENT =
+            register("removal_component", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL).persistent(com.mojang.serialization.Codec.BOOL));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> PRISTINE =
             register("pristine", builder -> builder.networkSynchronized(ByteBufCodecs.BOOL).persistent(com.mojang.serialization.Codec.BOOL));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> ACTIVE =

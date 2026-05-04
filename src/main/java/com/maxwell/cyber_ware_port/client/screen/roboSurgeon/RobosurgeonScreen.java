@@ -9,11 +9,14 @@ import com.maxwell.cyber_ware_port.common.entity.misc.PlayerTempModelState;
 import com.maxwell.cyber_ware_port.common.entity.misc.SkeletonPreviewState;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
 import com.maxwell.cyber_ware_port.common.network.SurgeryGhostTogglePacket;
+import com.maxwell.cyber_ware_port.common.risk.SurgeryAlert;
+import com.maxwell.cyber_ware_port.common.risk.SurgeryAnalyzer;
 import com.maxwell.cyber_ware_port.init.ModEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -25,9 +28,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -37,6 +42,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private static final Identifier MARKER_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/marker.png");
     private static final Identifier RED_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/red_slot.png");
     private static final Identifier BLUE_SLOT_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blue_slot.png");
+    private static final Identifier RISK_ICON = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/risk_icons.png");
     private static final float ANIMATION_DURATION = 2000f;
     private static final int GUI_WIDTH = 175;
     private static final int TOP_HEIGHT = 131;
@@ -67,6 +73,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     private float currentScale = 45;
     private float currentOffsetX = 0f;
     private float currentOffsetY = 0f;
+    private SurgeryAlert currentAlert = null;
 
     public RobosurgeonScreen(RobosurgeonMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, GUI_WIDTH, TOP_HEIGHT + 91);
@@ -143,7 +150,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int guiX = this.leftPos, guiY = this.topPos;
-
         float spd = 0.1f;
         float targetScale = (selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale);
         float targetOffsetX = (selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX);
@@ -151,26 +157,25 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         currentScale += (targetScale - currentScale) * spd;
         currentOffsetX += (targetOffsetX - currentOffsetX) * spd;
         currentOffsetY += (targetOffsetY - currentOffsetY) * spd;
-
+        if (this.minecraft.player != null) {
+            var data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            int maxTolerance = data.getMaxTolerance(this.minecraft.player);
+            this.currentAlert = SurgeryAnalyzer.check(this.menu.slots, maxTolerance);
+        }
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX, guiY, 0, 0, GUI_WIDTH, TOP_HEIGHT, 256, 256);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, guiX, guiY + TOP_HEIGHT, 0, 131, GUI_WIDTH, 91, 256, 256);
-
         graphics.nextStratum();
         drawEssenceLogic(graphics, guiX, guiY);
-
         int centerX = guiX + 88;
         int y0 = guiY + 5;
         int y1 = guiY + TOP_HEIGHT - 10;
         Quaternionf rotation = new Quaternionf().rotationXYZ(0, (float) Math.toRadians(this.viewRotation) + (float) Math.PI, (float) Math.PI);
-
         boolean showInternal = (this.selectedPart == BodyPart.NONE || this.selectedPart == BodyPart.INTERNAL);
         if (showInternal) {
-
             boolean isInternalZoom = (this.selectedPart == BodyPart.INTERNAL);
             int intX0, intY0, intX1, intY1;
             float intScale;
             Vector3f intTrans;
-
             if (isInternalZoom) {
                 intX0 = centerX - 70;
                 intY0 = y0;
@@ -181,18 +186,13 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             } else {
                 int boxWidth = 80;
                 int leftOffset = -50;
-
                 intScale = 40f;
                 intTrans = new Vector3f(0.0F, 0.7F, 0.0F);
-
                 intX0 = centerX + leftOffset - (boxWidth / 2);
                 intX1 = centerX + leftOffset + (boxWidth / 2);
-
                 intY0 = guiY + 20;
                 intY1 = guiY + 100;
-
                 int color = 0xFF00FFFF;
-                // 体内パーツを囲むCyanのボックス
                 int bx = intX0 + 21;
                 int by = intY0 + 42;
                 int bw = 37;
@@ -210,29 +210,38 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             float transX = currentOffsetX / currentScale;
             float transY = 1.1F + (currentOffsetY / currentScale);
             Vector3f dynamicTranslation = new Vector3f(transX, transY, 0.0F);
-
             graphics.entity(this.skeletonPreview, currentScale, dynamicTranslation, rotation, null,
                     centerX - 70, y0, centerX + 70, y1);
         }
-
         graphics.nextStratum();
         drawScanLine(graphics, guiY);
-
         if (this.selectedPart == BodyPart.NONE && this.minecraft.player != null) {
             String name = "_" + this.minecraft.player.getName().getString().toUpperCase();
-            graphics.text(this.font, Component.literal(name), getModelBaseX() - this.font.width(name) / 2, guiY + TOP_HEIGHT - 25, 0xFF00FFFF, true);
+            graphics.text(this.font, Component.literal(name), getModelBaseX() - this.font.width(name) / 2, guiY + TOP_HEIGHT - 15, 0xFF00FFFF, true);
+        }
+        if (this.currentAlert != null) {
+            int iconX = guiX + 156;
+            int iconY = guiY + 20;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, RISK_ICON, iconX, iconY, 0, 0, 16, 16, 16, 16, this.currentAlert.color() | 0xFF000000);
+
+            if (mouseX >= iconX && mouseX < iconX + 16 && mouseY >= iconY && mouseY < iconY + 16) {
+                graphics.setComponentTooltipForNextFrame(this.font, List.of(this.currentAlert.message()), mouseX, mouseY);
+            }
         }
 
         drawMarkersAndAlerts(graphics, guiX, guiY, mouseX, mouseY);
-        drawMarkerSlotBackgrounds(graphics);
+        drawMarkerSlotBackgrounds(graphics, mouseX, mouseY);
         super.extractContents(graphics, mouseX, mouseY, a);
     }
-
     private int calculateTotalEssenceCost() {
         int cost = 0;
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
             ItemStack stack = this.menu.getSlot(i).getItem();
             if (!stack.isEmpty()) {
+                if (stack.getOrDefault(CyberWare.REMOVAL_COMPONENT.get(), false)) {
+                    continue;
+                }
+
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
                 if (cw != null) {
                     cost += cw.getEssenceCost(stack) * stack.getCount();
@@ -240,6 +249,29 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             }
         }
         return cost;
+    }
+
+    @Override
+    protected void renderSlotContents(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, @Nullable String itemCount) {
+        boolean isBeingRemoved = !itemStack.isEmpty() && itemStack.getOrDefault(CyberWare.REMOVAL_COMPONENT.get(), false);
+
+        int x = slot.x;
+        int y = slot.y;
+        int seed = x + y * this.imageWidth;
+
+        if (slot.isFake()) {
+            graphics.fakeItem(itemStack, x, y, seed);
+        } else {
+            graphics.item(itemStack, x, y, seed);
+        }
+
+        var font = IClientItemExtensions.of(itemStack).getFont(itemStack, IClientItemExtensions.FontContext.ITEM_COUNT);
+        graphics.itemDecorations(font != null ? font : this.font, itemStack, x, y, itemCount);
+
+        if (isBeingRemoved) {
+            // 摘出予定のものだけを暗く（半透明に）する
+            graphics.fill(x, y, x + 16, y + 16, 0x80000000);
+        }
     }
 
 
@@ -307,15 +339,34 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         }
     }
 
-    private void drawMarkerSlotBackgrounds(GuiGraphicsExtractor graphics) {
-        if (this.selectedMarker != null) {
+    private void drawMarkerSlotBackgrounds(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        if (this.selectedMarker != null && this.minecraft.player != null) {
             int slotCount = this.selectedMarker.relatedSlots().length;
             int uiWidth = (18 * slotCount) + (2 * (slotCount - 1));
             int uiX = this.leftPos + (GUI_WIDTH - uiWidth) / 2;
+
+            // プレイヤーの現在インストールされているウェアのデータを取得
+            var data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            var installed = data.getInstalledCyberware();
+
             for (int i = 0; i < slotCount; i++) {
                 int slotX = uiX + (i * 20);
+                int slotId = this.selectedMarker.relatedSlots()[i];
                 graphics.blit(RenderPipelines.GUI_TEXTURED, BLUE_SLOT_TEXTURE, slotX - 1, this.topPos + 104, 0, 0, 18, 18, 18, 18);
-                graphics.blit(RenderPipelines.GUI_TEXTURED, RED_SLOT_TEXTURE, slotX - 1, this.topPos + 79, 0, 0, 18, 18, 18, 18);
+                int redY = this.topPos + 79;
+                graphics.blit(RenderPipelines.GUI_TEXTURED, RED_SLOT_TEXTURE, slotX - 1, redY, 0, 0, 18, 18, 18, 18);
+                ItemStack installedStack = installed.getResource(slotId).toStack(installed.getAmountAsInt(slotId));
+
+                if (!installedStack.isEmpty()) {
+                    int itemX = slotX;
+                    int itemY = redY + 1;
+                    graphics.item(installedStack, itemX, itemY);
+                    var font = IClientItemExtensions.of(installedStack).getFont(installedStack, IClientItemExtensions.FontContext.ITEM_COUNT);
+                    graphics.itemDecorations(font != null ? font : this.font, installedStack, itemX, itemY, null);
+                    if (mouseX >= itemX && mouseX < itemX + 16 && mouseY >= itemY && mouseY < itemY + 16) {
+                        graphics.setTooltipForNextFrame(this.font, Screen.getTooltipFromItem(this.minecraft, installedStack), installedStack.getTooltipImage(), mouseX, mouseY);
+                    }
+                }
             }
         }
     }
@@ -324,19 +375,14 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         double mx = event.x();
         double my = event.y();
-
-        // 1. 右上のボタン（Widget）の領域のみ super.mouseClicked を実行する
-        // 座標: x = leftPos + 158, y = topPos + 6, w = 12, h = 10
         if (mx >= this.leftPos + 158 && mx < this.leftPos + 158 + 12 &&
                 my >= this.topPos + 6 && my < this.topPos + 6 + 10) {
             if (super.mouseClicked(event, doubleClick)) return true;
         }
-
         if (event.button() == 0) {
             for (Slot slot : this.menu.slots) {
                 if (mx >= this.leftPos + slot.x && mx < this.leftPos + slot.x + 16 &&
                         my >= this.topPos + slot.y && my < this.topPos + slot.y + 16) {
-
                     if (slot.index < RobosurgeonBlockEntity.TOTAL_SLOTS) {
                         ItemStack stack = slot.getItem();
                         if (stack.isEmpty() || stack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
@@ -354,7 +400,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                     return true;
                 }
             }
-
             if (mx >= this.leftPos && mx < this.leftPos + GUI_WIDTH &&
                     my >= this.topPos && my < this.topPos + TOP_HEIGHT) {
                 this.potentialDrag = true;
@@ -365,6 +410,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         }
         return super.mouseClicked(event, doubleClick);
     }
+
     private boolean checkMarkerClick(double mx, double my) {
         float radRot = (float) Math.toRadians(this.viewRotation) + (float) Math.PI;
         float sin = (float) Math.sin(radRot), cos = (float) Math.cos(radRot);

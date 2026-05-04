@@ -22,16 +22,15 @@ public class ModBlockEntities {
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
-    }    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberSkullBlockEntity>> CYBER_SKULL =
+    }
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CyberSkullBlockEntity>> CYBER_SKULL =
             BLOCK_ENTITIES.register("cyber_wither_skeleton_skull",
                     () -> new BlockEntityType<>(
                             CyberSkullBlockEntity::new,
                             ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
                             ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get()
                     ));
-
-
-
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SurgeryChamberBlockEntity>> SURGERY_CHAMBER =
             BLOCK_ENTITIES.register("surgery_chamber",
                     () -> new BlockEntityType<>(

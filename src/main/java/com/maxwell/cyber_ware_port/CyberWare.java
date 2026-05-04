@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 public class CyberWare {
     public static final String MODID = "cyber_ware_port";
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> GHOST_COMPONENT = ModDataComponents.GHOST_COMPONENT;
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> REMOVAL_COMPONENT = ModDataComponents.REMOVAL_COMPONENT;
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public CyberWare(IEventBus modEventBus, ModContainer modContainer) {

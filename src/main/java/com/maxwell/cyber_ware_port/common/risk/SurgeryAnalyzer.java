@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.common.risk;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
@@ -22,6 +23,9 @@ public class SurgeryAnalyzer {
         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
             if (i >= slots.size()) break;
             ItemStack stack = slots.get(i).getItem();
+            if (stack.getOrDefault(CyberWare.REMOVAL_COMPONENT.get(), false)) {
+                continue;
+            }
             if (stack.isEmpty()) continue;
             ICyberware cw = CyberwareAPI.getCyberware(stack);
             if (cw != null) {

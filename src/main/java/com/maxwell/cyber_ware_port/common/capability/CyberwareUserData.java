@@ -372,13 +372,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         this.isInitialized = false;
         currentEnergy = 0;
         fillWithHumanParts();
-    }    private final ItemStacksResourceHandler installedCyberware = new ItemStacksResourceHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
-        @Override
-        protected void onContentsChanged(int index, ItemStack previousContents) {
-            updateBodyStatus();
-            needsCapacityUpdate = true;
-        }
-    };
+    }
 
     public void copyFrom(CyberwareUserData other) {
         for (int i = 0; i < this.installedCyberware.size(); i++)
@@ -387,7 +381,13 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         this.currentEnergy = other.currentEnergy;
         this.maxEnergy = other.maxEnergy;
         this.isInitialized = other.isInitialized;
-    }
+    }    private final ItemStacksResourceHandler installedCyberware = new ItemStacksResourceHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
+        @Override
+        protected void onContentsChanged(int index, ItemStack previousContents) {
+            updateBodyStatus();
+            needsCapacityUpdate = true;
+        }
+    };
 
     public boolean isInitialized() {
         return isInitialized;

@@ -296,6 +296,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         if (stack.isEmpty()) return false;
         for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) if (input.ingredient().test(stack)) return true;
         return false;
+    }
+
+    @Override
+    public @NotNull Component getDisplayName() {
+        return Component.translatable("block.cyber_ware_port.cyberware_workbench");
     }    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int index, ItemStack previousContents) {
@@ -330,11 +335,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             return super.insert(slot, resource, amount, tx);
         }
     };
-
-    @Override
-    public @NotNull Component getDisplayName() {
-        return Component.translatable("block.cyber_ware_port.cyberware_workbench");
-    }
 
     @Nullable
     @Override

@@ -43,6 +43,7 @@ public class ModCyberwareEvents {
                 new MobDataManager()
         );
     }
+
     private static void dispatch(LivingEntity entity, BiConsumer<ICyberware, ItemStack> action) {
         if (entity == null) return;
         CyberwareUserData data = entity.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());

@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
@@ -39,14 +38,12 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     if (stack.isEmpty()) return true;
                     if (!super.mayPlace(stack)) return false;
-
                     ICyberware myCw = CyberwareAPI.getCyberware(stack);
                     if (myCw == null) return false;
                     for (int j = 0; j < RobosurgeonBlockEntity.TOTAL_SLOTS; j++) {
                         if (j == this.getSlotIndex()) continue;
                         ItemStack other = handler.getResource(j).toStack(handler.getAmountAsInt(j));
                         if (other.isEmpty() || other.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) continue;
-
                         ICyberware otherCw = CyberwareAPI.getCyberware(other);
                         if (otherCw != null) {
                             if (myCw.isIncompatible(stack, other) || otherCw.isIncompatible(other, stack)) return false;
@@ -63,6 +60,7 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     }
                     return currentCount <= myCw.getMaxInstallAmount(stack);
                 }
+
                 @Override
                 public boolean mayPickup(Player playerIn) {
                     ItemStack stack = this.getItem();
@@ -84,21 +82,20 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             boolean isGhost = stackInSlot.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false);
             ItemStack carried = getCarried();
-
             if (isGhost) {
                 slot.set(ItemStack.EMPTY);
                 if (carried.isEmpty()) {
                     this.blockEntity.setChanged();
-                    return; // 拾わせない
+                    return;
                 }
             }
         }
         super.clicked(slotId, buttonNum, containerInput, player);
-
         if (slotId >= 0 && slotId < RobosurgeonBlockEntity.TOTAL_SLOTS) {
             this.blockEntity.setChanged();
         }
     }
+
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {

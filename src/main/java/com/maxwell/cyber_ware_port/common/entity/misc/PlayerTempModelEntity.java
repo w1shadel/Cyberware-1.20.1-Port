@@ -8,6 +8,7 @@ public class PlayerTempModelEntity extends Mob {
     public PlayerTempModelEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
     }
+
     @Override
     public void tick() {
         super.tick();

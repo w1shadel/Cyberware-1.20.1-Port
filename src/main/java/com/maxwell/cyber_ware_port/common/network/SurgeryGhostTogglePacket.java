@@ -36,23 +36,13 @@ public record SurgeryGhostTogglePacket(BlockPos pos, int slotId) implements Cust
                 BlockEntity be = player.level().getBlockEntity(pos);
                 if (be instanceof RobosurgeonBlockEntity tile) {
                     ItemStacksResourceHandler itemHandler = tile.getItemHandler();
-                    ItemStack currentStack = itemHandler.getResource(slotId).toStack(itemHandler.getAmountAsInt(slotId));
-                    boolean changed = false;
-                    if (!currentStack.isEmpty() && currentStack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
-                        itemHandler.set(slotId, ItemResource.EMPTY, 0);
-                        changed = true;
-                    } else if (currentStack.isEmpty()) {
-                        CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-                        ItemStacksResourceHandler body = data.getInstalledCyberware();
-                        ItemStack installed = body.getResource(slotId).toStack(body.getAmountAsInt(slotId));
-                        if (!installed.isEmpty()) {
-                            ItemStack ghost = installed.copy();
-                            ghost.set(CyberWare.GHOST_COMPONENT.get(), true);
-                            itemHandler.set(slotId, ItemResource.of(ghost), ghost.getCount());
-                            changed = true;
-                        }
-                    }
-                    if (changed) {
+                    ItemStack stack = itemHandler.getResource(slotId).toStack(itemHandler.getAmountAsInt(slotId));
+
+                    if (!stack.isEmpty() && stack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+                        boolean isRemoving = stack.getOrDefault(CyberWare.REMOVAL_COMPONENT.get(), false);
+                        stack.set(CyberWare.REMOVAL_COMPONENT.get(), !isRemoving);
+
+                        itemHandler.set(slotId, ItemResource.of(stack), stack.getCount());
                         tile.setChanged();
                         player.level().sendBlockUpdated(pos, tile.getBlockState(), tile.getBlockState(), 3);
                     }

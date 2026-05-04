@@ -14,7 +14,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -34,7 +33,6 @@ public class MobSpawnerEvents {
         if (!(event.getLevel() instanceof ServerLevel level) || event.loadedFromDisk()) {
             return;
         }
-
         Entity entity = event.getEntity();
         if (!(entity instanceof Mob vanillaMob)) return;
         if (vanillaMob.getSpawnType() == EntitySpawnReason.CONVERSION) {
@@ -42,11 +40,9 @@ public class MobSpawnerEvents {
         }
         EntityType<?> type = entity.getType();
         var mobData = com.maxwell.cyber_ware_port.api.json.MobDataManager.MOB_DATA.get(type);
-
         if (mobData != null && mobData.replaceWith != null) {
             double bonusChance = calculateBonusChance(level, vanillaMob.blockPosition());
             double totalChance = mobData.chance + bonusChance;
-
             if (level.getRandom().nextFloat() < totalChance) {
                 tryReplaceMob(event, level, vanillaMob, mobData.replaceWith);
             }
