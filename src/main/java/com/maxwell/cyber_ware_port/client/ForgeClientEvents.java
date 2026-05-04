@@ -15,6 +15,7 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -175,31 +176,4 @@ public class ForgeClientEvents {
         return ItemStack.EMPTY;
     }
 
-    @SubscribeEvent
-    public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
-        if (!(event.getRenderState() instanceof AvatarRenderState state)) return;
-        Entity entity = Minecraft.getInstance().level.getEntity(state.id);
-        if (entity instanceof Player player) {
-            CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-            if (hasSkinUpgrade(data)) return;
-            state.showLeftSleeve = true;
-            state.showRightSleeve = true;
-            state.showLeftPants = true;
-            state.showRightPants = true;
-            if (data.hasCyberLeftArm()) state.showLeftSleeve = false;
-            if (data.hasCyberRightArm()) state.showRightSleeve = false;
-            if (data.hasCyberLeftLeg()) state.showLeftPants = false;
-            if (data.hasCyberRightLeg()) state.showRightPants = false;
-        }
-    }
-
-    private static boolean hasSkinUpgrade(CyberwareUserData data) {
-        ItemStacksResourceHandler handler = data.getInstalledCyberware();
-        for (int i = 0; i < handler.size(); i++) {
-            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null && cw.getBodyPartType(stack) == BodyPartType.SKIN) return true;
-        }
-        return false;
-    }
 }

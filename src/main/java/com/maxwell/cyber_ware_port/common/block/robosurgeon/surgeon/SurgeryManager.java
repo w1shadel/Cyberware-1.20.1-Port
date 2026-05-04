@@ -17,8 +17,19 @@ import java.util.List;
 public class SurgeryManager {
     public static void execute(ServerPlayer player, ItemStacksResourceHandler table, ItemStacksResourceHandler body) {
         List<ItemStack> ejectList = new ArrayList<>();
+
         for (int i = 0; i < table.size(); i++) {
             ItemStack tableStack = table.getResource(i).toStack(table.getAmountAsInt(i));
+
+            if (isRemoving(tableStack)) {
+                ItemStack oldPart = body.getResource(i).toStack(body.getAmountAsInt(i));
+                if (!oldPart.isEmpty()) {
+                    ejectList.add(oldPart.copy());
+                }
+                body.set(i, ItemResource.EMPTY, 0);
+                table.set(i, ItemResource.EMPTY, 0);
+                continue;
+            }
             if (isGhost(tableStack)) {
                 continue;
             }
@@ -26,22 +37,30 @@ public class SurgeryManager {
             if (!oldPart.isEmpty()) {
                 ejectList.add(oldPart.copy());
             }
+
             ItemResource resource = table.getResource(i);
             int amount = table.getAmountAsInt(i);
+
             if (!resource.isEmpty() && amount > 0) {
+                body.set(i, resource, amount);
+
                 try (Transaction tx = Transaction.openRoot()) {
-                    int extractedCount = table.extract(i, resource, amount, tx);
+                    table.extract(i, resource, amount, tx);
                     tx.commit();
-                    ItemStack insertedDeducted = resource.toStack(extractedCount);
-                    body.set(i, ItemResource.of(insertedDeducted), insertedDeducted.getCount());
                 }
             } else {
                 body.set(i, ItemResource.EMPTY, 0);
             }
         }
+
         resolveConflicts(body, ejectList);
+
         for (ItemStack stack : ejectList) {
             if (stack.isEmpty()) continue;
+
+            stack.remove(CyberWare.GHOST_COMPONENT.get());
+            stack.remove(CyberWare.REMOVAL_COMPONENT.get());
+
             if (!player.getInventory().add(stack)) {
                 ItemEntity itemEntity = player.drop(stack, false);
                 if (itemEntity != null) {
@@ -51,6 +70,7 @@ public class SurgeryManager {
             }
         }
     }
+
 
     private static void resolveConflicts(ItemStacksResourceHandler body, List<ItemStack> ejectList) {
         for (int i = 0; i < body.size(); i++) {
@@ -83,5 +103,8 @@ public class SurgeryManager {
 
     public static boolean isGhost(ItemStack s) {
         return !s.isEmpty() && s.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false);
+    }
+    public static boolean isRemoving(ItemStack s) {
+        return isGhost(s) && s.getOrDefault(CyberWare.REMOVAL_COMPONENT.get(), false);
     }
 }

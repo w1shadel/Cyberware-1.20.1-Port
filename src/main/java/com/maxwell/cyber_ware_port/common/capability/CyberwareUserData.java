@@ -317,7 +317,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         CompoundTag tag = output.buildResult();
         int effectiveMax = getTolerance(player) + (maxTolerance - getTolerance(player));
         tag.putInt("MaxTolerance", effectiveMax);
-        PacketDistributor.sendToPlayer(player, new SyncCyberwareDataPacket(tag));
+        PacketDistributor.sendToPlayer(player, new SyncCyberwareDataPacket(tag, player.getId()));
     }
 
     private void killPlayer(ServerPlayer player, String suffix) {
@@ -348,11 +348,11 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
     }
 
     private void updateBodyStatus() {
-        CyberwareBodyStatus status = new CyberwareBodyStatus(installedCyberware);
-        this.hasCyberLeftArm = status.getCyberArmCount() >= 1;
-        this.hasCyberRightArm = status.getCyberArmCount() >= 2;
-        this.hasCyberLeftLeg = status.getCyberLegCount() >= 1;
-        this.hasCyberRightLeg = status.getCyberLegCount() >= 2;
+        this.hasCyberLeftArm = isCyberwareInstalled(ModItems.CYBER_ARM_LEFT.get());
+        this.hasCyberRightArm = isCyberwareInstalled(ModItems.CYBER_ARM_RIGHT.get());
+
+        this.hasCyberLeftLeg = isCyberwareInstalled(ModItems.CYBER_LEG_LEFT.get());
+        this.hasCyberRightLeg = isCyberwareInstalled(ModItems.CYBER_LEG_RIGHT.get());
     }
 
     public void ensureEssentialPartsAfterDeath() {

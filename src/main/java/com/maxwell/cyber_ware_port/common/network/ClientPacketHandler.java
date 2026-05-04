@@ -4,6 +4,8 @@ import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class ClientPacketHandler {
@@ -21,11 +23,14 @@ public class ClientPacketHandler {
     }
 
     public static void handleSyncPacket(SyncCyberwareDataPacket msg, IPayloadContext ctx) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            CyberwareUserData cyberware = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-            cyberware.deserializeNBT(player.registryAccess(), msg.data());
-        }
+        ctx.enqueueWork(() -> {
+            net.minecraft.client.multiplayer.ClientLevel level = Minecraft.getInstance().level;
+            if (level == null) return;
+            if (level.getEntity(msg.entityId()) instanceof Player player) {
+                CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+                data.deserializeNBT(player.registryAccess(), msg.data());
+            }
+        });
     }
 
     public static void handleProgressPacket(SyncSurgeryProgressPacket msg, IPayloadContext ctx) {

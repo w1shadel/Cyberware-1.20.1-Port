@@ -42,6 +42,8 @@ displayName="${mod_name}" #mandatory
 description='''
 Example mod description.
 '''
+[[mixins]]
+config = "${mod_id}.mixins.json"
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 #[[mixins]]

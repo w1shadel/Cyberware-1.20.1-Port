@@ -18,7 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
-    private static final Identifier CYBER_SKIN_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/entity/cyber_limbs.png");
+    private static final Identifier CYBER_SKIN_TEXTURE = Identifier.fromNamespaceAndPath("cyber_ware_port", "textures/entity/cyber_limbs.png");
     private final CyberLimbModel<AvatarRenderState> cyberLimbModel;
 
     public CyberwarePlayerLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
@@ -31,51 +31,28 @@ public class CyberwarePlayerLayer extends RenderLayer<AvatarRenderState, PlayerM
                        AvatarRenderState state, float yRot, float xRot) {
         Entity entity = Minecraft.getInstance().level.getEntity(state.id);
         if (!(entity instanceof Player player)) return;
+
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
-        if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) {
-            return;
-        }
+        if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) return;
+
         this.cyberLimbModel.setupAnim(state);
-        var renderType = RenderTypes.entityCutout(CYBER_SKIN_TEXTURE);
-        if (data.hasCyberRightArm() && state.showRightSleeve) {
-            submitNodeCollector.submitModelPart(
-                    this.cyberLimbModel.rightArm,
-                    poseStack,
-                    renderType,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY,
-                    null
-            );
-        }
-        if (data.hasCyberLeftArm() && state.showLeftSleeve) {
-            submitNodeCollector.submitModelPart(
-                    this.cyberLimbModel.leftArm,
-                    poseStack,
-                    renderType,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY,
-                    null
-            );
-        }
-        if (data.hasCyberRightLeg() && state.showRightPants) {
-            submitNodeCollector.submitModelPart(
-                    this.cyberLimbModel.rightLeg,
-                    poseStack,
-                    renderType,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY,
-                    null
-            );
-        }
-        if (data.hasCyberLeftLeg() && state.showLeftPants) {
-            submitNodeCollector.submitModelPart(
-                    this.cyberLimbModel.leftLeg,
-                    poseStack,
-                    renderType,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY,
-                    null
-            );
-        }
+
+        this.cyberLimbModel.leftArm.visible = data.hasCyberLeftArm();
+        this.cyberLimbModel.rightArm.visible = data.hasCyberRightArm();
+        this.cyberLimbModel.leftLeg.visible = data.hasCyberLeftLeg();
+        this.cyberLimbModel.rightLeg.visible = data.hasCyberRightLeg();
+
+        var cyberRenderType = RenderTypes.entityCutout(CYBER_SKIN_TEXTURE);
+
+        submitNodeCollector.submitModel(
+                this.cyberLimbModel,
+                state,
+                poseStack,
+                cyberRenderType,
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                0,
+                null
+        );
     }
 }

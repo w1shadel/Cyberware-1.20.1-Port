@@ -160,26 +160,36 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         ItemStacksResourceHandler playerBody = data.getInstalledCyberware();
         Map<net.minecraft.world.item.Item, Integer> futureCounts = new HashMap<>();
         List<ItemStack> futureBody = new ArrayList<>();
+
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = getStack(i);
             ItemStack playerPart = getStackFrom(playerBody, i);
+
+            if (SurgeryManager.isRemoving(table)) {
+                continue;
+            }
+
             ItemStack finalStack = SurgeryManager.isGhost(table) ? playerPart : table;
+
             if (!finalStack.isEmpty()) {
                 futureBody.add(finalStack);
                 futureCounts.put(finalStack.getItem(), futureCounts.getOrDefault(finalStack.getItem(), 0) + finalStack.getCount());
             }
         }
+
         for (ItemStack stack : futureBody) {
             ICyberware cw = getCyber(stack);
             if (cw == null) continue;
+
             if (futureCounts.get(stack.getItem()) > cw.getMaxInstallAmount(stack)) return false;
+
             for (net.minecraft.world.item.Item req : cw.getPrerequisites(stack)) {
                 if (futureBody.stream().noneMatch(s -> s.is(req))) return false;
             }
         }
+
         return true;
     }
-
     private boolean isGhost(ItemStack stack) {
         return SurgeryManager.isGhost(stack);
     }
@@ -222,7 +232,11 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
         ItemStacksResourceHandler playerBody = data.getInstalledCyberware();
         for (int i = 0; i < TOTAL_SLOTS; i++) {
             ItemStack table = getStack(i);
+
+            if (SurgeryManager.isRemoving(table)) return true;
+
             if (SurgeryManager.isGhost(table)) continue;
+
             if (!ItemStack.matches(table, getStackFrom(playerBody, i))) return true;
         }
         return false;

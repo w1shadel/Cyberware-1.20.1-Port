@@ -269,7 +269,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         graphics.itemDecorations(font != null ? font : this.font, itemStack, x, y, itemCount);
 
         if (isBeingRemoved) {
-            // 摘出予定のものだけを暗く（半透明に）する
+
             graphics.fill(x, y, x + 16, y + 16, 0x80000000);
         }
     }
@@ -345,7 +345,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             int uiWidth = (18 * slotCount) + (2 * (slotCount - 1));
             int uiX = this.leftPos + (GUI_WIDTH - uiWidth) / 2;
 
-            // プレイヤーの現在インストールされているウェアのデータを取得
             var data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             var installed = data.getInstalledCyberware();
 

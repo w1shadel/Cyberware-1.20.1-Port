@@ -11,18 +11,31 @@ public class SurgerySyncHelper {
         for (int i = 0; i < table.size(); i++) {
             ItemStack b = body.getResource(i).toStack(body.getAmountAsInt(i));
             ItemStack t = table.getResource(i).toStack(table.getAmountAsInt(i));
+
             if (!t.isEmpty() && !t.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
                 continue;
             }
+
             if (b.isEmpty()) {
+
                 if (!t.isEmpty()) {
                     table.set(i, ItemResource.EMPTY, 0);
                     changed = true;
                 }
             } else {
+
                 ItemStack ghost = createGhost(b);
+
+
+                boolean currentIsRemoving = t.getOrDefault(CyberWare.REMOVAL_COMPONENT.get(), false);
+
+
+                ghost.set(CyberWare.REMOVAL_COMPONENT.get(), currentIsRemoving);
+
                 if (!ItemStack.matches(t, ghost)) {
-                    table.set(i, ItemResource.of(ghost), ghost.getCount());
+
+                    ItemStack freshGhost = createGhost(b);
+                    table.set(i, ItemResource.of(freshGhost), freshGhost.getCount());
                     changed = true;
                 }
             }
@@ -33,6 +46,8 @@ public class SurgerySyncHelper {
     private static ItemStack createGhost(ItemStack stack) {
         ItemStack ghost = stack.copy();
         ghost.set(CyberWare.GHOST_COMPONENT.get(), true);
+
+        ghost.set(CyberWare.REMOVAL_COMPONENT.get(), false);
         return ghost;
     }
 }
