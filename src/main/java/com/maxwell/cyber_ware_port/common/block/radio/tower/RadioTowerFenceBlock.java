@@ -3,6 +3,7 @@ package com.maxwell.cyber_ware_port.common.block.radio.tower;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -11,6 +12,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
 
 public class RadioTowerFenceBlock extends FenceBlock {
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
@@ -19,12 +24,12 @@ public class RadioTowerFenceBlock extends FenceBlock {
     public RadioTowerFenceBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(NORTH, Boolean.valueOf(false))
-                .setValue(EAST, Boolean.valueOf(false))
-                .setValue(SOUTH, Boolean.valueOf(false))
-                .setValue(WEST, Boolean.valueOf(false))
-                .setValue(WATERLOGGED, Boolean.valueOf(false))
-                .setValue(FORMED, Boolean.valueOf(false)));
+                .setValue(NORTH, false)
+                .setValue(EAST, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false)
+                .setValue(WATERLOGGED, false)
+                .setValue(FORMED, false));
 
     }
 
@@ -39,9 +44,9 @@ public class RadioTowerFenceBlock extends FenceBlock {
     }
 
     @Override
-    public net.minecraft.world.phys.shapes.VoxelShape getCollisionShape(BlockState pState,
-                                                                        net.minecraft.world.level.BlockGetter pLevel, BlockPos pPos,
-                                                                        net.minecraft.world.phys.shapes.CollisionContext pContext) {
+    public VoxelShape getCollisionShape(BlockState pState,
+                                        BlockGetter pLevel, BlockPos pPos,
+                                        CollisionContext pContext) {
         return this.getShape(pState, pLevel, pPos, pContext);
     }
 
@@ -49,26 +54,43 @@ public class RadioTowerFenceBlock extends FenceBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder);
         pBuilder.add(FORMED);
+    }
 
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        if (!level.isClientSide()) {
+            var be = findTower(level, pos);
+            if (be != null) {
+                be.tryToFormStructure();
+            }
+        }
+        super.onPlace(state, level, pos, oldState, movedByPiston);
     }
 
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (!pLevel.isClientSide && pState.getValue(FORMED) && !pState.is(pNewState.getBlock())) {
-            BlockPos.MutableBlockPos searchPos = new BlockPos.MutableBlockPos();
-            for (int y = 1; y <= MAX_SEARCH_HEIGHT; y++) {
-                for (int x = -1; x <= 1; x++) {
-                    for (int z = -1; z <= 1; z++) {
-                        searchPos.set(pPos.getX() + x, pPos.getY() + y, pPos.getZ() + z);
-                        BlockEntity be = pLevel.getBlockEntity(searchPos);
-                        if (be instanceof RadioTowerCoreBlockEntity core) {
-                            core.deformStructure();
-                        }
+        if (!pLevel.isClientSide() && pState.getValue(FORMED) && !pState.is(pNewState.getBlock())) {
+            var be = findTower(pLevel, pPos);
+            if (be != null) {
+                be.deformStructure();
+            }
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+    }
+
+    private @Nullable RadioTowerCoreBlockEntity findTower(Level level, BlockPos origin) {
+        BlockPos.MutableBlockPos searchPos = new BlockPos.MutableBlockPos();
+        for (int y = 1; y <= MAX_SEARCH_HEIGHT; y++) {
+            for (int x = -1; x <= 1; x++) {
+                for (int z = -1; z <= 1; z++) {
+                    searchPos.set(origin.getX() + x, origin.getY() + y, origin.getZ() + z);
+                    BlockEntity be = level.getBlockEntity(searchPos);
+                    if (be instanceof RadioTowerCoreBlockEntity core) {
+                        return core;
                     }
                 }
             }
         }
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-
+        return null;
     }
 }
