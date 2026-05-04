@@ -38,18 +38,22 @@ public class CyberwarePlayerLayer extends RenderLayer<AbstractClientPlayer, Play
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(CYBER_SKIN_TEXTURE));
         if (data.hasCyberRightArm() && player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)) {
             this.cyberLimbModel.rightArm.copyFrom(parentModel.rightArm);
+            this.cyberLimbModel.rightArm.visible = true;
             this.cyberLimbModel.rightArm.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
         }
         if (data.hasCyberLeftArm() && player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE)) {
             this.cyberLimbModel.leftArm.copyFrom(parentModel.leftArm);
+            this.cyberLimbModel.leftArm.visible = true;
             this.cyberLimbModel.leftArm.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
         }
         if (data.hasCyberRightLeg() && player.isModelPartShown(PlayerModelPart.RIGHT_PANTS_LEG)) {
             this.cyberLimbModel.rightLeg.copyFrom(parentModel.rightLeg);
+            this.cyberLimbModel.rightLeg.visible = true;
             this.cyberLimbModel.rightLeg.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
         }
         if (data.hasCyberLeftLeg() && player.isModelPartShown(PlayerModelPart.LEFT_PANTS_LEG)) {
             this.cyberLimbModel.leftLeg.copyFrom(parentModel.leftLeg);
+            this.cyberLimbModel.leftLeg.visible = true;
             this.cyberLimbModel.leftLeg.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
         }
     }
