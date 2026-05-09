@@ -119,6 +119,7 @@ dependencies {
     implementation "curse.maven:waystones-245755:7976460"
     implementation "curse.maven:balm-531761:7959844"
     implementation "curse.maven:shogi-1475746:7939269"
+    implementation "curse.maven:pipez-443900:7904268"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -25,7 +25,12 @@ public record OpenPortableCraftingPacket() implements CustomPacketPayload {
         ctx.enqueueWork(() -> {
             if (ctx.player() instanceof ServerPlayer player) {
                 player.openMenu(new SimpleMenuProvider(
-                        (id, inv, p) -> new CraftingMenu(id, inv, ContainerLevelAccess.create(player.level(), player.blockPosition())),
+                        (id, inv, p) -> new CraftingMenu(id, inv, ContainerLevelAccess.create(player.level(), player.blockPosition())) {
+                            @Override
+                            public boolean stillValid(net.minecraft.world.entity.player.Player pPlayer) {
+                                return true;
+                            }
+                        },
                         Component.translatable("container.crafting")
                 ));
             }

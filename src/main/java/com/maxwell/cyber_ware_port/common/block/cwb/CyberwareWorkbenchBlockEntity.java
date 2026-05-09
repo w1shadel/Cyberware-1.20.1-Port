@@ -12,6 +12,7 @@ import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -35,9 +36,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.RangedWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -61,6 +66,26 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     private int progress = 0;
     private boolean isCrafting = false;
     private int cooldown = 0;
+    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(INVENTORY_SIZE) {
+        @Override
+        protected void onContentsChanged(int index, ItemStack previousContents) {
+            setChanged();
+            if (index == BLUEPRINT_SLOT) {
+                cachedRecipe = null;
+            }
+        }
+
+        @Override
+        public boolean isValid(int slot, ItemResource resource) {
+            ItemStack stack = resource.toStack();
+            return switch (slot) {
+                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack);
+                case PAPER_SLOT -> stack.is(Items.PAPER);
+                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
+                default -> true;
+            };
+        }
+    };
 
     public CyberwareWorkbenchBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CYBERWARE_WORKBENCH.get(), pPos, pBlockState);
@@ -301,40 +326,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     @Override
     public @NotNull Component getDisplayName() {
         return Component.translatable("block.cyber_ware_port.cyberware_workbench");
-    }    private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(INVENTORY_SIZE) {
-        @Override
-        protected void onContentsChanged(int index, ItemStack previousContents) {
-            setChanged();
-            if (index == BLUEPRINT_SLOT) {
-                cachedRecipe = null;
-            }
-        }
-
-        @Override
-        public boolean isValid(int slot, ItemResource resource) {
-            ItemStack stack = resource.toStack();
-            if (slot >= OUTPUT_SLOT_START) return true;
-            return switch (slot) {
-                case INPUT_SLOT -> CyberwareAPI.isCyberware(stack);
-                case PAPER_SLOT -> stack.is(Items.PAPER);
-                case BLUEPRINT_SLOT -> stack.getItem() instanceof BlueprintItem;
-                default -> false;
-            };
-        }
-
-        @Override
-        public int insert(int slot, ItemResource resource, int amount, TransactionContext tx) {
-            ItemStack stack = resource.toStack();
-            if (slot == PAPER_SLOT && !stack.is(Items.PAPER)) return 0;
-            if (slot == BLUEPRINT_SLOT && !(stack.getItem() instanceof BlueprintItem)) return 0;
-            if (slot == INPUT_SLOT && !CyberwareAPI.isCyberware(stack)) return 0;
-            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
-                AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-                if (activeRecipe != null && !isItemNeededForRecipe(activeRecipe, stack)) return 0;
-            }
-            return super.insert(slot, resource, amount, tx);
-        }
-    };
+    }
 
     @Nullable
     @Override
@@ -370,7 +362,6 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         this.loadAdditional(valueInput);
         super.onDataPacket(net, valueInput);
     }
-
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
@@ -380,7 +371,86 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
         return super.getUpdateTag(pRegistries);
     }
+    public ResourceHandler<ItemResource> getSidedHandler(@Nullable Direction side) {
+        if (side == null) return this.itemHandler;
 
+        Direction facing = getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
 
+        if (side == facing.getClockWise()) {
+            return new SidedResourceHandler(this.itemHandler, new int[]{INPUT_SLOT, PAPER_SLOT}, new int[]{});
+        }
+
+        if (side == facing.getCounterClockWise()) {
+            return new SidedResourceHandler(this.itemHandler, new int[]{}, new int[]{3, 4, 5, 6, 7, 8, SPECIAL_OUTPUT_SLOT});
+        }
+
+        if (side == facing.getOpposite()) {
+            return new SidedResourceHandler(this.itemHandler, new int[]{3, 4, 5, 6, 7, 8}, new int[]{});
+        }
+
+        if (side == facing) {
+            return new SidedResourceHandler(this.itemHandler, new int[]{BLUEPRINT_SLOT}, new int[]{});
+        }
+
+        return null;
+    }
+    private class SidedResourceHandler implements ResourceHandler<ItemResource> {
+        private final ItemStacksResourceHandler parent;
+        private final int[] insertSlots;
+        private final int[] extractSlots;
+
+        public SidedResourceHandler(ItemStacksResourceHandler parent, int[] insertSlots, int[] extractSlots) {
+            this.parent = parent;
+            this.insertSlots = insertSlots;
+            this.extractSlots = extractSlots;
+        }
+
+        @Override
+        public int size() { return parent.size(); }
+        @Override
+        public ItemResource getResource(int index) { return parent.getResource(index); }
+        @Override
+        public long getAmountAsLong(int index) { return parent.getAmountAsLong(index); }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            if (!isSlotInArray(index, insertSlots) && !isSlotInArray(index, extractSlots)) return 0;
+            return parent.getCapacityAsLong(index, resource);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return parent.isValid(index, resource);
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+
+            if (isSlotInArray(index, insertSlots)) {
+                return parent.insert(index, resource, amount, transaction);
+            }
+            return 0;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+
+            if (isSlotInArray(index, extractSlots)) {
+
+                if (index >= OUTPUT_SLOT_START && index <= OUTPUT_SLOT_END) {
+                    if (!getStack(BLUEPRINT_SLOT).isEmpty()) {
+                        return 0;
+                    }
+                }
+                return parent.extract(index, resource, amount, transaction);
+            }
+            return 0;
+        }
+
+        private boolean isSlotInArray(int index, int[] slots) {
+            for (int s : slots) if (s == index) return true;
+            return false;
+        }
+    }
 
 }

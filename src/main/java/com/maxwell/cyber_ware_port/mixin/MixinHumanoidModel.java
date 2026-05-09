@@ -39,7 +39,6 @@ public abstract class MixinHumanoidModel<S extends HumanoidRenderState> {
             CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) return;
 
-            // プレイヤー本体や防具モデルの場合のみ、ここが実行される
             if (data.hasCyberRightArm()) this.rightArm.visible = false;
             if (data.hasCyberLeftArm()) this.leftArm.visible = false;
             if (data.hasCyberRightLeg()) this.rightLeg.visible = false;
