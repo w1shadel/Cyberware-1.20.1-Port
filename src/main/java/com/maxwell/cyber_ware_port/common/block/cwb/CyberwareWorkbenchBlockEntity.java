@@ -74,10 +74,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         }
     };
     private final IItemHandlerModifiable sideInputHandler = new SidedProxyHandler(itemHandler, true, false, 0, 1, 2);
-    // 3-8: 製作材料入力
+
     private final IItemHandlerModifiable sideIngredientHandler = new SidedProxyHandler(itemHandler, true, false, 3, 4, 5, 6, 7, 8);
-    // 3-9: 搬出専用 (材料スロットの余り + 完成品) -> 0, 1, 2 は含まないので搬出されない
+
     private final IItemHandlerModifiable sideOutputHandler = new SidedProxyHandler(itemHandler, false, true, 3, 4, 5, 6, 7, 8, 9);
+    private final IItemHandlerModifiable sideFrontHandler = new SidedProxyHandler(itemHandler, true, false, BLUEPRINT_SLOT);
     private int progress = 0;
     private boolean isCrafting = false;
     private int cooldown = 0;
@@ -266,19 +267,22 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public IItemHandler getItemHandler(@Nullable Direction side) {
         if (side == null) return itemHandler;
         Direction facing = getBlockState().getValue(CyberwareWorkbenchBlock.FACING);
+        if (side == facing) {
+            return sideFrontHandler;
+        }
+
         if (side == facing.getClockWise()) {
             return sideInputHandler;
         }
         if (side == facing.getCounterClockWise()) {
             return sideOutputHandler;
         }
-        if (side == Direction.DOWN || side == facing.getOpposite()) {
+        if (side == Direction.DOWN || side == facing.getOpposite() || side == Direction.UP) {
             return sideIngredientHandler;
         }
 
-        return itemHandler;
+        return sideIngredientHandler;
     }
-
     @Override
     protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         super.saveAdditional(pTag, pRegistries);
