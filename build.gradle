@@ -134,6 +134,7 @@ dependencies {
     implementation "curse.maven:curios-309927:6529130"
     compileOnly "curse.maven:emi-580555:6420931"
     implementation "curse.maven:mekanism-268560:7621971"
+    implementation "curse.maven:pipez-443900:5757713"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

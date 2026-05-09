@@ -11,6 +11,7 @@ import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -71,53 +73,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             };
         }
     };
-    private final IItemHandlerModifiable exposedHandler = new IItemHandlerModifiable() {
-        @Override
-        public void setStackInSlot(int slot, @NotNull ItemStack stack) {
-            itemHandler.setStackInSlot(slot, stack);
-        }
-
-        @Override
-        public int getSlots() {
-            return INVENTORY_SIZE;
-        }
-
-        @Override
-        public @NotNull ItemStack getStackInSlot(int slot) {
-            return itemHandler.getStackInSlot(slot);
-        }
-
-        @Override
-        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (stack.isEmpty()) return stack;
-            if (slot == PAPER_SLOT && stack.is(Items.PAPER)) return itemHandler.insertItem(PAPER_SLOT, stack, simulate);
-            if (slot == BLUEPRINT_SLOT && stack.getItem() instanceof BlueprintItem)
-                return itemHandler.insertItem(BLUEPRINT_SLOT, stack, simulate);
-            if (slot == INPUT_SLOT && CyberwareAPI.getCyberware(stack) != null)
-                return itemHandler.insertItem(INPUT_SLOT, stack, simulate);
-            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
-                AssemblyRecipe activeRecipe = getActiveAssemblyRecipe();
-                if (activeRecipe != null && isItemNeededForRecipe(activeRecipe, stack))
-                    return itemHandler.insertItem(slot, stack, simulate);
-            }
-            return stack;
-        }
-
-        @Override
-        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return itemHandler.extractItem(slot, amount, simulate);
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return itemHandler.getSlotLimit(slot);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return itemHandler.isItemValid(slot, stack);
-        }
-    };
+    private final IItemHandlerModifiable sideInputHandler = new SidedProxyHandler(itemHandler, true, false, 0, 1, 2);
+    // 3-8: 製作材料入力
+    private final IItemHandlerModifiable sideIngredientHandler = new SidedProxyHandler(itemHandler, true, false, 3, 4, 5, 6, 7, 8);
+    // 3-9: 搬出専用 (材料スロットの余り + 完成品) -> 0, 1, 2 は含まないので搬出されない
+    private final IItemHandlerModifiable sideOutputHandler = new SidedProxyHandler(itemHandler, false, true, 3, 4, 5, 6, 7, 8, 9);
     private int progress = 0;
     private boolean isCrafting = false;
     private int cooldown = 0;
@@ -303,8 +263,19 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
         return new CyberwareWorkbenchMenu(pContainerId, pPlayerInventory, this);
     }
+    public IItemHandler getItemHandler(@Nullable Direction side) {
+        if (side == null) return itemHandler;
+        Direction facing = getBlockState().getValue(CyberwareWorkbenchBlock.FACING);
+        if (side == facing.getClockWise()) {
+            return sideInputHandler;
+        }
+        if (side == facing.getCounterClockWise()) {
+            return sideOutputHandler;
+        }
+        if (side == Direction.DOWN || side == facing.getOpposite()) {
+            return sideIngredientHandler;
+        }
 
-    public ItemStackHandler getItemHandler() {
         return itemHandler;
     }
 
@@ -344,5 +315,59 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
         CompoundTag tag = new CompoundTag();
         saveAdditional(tag, pRegistries);
         return tag;
+    }
+    private class SidedProxyHandler implements IItemHandlerModifiable {
+        private final ItemStackHandler internal;
+        private final boolean canInsert;
+        private final boolean canExtract;
+        private final int[] allowedSlots;
+
+        public SidedProxyHandler(ItemStackHandler internal, boolean canInsert, boolean canExtract, int... slots) {
+            this.internal = internal;
+            this.canInsert = canInsert;
+            this.canExtract = canExtract;
+            this.allowedSlots = slots;
+        }
+
+        private boolean isSlotAllowed(int slot) {
+            for (int s : allowedSlots) if (s == slot) return true;
+            return false;
+        }
+
+        @Override public int getSlots() { return internal.getSlots(); }
+        @Override public @NotNull ItemStack getStackInSlot(int slot) { return internal.getStackInSlot(slot); }
+        @Override public int getSlotLimit(int slot) { return internal.getSlotLimit(slot); }
+        @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return internal.isItemValid(slot, stack); }
+        @Override public void setStackInSlot(int slot, @NotNull ItemStack stack) { internal.setStackInSlot(slot, stack); }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            if (!canInsert || !isSlotAllowed(slot)) return stack;
+            if (slot == INPUT_SLOT && !CyberwareAPI.isCyberware(stack)) return stack;
+            if (slot == PAPER_SLOT && !stack.is(Items.PAPER)) return stack;
+            if (slot == BLUEPRINT_SLOT && !(stack.getItem() instanceof BlueprintItem)) return stack;
+            if (slot >= OUTPUT_SLOT_START && slot < SPECIAL_OUTPUT_SLOT) {
+                AssemblyRecipe recipe = getActiveAssemblyRecipe();
+                if (recipe == null || !isItemNeededForRecipe(recipe, stack)) return stack;
+            }
+
+            return internal.insertItem(slot, stack, simulate);
+        }
+
+        @Override
+        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (!canExtract || !isSlotAllowed(slot)) return ItemStack.EMPTY;
+            if (slot >= OUTPUT_SLOT_START && slot <= OUTPUT_SLOT_END) {
+                AssemblyRecipe recipe = getActiveAssemblyRecipe();
+                if (recipe != null) {
+                    ItemStack stackInSlot = internal.getStackInSlot(slot);
+                    if (isItemNeededForRecipe(recipe, stackInSlot)) {
+                        return ItemStack.EMPTY;
+                    }
+                }
+            }
+
+            return internal.extractItem(slot, amount, simulate);
+        }
     }
 }

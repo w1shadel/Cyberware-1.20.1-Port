@@ -1,6 +1,7 @@
 package com.maxwell.cyber_ware_port.common.capability;
 
 import com.maxwell.cyber_ware_port.CyberWare;
+import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -36,7 +37,7 @@ public class CyberwareCapabilityProvider {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.ROBO_SURGEON.get(), (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.COMPONENT_BOX.get(), (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.BLUEPRINT_CHEST.get(), (be, side) -> be.getItemHandler());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CYBERWARE_WORKBENCH.get(), (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.CYBERWARE_WORKBENCH.get(), CyberwareWorkbenchBlockEntity::getItemHandler);
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ModBlockEntities.CHARGER.get(), (be, side) -> be.getEnergyStorage());
     }
 }

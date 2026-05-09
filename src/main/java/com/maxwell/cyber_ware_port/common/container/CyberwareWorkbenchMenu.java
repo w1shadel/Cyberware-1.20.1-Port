@@ -97,7 +97,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
         super(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), pContainerId);
         this.blockEntity = (CyberwareWorkbenchBlockEntity) entity;
         this.level = inv.player.level();
-        IItemHandler handler = this.blockEntity.getItemHandler();
+        IItemHandler handler = this.blockEntity.getItemHandler(null);
         this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.INPUT_SLOT, 15, 20));
         this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.PAPER_SLOT, 15, 53));
         this.addSlot(new SlotItemHandler(handler, CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT, 115, 53));
