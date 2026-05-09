@@ -47,6 +47,17 @@ public class ModItems {
     public static final DeferredItem<BlockItem> RADIO_TOWER_COMPONENT = ITEMS.registerSimpleBlockItem("radio_tower_component", ModBlocks.RADIO_TOWER_COMPONENT);
     public static final DeferredItem<BlockItem> CHARGER = ITEMS.registerSimpleBlockItem("charger", ModBlocks.CHARGER);
     public static final DeferredItem<BlockItem> SCANNER = ITEMS.registerSimpleBlockItem("scanner", ModBlocks.SCANNER);
+    public static final DeferredItem<BlockItem> CYBER_WITHER_SKELETON_SKULL_ITEM = ITEMS.register(
+            "cyber_wither_skeleton_skull",
+            (location) -> new StandingAndWallBlockItem(
+                    ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
+                    ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get(),
+                    Direction.DOWN,
+                    new Item.Properties()
+                            .setId(ResourceKey.create(Registries.ITEM, location))
+                            .rarity(Rarity.RARE)
+                            .equippableUnswappable(EquipmentSlot.HEAD)
+            ));
     public static final DeferredHolder<Item, Item> CYBER_ZOMBIE_SPAWN_EGG = ITEMS.register("cyber_zombie_spawn_egg",
             (location) -> new SpawnEggItem(
                     new Item.Properties()
@@ -163,17 +174,7 @@ public class ModItems {
     public static final DeferredHolder<Item, DeployableWheelsItem> DEPLOYABLE_WHEELS = ITEMS.register("foot_upgrades_wheels", (location) -> new DeployableWheelsItem(modProps(location)));
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_LEFT_FOOT = registerHumanPart("body_part_foot_left", BodyRegionEnum.BOOTS.getStartSlot(), 1, BodyPartType.FOOT_LEFT);
     public static final DeferredHolder<Item, CyberwareItem> HUMAN_RIGHT_FOOT = registerHumanPart("body_part_foot_right", BodyRegionEnum.BOOTS.getStartSlot(), 1, BodyPartType.FOOT_RIGHT);
-    public static final DeferredItem<BlockItem> CYBER_WITHER_SKELETON_SKULL_ITEM = ITEMS.register(
-            "cyber_wither_skeleton_skull",
-            (location) -> new StandingAndWallBlockItem(
-                    ModBlocks.CYBER_WITHER_SKELETON_SKULL.get(),
-                    ModBlocks.CYBER_WITHER_SKELETON_WALL_SKULL.get(),
-                    Direction.DOWN,
-                    new Item.Properties()
-                            .setId(ResourceKey.create(Registries.ITEM, location))
-                            .rarity(Rarity.RARE)
-                            .equippableUnswappable(EquipmentSlot.HEAD)
-            ));
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CW_TABS = TABS.register("cyber_wear_port",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.cyber_ware_port.items"))

@@ -4,19 +4,22 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.radio.RadioKitBlock;
 import com.maxwell.cyber_ware_port.common.block.radio.tower.RadioTowerCoreBlock;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.entity.monster.cyberwitherskeleton.CyberWitherSkeletonEntity;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -97,5 +100,37 @@ public class MobSpawnerEvents {
             return false;
         }
         return Math.abs(currentTime - lastActive) < ACTIVE_TIMEOUT;
+    }
+    @SubscribeEvent
+    public static void onLivingDrops(LivingDropsEvent event) {
+        if (event.getEntity() instanceof CyberWitherSkeletonEntity skeleton) {
+            DamageSource source = event.getSource();
+            Entity killer = source.getEntity();
+            if (source.getDirectEntity() instanceof Creeper creeper && creeper.isPowered()) {
+                addSkullDrop(event);
+                return;
+            }
+            if (killer instanceof Player player) {
+                int lootingLevel = player.getWeaponItem().getEnchantmentLevel(
+                        player.level().registryAccess().holderOrThrow(net.minecraft.world.item.enchantment.Enchantments.LOOTING)
+                );
+                float chance = 0.025F + (lootingLevel * 0.01F);
+                if (skeleton.getRandom().nextFloat() < chance) {
+                    addSkullDrop(event);
+                }
+            }
+        }
+    }
+
+    private static void addSkullDrop(LivingDropsEvent event) {
+        LivingEntity entity = event.getEntity();
+        ItemStack skull = new ItemStack(ModItems.CYBER_WITHER_SKELETON_SKULL_ITEM.get());
+
+        ItemEntity itemEntity = new ItemEntity(
+                entity.level(),
+                entity.getX(), entity.getY(), entity.getZ(),
+                skull
+        );
+        event.getDrops().add(itemEntity);
     }
 }
