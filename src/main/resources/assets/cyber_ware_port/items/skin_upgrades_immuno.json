@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/skin_upgrades_immuno"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/skin_upgrades_immuno"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/skin_upgrades_immuno_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

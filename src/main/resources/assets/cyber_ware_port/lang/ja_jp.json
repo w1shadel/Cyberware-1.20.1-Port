@@ -97,6 +97,7 @@
   "cyberware.message.suppressant_applied": "症状を抑制した。",
   "cyberware.quality.manufactured": "新品",
   "cyberware.quality.scavenged": "中古",
+
   "cyberware.risk.low_tolerance": "注意：耐性値が低下しています。抑制剤が必須。",
   "cyberware.risk.missing_arm_left": "注意：両腕がありません",
   "cyberware.risk.missing_arm_right": "注意：片腕がありません。",
@@ -124,6 +125,8 @@
   "cyberware.tooltip.brain_upgrades_neural_contextualizer": "自動的に適正ツールに切り替えます",
   "cyberware.tooltip.brain_upgrades_radio": "近くのサイバーゾンビのスポーン率をわずかに増加させます",
   "cyberware.tooltip.capacity": "%sパワーの蓄電容量",
+  "cyberware.tooltip.blueprint.schematic_for": "設計図: %s",
+  "cyberware.tooltip.blueprint.blank": "空の設計図",
   "cyberware.tooltip.creative_battery": "無限のポテンシャル",
   "cyberware.tooltip.cybereye_upgrades_hudjack": "体内の電力情報を表示します、HUDをオーバーレイするアップグレードが可能になります",
   "cyberware.tooltip.cybereye_upgrades_night_vision": "暗闇の中でも見えます",

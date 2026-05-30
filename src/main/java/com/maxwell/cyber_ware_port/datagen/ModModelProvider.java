@@ -6,9 +6,12 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
@@ -21,6 +24,7 @@ public class ModModelProvider extends ModelProvider {
 
     @Override
     protected void registerModels(BlockModelGenerators blockGenerators, ItemModelGenerators itemGenerators) {
+
         for (DeferredHolder<Block, ? extends Block> entry : ModBlocks.BLOCKS.getEntries()) {
             Block block = entry.get();
             if (entry.getId().getPath().contains("skull")) {
@@ -29,16 +33,64 @@ public class ModModelProvider extends ModelProvider {
                 blockGenerators.createTrivialCube(block);
             }
         }
+
         for (DeferredHolder<Item, ? extends Item> entry : ModItems.ITEMS.getEntries()) {
             Item item = entry.get();
             String name = entry.getId().getPath();
-            if (item instanceof SpawnEggItem) {
+
+            if (item instanceof BlockItem) {
+
+
+                itemGenerators.declareCustomModelItem(item);
+            } else if (item instanceof SpawnEggItem) {
+
                 itemGenerators.generateFlatItem(item, ModelTemplates.FLAT_ITEM);
             } else if (name.contains("katana")) {
+
                 itemGenerators.generateFlatItem(item, ModelTemplates.FLAT_HANDHELD_ITEM);
+            } else if (isScavengedItem(item, name)) {
+
+                generateScavengedItem(itemGenerators, item);
             } else {
+
                 itemGenerators.generateFlatItem(item, ModelTemplates.FLAT_ITEM);
             }
         }
+    }
+
+    /**
+     * そのアイテムがスカベンジバリアントを持つべきか判定する
+     */
+    private boolean isScavengedItem(Item item, String name) {
+
+        return !(item instanceof BlockItem)
+                && !(item instanceof SpawnEggItem)
+                && !name.contains("katana")
+                && !name.contains("blueprint");
+    }
+
+    /**
+     * 通常モデル・スカベンジモデルを生成し、
+     * items/ フォルダ内に「cyber_ware_port:is_scavenged」による分岐JSONを出力する
+     */
+    private void generateScavengedItem(ItemModelGenerators generators, Item item) {
+
+
+        net.minecraft.resources.Identifier normalModelId = generators.createFlatItemModel(item, ModelTemplates.FLAT_ITEM);
+        net.minecraft.client.renderer.item.ItemModel.Unbaked normalModel =
+                net.minecraft.client.data.models.model.ItemModelUtils.plainModel(normalModelId);
+
+
+
+        net.minecraft.resources.Identifier scavengedModelId = generators.createFlatItemModel(item, "_scavenged", ModelTemplates.FLAT_ITEM);
+        net.minecraft.client.renderer.item.ItemModel.Unbaked scavengedModel =
+                net.minecraft.client.data.models.model.ItemModelUtils.plainModel(scavengedModelId);
+
+        generators.generateBooleanDispatch(
+                item,
+                new IsScavengedProperty(),
+                scavengedModel,
+                normalModel
+        );
     }
 }

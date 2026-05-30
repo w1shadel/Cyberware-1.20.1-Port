@@ -3,13 +3,16 @@ package com.maxwell.cyber_ware_port;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.network.A_PacketHandler;
 import com.maxwell.cyber_ware_port.config.CyberwareConfig;
+import com.maxwell.cyber_ware_port.datagen.IsScavengedProperty;
 import com.maxwell.cyber_ware_port.init.*;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.slf4j.Logger;
 
@@ -31,5 +34,12 @@ public class CyberWare {
         CyberwareCapabilityProvider.register(modEventBus);
         A_PacketHandler.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, CyberwareConfig.COMMON_CONFIG);
+        modEventBus.addListener(this::registerConditionalProperties);
+    }
+    private void registerConditionalProperties(RegisterConditionalItemModelPropertyEvent event) {
+        event.register(
+                Identifier.fromNamespaceAndPath(MODID, "is_scavenged"),
+               IsScavengedProperty.CODEC
+        );
     }
 }

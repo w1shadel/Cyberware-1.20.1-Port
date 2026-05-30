@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/foot_upgrades_wheels"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/foot_upgrades_wheels"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/foot_upgrades_wheels_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/muscle_upgrades_wired_reflexes"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/muscle_upgrades_wired_reflexes"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/muscle_upgrades_wired_reflexes_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

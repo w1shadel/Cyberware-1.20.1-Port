@@ -113,6 +113,8 @@
   "cyberware.risk.missing_skin": "Danger: Skin is missing, damage taken is increased.",
   "cyberware.risk.missing_stomach": "Note: Stomach is missing, cannot eat.",
   "cyberware.risk.zero_tolerance": "Warning: Tolerance depleted, will die from shock.",
+  "cyberware.tooltip.blueprint.schematic_for": "Schematic for: %s",
+  "cyberware.tooltip.blueprint.blank": "Blank Schematic",
   "cyberware.tooltip.arm_upgrades_bow": "Draws bows faster.",
   "cyberware.tooltip.bone_upgrades_bonebattery": "Stores energy.",
   "cyberware.tooltip.bone_upgrades_boneflex": "Absorbs fall damage.",

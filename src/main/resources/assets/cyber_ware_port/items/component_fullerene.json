@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/component_fullerene"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/component_fullerene"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/component_fullerene_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

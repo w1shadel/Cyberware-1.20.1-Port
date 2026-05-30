@@ -61,6 +61,8 @@
   "cyberware.risk.missing_skin": "Danger : Peau manquante, dégâts subis augmentés.",
   "cyberware.risk.missing_stomach": "Note : Estomac manquant, ne peut pas manger.",
   "cyberware.risk.zero_tolerance": "Avertissement : Tolérance épuisée, mourra de choc.",
+  "cyberware.tooltip.blueprint.schematic_for": "Schéma pour : %s",
+  "cyberware.tooltip.blueprint.blank": "Schéma vierge",
   "cyberware.tooltip.arm_upgrades_bow": "Bande les arcs plus rapidement.",
   "cyberware.tooltip.bone_upgrades_bonebattery": "Stocke de l'énergie.",
   "cyberware.tooltip.bone_upgrades_boneflex": "Absorbe les dégâts de chute.",

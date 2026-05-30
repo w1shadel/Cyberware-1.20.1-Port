@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/arm_upgrades_bow"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/arm_upgrades_bow"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/arm_upgrades_bow_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

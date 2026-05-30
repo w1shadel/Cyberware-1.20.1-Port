@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/muscle_upgrades_muscle_replacements"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/muscle_upgrades_muscle_replacements"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/muscle_upgrades_muscle_replacements_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

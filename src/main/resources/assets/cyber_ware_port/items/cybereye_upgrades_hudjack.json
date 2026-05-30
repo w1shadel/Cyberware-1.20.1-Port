@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/cybereye_upgrades_hudjack"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/cybereye_upgrades_hudjack"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/cybereye_upgrades_hudjack_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

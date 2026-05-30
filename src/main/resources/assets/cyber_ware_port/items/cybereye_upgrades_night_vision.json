@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/cybereye_upgrades_night_vision"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/cybereye_upgrades_night_vision"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/cybereye_upgrades_night_vision_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }

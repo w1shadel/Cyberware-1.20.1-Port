@@ -1,6 +1,14 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "cyber_ware_port:item/bone_upgrades_boneflex"
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/bone_upgrades_boneflex"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "cyber_ware_port:item/bone_upgrades_boneflex_scavenged"
+    },
+    "property": "cyber_ware_port:is_scavenged"
   }
 }
