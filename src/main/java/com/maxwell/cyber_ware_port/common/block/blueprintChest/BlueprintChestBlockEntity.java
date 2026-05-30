@@ -32,7 +32,11 @@ public class BlueprintChestBlockEntity extends BlockEntity implements MenuProvid
             return resource.toStack().getItem() instanceof BlueprintItem;
         }
     };
-
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        this.drops();
+    }
     public BlueprintChestBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.BLUEPRINT_CHEST.get(), pPos, pBlockState);
     }

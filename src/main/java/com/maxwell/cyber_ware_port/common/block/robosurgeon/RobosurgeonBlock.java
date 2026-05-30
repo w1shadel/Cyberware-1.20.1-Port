@@ -69,13 +69,4 @@ public class RobosurgeonBlock extends HorizontalDirectionalBlock implements Enti
         }
         return InteractionResult.SUCCESS;
     }
-
-    @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof RobosurgeonBlockEntity tile) {
-            tile.drops();
-        }
-        super.destroy(level, pos, state);
-    }
 }

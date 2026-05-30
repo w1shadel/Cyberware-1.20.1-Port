@@ -120,15 +120,6 @@ public class RadioTowerCoreBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof RadioTowerCoreBlockEntity tile) {
-            tile.deformFencesOnly();
-        }
-        super.destroy(level, pos, state);
-    }
-
-    @Override
     public RenderShape getRenderShape(BlockState pState) {
         return RenderShape.MODEL;
     }

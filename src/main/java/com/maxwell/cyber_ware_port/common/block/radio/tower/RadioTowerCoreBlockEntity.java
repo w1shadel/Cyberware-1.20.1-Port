@@ -16,7 +16,11 @@ public class RadioTowerCoreBlockEntity extends BlockEntity {
     public RadioTowerCoreBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.RADIO_TOWER_CORE.get(), pPos, pBlockState);
     }
-
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        this.deformFencesOnly();
+    }
     public void deformFencesOnly() {
         if (this.level == null || this.level.isClientSide()) return;
         setStructureState(false, false);

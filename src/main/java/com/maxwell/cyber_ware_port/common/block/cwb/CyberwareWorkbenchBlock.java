@@ -111,12 +111,4 @@ public class CyberwareWorkbenchBlock extends HorizontalDirectionalBlock implemen
         return pBlockEntityType == ModBlockEntities.CYBERWARE_WORKBENCH.get() ? (lvl, pos, st, be) -> CyberwareWorkbenchBlockEntity.tick(lvl, pos, st, (CyberwareWorkbenchBlockEntity) be) : null;
     }
 
-    @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof CyberwareWorkbenchBlockEntity tile) {
-            tile.drops();
-        }
-        super.destroy(level, pos, state);
-    }
 }

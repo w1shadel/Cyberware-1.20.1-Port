@@ -43,7 +43,11 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     public static final int MAX_PROGRESS = 2400;
     private static final int SLOT_COUNT = 3;
     protected final ContainerData data;
-
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        this.drops();
+    }
     private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(SLOT_COUNT) {
         @Override
         protected void onContentsChanged(int index, ItemStack previousContents) {

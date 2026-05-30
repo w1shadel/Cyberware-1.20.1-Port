@@ -3,8 +3,11 @@ package com.maxwell.cyber_ware_port.common.container;
 import com.maxwell.cyber_ware_port.common.block.blueprintchest.BlueprintChestBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.component_box.ComponentBoxBlockEntity;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
+import com.maxwell.cyber_ware_port.common.block.cwb.recipe.AssemblyRecipe;
+import com.maxwell.cyber_ware_port.common.block.cwb.recipe.EngineeringRecipe;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
+import com.maxwell.cyber_ware_port.common.network.SyncWorkbenchRecipePacket;
 import com.maxwell.cyber_ware_port.init.ModBlocks;
 import com.maxwell.cyber_ware_port.init.ModMenuTypes;
 import net.minecraft.core.BlockPos;
@@ -12,6 +15,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -27,7 +31,9 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     private static final int PANEL_X = -61;
     private static final int PANEL_Y = 12;
     private static final java.lang.reflect.Field slotX, slotY;
-
+    private final Player player;
+    private ItemStack lastBlueprint = ItemStack.EMPTY;
+    private ItemStack lastInput = ItemStack.EMPTY;
     static {
         try {
             slotX = Slot.class.getDeclaredField("x");
@@ -38,7 +44,12 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
             throw new RuntimeException(e);
         }
     }
-
+    public List<SyncWorkbenchRecipePacket.SizedIngredientDisplay> syncedIngredients = null;
+    public float syncedDeconstructChance = 0.0f;
+    public void setSyncedRecipeData(List<SyncWorkbenchRecipePacket.SizedIngredientDisplay> ingredients, float deconstructChance) {
+        this.syncedIngredients = ingredients;
+        this.syncedDeconstructChance = deconstructChance;
+    }
     public final CyberwareWorkbenchBlockEntity blockEntity;
     private final Level level;
     private final List<List<Slot>> pageSlots = new ArrayList<>();
@@ -92,6 +103,7 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
 
     public CyberwareWorkbenchMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.CYBERWARE_WORKBENCH_MENU.get(), pContainerId);
+        this.player = inv.player;
         this.blockEntity = (CyberwareWorkbenchBlockEntity) entity;
         this.level = inv.player.level();
         var handler = this.blockEntity.getItemHandler();
@@ -275,5 +287,63 @@ public class CyberwareWorkbenchMenu extends AbstractContainerMenu {
     public void changeBlueprintPage(int direction) {
         blueprintCurrentPage = Math.clamp(blueprintCurrentPage + direction, 0, Math.max(0, blueprintMaxPages - 1));
         updateSlotPositions();
+    }
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+
+        if (this.player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            ItemStack currentBlueprint = this.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
+            ItemStack currentInput = this.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();
+
+            if (!ItemStack.matches(lastBlueprint, currentBlueprint) || !ItemStack.matches(lastInput, currentInput)) {
+                this.lastBlueprint = currentBlueprint.copy();
+                this.lastInput = currentInput.copy();
+
+                List<SyncWorkbenchRecipePacket.SizedIngredientDisplay> ingredientDisplays = new java.util.ArrayList<>();
+                float deconstructChance = 0.0f;
+
+                if (this.level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                    net.minecraft.server.MinecraftServer server = serverLevel.getServer();
+                    net.minecraft.world.item.crafting.RecipeManager recipeManager = server.getRecipeManager();
+
+                    if (currentBlueprint.getItem() instanceof BlueprintItem) {
+                        Item targetItem = BlueprintItem.getTargetItem(currentBlueprint);
+                        if (targetItem != null) {
+                            recipeManager.getRecipes().stream()
+                                    .filter(holder -> holder.value() instanceof AssemblyRecipe assemblyRecipe &&
+                                            assemblyRecipe.getType() == com.maxwell.cyber_ware_port.init.ModRecipes.ASSEMBLY_TYPE.get() &&
+                                            assemblyRecipe.getResultItem(level.registryAccess()).is(targetItem))
+                                    .map(holder -> (AssemblyRecipe) holder.value())
+                                    .findFirst()
+                                    .ifPresent(recipe -> {
+                                        for (AssemblyRecipe.SizedIngredient req : recipe.getInputs()) {
+                                            req.ingredient().items().findFirst().ifPresent(holder -> {
+                                                ItemStack displayStack = new ItemStack(holder);
+                                                ingredientDisplays.add(new SyncWorkbenchRecipePacket.SizedIngredientDisplay(displayStack, req.count()));
+                                            });
+                                        }
+                                    });
+                        }
+                    }
+
+                    if (!currentInput.isEmpty()) {
+                        var engRecipeOpt = recipeManager.getRecipes().stream()
+                                .filter(holder -> holder.value() instanceof EngineeringRecipe engineeringRecipe &&
+                                        engineeringRecipe.getType() == com.maxwell.cyber_ware_port.init.ModRecipes.ENGINEERING_TYPE.get() &&
+                                        engineeringRecipe.matches(new net.minecraft.world.item.crafting.SingleRecipeInput(currentInput), level))
+                                .findFirst();
+                        if (engRecipeOpt.isPresent()) {
+                            deconstructChance = ((EngineeringRecipe) engRecipeOpt.get().value()).blueprintChance();
+                        }
+                    }
+                }
+
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(
+                        serverPlayer,
+                        new SyncWorkbenchRecipePacket(ingredientDisplays, deconstructChance)
+                );
+            }
+        }
     }
 }

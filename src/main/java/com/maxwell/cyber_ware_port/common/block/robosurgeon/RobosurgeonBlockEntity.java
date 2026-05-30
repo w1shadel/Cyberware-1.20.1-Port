@@ -66,7 +66,11 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     private final ContainerData data;
     private int progress = 0;
     private int maxProgress = 100;
-
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        this.drops();
+    }
     public RobosurgeonBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ROBO_SURGEON.get(), pPos, pBlockState);
         this.data = createContainerData();

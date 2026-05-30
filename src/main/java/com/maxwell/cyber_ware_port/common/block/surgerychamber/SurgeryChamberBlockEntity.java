@@ -24,7 +24,6 @@ public class SurgeryChamberBlockEntity extends BlockEntity {
     public SurgeryChamberBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.SURGERY_CHAMBER.get(), pPos, pBlockState);
     }
-
     public static void tick(Level level, BlockPos pos, BlockState state, SurgeryChamberBlockEntity entity) {
         entity.prevAnimationProgress = entity.animationProgress;
         boolean isOpen = state.getValue(SurgeryChamberBlock.OPEN);

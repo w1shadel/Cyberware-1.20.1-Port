@@ -86,7 +86,11 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
             };
         }
     };
-
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        this.drops();
+    }
     public CyberwareWorkbenchBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CYBERWARE_WORKBENCH.get(), pPos, pBlockState);
     }

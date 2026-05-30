@@ -22,5 +22,6 @@ public class A_PacketHandler {
         registrar.playToServer(DoubleJumpPacket.TYPE, DoubleJumpPacket.STREAM_CODEC, DoubleJumpPacket::handle);
         registrar.playToServer(ComponentChangePagePacket.TYPE, ComponentChangePagePacket.STREAM_CODEC, ComponentChangePagePacket::handle);
         registrar.playToServer(ComponentToggleExtendTabPacket.TYPE, ComponentToggleExtendTabPacket.STREAM_CODEC, ComponentToggleExtendTabPacket::handle);
+        registrar.playToClient(SyncWorkbenchRecipePacket.TYPE, SyncWorkbenchRecipePacket.STREAM_CODEC, ClientPacketHandler::handleSyncWorkbenchRecipe);
     }
 }

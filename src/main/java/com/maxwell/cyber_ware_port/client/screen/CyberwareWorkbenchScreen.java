@@ -9,6 +9,7 @@ import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.common.network.ComponentChangePagePacket;
 import com.maxwell.cyber_ware_port.common.network.ComponentToggleExtendTabPacket;
 import com.maxwell.cyber_ware_port.common.network.StartWorkbenchCraftingPacket;
+import com.maxwell.cyber_ware_port.common.network.SyncWorkbenchRecipePacket;
 import com.maxwell.cyber_ware_port.init.ModRecipes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -38,8 +39,6 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/engineering.png");
     private static final Identifier COMPONENT_BOX_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/component_box.png");
     private static final Identifier BLUEPRINT_PANEL_TEXTURE = Identifier.fromNamespaceAndPath(CyberWare.MODID, "textures/gui/blueprint_chest.png");
-    private ItemStack cachedBlueprint = ItemStack.EMPTY;
-    private List<AssemblyRecipe.SizedIngredient> cachedIngredients = null;
     private float slideProgress = 1.0f;
     private Button toggleButton, prevButton, nextButton, prevBlueprintBtn, nextBlueprintBtn;
 
@@ -48,6 +47,7 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
         this.titleLabelY = 6;
         this.inventoryLabelY = this.imageHeight - 94;
     }
+
 
     @Override
     protected void init() {
@@ -73,44 +73,30 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
                 ItemStack inputStack = menu.getSlot(CyberwareWorkbenchBlockEntity.INPUT_SLOT).getItem();
                 ItemStack blueprintStack = menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
                 ItemStack paperStack = menu.getSlot(CyberwareWorkbenchBlockEntity.PAPER_SLOT).getItem();
-                if (this.isHovered && !inputStack.isEmpty()) {
-                    graphics.fill(0, 0, this.width, this.height, 0x50FFFFFF);
+
+                if (this.isHovered && (!inputStack.isEmpty() || !blueprintStack.isEmpty())) {
+                    graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x50FFFFFF);
                 }
+
                 if (this.isHovered) {
                     List<Component> tooltip = new ArrayList<>();
                     if (!blueprintStack.isEmpty()) {
                         tooltip.add(Component.translatable("gui.cyber_ware_port.assemble").withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN));
                     } else if (!inputStack.isEmpty()) {
                         tooltip.add(Component.translatable("gui.cyber_ware_port.deconstruct").withStyle(ChatFormatting.BOLD, ChatFormatting.RED));
-                        if (minecraft != null && minecraft.level != null) {
-                            if (minecraft.level.recipeAccess() instanceof net.minecraft.world.item.crafting.RecipeManager recipeManager) {
-                                Optional<RecipeHolder<EngineeringRecipe>> recipeOpt = recipeManager.getRecipes().stream()
-                                        .filter(holder -> {
-                                            Recipe<?> recipe = holder.value();
-                                            return recipe instanceof EngineeringRecipe engineeringRecipe &&
-                                                    engineeringRecipe.getType() == ModRecipes.ENGINEERING_TYPE.get() &&
-                                                    engineeringRecipe.matches(new SingleRecipeInput(inputStack), minecraft.level);
-                                        })
-                                        .map(holder -> (RecipeHolder<EngineeringRecipe>) holder)
-                                        .findFirst();
-                                if (recipeOpt.isPresent()) {
-                                    float chance = paperStack.is(Items.PAPER) ? recipeOpt.get().value().blueprintChance() : 0.0f;
-                                    tooltip.add(Component.translatable("gui.cyber_ware_port.blueprint_chance", String.format("%.0f", chance * 100)).withStyle(ChatFormatting.GRAY));
-                                }
-                            }
-                        }
+
+                        float chance = paperStack.is(Items.PAPER) ? menu.syncedDeconstructChance : 0.0f;
+                        tooltip.add(Component.translatable("gui.cyber_ware_port.blueprint_chance", String.format("%.0f", chance * 100)).withStyle(ChatFormatting.GRAY));
                     }
                     if (!tooltip.isEmpty()) {
                         graphics.setTooltipForNextFrame(Minecraft.getInstance().font, tooltip, Optional.empty(), ItemStack.EMPTY, mouseX, mouseY);
                     }
                 }
             }
-
             @Override
             public void onClick(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
                 ClientPacketDistributor.sendToServer(new StartWorkbenchCraftingPacket());
             }
-
             @Override
             protected void updateWidgetNarration(NarrationElementOutput output) {
                 this.defaultButtonNarrationText(output);
@@ -154,39 +140,24 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
     private void renderBlueprintGhosts(GuiGraphicsExtractor graphics, int guiX, int guiY) {
         ItemStack currentBlueprint = this.menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
         if (currentBlueprint.isEmpty() || !(currentBlueprint.getItem() instanceof BlueprintItem)) {
-            cachedBlueprint = ItemStack.EMPTY;
-            cachedIngredients = null;
+            // リセット
+            this.menu.syncedIngredients = null;
             return;
         }
-        if (!ItemStack.isSameItemSameComponents(cachedBlueprint, currentBlueprint) || cachedIngredients == null) {
-            cachedBlueprint = currentBlueprint.copy();
-            Item targetItem = BlueprintItem.getTargetItem(currentBlueprint);
-            if (targetItem != null && this.minecraft != null && this.minecraft.level != null) {
-                if (this.minecraft.level.recipeAccess() instanceof net.minecraft.world.item.crafting.RecipeManager recipeManager) {
-                    this.cachedIngredients = recipeManager.getRecipes().stream()
-                            .filter(holder -> {
-                                Recipe<?> recipe = holder.value();
-                                return recipe instanceof AssemblyRecipe assemblyRecipe &&
-                                        assemblyRecipe.getType() == ModRecipes.ASSEMBLY_TYPE.get() &&
-                                        assemblyRecipe.getResultItem(this.minecraft.level.registryAccess()).is(targetItem);
-                            })
-                            .map(holder -> ((AssemblyRecipe) holder.value()).getInputs())
-                            .findFirst()
-                            .orElse(null);
-                }
-            }
-        }
-        if (cachedIngredients != null) {
-            for (int i = 0; i < Math.min(cachedIngredients.size(), 6); i++) {
-                AssemblyRecipe.SizedIngredient req = cachedIngredients.get(i);
-                var items = req.ingredient().items();
-                if (items.findAny().isEmpty()) continue;
-                ItemStack displayStack = new ItemStack(req.ingredient().items().findFirst().get());
+
+        // ★ コンテナメニュー側に保存されている同期データからゴーストを描画します
+        var ingredients = this.menu.syncedIngredients;
+        if (ingredients != null) {
+            for (int i = 0; i < Math.min(ingredients.size(), 6); i++) {
+                SyncWorkbenchRecipePacket.SizedIngredientDisplay req = ingredients.get(i);
+                ItemStack displayStack = req.item();
                 Slot targetSlot = this.menu.getSlot(3 + i);
                 int x = guiX + targetSlot.x;
                 int y = guiY + targetSlot.y;
                 ItemStack stackInSlot = targetSlot.getItem();
-                if (stackInSlot.isEmpty() || !req.ingredient().test(stackInSlot) || stackInSlot.getCount() < req.count()) {
+
+                boolean hasItem = !stackInSlot.isEmpty() && ItemStack.isSameItem(stackInSlot, displayStack) && stackInSlot.getCount() >= req.count();
+                if (!hasItem) {
                     graphics.item(displayStack, x, y);
                     graphics.nextStratum();
                     graphics.fill(x, y, x + 16, y + 16, 0x80000000);

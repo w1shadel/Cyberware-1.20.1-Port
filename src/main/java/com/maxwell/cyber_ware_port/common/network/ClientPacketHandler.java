@@ -1,7 +1,9 @@
 package com.maxwell.cyber_ware_port.common.network;
 
+import com.maxwell.cyber_ware_port.client.screen.CyberwareWorkbenchScreen;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
+import com.maxwell.cyber_ware_port.common.container.CyberwareWorkbenchMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -32,7 +34,14 @@ public class ClientPacketHandler {
             }
         });
     }
-
+    public static void handleSyncWorkbenchRecipe(final SyncWorkbenchRecipePacket payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.player.containerMenu instanceof CyberwareWorkbenchMenu menu) {
+                menu.setSyncedRecipeData(payload.ingredients(), payload.deconstructChance());
+            }
+        });
+    }
     public static void handleProgressPacket(SyncSurgeryProgressPacket msg, IPayloadContext ctx) {
         update(msg.progress(), msg.maxProgress());
     }

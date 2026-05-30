@@ -61,15 +61,6 @@ public class ScannerBlock extends HorizontalDirectionalBlock implements EntityBl
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof ScannerBlockEntity tile) {
-            tile.drops();
-        }
-        super.destroy(level, pos, state);
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
