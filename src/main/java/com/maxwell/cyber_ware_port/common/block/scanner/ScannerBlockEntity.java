@@ -6,6 +6,7 @@ import com.maxwell.cyber_ware_port.common.container.ScannerMenu;
 import com.maxwell.cyber_ware_port.common.item.BlueprintItem;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction; 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.transfer.ResourceHandler; 
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -41,6 +43,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
     public static final int MAX_PROGRESS = 2400;
     private static final int SLOT_COUNT = 3;
     protected final ContainerData data;
+
     private final ItemStacksResourceHandler itemHandler = new ItemStacksResourceHandler(SLOT_COUNT) {
         @Override
         protected void onContentsChanged(int index, ItemStack previousContents) {
@@ -63,11 +66,6 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             return super.insert(index, resource, amount, transaction);
         }
 
-        @Override
-        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            if (index != SLOT_OUTPUT) return 0;
-            return super.extract(index, resource, amount, transaction);
-        }
     };
     private int progress = 0;
     private boolean isWorking = false;
@@ -169,6 +167,7 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
             itemHandler.set(SLOT_OUTPUT, ItemResource.of(blueprint), blueprint.getCount());
         }
         if (event.shouldConsumeItem()) {
+
             try (Transaction tx = Transaction.openRoot()) {
                 itemHandler.extract(SLOT_PAPER, ItemResource.of(Items.PAPER), 1, tx);
                 itemHandler.extract(SLOT_INPUT, ItemResource.of(inputStack), 1, tx);
@@ -226,4 +225,69 @@ public class ScannerBlockEntity extends BlockEntity implements MenuProvider {
         return itemHandler;
     }
 
+    public ResourceHandler<ItemResource> getSidedHandler(@Nullable Direction side) {
+        if (side == null) return this.itemHandler;
+
+        if (side == Direction.UP) {
+
+            return new SidedResourceHandler(this.itemHandler, new int[]{SLOT_PAPER}, new int[]{});
+        }
+        if (side == Direction.DOWN) {
+
+            return new SidedResourceHandler(this.itemHandler, new int[]{}, new int[]{SLOT_OUTPUT});
+        }
+
+        return new SidedResourceHandler(this.itemHandler, new int[]{SLOT_INPUT}, new int[]{});
+    }
+
+    private class SidedResourceHandler implements ResourceHandler<ItemResource> {
+        private final ItemStacksResourceHandler parent;
+        private final int[] insertSlots;
+        private final int[] extractSlots;
+
+        public SidedResourceHandler(ItemStacksResourceHandler parent, int[] insertSlots, int[] extractSlots) {
+            this.parent = parent;
+            this.insertSlots = insertSlots;
+            this.extractSlots = extractSlots;
+        }
+
+        @Override
+        public int size() { return parent.size(); }
+        @Override
+        public ItemResource getResource(int index) { return parent.getResource(index); }
+        @Override
+        public long getAmountAsLong(int index) { return parent.getAmountAsLong(index); }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            if (!isSlotInArray(index, insertSlots) && !isSlotInArray(index, extractSlots)) return 0;
+            return parent.getCapacityAsLong(index, resource);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return parent.isValid(index, resource);
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            if (isSlotInArray(index, insertSlots)) {
+                return parent.insert(index, resource, amount, transaction);
+            }
+            return 0;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            if (isSlotInArray(index, extractSlots)) {
+                return parent.extract(index, resource, amount, transaction);
+            }
+            return 0;
+        }
+
+        private boolean isSlotInArray(int index, int[] slots) {
+            for (int s : slots) if (s == index) return true;
+            return false;
+        }
+    }
 }

@@ -369,7 +369,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
 
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
-        return super.getUpdateTag(pRegistries);
+        return this.saveWithoutMetadata(pRegistries);
     }
     public ResourceHandler<ItemResource> getSidedHandler(@Nullable Direction side) {
         if (side == null) return this.itemHandler;

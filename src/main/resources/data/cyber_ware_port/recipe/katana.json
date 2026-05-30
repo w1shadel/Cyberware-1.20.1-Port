@@ -6,9 +6,9 @@
     "S": "minecraft:stick"
   },
   "pattern": [
+    "  I",
     " I ",
-    " I ",
-    " S "
+    "S  "
   ],
   "result": {
     "id": "cyber_ware_port:katana"

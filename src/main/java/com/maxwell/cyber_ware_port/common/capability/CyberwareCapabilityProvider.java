@@ -2,6 +2,7 @@ package com.maxwell.cyber_ware_port.common.capability;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.cwb.CyberwareWorkbenchBlockEntity;
+import com.maxwell.cyber_ware_port.common.block.scanner.ScannerBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModBlockEntities;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,8 +38,11 @@ public class CyberwareCapabilityProvider {
                 net.minecraft.world.entity.EntityType.PLAYER,
                 (player, side) -> player.getData(CYBERWARE_DATA.get())
         );
-        event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.SCANNER.get(),
-                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.SCANNER.get(),
+                ScannerBlockEntity::getSidedHandler
+        );
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.ROBO_SURGEON.get(),
                 (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.COMPONENT_BOX.get(),
