@@ -41,9 +41,9 @@ public class BlueprintItem extends Item {
     public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         Item target = getTargetItem(pStack);
         if (target != null) {
-            pTooltipComponents.add(Component.literal("Schematic for: ").append(target.getDescription()));
+            pTooltipComponents.add(Component.translatable("cyberware.tooltip.blueprint.schematic_for", target.getDescription()));
         } else {
-            pTooltipComponents.add(Component.literal("Blank Schematic"));
+            pTooltipComponents.add(Component.translatable("cyberware.tooltip.blueprint.blank"));
         }
         super.appendHoverText(pStack, pContext, pTooltipComponents, pIsAdvanced);
     }
