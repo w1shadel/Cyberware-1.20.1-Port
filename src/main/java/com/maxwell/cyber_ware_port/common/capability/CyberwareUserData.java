@@ -12,6 +12,7 @@ import com.maxwell.cyber_ware_port.common.util.CyberwareBodyStatus;
 import com.maxwell.cyber_ware_port.config.CyberwareConfig;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -35,6 +37,7 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -272,9 +275,15 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         SyncCyberwareDataPacket packet = new SyncCyberwareDataPacket(tag, player.getId());
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, packet);
     }
-
     private void killPlayer(ServerPlayer player, String suffix) {
-        DamageSource source = player.level().damageSources().source(DamageTypes.FELL_OUT_OF_WORLD);
+        Holder<@NotNull DamageType> fellOutOfWorldHolder =
+                player.damageSources().fellOutOfWorld().typeHolder();
+        DamageSource source = new DamageSource(fellOutOfWorldHolder) {
+            @Override
+            public Component getLocalizedDeathMessage(LivingEntity entity) {
+                return Component.translatable("death.attack." + suffix, entity.getDisplayName());
+            }
+        };
         player.hurt(source, Float.MAX_VALUE);
     }
 
