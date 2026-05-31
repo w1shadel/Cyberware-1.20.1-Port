@@ -78,6 +78,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     public RobosurgeonScreen(RobosurgeonMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, GUI_WIDTH, TOP_HEIGHT + 91);
         this.titleLabelX = -1000;
+        this.inventoryLabelY = this.imageHeight - 94 + 2;
     }
 
     private static int[] slots(int start) {
