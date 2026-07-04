@@ -42,7 +42,8 @@ public class ModCyberwareEvents {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (!stack.isEmpty() && cw != null && cw.isActive(stack)) {
+
+            if (!stack.isEmpty() && cw != null && CyberwareUserData.isItemPowered(data, cw, stack)) {
                 action.accept(cw, stack);
             }
         }

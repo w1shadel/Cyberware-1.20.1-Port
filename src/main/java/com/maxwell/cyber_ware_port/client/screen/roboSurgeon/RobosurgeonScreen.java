@@ -391,7 +391,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             for (int i = 0; i < slotCount; i++) {
                 int slotX = uiX + (i * (SLOT_SIZE + SLOT_SPACING));
                 pGuiGraphics.blit(BLUE_SLOT_TEXTURE, slotX - 1, stagingY - 1, 0, 0, 18, 18, 18, 18);
-                pGuiGraphics.blit(RED_SLOT_TEXTURE, slotX - 1, installedY - 1, 0, 0, 18, 18, 18, 18);
+                pGuiGraphics.blit(RED_SLOT_TEXTURE, slotX - 1, installedY - 2, 0, 0, 18, 18, 18, 18);
             }
             RenderSystem.disableBlend();
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -399,16 +399,22 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 IItemHandler installed = cyberware.getInstalledCyberware();
                 for (int i = 0; i < slotCount; i++) {
                     int slotId = this.selectedMarker.relatedSlots()[i];
-                    int itemX = uiX + (i * (SLOT_SIZE + SLOT_SPACING)) + 1;
+
+                    int itemX = uiX + (i * (SLOT_SIZE + SLOT_SPACING));
+
                     if (slotId < installed.getSlots()) {
                         ItemStack installedStack = installed.getStackInSlot(slotId);
-                        pGuiGraphics.renderItem(installedStack, itemX, installedY + 1);
-                        pGuiGraphics.renderItemDecorations(this.font, installedStack, itemX, installedY + 1);
+
+                        pGuiGraphics.renderItem(installedStack, itemX, installedY - 1);
+                        pGuiGraphics.renderItemDecorations(this.font, installedStack, itemX, installedY - 1);
+
                         if (this.menu.getSlot(slotId).getItem().isEmpty() && !installedStack.isEmpty()) {
                             pGuiGraphics.pose().pushPose();
                             pGuiGraphics.pose().translate(0, 0, 150);
-                            pGuiGraphics.renderItem(installedStack, itemX, stagingY + 1);
-                            pGuiGraphics.fill(itemX, stagingY + 1, itemX + 16, stagingY + 17, 0x80000000);
+
+                            pGuiGraphics.renderItem(installedStack, itemX, stagingY );
+                            pGuiGraphics.fill(itemX, stagingY, itemX + 16, stagingY + 16, 0x80000000);
+
                             pGuiGraphics.pose().popPose();
                         }
                     }
@@ -426,28 +432,47 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         int y = this.topPos;
         g.blit(TEXTURE, x, y, 0, 0, GUI_WIDTH, TOP_HEIGHT);
         g.blit(TEXTURE, x, y + TOP_HEIGHT, 0, TEXTURE_INVENTORY_START_Y, GUI_WIDTH, BOTTOM_HEIGHT);
+
         int maxEssence = 100, currentEssence = 0;
+        CyberwareUserData data = null;
         if (this.minecraft.player != null) {
-            CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+            data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
             maxEssence = data.getMaxTolerance(this.minecraft.player);
             currentEssence = data.getTolerance(this.minecraft.player);
         }
-        int projectedCost = 0;
-        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
-            ItemStack stack = this.menu.getSlot(i).getItem();
-            ICyberware cw = CyberwareAPI.getCyberware(stack);
-            if (cw != null) projectedCost += cw.getEssenceCost(stack) * stack.getCount();
-        }
-        int projectedEssence = maxEssence - projectedCost;
+
         int barX = x + 5, barY = y + 4, barW = 8, barH = 48;
-        g.blit(TEXTURE, barX, barY, 211, 61, barW, barH);
-        drawEssenceBar(g, projectedEssence, maxEssence, barX, barY, barW, barH);
-        if (currentEssence > projectedEssence) {
-            float time = (System.currentTimeMillis() % 1000) / 1000f;
-            g.setColor(1f, 1f, 1f, 0.45f + 0.25f * (float) Math.sin(time * 2 * Math.PI));
-            drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
-            g.setColor(1f, 1f, 1f, 1f);
+
+
+        g.blit(TEXTURE, barX, barY, 211.0F, 61.0F, barW, barH, 256, 256);
+
+        if (data != null) {
+            int futureEssence = getProjectedFutureEssence(data);
+
+            if (futureEssence < currentEssence) {
+
+
+                float flash = 0.5f + 0.3f * (float) Math.sin((System.currentTimeMillis() % 1000) / 1000f * 2 * Math.PI);
+                g.setColor(1.0f, 0.6f, 0.0f, flash);
+                drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
+                g.setColor(1.0f, 1.0f, 1.0f, 1.0f); 
+
+                drawEssenceBar(g, futureEssence, maxEssence, barX, barY, barW, barH);
+            } else if (futureEssence > currentEssence) {
+
+
+                float flash = 0.5f + 0.3f * (float) Math.sin((System.currentTimeMillis() % 1000) / 1000f * 2 * Math.PI);
+                g.setColor(0.2f, 1.0f, 0.2f, flash);
+                drawEssenceBar(g, futureEssence, maxEssence, barX, barY, barW, barH);
+                g.setColor(1.0f, 1.0f, 1.0f, 1.0f); 
+
+                drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
+            } else {
+
+                drawEssenceBar(g, currentEssence, maxEssence, barX, barY, barW, barH);
+            }
         }
+
         float spd = 0.05f;
         currentScale += ((selectedPart == BodyPart.NONE ? BASE_SCALE : selectedPart.zoomScale) - currentScale) * spd;
         currentOffsetX += ((selectedPart == BodyPart.NONE ? 0 : selectedPart.zoomOffsetX) - currentOffsetX) * spd;
@@ -459,7 +484,14 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
         }
         long elapsed = System.currentTimeMillis() - startTime;
         float ease = (elapsed < ANIMATION_DURATION) ? (1f - (float) Math.pow(1f - Math.min(elapsed / ANIMATION_DURATION, 1f), 3)) : 1.0f;
-        float currentRotation = isDraggingModel ? this.viewRotation : ease * 360f;
+        float currentRotation;
+        if (elapsed < ANIMATION_DURATION) {
+            currentRotation = ease * 360f;
+            this.viewRotation = currentRotation;
+        } else {
+            currentRotation = this.viewRotation;
+        }
+
         if (this.internalPartsModel != null && this.selectedPart != BodyPart.ARM_LEFT && this.selectedPart != BodyPart.ARM_RIGHT && this.selectedPart != BodyPart.LEG_LEFT && this.selectedPart != BodyPart.LEG_RIGHT && this.selectedPart != BodyPart.HEAD && this.selectedPart != BodyPart.TORSO) {
             int subX = (this.selectedPart == BodyPart.INTERNAL) ? drawX - 48 : x + 40;
             int subY = (this.selectedPart == BodyPart.INTERNAL) ? drawY : y + TOP_HEIGHT - 21;
@@ -529,8 +561,11 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             int uiWidth = (SLOT_SIZE * targets.length) + (SLOT_SPACING * (targets.length - 1));
             int uiX = (this.width - uiWidth) / 2;
             for (int i = 0; i < targets.length; i++) {
-                if (targets[i] < this.menu.slots.size())
-                    setSlotPos(this.menu.slots.get(targets[i]), uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING)), 105);
+                if (targets[i] < this.menu.slots.size()) {
+                    int slotXVal = uiX - this.leftPos + (i * (SLOT_SIZE + SLOT_SPACING));
+                    int slotYVal = 105;
+                    setSlotPos(this.menu.slots.get(targets[i]), slotXVal, slotYVal);
+                }
             }
         }
     }
@@ -549,12 +584,15 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             if (!other.isEmpty()) {
                 ICyberware otherCw = CyberwareAPI.getCyberware(other);
                 if (otherCw != null && ((carriedCw.getBodyPartType(carried) != com.maxwell.cyber_ware_port.common.item.base.BodyPartType.NONE && carriedCw.getBodyPartType(carried) == otherCw.getBodyPartType(other)) || carriedCw.isIncompatible(carried, other) || otherCw.isIncompatible(other, carried))) {
-                    int x = uiX + (j * (SLOT_SIZE + SLOT_SPACING)), y = isStaging ? stagingY : installedY;
+
+                    int x = uiX + (j * (SLOT_SIZE + SLOT_SPACING)) - 1;
+                    int y = isStaging ? stagingY - 1 : installedY - 1;
+
                     g.pose().pushPose();
                     g.pose().translate(0, 0, 400);
                     g.fill(x, y, x + 18, y + 18, 0x80FF0000);
-                    g.renderOutline(x - 1, y - 1, 20, 20, 0xFFFF0000);
-                    g.drawString(this.font, "!", x + 6, y + 4, 0xFFFF0000, true);
+                    g.renderOutline(x, y, 18, 18, 0xFFFF0000);
+                    g.drawString(this.font, "!", x + 7, y + 5, 0xFFFF0000, true);
                     g.pose().popPose();
                 }
             }
@@ -562,10 +600,25 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     private void drawEssenceBar(GuiGraphics g, int essence, int maxEssence, int x, int y, int w, int h) {
+        // 修正：ブレンド機能を明示的に有効化
+        // これにより、赤・青のバーのアルファ透過（半透明）が有効になり、
+        // 背後にある背景の「水色・灰色」の縞模様が美しく透けて見えるようになります
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
         int danger = (int) (maxEssence * 0.25f);
-        int rH = (int) (h * ((float) Math.min(Math.max(0, essence), danger) / maxEssence)), bH = (int) (h * ((float) Math.max(0, essence - danger) / maxEssence));
-        if (rH > 0) g.blit(TEXTURE, x, y + (h - rH), w, rH, 220, 61 + (48 - rH), w, rH, 256, 256);
-        if (bH > 0) g.blit(TEXTURE, x, y + (h - rH - bH), w, bH, 176, 61 + (48 - (rH + bH)), w, bH, 256, 256);
+        int rH = (int) (h * ((float) Math.min(Math.max(0, essence), danger) / maxEssence));
+        int bH = (int) (h * ((float) Math.max(0, essence - danger) / maxEssence));
+
+        if (rH > 0) {
+            g.blit(TEXTURE, x, y + (h - rH), w, rH, 220, 61 + (48 - rH), w, rH, 256, 256);
+        }
+        if (bH > 0) {
+            g.blit(TEXTURE, x, y + (h - rH - bH), w, bH, 176, 61 + (48 - (rH + bH)), w, bH, 256, 256);
+        }
+
+        // 描画後はブレンド機能を無効化（他のGUIへの影響を防ぐため）
+        RenderSystem.disableBlend();
     }
 
     private enum BodyPart {
@@ -594,5 +647,36 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public record TargetMarker(Component name, float modelX, float modelY, float modelZ, int[] relatedSlots) {
+    }
+
+
+    private int getProjectedFutureEssence(CyberwareUserData data) {
+        if (this.minecraft == null || this.minecraft.player == null) return 100;
+        net.neoforged.neoforge.items.ItemStackHandler playerBody = data.getInstalledCyberware();
+        int futureCost = 0;
+
+        for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
+            ItemStack tableStack = this.menu.getSlot(i).getItem();
+            ItemStack finalStack;
+
+            if (tableStack.isEmpty()) {
+
+                finalStack = ItemStack.EMPTY;
+            } else if (tableStack.getOrDefault(CyberWare.GHOST_COMPONENT.get(), false)) {
+
+                finalStack = playerBody.getStackInSlot(i);
+            } else {
+
+                finalStack = tableStack;
+            }
+
+            ICyberware cw = CyberwareAPI.getCyberware(finalStack);
+            if (cw != null) {
+                futureCost += cw.getEssenceCost(finalStack) * finalStack.getCount();
+            }
+        }
+
+        int maxTolerance = data.getMaxTolerance(this.minecraft.player);
+        return Math.max(0, maxTolerance - futureCost);
     }
 }
