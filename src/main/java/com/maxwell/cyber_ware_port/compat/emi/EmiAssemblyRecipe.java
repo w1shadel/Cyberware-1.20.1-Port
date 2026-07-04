@@ -67,7 +67,6 @@ public class EmiAssemblyRecipe implements EmiRecipe {
     @Override
     public void addWidgets(WidgetHolder widgets) {
         widgets.addTexture(new EmiTexture(CyberwareEmiPlugin.GUI_TEXTURE, 0, 0, 176, 80), 0, 0);
-<<<<<<< HEAD
         int gridX = 71;
         int gridY = 17;
         for (int i = 0; i < Math.min(inputs.size(), 6); i++) {
@@ -75,16 +74,5 @@ public class EmiAssemblyRecipe implements EmiRecipe {
         }
         widgets.addSlot(blueprint, 115, 53).drawBack(false);
         widgets.addSlot(output, 141, 21).drawBack(false).recipeContext(this);
-=======
-
-        int gridX = 70;
-        int gridY = 16;
-        for (int i = 0; i < Math.min(inputs.size(), 6); i++) {
-            widgets.addSlot(inputs.get(i), gridX + (i % 2) * 18, gridY + (i / 2) * 18).drawBack(false);
-        }
-
-        widgets.addSlot(blueprint, 114, 52).drawBack(false);
-        widgets.addSlot(output, 140, 20).drawBack(false).recipeContext(this);
->>>>>>> 6854deb0e5f09efcbf6a1ac609d3f1759e819233
     }
 }
