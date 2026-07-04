@@ -56,7 +56,6 @@ public class DynamicCyberwareWrapper implements ICyberware {
         return data.attributeModifiers;
     }
 
-    // 修正：動的に取得した電力関連属性を適用
     @Override
     public boolean hasEnergyProperties(ItemStack stack) {
         return data.hasEnergyProperties;

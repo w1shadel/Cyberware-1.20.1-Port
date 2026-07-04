@@ -242,12 +242,10 @@ public class CyberwareHudOverlay {
         int height = 20;
         float[] floats = ClientCyberwareSettings.getColorFloats();
 
-        // 旧 g.setColor(...) 呼び出しを削除。fillメソッドの色引数に直接適用します。
         int outlineColor = ((int) (floats[3] * hudAlpha * 255) << 24) | (hudColor & 0xFFFFFF);
         int bLen = 5;
         int bThk = 1;
 
-        // L字フレーム
         g.fill(RenderPipelines.GUI, startX, slotY, startX + bLen, slotY + bThk, outlineColor);
         g.fill(RenderPipelines.GUI, startX, slotY, startX + bThk, slotY + bLen, outlineColor);
         g.fill(RenderPipelines.GUI, startX + width - bLen, slotY, startX + width, slotY + bThk, outlineColor);
@@ -276,7 +274,7 @@ public class CyberwareHudOverlay {
                 g.fill(RenderPipelines.GUI, startX + 5, lineY, startX + 21, lineY + 1, staticLineColor);
             }
         } else if (isToggledOff) {
-            // 修正：1.21.x のアイテム専用アトラス「minecraft:textures/atlas/items.png」を指定します
+
             net.minecraft.resources.Identifier atlasLoc = net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "textures/atlas/items.png");
             net.minecraft.resources.Identifier itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
             net.minecraft.resources.Identifier spriteLoc = net.minecraft.resources.Identifier.fromNamespaceAndPath(itemId.getNamespace(), "item/" + itemId.getPath());
@@ -285,11 +283,10 @@ public class CyberwareHudOverlay {
             net.minecraft.client.renderer.texture.TextureAtlasSprite sprite = g.getSprite(spriteId);
 
             if (sprite != null) {
-                // アイテムの形状（スプライト）に沿って、乗算（Multiply）で暗いグレーを上から重ねます
-                int darkenAlpha = (int) (140 * hudAlpha); // アルファ値（約55%）
-                int darkenColor = (darkenAlpha << 24) | 0x202020; // 乗算する暗いグレー
 
-                // スプライトを直接 blit し、背景の透明部分はそのままにアイテムの形状だけを綺麗に暗くします
+                int darkenAlpha = (int) (140 * hudAlpha); 
+                int darkenColor = (darkenAlpha << 24) | 0x202020; 
+
                 g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, startX + 5, slotY + 2, 16, 16, darkenColor);
             }
         }
@@ -341,7 +338,6 @@ public class CyberwareHudOverlay {
         int frameWidth = 13;
         int frameHeight = 25;
 
-        // 旧 g.setColor(...) 呼び出しを削除し、blit 時にカラーコードを受け渡します
         g.blit(
                 RenderPipelines.GUI_TEXTURED,
                 BATTERY_TEXTURE,

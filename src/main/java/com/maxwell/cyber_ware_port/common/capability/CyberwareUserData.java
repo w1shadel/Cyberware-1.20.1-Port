@@ -91,7 +91,6 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
     private int lastProduction = 0;
     private int lastConsumption = 0;
 
-    // 追加：EMP機能停止用のタイマー
     private int empTicks = 0;
 
     private final ItemStacksResourceHandler installedCyberware = new ItemStacksResourceHandler(RobosurgeonBlockEntity.TOTAL_SLOTS) {
@@ -107,7 +106,6 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         this.currentEnergy = 0;
     }
 
-    // 追加：ゲッター・セッター・義体の稼働状態チェックヘルパー
     public int getEmpTicks() {
         return this.empTicks;
     }
@@ -232,7 +230,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
     public void tick(ServerPlayer player) {
         if (this.toleranceImmunityTime > 0) this.toleranceImmunityTime--;
         if (this.respawnGracePeriod > 0) this.respawnGracePeriod--;
-        if (this.empTicks > 0) this.empTicks--; // EMPタイマーの減算
+        if (this.empTicks > 0) this.empTicks--; 
         if (this.needsCapacityUpdate) {
             recalculateCapacity(player);
             this.needsCapacityUpdate = false;
@@ -243,7 +241,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         for (int i = 0; i < installedCyberware.size(); i++) {
             ItemStack stack = getStack(i);
             ICyberware cyberware = CyberwareAPI.getCyberware(stack);
-            // 修正：電力が無い、またはEMP作動中の場合、義体のシステム動作を完全に休止させる
+
             if (cyberware != null && isItemPowered(this, cyberware, stack)) {
                 cyberware.onSystemTick(player, stack);
             }
@@ -313,7 +311,6 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         }
     }
 
-    // 修正：maxEnergy <= 0の際にも、システム停止（isPowered = false）へ正しく推移するようにバグを完全修正
     private void processPowerTick(ServerPlayer player) {
         int prod = 0, cons = 0;
         for (int i = 0; i < installedCyberware.size(); i++) {
@@ -340,7 +337,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
                 tx.commit();
             }
         } else {
-            // バッテリー未装備状態であれば、発電なし/消費なし、または発電量が消費電力量を直通でカバーできている場合のみ電力OKとする
+
             currentlyPowered = (cons == 0) || (prod >= cons);
         }
 
@@ -472,7 +469,6 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         output.putInt("LastProd", lastProduction);
         output.putInt("LastCons", lastConsumption);
 
-        // 追加セーブデータ
         output.putInt("EmpTicks", empTicks);
         output.putBoolean("IsPowered", isPowered);
     }
@@ -488,7 +484,6 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         this.lastProduction = input.getIntOr("LastProd", 0);
         this.lastConsumption = input.getIntOr("LastCons", 0);
 
-        // 追加ロードデータ
         this.empTicks = input.getIntOr("EmpTicks", 0);
         this.isPowered = input.getBooleanOr("IsPowered", true);
         updateBodyStatus();

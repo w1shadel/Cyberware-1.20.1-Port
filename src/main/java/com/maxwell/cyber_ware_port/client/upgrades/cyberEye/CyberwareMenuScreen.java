@@ -38,7 +38,6 @@ public class CyberwareMenuScreen extends Screen {
     private int dragOffsetX = 0;
     private int dragOffsetY = 0;
 
-    // バーのドラッグ位置情報
     private boolean isDraggingBar = false;
     private int dragBarOffsetX = 0;
     private int dragBarOffsetY = 0;
@@ -46,7 +45,6 @@ public class CyberwareMenuScreen extends Screen {
     private static final int HUD_WIDTH = 80;
     private static final int HUD_HEIGHT = 25;
 
-    // スリム化したバーのプレビュー時サイズ
     private static final int BAR_WIDTH = 26;
     private static final int BAR_HEIGHT = 210;
 
@@ -169,14 +167,12 @@ public class CyberwareMenuScreen extends Screen {
             double cos = Math.cos(angle);
             double sin = Math.sin(angle);
 
-            // 内側目盛り（内円から外へ）
             for (float r = innerRadius; r < innerRadius + notchLength; r += 1.0f) {
                 int x = centerX + (int) (r * cos);
                 int y = centerY + (int) (r * sin);
                 g.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, notchColor);
             }
 
-            // 外側目盛り（外円から内へ）
             for (float r = outerRadius - notchLength; r < outerRadius; r += 1.0f) {
                 int x = centerX + (int) (r * cos);
                 int y = centerY + (int) (r * sin);
@@ -185,36 +181,30 @@ public class CyberwareMenuScreen extends Screen {
         }
     }
 
-    // デジタル・レティクル（円環）全体を構成するメソッド
     private void drawRadialRing(GuiGraphicsExtractor g, int centerX, int centerY, float innerRadius, float outerRadius, int color) {
-        // 内円と外円を美しい点線（2ドットおき）で描画
+
         drawDottedCircle(g, centerX, centerY, innerRadius, color, 2);
         drawDottedCircle(g, centerX, centerY, outerRadius, color, 2);
 
-        // 背景のうっすらとしたSFグリッドサークル（8pxおき、8ドットおきの非常に粗い点線。超軽量ながらホログラム感が出ます）
         int bgColor = applyAlpha(color, 0.05f);
         for (float r = innerRadius + 8; r < outerRadius; r += 8.0f) {
             drawDottedCircle(g, centerX, centerY, r, bgColor, 8);
         }
 
-        // スタイリッシュな目盛り線（ノッチ）を描画
         drawRadialNotches(g, centerX, centerY, innerRadius, outerRadius, color);
     }
 
     private void renderRadialMenu(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
         int hudColor = ClientCyberwareSettings.hudColor;
 
-        // 1. 同心円状のSFデジタル・レティクルを描画
         drawRadialRing(g, centerX, centerY, INNER_RADIUS, OUTER_RADIUS, hudColor);
 
-        // 2. ホログラフィックな十字インジケータ（クロスヘア・ノッチ）の描画
         int notchLen = 15;
         g.fill(RenderPipelines.GUI, centerX - (int)OUTER_RADIUS, centerY, centerX - (int)OUTER_RADIUS + notchLen, centerY + 1, applyAlpha(hudColor, 0.35f));
         g.fill(RenderPipelines.GUI, centerX + (int)OUTER_RADIUS - notchLen, centerY, centerX + (int)OUTER_RADIUS, centerY + 1, applyAlpha(hudColor, 0.35f));
         g.fill(RenderPipelines.GUI, centerX, centerY - (int)OUTER_RADIUS, centerX + 1, centerY - (int)OUTER_RADIUS + notchLen, applyAlpha(hudColor, 0.35f));
         g.fill(RenderPipelines.GUI, centerX, centerY + (int)OUTER_RADIUS - notchLen, centerX + 1, centerY + (int)OUTER_RADIUS, applyAlpha(hudColor, 0.35f));
 
-        // 3. レティクルの中心コア・ドット
         g.fill(RenderPipelines.GUI, centerX - 1, centerY - 1, centerX + 2, centerY + 2, applyAlpha(hudColor, 0.5f));
 
         if (parts.isEmpty()) return;
@@ -225,7 +215,6 @@ public class CyberwareMenuScreen extends Screen {
             int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
             int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
 
-            // 修正：Capability データから最新の ItemStack をその場で取得し、リアルタイムに反映
             ItemStack currentStack = ItemStack.EMPTY;
             if (this.minecraft.player != null) {
                 CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
@@ -294,14 +283,12 @@ public class CyberwareMenuScreen extends Screen {
             float[] rgba = ClientCyberwareSettings.getColorFloats();
             int color = ARGB.color((int) (rgba[3] * 255), (int) (rgba[0] * 255), (int) (rgba[1] * 255), (int) (rgba[2] * 255));
 
-            // ------------------ 1. バッテリー ------------------
             g.outline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
             g.text(this.font, "BATTERY", hudX + (HUD_WIDTH - this.font.width("BATTERY")) / 2, hudY - 10, 0xFF00FF00, true);
             if (isDraggingHud || isInside(mouseX, mouseY, hudX, hudY, HUD_WIDTH, HUD_HEIGHT)) {
                 g.outline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
             }
 
-            // バッテリー専用リセット
             int batResetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
             int batResetBtnY = hudY + HUD_HEIGHT + 5;
             g.blit(RenderPipelines.GUI_TEXTURED, HUD_RESET_ICON, batResetBtnX, batResetBtnY, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE, color);
@@ -310,14 +297,12 @@ public class CyberwareMenuScreen extends Screen {
                 g.setTooltipForNextFrame(Component.literal("Reset Battery HUD"), mouseX, mouseY);
             }
 
-            // ------------------ 2. ステータスバー ------------------
             g.outline(barX - 1, barY - 1, BAR_WIDTH + 2, BAR_HEIGHT + 2, 0xFF00FF00);
             g.text(this.font, "STATUS BAR", barX + (BAR_WIDTH - this.font.width("STATUS BAR")) / 2, barY - 10, 0xFF00FF00, true);
             if (isDraggingBar || isInside(mouseX, mouseY, barX, barY, BAR_WIDTH, BAR_HEIGHT)) {
                 g.outline(barX - 1, barY - 1, BAR_WIDTH + 2, BAR_HEIGHT + 2, 0xFFFFFFFF);
             }
 
-            // ステータスバー専用リセット
             int barResetBtnX = barX + (BAR_WIDTH - BTN_SIZE) / 2;
             int barResetBtnY = barY + BAR_HEIGHT + 5;
             g.blit(RenderPipelines.GUI_TEXTURED, HUD_RESET_ICON, barResetBtnX, barResetBtnY, 0, 0, BTN_SIZE, BTN_SIZE, BTN_SIZE, BTN_SIZE, color);
@@ -326,7 +311,6 @@ public class CyberwareMenuScreen extends Screen {
                 g.setTooltipForNextFrame(Component.literal("Reset Status Bar"), mouseX, mouseY);
             }
 
-            // 方向選択ボタン
             int ltrBtnX = barResetBtnX - 20;
             int ltrBtnY = barResetBtnY;
             int rltBtnX = barResetBtnX + 20;
@@ -336,7 +320,6 @@ public class CyberwareMenuScreen extends Screen {
             boolean ltrSelected = ClientCyberwareSettings.slideDirection == 0;
             boolean rltSelected = ClientCyberwareSettings.slideDirection == 1;
 
-            // 左から右へのスライド設定 (→)
             g.fill(RenderPipelines.GUI, ltrBtnX, ltrBtnY, ltrBtnX + BTN_SIZE, ltrBtnY + BTN_SIZE, applyAlpha(0x40000000 | (hudColorInt & 0xFFFFFF), 1.0f));
             g.outline(ltrBtnX, ltrBtnY, BTN_SIZE, BTN_SIZE, ltrSelected ? 0xFFFFFFFF : (0x60000000 | (hudColorInt & 0xFFFFFF)));
             g.text(this.font, "→", ltrBtnX + 4, ltrBtnY + 4, ltrSelected ? 0xFFFFFFFF : 0xFFAAAAAA, false);
@@ -345,7 +328,6 @@ public class CyberwareMenuScreen extends Screen {
                 g.setTooltipForNextFrame(Component.literal("Slide: Left to Right"), mouseX, mouseY);
             }
 
-            // 右から左へのスライド設定 (←)
             g.fill(RenderPipelines.GUI, rltBtnX, rltBtnY, rltBtnX + BTN_SIZE, rltBtnY + BTN_SIZE, applyAlpha(0x40000000 | (hudColorInt & 0xFFFFFF), 1.0f));
             g.outline(rltBtnX, rltBtnY, BTN_SIZE, BTN_SIZE, rltSelected ? 0xFFFFFFFF : (0x60000000 | (hudColorInt & 0xFFFFFF)));
             g.text(this.font, "←", rltBtnX + 4, rltBtnY + 4, rltSelected ? 0xFFFFFFFF : 0xFFAAAAAA, false);
@@ -413,7 +395,6 @@ public class CyberwareMenuScreen extends Screen {
                 int rltBtnX = barResetBtnX + 20;
                 int rltBtnY = barResetBtnY;
 
-                // 1. バッテリーリセット
                 if (isInside(mouseX, mouseY, batResetBtnX, batResetBtnY, BTN_SIZE, BTN_SIZE)) {
                     ClientCyberwareSettings.hudX = 10;
                     ClientCyberwareSettings.hudY = 10;
@@ -421,7 +402,6 @@ public class CyberwareMenuScreen extends Screen {
                     return true;
                 }
 
-                // 2. ステータスバーリセット
                 if (isInside(mouseX, mouseY, barResetBtnX, barResetBtnY, BTN_SIZE, BTN_SIZE)) {
                     ClientCyberwareSettings.barX = 10;
                     ClientCyberwareSettings.barY = 40;
@@ -429,21 +409,18 @@ public class CyberwareMenuScreen extends Screen {
                     return true;
                 }
 
-                // 3. 左から右スライド判定 (→)
                 if (isInside(mouseX, mouseY, ltrBtnX, ltrBtnY, BTN_SIZE, BTN_SIZE)) {
                     ClientCyberwareSettings.slideDirection = 0;
                     playClickSound();
                     return true;
                 }
 
-                // 4. 右から左スライド判定 (←)
                 if (isInside(mouseX, mouseY, rltBtnX, rltBtnY, BTN_SIZE, BTN_SIZE)) {
                     ClientCyberwareSettings.slideDirection = 1;
                     playClickSound();
                     return true;
                 }
 
-                // バッテリードラッグ
                 if (isInside(mouseX, mouseY, hudX, hudY, HUD_WIDTH, HUD_HEIGHT)) {
                     isDraggingHud = true;
                     dragOffsetX = (int) mouseX - hudX;
@@ -451,7 +428,6 @@ public class CyberwareMenuScreen extends Screen {
                     return true;
                 }
 
-                // 非稼働ステータスバードラッグ
                 if (isInside(mouseX, mouseY, barX, barY, BAR_WIDTH, BAR_HEIGHT)) {
                     isDraggingBar = true;
                     dragBarOffsetX = (int) mouseX - barX;

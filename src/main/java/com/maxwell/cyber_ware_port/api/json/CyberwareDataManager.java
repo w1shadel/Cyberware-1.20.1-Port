@@ -82,7 +82,6 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                         data.stackingRule = ICyberware.StackingRule.valueOf(ruleStr);
                     }
 
-                    // 追加：エネルギーシステム（電力）関連パラメーターのパース
                     if (json.has("has_energy")) {
                         data.hasEnergyProperties = json.get("has_energy").getAsBoolean();
                     } else if (json.has("energy_consumption") || json.has("energy_generation") || json.has("energy_storage")) {

@@ -140,12 +140,11 @@ public class CyberwareWorkbenchScreen extends AbstractContainerScreen<CyberwareW
     private void renderBlueprintGhosts(GuiGraphicsExtractor graphics, int guiX, int guiY) {
         ItemStack currentBlueprint = this.menu.getSlot(CyberwareWorkbenchBlockEntity.BLUEPRINT_SLOT).getItem();
         if (currentBlueprint.isEmpty() || !(currentBlueprint.getItem() instanceof BlueprintItem)) {
-            // リセット
+
             this.menu.syncedIngredients = null;
             return;
         }
 
-        // ★ コンテナメニュー側に保存されている同期データからゴーストを描画します
         var ingredients = this.menu.syncedIngredients;
         if (ingredients != null) {
             for (int i = 0; i < Math.min(ingredients.size(), 6); i++) {

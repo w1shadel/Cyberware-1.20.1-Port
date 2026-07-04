@@ -20,7 +20,6 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 @EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class EyeWareEvents {
 
-    // 電力を消費しないパッシブ機能が正しく動作するよう、電力判定を適正化
     private static boolean isFeatureActive(Player player, Item item) {
         CyberwareUserData data = player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
         if (data == null) return false;
@@ -32,11 +31,10 @@ public class EyeWareEvents {
                 if (cw != null) {
                     if (!cw.isActive(stack)) return false;
 
-                    // 電力を消費するアイテムの場合のみ、電力の有無をチェック
                     if (cw.hasEnergyProperties(stack) && cw.getEnergyConsumption(stack) > 0) {
                         return data.isPowered();
                     }
-                    return true; // 電力不要なアップグレードは常に動作可能
+                    return true; 
                 }
             }
         }
@@ -54,16 +52,15 @@ public class EyeWareEvents {
         }
     }
 
-    // イベントを ViewportEvent.ComputeFov に変更し、カメラの視野角を強制上書き
     @SubscribeEvent
     public static void onComputeFov(ViewportEvent.ComputeFov event) {
         Player player = Minecraft.getInstance().player;
         if (player != null && isFeatureActive(player, ModItems.DISTANCE_ENHANCER.get())) {
-            // スニーク（しゃがみ：Shiftキー）している間だけ、視野角を狭めてズーム
+
             if (player.isCrouching()) {
-                // デフォルトの視野角（FOV）を 0.3f 倍（約3.3倍望遠）に設定します
-                float originalFov = event.getFOV(); // float型 且つ 大文字の getFOV()
-                event.setFOV(originalFov * 0.3f);   // float型 且つ 大文字の setFOV()
+
+                float originalFov = event.getFOV(); 
+                event.setFOV(originalFov * 0.3f);   
             }
         }
     }

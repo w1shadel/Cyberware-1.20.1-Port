@@ -58,9 +58,7 @@ public class ModModelProvider extends ModelProvider {
         }
     }
 
-    /**
-     * そのアイテムがスカベンジバリアントを持つべきか判定する
-     */
+    
     private boolean isScavengedItem(Item item, String name) {
 
         return !(item instanceof BlockItem)
@@ -69,10 +67,7 @@ public class ModModelProvider extends ModelProvider {
                 && !name.contains("blueprint");
     }
 
-    /**
-     * 通常モデル・スカベンジモデルを生成し、
-     * items/ フォルダ内に「cyber_ware_port:is_scavenged」による分岐JSONを出力する
-     */
+    
     private void generateScavengedItem(ItemModelGenerators generators, Item item) {
 
 
