@@ -1,4 +1,4 @@
-package com.maxwell.cyber_ware_port.client.upgrades.cyberEye;
+package com.maxwell.cyber_ware_port.client.upgrades.cybereye;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
@@ -22,8 +22,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareHudOverlay {
-    private static final ResourceLocation BATTERY_TEXTURE =
-            new ResourceLocation(CyberWare.MODID, "textures/gui/battery_hud.png");
+    private static final ResourceLocation BATTERY_TEXTURE = new ResourceLocation(CyberWare.MODID, "textures/gui/battery_hud.png");
 
     @SubscribeEvent
     public static void onRenderGui(RenderGuiOverlayEvent.Post event) {

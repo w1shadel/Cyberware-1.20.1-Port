@@ -40,7 +40,6 @@ public class CyberwareEmiPlugin implements EmiPlugin {
 
         RecipeManager rm = registry.getRecipeManager();
 
-        // 1.20.1 では RecipeHolder を介さず直接レシピを取得します
         for (AssemblyRecipe recipe : rm.getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get())) {
             registry.addRecipe(new EmiAssemblyRecipe(recipe));
         }

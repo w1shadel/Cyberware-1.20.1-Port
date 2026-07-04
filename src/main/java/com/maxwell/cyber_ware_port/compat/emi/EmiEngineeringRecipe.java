@@ -80,6 +80,7 @@ public class EmiEngineeringRecipe implements EmiRecipe {
         int gridX = 70;
         int gridY = 16;
         for (int i = 0; i < Math.min(outputs.size(), 6); i++) {
+
             float chance = recipe.getOutputs().get(i).chance() * 100;
             widgets.addSlot(outputs.get(i), gridX + (i % 2) * 18, gridY + (i / 2) * 18).drawBack(false)
                     .appendTooltip(Component.literal(String.format("%.0f%% Chance", chance)).withStyle(ChatFormatting.YELLOW));

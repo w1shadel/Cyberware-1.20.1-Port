@@ -29,7 +29,6 @@ public class EmiAssemblyRecipe implements EmiRecipe {
             this.inputs.add(EmiIngredient.of(input.ingredient(), input.count()));
         }
 
-        // 1.20.1 の getResultItem 呼び出し
         ItemStack result = recipe.getResultItem(Minecraft.getInstance().level.registryAccess());
         this.output = EmiStack.of(result);
         this.blueprint = EmiStack.of(BlueprintItem.createBlueprintFor(result.getItem()));

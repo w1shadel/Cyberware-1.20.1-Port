@@ -24,7 +24,6 @@ public class CyberwareBodyStatus {
 
             ICyberware cw = CyberwareAPI.getCyberware(stack);
 
-            // Collect BodyPartType
             if (cw != null) {
                 BodyPartType type = cw.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
@@ -32,7 +31,6 @@ public class CyberwareBodyStatus {
                 }
             }
 
-            // Count Limbs
             if (isArm(stack, cw)) {
                 armCount++;
             } else if (isLeg(stack, cw)) {

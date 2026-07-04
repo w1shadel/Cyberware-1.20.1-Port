@@ -178,7 +178,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                 serverPlayer.hurt(level.damageSources().magic(), 1.0f);
                 level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
 
-                // もっと機械的な音を追加
                 if (entity.progress % 40 == 0) {
                     level.playSound(null, pos, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.3F, 1.5F);
                     if (entity.progress % 80 == 0) {

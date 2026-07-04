@@ -2,7 +2,7 @@ package com.maxwell.cyber_ware_port.client;
 
 import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
-import com.maxwell.cyber_ware_port.client.upgrades.cyberEye.CyberwareMenuScreen;
+import com.maxwell.cyber_ware_port.client.upgrades.cybereye.CyberwareMenuScreen;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
