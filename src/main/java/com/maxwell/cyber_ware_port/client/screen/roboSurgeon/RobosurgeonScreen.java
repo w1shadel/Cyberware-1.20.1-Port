@@ -600,9 +600,9 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     private void drawEssenceBar(GuiGraphics g, int essence, int maxEssence, int x, int y, int w, int h) {
-        // 修正：ブレンド機能を明示的に有効化
-        // これにより、赤・青のバーのアルファ透過（半透明）が有効になり、
-        // 背後にある背景の「水色・灰色」の縞模様が美しく透けて見えるようになります
+
+
+
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
@@ -617,7 +617,6 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
             g.blit(TEXTURE, x, y + (h - rH - bH), w, bH, 176, 61 + (48 - (rH + bH)), w, bH, 256, 256);
         }
 
-        // 描画後はブレンド機能を無効化（他のGUIへの影響を防ぐため）
         RenderSystem.disableBlend();
     }
 

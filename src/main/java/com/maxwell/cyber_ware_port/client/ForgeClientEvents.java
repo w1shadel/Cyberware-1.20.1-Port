@@ -203,8 +203,8 @@ public class ForgeClientEvents {
     }
 
     private static boolean hasSkinUpgrade(CyberwareUserData data) {
-        // バグ修正：合成皮膚（SYNTHETIC_SKIN）がインストールされているかを直接チェックします
-        // これにより、合成皮膚装着時にバニラの腕や足が非表示化されて消えてしまうバグを解決します
+
+
         if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) {
             return true;
         }

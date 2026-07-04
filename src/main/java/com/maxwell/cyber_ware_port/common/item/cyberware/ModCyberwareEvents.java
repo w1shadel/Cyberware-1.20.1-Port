@@ -143,5 +143,7 @@ public class ModCyberwareEvents {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
+
+        com.maxwell.cyber_ware_port.common.command.CyberwareCommands.register(event.getDispatcher());
     }
 }
