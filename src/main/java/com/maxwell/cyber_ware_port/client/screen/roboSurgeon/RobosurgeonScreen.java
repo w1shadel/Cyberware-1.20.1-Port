@@ -521,6 +521,8 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 new TargetMarker(Component.literal("Brain"), -0.13f, 19.56f, 1.52f, slots(RobosurgeonBlockEntity.SLOT_BRAIN)))),
         TORSO(0, -54, 0, 24, 32, 0, 20, 120f, List.of(
                 new TargetMarker(Component.literal("Heart"), 0f, 12f, -0.5f, slots(RobosurgeonBlockEntity.SLOT_HEART)),
+                new TargetMarker(Component.literal("Left Lungs"), 2.3f, 10f, 0.5f, slots(RobosurgeonBlockEntity.SLOT_LUNGS)),
+                new TargetMarker(Component.literal("Right Lungs"), -2.3f, 10f, 0.5f, slots(RobosurgeonBlockEntity.SLOT_LUNGS)),
                 new TargetMarker(Component.literal("Stomach"), 0.0f, 6f, -1.5f, slots(RobosurgeonBlockEntity.SLOT_STOMACH)))),
         ARM_LEFT(25, -54, 0, 20, 34, 60, 30, 120f, List.of(
                 new TargetMarker(Component.literal("Left Arm"), 5.5f, 14.0f, 0, slots(RobosurgeonBlockEntity.SLOT_ARMS)),
