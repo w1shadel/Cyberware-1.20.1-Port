@@ -348,6 +348,10 @@ public class CyberWitherBoss extends Monster implements RangedAttackMob, ICyberw
                         data.extract(5000, tx);
                         tx.commit();
                     }
+
+                    data.setEmpTicks(200);
+                    data.syncToClient(serverPlayer);
+
                     serverPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
                     serverPlayer.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 200, 0));
                     serverPlayer.sendSystemMessage(Component.literal("§cWARNING: EMP SURGE DETECTED - SYSTEMS OFFLINE"));

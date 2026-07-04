@@ -21,6 +21,12 @@ public class CyberwareData {
     public Set<Item> incompatibleItems = new HashSet<>();
     public Set<Item> prerequisites = new HashSet<>();
 
+    // 追加：エネルギーシステム対応用のフィールド
+    public boolean hasEnergyProperties = false;
+    public int energyConsumption = 0;
+    public int energyGeneration = 0;
+    public int energyStorage = 0;
+
     public CyberwareData() {
     }
 }

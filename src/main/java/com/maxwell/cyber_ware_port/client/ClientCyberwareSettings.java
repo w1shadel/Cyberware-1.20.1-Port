@@ -3,6 +3,14 @@ package com.maxwell.cyber_ware_port.client;
 public class ClientCyberwareSettings {
     public static int hudX = 10;
     public static int hudY = 10;
+
+    // 追加：縦型コンパクトステータスバーの独立座標
+    public static int barX = 10;
+    public static int barY = 40;
+
+    // 追加：スライド方向フラグ（0 = 左から右, 1 = 右から左）
+    public static int slideDirection = 0;
+
     public static int hudColor = 0xFF00FFFF;
 
     public static void setHudColorFromHex(String hex) {

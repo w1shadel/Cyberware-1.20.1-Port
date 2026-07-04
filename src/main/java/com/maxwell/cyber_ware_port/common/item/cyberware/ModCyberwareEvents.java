@@ -52,7 +52,8 @@ public class ModCyberwareEvents {
             ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
             if (!stack.isEmpty()) {
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
-                if (cw != null && cw.isActive(stack)) {
+
+                if (cw != null && com.maxwell.cyber_ware_port.common.capability.CyberwareUserData.isItemPowered(data, cw, stack)) {
                     action.accept(cw, stack);
                 }
             }
