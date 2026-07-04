@@ -4,8 +4,6 @@ import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.block.radio.RadioKitBlock;
 import com.maxwell.cyber_ware_port.common.block.radio.tower.RadioTowerCoreBlock;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
-import com.maxwell.cyber_ware_port.config.CyberwareConfig;
-import com.maxwell.cyber_ware_port.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +26,7 @@ public class MobSpawnerEvents {
     private static final double RADIO_KIT_BOOST = 0.3;
     private static final double RADIO_TOWER_BOOST = 0.15;
     private static final long ACTIVE_TIMEOUT = 420;
+    private static final double PLAYER_BEACON_BOOST = 0.25;
 
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinLevelEvent event) {
@@ -48,8 +47,6 @@ public class MobSpawnerEvents {
             tryReplaceMob(event, level, vanillaMob, mobData.replaceWith, mobData.chance + bonusChance);
         }
     }
-
-    private static final double PLAYER_BEACON_BOOST = 0.25;
 
     private static double calculateBonusChance(ServerLevel level, BlockPos spawnPos) {
         double bonus = 0.0;
@@ -78,7 +75,7 @@ public class MobSpawnerEvents {
     }
 
     private static boolean isActive(Map<ResourceKey<Level>, Long> timeMap, ResourceKey<Level> dimKey,
-            long currentTime) {
+                                    long currentTime) {
         Long lastActive = timeMap.get(dimKey);
         if (lastActive == null)
             return false;
@@ -86,7 +83,7 @@ public class MobSpawnerEvents {
     }
 
     private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original,
-            EntityType<?> newType, double chance) {
+                                      EntityType<?> newType, double chance) {
         if (level.getRandom().nextFloat() < chance) {
             Mob customMob = (Mob) newType.create(level);
             if (customMob != null) {

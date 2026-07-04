@@ -87,7 +87,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public static void renderEntityWithRotation(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw,
-            LivingEntity pEntity) {
+                                                LivingEntity pEntity) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
@@ -141,7 +141,7 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
     }
 
     public static void renderCustomModel(GuiGraphics pGuiGraphics, int pX, int pY, int pScale, float rotationYaw,
-            Model pModel, ResourceLocation texture) {
+                                         Model pModel, ResourceLocation texture) {
         pGuiGraphics.pose().pushPose();
         pGuiGraphics.pose().translate((float) pX, (float) pY, 50.0F);
         pGuiGraphics.pose().mulPoseMatrix((new Matrix4f()).scaling((float) pScale, (float) pScale, (float) (-pScale)));
@@ -874,14 +874,13 @@ public class RobosurgeonScreen extends AbstractContainerScreen<RobosurgeonMenu> 
                 new TargetMarker(Component.literal("Bone"), 3.0f, 20.8f, -5.5f,
                         slots(RobosurgeonBlockEntity.SLOT_BONES)))),
         NONE(0, 0, 0, 0, 0, 0, 45f, List.of());
-
         final int hitX, hitY, hitW, hitH;
         final int zoomOffsetX, zoomOffsetY;
         final float zoomScale;
         final List<TargetMarker> markers;
 
         BodyPart(int hitX, int hitY, int hitW, int hitH, int zoomOffsetX, int zoomOffsetY, float zoomScale,
-                List<TargetMarker> markers) {
+                 List<TargetMarker> markers) {
             this.hitX = hitX;
             this.hitY = hitY;
             this.hitW = hitW;

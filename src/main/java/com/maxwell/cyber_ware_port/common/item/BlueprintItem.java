@@ -9,7 +9,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @SuppressWarnings("removal")
@@ -37,6 +36,7 @@ public class BlueprintItem extends Item {
         return null;
 
     }
+
     @Override
     public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         Item target = getTargetItem(pStack);

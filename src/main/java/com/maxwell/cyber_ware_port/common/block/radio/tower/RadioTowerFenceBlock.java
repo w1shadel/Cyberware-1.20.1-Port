@@ -34,8 +34,8 @@ public class RadioTowerFenceBlock extends FenceBlock {
 
     @Override
     public net.minecraft.world.phys.shapes.VoxelShape getCollisionShape(BlockState pState,
-            net.minecraft.world.level.BlockGetter pLevel, BlockPos pPos,
-            net.minecraft.world.phys.shapes.CollisionContext pContext) {
+                                                                        net.minecraft.world.level.BlockGetter pLevel, BlockPos pPos,
+                                                                        net.minecraft.world.phys.shapes.CollisionContext pContext) {
         return this.getShape(pState, pLevel, pPos, pContext);
     }
 

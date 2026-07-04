@@ -23,13 +23,10 @@ public class DoubleJumpPacket {
             ServerPlayer player = ctx.get().getSender();
             if (player != null) {
                 player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
-
-
-
                     if (data.isCyberwareActive(ModItems.LINEAR_ACTUATORS.get())
                             && !player.getPersistentData().getBoolean("cyberware_double_jumped")) {
                         LinearActuatorsItem.performDoubleJump(player);
-                        player.hurtMarked = true; 
+                        player.hurtMarked = true;
                     }
                 });
 

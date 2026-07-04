@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Map<Item, ICyberware> DYNAMIC_CYBERWARE = new HashMap<>();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public String abilityId = "";
 
     public CyberwareDataManager() {
@@ -59,6 +59,20 @@ public class CyberwareDataManager extends SimpleJsonResourceReloadListener {
                     if (json.has("stacking")) {
                         String ruleStr = json.get("stacking").getAsString().toUpperCase();
                         data.stackingRule = ICyberware.StackingRule.valueOf(ruleStr);
+                    }
+                    if (json.has("has_energy")) {
+                        data.hasEnergyProperties = json.get("has_energy").getAsBoolean();
+                    } else if (json.has("energy_consumption") || json.has("energy_generation") || json.has("energy_storage")) {
+                        data.hasEnergyProperties = true;
+                    }
+                    if (json.has("energy_consumption")) {
+                        data.energyConsumption = json.get("energy_consumption").getAsInt();
+                    }
+                    if (json.has("energy_generation")) {
+                        data.energyGeneration = json.get("energy_generation").getAsInt();
+                    }
+                    if (json.has("energy_storage")) {
+                        data.energyStorage = json.get("energy_storage").getAsInt();
                     }
                     DYNAMIC_CYBERWARE.put(item, new DynamicCyberwareWrapper(data));
                 }

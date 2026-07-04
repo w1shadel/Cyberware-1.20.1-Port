@@ -368,14 +368,14 @@ public class CyberWitherBoss extends Monster implements PowerableMob, RangedAtta
                     int currentEnergy = data.getEnergyStored();
                     if (currentEnergy > 0) {
                         data.extractEnergy(5000, false);
+                        data.setEmpTicks(200);
+                        data.syncToClient(serverPlayer);
                         serverPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0));
                         serverPlayer.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
                         serverPlayer.sendSystemMessage(Component.literal("§cWARNING: EMP SURGE DETECTED - SYSTEMS OFFLINE"));
-
                     }
                 });
                 hitAny = true;
-
             }
         }
         if (hitAny) {

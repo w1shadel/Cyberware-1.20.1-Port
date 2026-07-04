@@ -24,11 +24,9 @@ public class EmiAssemblyRecipe implements EmiRecipe {
     public EmiAssemblyRecipe(AssemblyRecipe recipe) {
         this.recipe = recipe;
         this.inputs = new ArrayList<>();
-
         for (AssemblyRecipe.SizedIngredient input : recipe.getInputs()) {
             this.inputs.add(EmiIngredient.of(input.ingredient(), input.count()));
         }
-
         ItemStack result = recipe.getResultItem(Minecraft.getInstance().level.registryAccess());
         this.output = EmiStack.of(result);
         this.blueprint = EmiStack.of(BlueprintItem.createBlueprintFor(result.getItem()));
@@ -69,13 +67,11 @@ public class EmiAssemblyRecipe implements EmiRecipe {
     @Override
     public void addWidgets(WidgetHolder widgets) {
         widgets.addTexture(new EmiTexture(CyberwareEmiPlugin.GUI_TEXTURE, 0, 0, 176, 80), 0, 0);
-
         int gridX = 71;
         int gridY = 17;
         for (int i = 0; i < Math.min(inputs.size(), 6); i++) {
             widgets.addSlot(inputs.get(i), gridX + (i % 2) * 18, gridY + (i / 2) * 18).drawBack(false);
         }
-
         widgets.addSlot(blueprint, 115, 53).drawBack(false);
         widgets.addSlot(output, 141, 21).drawBack(false).recipeContext(this);
     }

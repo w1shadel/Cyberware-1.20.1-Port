@@ -6,7 +6,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -40,8 +39,8 @@ public class ModStructures {
     }
 
     private static Structure.StructureSettings structure(net.minecraft.core.HolderSet<Biome> biomes,
-            Map<net.minecraft.world.entity.MobCategory, net.minecraft.world.level.levelgen.structure.StructureSpawnOverride> spawnOverrides,
-            GenerationStep.Decoration step, TerrainAdjustment terrainAdjustment) {
+                                                         Map<net.minecraft.world.entity.MobCategory, net.minecraft.world.level.levelgen.structure.StructureSpawnOverride> spawnOverrides,
+                                                         GenerationStep.Decoration step, TerrainAdjustment terrainAdjustment) {
         return new Structure.StructureSettings(biomes, spawnOverrides, step, terrainAdjustment);
     }
 

@@ -31,7 +31,6 @@ public class JeiCyberwarePlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         RecipeManager rm = Minecraft.getInstance().level.getRecipeManager();
-
         registration.addRecipes(AssemblyRecipeCategory.RECIPE_TYPE, rm.getAllRecipesFor(ModRecipes.ASSEMBLY_TYPE.get()));
         registration.addRecipes(EngineeringRecipeCategory.RECIPE_TYPE, rm.getAllRecipesFor(ModRecipes.ENGINEERING_TYPE.get()));
     }

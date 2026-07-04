@@ -38,22 +38,27 @@ public class CyberwareMenuScreen extends Screen {
     private static final float INNER_RADIUS = 40.0f;
     private static final float OUTER_RADIUS = 100.0f;
     private static final float ITEM_RADIUS = (INNER_RADIUS + OUTER_RADIUS) / 2.0f;
-    private final List<ToggleablePart> parts = new ArrayList<>();
-    private boolean isHudMoveMode = false;
-    private boolean isDraggingHud = false;
-    private int dragOffsetX = 0;
-    private int dragOffsetY = 0;
     private static final int HUD_WIDTH = 80;
     private static final int HUD_HEIGHT = 25;
-    private static final int POS_BTN_X = 338;
-    private static final int POS_BTN_Y = 63;
+    private static final int BAR_WIDTH = 26;
+    private static final int BAR_HEIGHT = 210;
     private static final int BTN_SIZE = 16;
-    public boolean isColorSettingsOpen = false;
-    private EditBox hexInput;
     private static final int[] PRESET_COLORS = {
             0xFF00FFFF, 0xFF00FF00, 0xFFFF0000, 0xFFFFFF00,
             0xFFFFFFFF, 0xFFFF00FF, 0xFF0000FF, 0xFFFF8000
     };
+    private final List<ToggleablePart> parts = new ArrayList<>();
+    public boolean isHudMoveMode = false;
+    public boolean isColorSettingsOpen = false;
+    private boolean isDraggingHud = false;
+    private int dragOffsetX = 0;
+    private int dragOffsetY = 0;
+    private boolean isDraggingBar = false;
+    private int dragBarOffsetX = 0;
+    private int dragBarOffsetY = 0;
+    private int btnX;
+    private int btnY;
+    private EditBox hexInput;
 
     public CyberwareMenuScreen() {
         super(Component.translatable("gui.cyber_ware_port.menu"));
@@ -63,6 +68,10 @@ public class CyberwareMenuScreen extends Screen {
     protected void init() {
         super.init();
         parts.clear();
+        int centerX = this.width / 2;
+        int centerY = this.height / 2;
+        this.btnX = centerX + 120;
+        this.btnY = centerY - 60;
         if (this.minecraft != null && this.minecraft.player != null) {
             this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
                 ItemStackHandler handler = data.getInstalledCyberware();
@@ -79,8 +88,6 @@ public class CyberwareMenuScreen extends Screen {
         }
         int boxWidth = 80;
         int boxHeight = 20;
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
         this.hexInput = new EditBox(this.font, centerX - boxWidth / 2, centerY + 30, boxWidth, boxHeight, Component.literal("Color Hex"));
         this.hexInput.setMaxLength(8);
         this.hexInput.setValue(ClientCyberwareSettings.getHudColorAsHex());
@@ -152,9 +159,9 @@ public class CyberwareMenuScreen extends Screen {
         }
         renderHudPreview(g, mouseX, mouseY);
         if (!isHudMoveMode) {
-            renderIconButton(g, HUD_COLOR_ICON, POS_BTN_X, POS_BTN_Y + 20, mouseX, mouseY, "HUD Color Settings");
+            renderIconButton(g, HUD_COLOR_ICON, btnX, btnY + 20, mouseX, mouseY, "HUD Color Settings");
             if (!isColorSettingsOpen) {
-                renderIconButton(g, HUD_POS_ICON, POS_BTN_X, POS_BTN_Y, mouseX, mouseY, "Move HUD Position");
+                renderIconButton(g, HUD_POS_ICON, btnX, btnY, mouseX, mouseY, "Move HUD Position");
             }
         }
         if (isColorSettingsOpen) {
@@ -162,7 +169,7 @@ public class CyberwareMenuScreen extends Screen {
         }
         if (isHudMoveMode) {
             g.drawCenteredString(this.font, "HUD MOVE MODE", centerX, 40, 0xFF00FF00);
-            g.drawCenteredString(this.font, "Drag HUD to move / Press ESC to finish", centerX, 55, 0xFFFFFFFF);
+            g.drawCenteredString(this.font, "Drag HUD elements to move / Press ESC to finish", centerX, 55, 0xFFFFFFFF);
         }
         super.render(g, mouseX, mouseY, partialTick);
     }
@@ -170,9 +177,9 @@ public class CyberwareMenuScreen extends Screen {
     private void renderIconButton(GuiGraphics g, ResourceLocation texture, int x, int y, int mouseX, int mouseY, String tooltip) {
         RenderSystem.setShaderTexture(0, texture);
         float[] rgba = ClientCyberwareSettings.getColorFloats();
-        RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+        g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
         g.blit(texture, x, y, BTN_SIZE, BTN_SIZE, 0, 0, 8, 8, 8, 8);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (mouseX >= x && mouseX <= x + BTN_SIZE && mouseY >= y && mouseY <= y + BTN_SIZE) {
             g.renderOutline(x - 1, y - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
             if (!isColorSettingsOpen && !isHudMoveMode) {
@@ -264,22 +271,59 @@ public class CyberwareMenuScreen extends Screen {
         this.minecraft.player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             int hudX = ClientCyberwareSettings.hudX;
             int hudY = ClientCyberwareSettings.hudY;
+            int barX = ClientCyberwareSettings.barX;
+            int barY = ClientCyberwareSettings.barY;
             if (isHudMoveMode) {
+                float[] rgba = ClientCyberwareSettings.getColorFloats();
+                RenderSystem.setShaderTexture(0, HUD_RESET_ICON);
                 g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFF00FF00);
-                g.drawCenteredString(this.font, "DRAG TO MOVE", hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
+                g.drawCenteredString(this.font, "BATTERY", hudX + HUD_WIDTH / 2, hudY - 10, 0xFF00FF00);
                 if (isDraggingHud || (mouseX >= hudX && mouseX <= hudX + HUD_WIDTH && mouseY >= hudY && mouseY <= hudY + HUD_HEIGHT)) {
                     g.renderOutline(hudX - 1, hudY - 1, HUD_WIDTH + 2, HUD_HEIGHT + 2, 0xFFFFFFFF);
                 }
-                int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
-                int resetBtnY = hudY + HUD_HEIGHT + 5;
-                RenderSystem.setShaderTexture(0, HUD_RESET_ICON);
-                float[] rgba = ClientCyberwareSettings.getColorFloats();
-                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-                g.blit(HUD_RESET_ICON, resetBtnX, resetBtnY, BTN_SIZE, BTN_SIZE, 0, 0, 8, 8, 8, 8);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
-                    g.renderOutline(resetBtnX - 1, resetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
-                    g.renderTooltip(this.font, Component.literal("Reset Position"), mouseX, mouseY);
+                int batResetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
+                int batResetBtnY = hudY + HUD_HEIGHT + 5;
+                g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+                g.blit(HUD_RESET_ICON, batResetBtnX, batResetBtnY, BTN_SIZE, BTN_SIZE, 0, 0, 8, 8, 8, 8);
+                g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+                if (mouseX >= batResetBtnX && mouseX <= batResetBtnX + BTN_SIZE && mouseY >= batResetBtnY && mouseY <= batResetBtnY + BTN_SIZE) {
+                    g.renderOutline(batResetBtnX - 1, batResetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+                    g.renderTooltip(this.font, Component.literal("Reset Battery HUD"), mouseX, mouseY);
+                }
+                g.renderOutline(barX - 1, barY - 1, BAR_WIDTH + 2, BAR_HEIGHT + 2, 0xFF00FF00);
+                g.drawCenteredString(this.font, "STATUS BAR", barX + BAR_WIDTH / 2, barY - 10, 0xFF00FF00);
+                if (isDraggingBar || (mouseX >= barX && mouseX <= barX + BAR_WIDTH && mouseY >= barY && mouseY <= barY + BAR_HEIGHT)) {
+                    g.renderOutline(barX - 1, barY - 1, BAR_WIDTH + 2, BAR_HEIGHT + 2, 0xFFFFFFFF);
+                }
+                int barResetBtnX = barX + (BAR_WIDTH - BTN_SIZE) / 2;
+                int barResetBtnY = barY + BAR_HEIGHT + 5;
+                g.setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+                g.blit(HUD_RESET_ICON, barResetBtnX, barResetBtnY, BTN_SIZE, BTN_SIZE, 0, 0, 8, 8, 8, 8);
+                g.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+                if (mouseX >= barResetBtnX && mouseX <= barResetBtnX + BTN_SIZE && mouseY >= barResetBtnY && mouseY <= barResetBtnY + BTN_SIZE) {
+                    g.renderOutline(barResetBtnX - 1, barResetBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+                    g.renderTooltip(this.font, Component.literal("Reset Status Bar"), mouseX, mouseY);
+                }
+                int ltrBtnX = barResetBtnX - 20;
+                int ltrBtnY = barResetBtnY;
+                int rtlBtnX = barResetBtnX + 20;
+                int rtlBtnY = barResetBtnY;
+                int hudColorInt = ClientCyberwareSettings.hudColor;
+                boolean ltrSelected = ClientCyberwareSettings.slideDirection == 0;
+                boolean rtlSelected = ClientCyberwareSettings.slideDirection == 1;
+                g.fill(ltrBtnX, ltrBtnY, ltrBtnX + BTN_SIZE, ltrBtnY + BTN_SIZE, 0x40000000 | (hudColorInt & 0xFFFFFF));
+                g.renderOutline(ltrBtnX, ltrBtnY, BTN_SIZE, BTN_SIZE, ltrSelected ? 0xFFFFFFFF : (0x60000000 | (hudColorInt & 0xFFFFFF)));
+                g.drawString(this.font, "→", ltrBtnX + 4, ltrBtnY + 4, ltrSelected ? 0xFFFFFFFF : 0xFFAAAAAA, false);
+                if (mouseX >= ltrBtnX && mouseX <= ltrBtnX + BTN_SIZE && mouseY >= ltrBtnY && mouseY <= ltrBtnY + BTN_SIZE) {
+                    g.renderOutline(ltrBtnX - 1, ltrBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+                    g.renderTooltip(this.font, Component.literal("Slide: Left to Right"), mouseX, mouseY);
+                }
+                g.fill(rtlBtnX, rtlBtnY, rtlBtnX + BTN_SIZE, rtlBtnY + BTN_SIZE, 0x40000000 | (hudColorInt & 0xFFFFFF));
+                g.renderOutline(rtlBtnX, rtlBtnY, BTN_SIZE, BTN_SIZE, rtlSelected ? 0xFFFFFFFF : (0x60000000 | (hudColorInt & 0xFFFFFF)));
+                g.drawString(this.font, "←", rtlBtnX + 4, rtlBtnY + 4, rtlSelected ? 0xFFFFFFFF : 0xFFAAAAAA, false);
+                if (mouseX >= rtlBtnX && mouseX <= rtlBtnX + BTN_SIZE && mouseY >= rtlBtnY && mouseY <= rtlBtnY + BTN_SIZE) {
+                    g.renderOutline(rtlBtnX - 1, rtlBtnY - 1, BTN_SIZE + 2, BTN_SIZE + 2, 0xFFFFFFFF);
+                    g.renderTooltip(this.font, Component.literal("Slide: Right to Left"), mouseX, mouseY);
                 }
             }
         });
@@ -291,8 +335,8 @@ public class CyberwareMenuScreen extends Screen {
             int centerX = width / 2;
             int centerY = height / 2;
             if (!isHudMoveMode) {
-                int colorBtnX = POS_BTN_X;
-                int colorBtnY = POS_BTN_Y + 21;
+                int colorBtnX = btnX;
+                int colorBtnY = btnY + 20;
                 if (mouseX >= colorBtnX && mouseX <= colorBtnX + BTN_SIZE && mouseY >= colorBtnY && mouseY <= colorBtnY + BTN_SIZE) {
                     toggleColorSettings();
                     playClickSound();
@@ -300,7 +344,7 @@ public class CyberwareMenuScreen extends Screen {
                 }
             }
             if (!isColorSettingsOpen && !isHudMoveMode) {
-                if (mouseX >= POS_BTN_X && mouseX <= POS_BTN_X + BTN_SIZE && mouseY >= POS_BTN_Y + 1 && mouseY <= POS_BTN_Y + BTN_SIZE + 1) {
+                if (mouseX >= btnX && mouseX <= btnX + BTN_SIZE && mouseY >= btnY && mouseY <= btnY + BTN_SIZE) {
                     isHudMoveMode = true;
                     playClickSound();
                     return true;
@@ -334,11 +378,35 @@ public class CyberwareMenuScreen extends Screen {
             if (isHudMoveMode) {
                 int hudX = ClientCyberwareSettings.hudX;
                 int hudY = ClientCyberwareSettings.hudY;
-                int resetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
-                int resetBtnY = hudY + HUD_HEIGHT + 5;
-                if (mouseX >= resetBtnX && mouseX <= resetBtnX + BTN_SIZE && mouseY >= resetBtnY && mouseY <= resetBtnY + BTN_SIZE) {
+                int barX = ClientCyberwareSettings.barX;
+                int barY = ClientCyberwareSettings.barY;
+                int batResetBtnX = hudX + (HUD_WIDTH - BTN_SIZE) / 2;
+                int batResetBtnY = hudY + HUD_HEIGHT + 5;
+                int barResetBtnX = barX + (BAR_WIDTH - BTN_SIZE) / 2;
+                int barResetBtnY = barY + BAR_HEIGHT + 5;
+                int ltrBtnX = barResetBtnX - 20;
+                int ltrBtnY = barResetBtnY;
+                int rtlBtnX = barResetBtnX + 20;
+                int rtlBtnY = barResetBtnY;
+                if (mouseX >= batResetBtnX && mouseX <= batResetBtnX + BTN_SIZE && mouseY >= batResetBtnY && mouseY <= batResetBtnY + BTN_SIZE) {
                     ClientCyberwareSettings.hudX = 10;
                     ClientCyberwareSettings.hudY = 10;
+                    playClickSound();
+                    return true;
+                }
+                if (mouseX >= barResetBtnX && mouseX <= barResetBtnX + BTN_SIZE && mouseY >= barResetBtnY && mouseY <= barResetBtnY + BTN_SIZE) {
+                    ClientCyberwareSettings.barX = 10;
+                    ClientCyberwareSettings.barY = 40;
+                    playClickSound();
+                    return true;
+                }
+                if (mouseX >= ltrBtnX && mouseX <= ltrBtnX + BTN_SIZE && mouseY >= ltrBtnY && mouseY <= ltrBtnY + BTN_SIZE) {
+                    ClientCyberwareSettings.slideDirection = 0;
+                    playClickSound();
+                    return true;
+                }
+                if (mouseX >= rtlBtnX && mouseX <= rtlBtnX + BTN_SIZE && mouseY >= rtlBtnY && mouseY <= rtlBtnY + BTN_SIZE) {
+                    ClientCyberwareSettings.slideDirection = 1;
                     playClickSound();
                     return true;
                 }
@@ -346,6 +414,13 @@ public class CyberwareMenuScreen extends Screen {
                     isDraggingHud = true;
                     dragOffsetX = (int) mouseX - hudX;
                     dragOffsetY = (int) mouseY - hudY;
+                    playClickSound();
+                    return true;
+                }
+                if (mouseX >= barX && mouseX <= barX + BAR_WIDTH && mouseY >= barY && mouseY <= barY + BAR_HEIGHT) {
+                    isDraggingBar = true;
+                    dragBarOffsetX = (int) mouseX - barX;
+                    dragBarOffsetY = (int) mouseY - barY;
                     playClickSound();
                     return true;
                 }
@@ -385,19 +460,32 @@ public class CyberwareMenuScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (isHudMoveMode && isDraggingHud && button == 0) {
-            ClientCyberwareSettings.hudX = (int) mouseX - dragOffsetX;
-            ClientCyberwareSettings.hudY = (int) mouseY - dragOffsetY;
-            return true;
+        if (isHudMoveMode && button == 0) {
+            if (isDraggingHud) {
+                ClientCyberwareSettings.hudX = (int) mouseX - dragOffsetX;
+                ClientCyberwareSettings.hudY = (int) mouseY - dragOffsetY;
+                return true;
+            }
+            if (isDraggingBar) {
+                ClientCyberwareSettings.barX = (int) mouseX - dragBarOffsetX;
+                ClientCyberwareSettings.barY = (int) mouseY - dragBarOffsetY;
+                return true;
+            }
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0 && isDraggingHud) {
-            isDraggingHud = false;
-            return true;
+        if (button == 0) {
+            if (isDraggingHud) {
+                isDraggingHud = false;
+                return true;
+            }
+            if (isDraggingBar) {
+                isDraggingBar = false;
+                return true;
+            }
         }
         return super.mouseReleased(mouseX, mouseY, button);
     }

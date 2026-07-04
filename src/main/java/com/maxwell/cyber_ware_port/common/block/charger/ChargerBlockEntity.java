@@ -24,9 +24,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ChargerBlockEntity extends BlockEntity {
-    private boolean isDrainMode = false;
     private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(1000000, 10000);
     private final LazyOptional<IEnergyStorage> energyHandler = LazyOptional.of(() -> energyStorage);
+    private boolean isDrainMode = false;
 
     public ChargerBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CHARGER.get(), pPos, pBlockState);

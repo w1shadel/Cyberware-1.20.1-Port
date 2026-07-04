@@ -1,4 +1,3 @@
-
 package com.maxwell.cyber_ware_port.compat.jei;
 
 import com.maxwell.cyber_ware_port.CyberWare;
@@ -13,8 +12,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class AssemblyRecipeCategory implements IRecipeCategory<AssemblyRecipe> {
     public static final RecipeType<AssemblyRecipe> RECIPE_TYPE = RecipeType.create(CyberWare.MODID, "assembly", AssemblyRecipe.class);
-    private static final ResourceLocation BACKGROUND_LOC = new  ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png");
+    private static final ResourceLocation BACKGROUND_LOC = new ResourceLocation(CyberWare.MODID, "textures/gui/engineering.png");
     private final IDrawable background;
     private final IDrawable icon;
 
@@ -50,6 +47,7 @@ public class AssemblyRecipeCategory implements IRecipeCategory<AssemblyRecipe> {
     public @NotNull IDrawable getIcon() {
         return icon;
     }
+
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, AssemblyRecipe recipe, IFocusGroup focuses) {
         int gridStartX = 71;

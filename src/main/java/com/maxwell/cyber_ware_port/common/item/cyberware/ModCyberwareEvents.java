@@ -5,9 +5,9 @@ import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
 import com.maxwell.cyber_ware_port.api.json.CyberwareDataManager;
 import com.maxwell.cyber_ware_port.api.json.MobDataManager;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
+import com.maxwell.cyber_ware_port.common.capability.CyberwareUserData;
 import com.maxwell.cyber_ware_port.common.command.CyberwareCommands;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +22,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.BiConsumer;
 
@@ -42,11 +41,8 @@ public class ModCyberwareEvents {
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack stack = handler.getStackInSlot(i);
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
-                if (!stack.isEmpty() && cw != null && cw.isActive(stack)) {
+                if (!stack.isEmpty() && cw != null && CyberwareUserData.isItemPowered(data, cw, stack)) {
                     action.accept(cw, stack);
-                    ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
-                    if (id != null) {
-                    }
                 }
             }
         });

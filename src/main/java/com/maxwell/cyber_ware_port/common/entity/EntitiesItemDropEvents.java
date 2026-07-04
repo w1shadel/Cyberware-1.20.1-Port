@@ -93,14 +93,11 @@ public class EntitiesItemDropEvents {
     private static List<Item> generateMobDropPool(ICyberwareMob cyberMob) {
         List<Item> pool = new ArrayList<>();
         pool.addAll(CACHED_COMMON_POOL);
-
         net.minecraft.world.entity.LivingEntity entity = (net.minecraft.world.entity.LivingEntity) cyberMob;
         var mobData = com.maxwell.cyber_ware_port.api.json.MobDataManager.MOB_DATA.get(entity.getType());
-
         boolean isHighTier = cyberMob.isHighTierMob();
         List<Item> specialDrops = new ArrayList<>(cyberMob.getSpecialDrops());
         List<Item> forbiddenDrops = new ArrayList<>(cyberMob.getForbiddenDrops());
-
         if (mobData != null) {
             isHighTier |= mobData.isHighTier;
             if (mobData.specialDrops != null)
@@ -108,16 +105,13 @@ public class EntitiesItemDropEvents {
             if (mobData.forbiddenDrops != null)
                 forbiddenDrops.addAll(mobData.forbiddenDrops);
         }
-
         if (isHighTier) {
             pool.addAll(CACHED_HIGH_TIER_POOL);
         }
-
         if (!specialDrops.isEmpty()) {
             pool.addAll(specialDrops);
             pool.addAll(specialDrops);
         }
-
         if (!forbiddenDrops.isEmpty()) {
             pool.removeAll(forbiddenDrops);
         }

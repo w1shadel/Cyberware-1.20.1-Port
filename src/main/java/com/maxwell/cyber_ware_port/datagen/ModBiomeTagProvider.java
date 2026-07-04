@@ -19,14 +19,14 @@ public class ModBiomeTagProvider extends BiomeTagsProvider {
             new ResourceLocation(CyberWare.MODID, "has_structure/cyber_lab"));
 
     public ModBiomeTagProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pProvider,
-            @Nullable ExistingFileHelper existingFileHelper) {
+                               @Nullable ExistingFileHelper existingFileHelper) {
         super(pOutput, pProvider, CyberWare.MODID, existingFileHelper);
     }
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(net.minecraft.tags.TagKey.create(Registries.BIOME,
-                new ResourceLocation(CyberWare.MODID, "has_structure/cyber_lab")))
+                        new ResourceLocation(CyberWare.MODID, "has_structure/cyber_lab")))
                 .addTag(BiomeTags.IS_OVERWORLD)
                 .remove(BiomeTags.IS_OCEAN)
                 .remove(BiomeTags.IS_RIVER);

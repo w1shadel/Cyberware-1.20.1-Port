@@ -43,35 +43,27 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                         for (int otherSlotIndex = 0; otherSlotIndex < RobosurgeonBlockEntity.TOTAL_SLOTS; otherSlotIndex++) {
                             if (otherSlotIndex == this.getSlotIndex())
                                 continue;
-
                             ItemStack otherStackInside = handler.getStackInSlot(otherSlotIndex);
                             if (otherStackInside.isEmpty())
                                 continue;
-
-
-
                             if (otherStackInside.hasTag() && otherStackInside.getTag() != null
                                     && otherStackInside.getTag().getBoolean("cyberware_ghost")) {
                                 continue;
                             }
-
                             ICyberware otherCw = CyberwareAPI.getCyberware(otherStackInside);
                             if (otherCw == null)
                                 continue;
-
                             if (myCw.isIncompatible(stack, otherStackInside)
                                     || otherCw.isIncompatible(otherStackInside, stack)) {
                                 return false;
                             }
                         }
-
                         int currentCount = stack.getCount();
                         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
                             if (i == this.getSlotIndex())
                                 continue;
                             ItemStack otherStack = handler.getStackInSlot(i);
                             if (!otherStack.isEmpty() && otherStack.getItem() == stack.getItem()) {
-
                                 if (otherStack.hasTag() && otherStack.getTag() != null
                                         && otherStack.getTag().getBoolean("cyberware_ghost")) {
                                     continue;
@@ -82,7 +74,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                         if (currentCount > myCw.getMaxInstallAmount(stack)) {
                             return false;
                         }
-
                         return true;
                     }
                 });
@@ -108,7 +99,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     slot.set(ItemStack.EMPTY);
                 }
             }
-
             ItemStack carried = getCarried();
             if (!carried.isEmpty()) {
                 ICyberware newCw = CyberwareAPI.getCyberware(carried);
@@ -119,13 +109,10 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                                 ItemStack existing = modifiable.getStackInSlot(i);
                                 if (!existing.isEmpty() && existing.hasTag() && existing.getTag() != null
                                         && existing.getTag().getBoolean("cyberware_ghost")) {
-
                                     boolean shouldEject = false;
                                     if (i == slotId) {
-
                                         shouldEject = true;
                                     } else {
-
                                         ICyberware existingCw = CyberwareAPI.getCyberware(existing);
                                         if (existingCw != null) {
                                             if (newCw.isIncompatible(carried, existing)
@@ -134,7 +121,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                                             }
                                         }
                                     }
-
                                     if (shouldEject) {
                                         modifiable.setStackInSlot(i, ItemStack.EMPTY);
                                     }
@@ -185,9 +171,8 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                 ICyberware cw = CyberwareAPI.getCyberware(itemstack1);
                 if (cw != null) {
                     int slotType = cw.getSlot(itemstack1);
-
                     boolean moved = false;
-                    for (int pass = 0; pass < 2; pass++) { 
+                    for (int pass = 0; pass < 2; pass++) {
                         for (int i = 0; i < RobosurgeonBlockEntity.TOTAL_SLOTS; i++) {
                             if (i >= slotType && i < slotType + RobosurgeonBlockEntity.SLOTS_PER_PART) {
                                 Slot targetSlot = this.slots.get(i);
@@ -195,10 +180,9 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                                     ItemStack targetItem = targetSlot.getItem();
                                     if (targetItem.hasTag() && targetItem.getTag() != null
                                             && targetItem.getTag().getBoolean("cyberware_ghost")) {
-                                        targetSlot.set(ItemStack.EMPTY); 
+                                        targetSlot.set(ItemStack.EMPTY);
                                     }
                                 }
-
                                 if (targetSlot.mayPlace(itemstack1)) {
                                     if (this.moveItemStackTo(itemstack1, i, i + 1, false)) {
                                         moved = true;
@@ -216,7 +200,6 @@ public class RobosurgeonMenu extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
             }
-
             if (itemstack1.isEmpty()) {
                 slot.set(ItemStack.EMPTY);
             } else {

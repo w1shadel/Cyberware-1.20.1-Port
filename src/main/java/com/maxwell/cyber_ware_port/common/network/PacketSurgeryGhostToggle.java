@@ -65,7 +65,6 @@ public class PacketSurgeryGhostToggle {
                     ghost.getOrCreateTag().putBoolean("cyberware_ghost", true);
                     tile.getItemHandler().setStackInSlot(slotId, ghost);
                     changed = true;
-
                     com.maxwell.cyber_ware_port.common.item.base.ICyberware newCw = com.maxwell.cyber_ware_port.api.json.CyberwareAPI
                             .getCyberware(ghost);
                     if (newCw != null) {

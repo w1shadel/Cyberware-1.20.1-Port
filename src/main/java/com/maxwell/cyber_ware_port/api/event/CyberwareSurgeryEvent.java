@@ -31,12 +31,12 @@ public class CyberwareSurgeryEvent extends Event {
             super(patient, blockEntity);
         }
 
-        public void setDenialReason(Component reason) {
-            this.denialReason = reason;
-        }
-
         public Component getDenialReason() {
             return denialReason;
+        }
+
+        public void setDenialReason(Component reason) {
+            this.denialReason = reason;
         }
     }
 

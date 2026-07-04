@@ -19,6 +19,10 @@ public class CyberwareData {
     public Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
     public Set<Item> incompatibleItems = new HashSet<>();
     public Set<Item> prerequisites = new HashSet<>();
+    public boolean hasEnergyProperties = false;
+    public int energyConsumption = 0;
+    public int energyGeneration = 0;
+    public int energyStorage = 0;
 
     public CyberwareData() {
     }

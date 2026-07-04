@@ -16,16 +16,13 @@ import net.minecraftforge.fml.common.Mod;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class CyberwareTabEvent {
-
     private static final ResourceLocation TAB_TEXTURE =
             new ResourceLocation(CyberWare.MODID.toLowerCase(), "textures/gui/extended_tabs.png");
-
     private static final List<CyberwareSideTabButton> customTabs = new ArrayList<>();
     private static boolean isReloading = false;
     private static Field cachedSelectedTabField = null;
@@ -43,8 +40,7 @@ public class CyberwareTabEvent {
             customTabs.clear();
             int guiLeft = screen.getGuiLeft();
             int guiTop = screen.getGuiTop();
-            int buttonX = guiLeft - 21; 
-
+            int buttonX = guiLeft - 21;
             CyberwareSideTabButton btn1 = new CyberwareSideTabButton(
                     buttonX, guiTop + 8, 17, 17,
                     (btn) -> {
@@ -56,7 +52,6 @@ public class CyberwareTabEvent {
             );
             event.addListener(btn1);
             customTabs.add(btn1);
-
             CyberwareSideTabButton btn2 = new CyberwareSideTabButton(
                     buttonX, guiTop + 31, 17, 17,
                     (btn) -> {
@@ -68,7 +63,6 @@ public class CyberwareTabEvent {
             );
             event.addListener(btn2);
             customTabs.add(btn2);
-
             updateVisibility(screen);
         }
     }
@@ -80,15 +74,11 @@ public class CyberwareTabEvent {
                 int guiLeft = screen.getGuiLeft();
                 int guiTop = screen.getGuiTop();
                 int panelX = guiLeft - 28;
-
                 event.getGuiGraphics().pose().pushPose();
-
                 event.getGuiGraphics().pose().translate(0, 0, 100);
-
                 RenderSystem.setShaderTexture(0, TAB_TEXTURE);
                 RenderSystem.enableBlend();
                 event.getGuiGraphics().blit(TAB_TEXTURE, panelX, guiTop, 0, 0, 28, 128, 256, 256);
-
                 RenderSystem.disableBlend();
                 event.getGuiGraphics().pose().popPose();
             }
@@ -101,12 +91,11 @@ public class CyberwareTabEvent {
             CyberwareTabState.currentPage = 0;
         }
     }
+
     private static void reloadScreen() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
-
         isReloading = true;
-
         try {
             CreativeModeTab tab = ModItems.CW_TABS.get();
             CreativeModeTab.ItemDisplayParameters params = new CreativeModeTab.ItemDisplayParameters(
@@ -128,6 +117,7 @@ public class CyberwareTabEvent {
             isReloading = false;
         }
     }
+
     private static void refreshTabContents() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -143,7 +133,6 @@ public class CyberwareTabEvent {
     private static CreativeModeTab getSelectedTab() {
         try {
             if (cachedSelectedTabField == null) {
-
                 for (Field field : CreativeModeInventoryScreen.class.getDeclaredFields()) {
                     if (Modifier.isStatic(field.getModifiers()) && field.getType() == CreativeModeTab.class) {
                         field.setAccessible(true);
@@ -163,7 +152,6 @@ public class CyberwareTabEvent {
     private static boolean updateVisibility(CreativeModeInventoryScreen screen) {
         CreativeModeTab selectedTab = getSelectedTab();
         if (selectedTab == null) return false;
-
         boolean isMyTab = (selectedTab == ModItems.CW_TABS.get());
         for (CyberwareSideTabButton btn : customTabs) {
             btn.visible = isMyTab;

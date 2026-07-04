@@ -150,7 +150,7 @@ public class CyberwareWorkbenchBlockEntity extends BlockEntity implements MenuPr
     }
 
     public static void tick(Level pLevel, BlockPos pPos, BlockState pState,
-            CyberwareWorkbenchBlockEntity pBlockEntity) {
+                            CyberwareWorkbenchBlockEntity pBlockEntity) {
         pBlockEntity.prevAnimationProgress = pBlockEntity.animationProgress;
         if (pBlockEntity.cooldown > 0)
             pBlockEntity.cooldown--;

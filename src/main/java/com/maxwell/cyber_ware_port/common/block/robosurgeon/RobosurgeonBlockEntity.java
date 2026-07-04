@@ -50,11 +50,6 @@ import java.util.List;
 
 public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider {
     public static final int TOTAL_SLOTS = BodyRegionEnum.getTotalSlots();
-    private final ItemStackHandler itemHandler = createItemHandler();
-    private final ContainerData data;
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private int progress = 0;
-    private int maxProgress = 100;
     public static final int SLOTS_PER_PART = BodyRegionEnum.SLOTS_PER_PART;
     public static final int SLOT_EYES = BodyRegionEnum.EYES.getStartSlot();
     public static final int SLOT_BRAIN = BodyRegionEnum.BRAIN.getStartSlot();
@@ -68,10 +63,72 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
     public static final int SLOT_HANDS = BodyRegionEnum.HANDS.getStartSlot();
     public static final int SLOT_LEGS = BodyRegionEnum.LEGS.getStartSlot();
     public static final int SLOT_BOOTS = BodyRegionEnum.BOOTS.getStartSlot();
+    private final ItemStackHandler itemHandler = createItemHandler();
+    private final ContainerData data;
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    private int progress = 0;
+    private int maxProgress = 100;
 
     public RobosurgeonBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ROBO_SURGEON.get(), pPos, pBlockState);
         this.data = createContainerData();
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState state, RobosurgeonBlockEntity entity) {
+        if (level.isClientSide)
+            return;
+        BlockPos chamberPos = entity.findChamberPos();
+        if (chamberPos == null) {
+            entity.resetProgress();
+            return;
+        }
+        BlockEntity be = level.getBlockEntity(chamberPos);
+        if (!(be instanceof SurgeryChamberBlockEntity chamber)) {
+            entity.resetProgress();
+            return;
+        }
+        LivingEntity patient = entity.findPatient(chamberPos);
+        if (chamber.isOpen() || !(patient instanceof ServerPlayer serverPlayer)) {
+            if (entity.progress > 0) {
+                entity.resetProgress();
+                syncProgress(entity, patient instanceof ServerPlayer sp ? sp : null);
+            }
+            return;
+        }
+        if (entity.needsSurgery(serverPlayer) && entity.checkRequirements(serverPlayer)) {
+            entity.progress++;
+            setChanged(level, pos, state);
+            syncProgress(entity, serverPlayer);
+            if (entity.progress % 20 == 0) {
+                serverPlayer.hurt(level.damageSources().magic(), 1.0f);
+                level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
+                if (entity.progress % 40 == 0) {
+                    level.playSound(null, pos, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.3F, 1.5F);
+                    if (entity.progress % 80 == 0) {
+                        level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_IRON, SoundSource.BLOCKS, 0.2F, 0.8F);
+                    }
+                }
+            }
+            if (entity.progress >= entity.maxProgress) {
+                entity.performSurgery(serverPlayer);
+                level.playSound(null, pos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.5F, 2.0F);
+                level.playSound(null, pos, SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.5F, 1.0F);
+                entity.resetProgress();
+                syncProgress(entity, serverPlayer);
+                chamber.setDoorState(true);
+            }
+        } else if (entity.progress > 0) {
+            entity.resetProgress();
+            syncProgress(entity, serverPlayer);
+            chamber.setDoorState(true);
+        }
+    }
+
+    private static void syncProgress(RobosurgeonBlockEntity entity, @Nullable ServerPlayer player) {
+        if (player != null) {
+            A_PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+                    new SyncSurgeryProgressPacket(entity.progress, entity.maxProgress));
+        }
     }
 
     private boolean isGhost(ItemStack stack) {
@@ -147,64 +204,6 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
                 return CyberwareSlotType.fromId(cw.getSlot(stack)) == CyberwareSlotType.fromId(slot);
             }
         };
-    }
-
-    public static void tick(Level level, BlockPos pos, BlockState state, RobosurgeonBlockEntity entity) {
-        if (level.isClientSide)
-            return;
-        BlockPos chamberPos = entity.findChamberPos();
-        if (chamberPos == null) {
-            entity.resetProgress();
-            return;
-        }
-        BlockEntity be = level.getBlockEntity(chamberPos);
-        if (!(be instanceof SurgeryChamberBlockEntity chamber)) {
-            entity.resetProgress();
-            return;
-        }
-        LivingEntity patient = entity.findPatient(chamberPos);
-        if (chamber.isOpen() || !(patient instanceof ServerPlayer serverPlayer)) {
-            if (entity.progress > 0) {
-                entity.resetProgress();
-                syncProgress(entity, patient instanceof ServerPlayer sp ? sp : null);
-            }
-            return;
-        }
-        if (entity.needsSurgery(serverPlayer) && entity.checkRequirements(serverPlayer)) {
-            entity.progress++;
-            setChanged(level, pos, state);
-            syncProgress(entity, serverPlayer);
-            if (entity.progress % 20 == 0) {
-                serverPlayer.hurt(level.damageSources().magic(), 1.0f);
-                level.playSound(null, chamberPos, SoundEvents.PLAYER_HURT, SoundSource.PLAYERS, 0.5f, 1.0f);
-
-                if (entity.progress % 40 == 0) {
-                    level.playSound(null, pos, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 0.3F, 1.5F);
-                    if (entity.progress % 80 == 0) {
-                        level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_IRON, SoundSource.BLOCKS, 0.2F, 0.8F);
-                    }
-                }
-            }
-            if (entity.progress >= entity.maxProgress) {
-                entity.performSurgery(serverPlayer);
-                level.playSound(null, pos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.5F, 2.0F);
-                level.playSound(null, pos, SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.5F, 1.0F);
-                entity.resetProgress();
-                syncProgress(entity, serverPlayer);
-                chamber.setDoorState(true);
-            }
-        } else if (entity.progress > 0) {
-            entity.resetProgress();
-            syncProgress(entity, serverPlayer);
-            chamber.setDoorState(true);
-        }
-    }
-
-    private static void syncProgress(RobosurgeonBlockEntity entity, @Nullable ServerPlayer player) {
-        if (player != null) {
-            A_PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                    new SyncSurgeryProgressPacket(entity.progress, entity.maxProgress));
-        }
     }
 
     private boolean needsSurgery(ServerPlayer player) {
@@ -291,7 +290,7 @@ public class RobosurgeonBlockEntity extends BlockEntity implements MenuProvider 
 
     @Override
     public void onDataPacket(net.minecraft.network.Connection net,
-            net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket pkt) {
+                             net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket pkt) {
         load(pkt.getTag());
     }
 

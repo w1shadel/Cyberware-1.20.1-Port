@@ -99,7 +99,7 @@ public class RadioKitBlock extends HorizontalDirectionalBlock {
 
     @Override
     public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos,
-            boolean pIsMoving) {
+                                boolean pIsMoving) {
         if (!pLevel.isClientSide) {
             boolean isPoweredNow = pLevel.hasNeighborSignal(pPos);
             boolean wasPowered = pState.getValue(POWERED);

@@ -1,9 +1,9 @@
 package com.maxwell.cyber_ware_port.common.util;
 
 import com.maxwell.cyber_ware_port.api.json.CyberwareAPI;
+import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.common.item.base.BodyPartType;
 import com.maxwell.cyber_ware_port.common.item.base.ICyberware;
-import com.maxwell.cyber_ware_port.common.block.robosurgeon.RobosurgeonBlockEntity;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
@@ -21,16 +21,13 @@ public class CyberwareBodyStatus {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.isEmpty())
                 continue;
-
             ICyberware cw = CyberwareAPI.getCyberware(stack);
-
             if (cw != null) {
                 BodyPartType type = cw.getBodyPartType(stack);
                 if (type != BodyPartType.NONE) {
                     presentParts.add(type);
                 }
             }
-
             if (isArm(stack, cw)) {
                 armCount++;
             } else if (isLeg(stack, cw)) {

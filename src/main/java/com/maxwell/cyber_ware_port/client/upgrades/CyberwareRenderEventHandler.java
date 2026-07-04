@@ -1,5 +1,6 @@
 package com.maxwell.cyber_ware_port.client.upgrades;
 
+import com.maxwell.cyber_ware_port.CyberWare;
 import com.maxwell.cyber_ware_port.common.capability.CyberwareCapabilityProvider;
 import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.client.model.PlayerModel;
@@ -9,23 +10,18 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import com.maxwell.cyber_ware_port.CyberWare;
 
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, value = Dist.CLIENT)
 public class CyberwareRenderEventHandler {
-
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
         if (!(player instanceof AbstractClientPlayer clientPlayer)) return;
-
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             if (data.isCyberwareInstalled(ModItems.SYNTHETIC_SKIN.get())) {
                 return;
             }
-
             PlayerModel<AbstractClientPlayer> model = event.getRenderer().getModel();
-
             if (data.hasCyberRightArm()) {
                 model.rightArm.visible = false;
                 model.rightSleeve.visible = false;

@@ -38,8 +38,7 @@ public class ToggleCyberwarePacket {
                     ICyberware cw = CyberwareAPI.getCyberware(stack);
                     if (!stack.isEmpty() && cw != null) {
                         if (cw.canToggle(stack)) {
-
-                            if (!cw.isActive(stack)) { 
+                            if (!cw.isActive(stack)) {
                                 for (int i = 0; i < data.getInstalledCyberware().getSlots(); i++) {
                                     if (i == slotId)
                                         continue;
@@ -57,7 +56,6 @@ public class ToggleCyberwarePacket {
                                             conflict = true;
                                         }
                                         if (conflict) {
-
                                             player.sendSystemMessage(net.minecraft.network.chat.Component
                                                     .translatable("cyberware.message.conflict_active")
                                                     .withStyle(net.minecraft.ChatFormatting.RED));

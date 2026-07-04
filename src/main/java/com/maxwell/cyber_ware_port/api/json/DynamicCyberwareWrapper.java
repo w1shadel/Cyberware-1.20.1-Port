@@ -57,7 +57,7 @@ public class DynamicCyberwareWrapper implements ICyberware {
 
     @Override
     public boolean hasEnergyProperties(ItemStack stack) {
-        return false;
+        return data.hasEnergyProperties;
     }
 
     @Override
@@ -67,16 +67,16 @@ public class DynamicCyberwareWrapper implements ICyberware {
 
     @Override
     public int getEnergyConsumption(ItemStack stack) {
-        return 0;
+        return data.energyConsumption;
     }
 
     @Override
     public int getEnergyGeneration(ItemStack stack) {
-        return 0;
+        return data.energyGeneration;
     }
 
     @Override
     public int getEnergyStorage(ItemStack stack) {
-        return 0;
+        return data.energyStorage;
     }
 }
