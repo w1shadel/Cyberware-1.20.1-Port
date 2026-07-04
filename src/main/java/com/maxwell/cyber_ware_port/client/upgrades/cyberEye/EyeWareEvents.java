@@ -29,8 +29,14 @@ public class EyeWareEvents {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.is(item)) {
                 ICyberware cw = CyberwareAPI.getCyberware(stack);
-                if (cw != null && !cw.isActive(stack)) return false;
-                return data.getEnergyStored() > 0;
+                if (cw != null) {
+                    if (!cw.isActive(stack)) return false;
+
+                    if (cw.hasEnergyProperties(stack) && cw.getEnergyConsumption(stack) > 0) {
+                        return data.isPowered();
+                    }
+                    return true;
+                }
             }
         }
         return false;
@@ -49,10 +55,13 @@ public class EyeWareEvents {
     }
 
     @SubscribeEvent
-    public static void onComputeFov(ComputeFovModifierEvent event) {
-        Player player = event.getPlayer();
-        if (isFeatureActive(player, ModItems.DISTANCE_ENHANCER.get())) {
-            event.setNewFovModifier(event.getNewFovModifier() * 0.5f);
+    public static void onComputeFov(ViewportEvent.ComputeFov event) {
+        Player player = Minecraft.getInstance().player;
+        if (player != null && isFeatureActive(player, ModItems.DISTANCE_ENHANCER.get())) {
+            if (player.isCrouching()) {
+                double originalFov = event.getFOV();
+                event.setFOV(originalFov * 0.3f);
+            }
         }
     }
-}
+}
