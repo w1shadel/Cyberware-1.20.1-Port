@@ -148,19 +148,71 @@ public class CyberwareMenuScreen extends Screen {
         }
     }
 
+    private void drawDottedCircle(GuiGraphicsExtractor g, int centerX, int centerY, float radius, int color, int step) {
+        int points = (int) (2 * Math.PI * radius);
+        if (points <= 0) return;
+        for (int i = 0; i < points; i += step) {
+            double angle = (i * 2 * Math.PI) / points;
+            int x = centerX + (int) (radius * Math.cos(angle));
+            int y = centerY + (int) (radius * Math.sin(angle));
+            g.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, color);
+        }
+    }
+
+    private void drawRadialNotches(GuiGraphicsExtractor g, int centerX, int centerY, float innerRadius, float outerRadius, int color) {
+        int notchCount = 24;
+        float notchLength = 5.0f;
+        int notchColor = applyAlpha(color, 0.4f);
+
+        for (int i = 0; i < notchCount; i++) {
+            double angle = Math.toRadians((i * 360.0) / notchCount);
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+
+            // 内側目盛り（内円から外へ）
+            for (float r = innerRadius; r < innerRadius + notchLength; r += 1.0f) {
+                int x = centerX + (int) (r * cos);
+                int y = centerY + (int) (r * sin);
+                g.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, notchColor);
+            }
+
+            // 外側目盛り（外円から内へ）
+            for (float r = outerRadius - notchLength; r < outerRadius; r += 1.0f) {
+                int x = centerX + (int) (r * cos);
+                int y = centerY + (int) (r * sin);
+                g.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, notchColor);
+            }
+        }
+    }
+
+    // デジタル・レティクル（円環）全体を構成するメソッド
+    private void drawRadialRing(GuiGraphicsExtractor g, int centerX, int centerY, float innerRadius, float outerRadius, int color) {
+        // 内円と外円を美しい点線（2ドットおき）で描画
+        drawDottedCircle(g, centerX, centerY, innerRadius, color, 2);
+        drawDottedCircle(g, centerX, centerY, outerRadius, color, 2);
+
+        // 背景のうっすらとしたSFグリッドサークル（8pxおき、8ドットおきの非常に粗い点線。超軽量ながらホログラム感が出ます）
+        int bgColor = applyAlpha(color, 0.05f);
+        for (float r = innerRadius + 8; r < outerRadius; r += 8.0f) {
+            drawDottedCircle(g, centerX, centerY, r, bgColor, 8);
+        }
+
+        // スタイリッシュな目盛り線（ノッチ）を描画
+        drawRadialNotches(g, centerX, centerY, innerRadius, outerRadius, color);
+    }
+
     private void renderRadialMenu(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
         int hudColor = ClientCyberwareSettings.hudColor;
 
-        // 1. 同心円状のデジタル・レティクル線の境界描画（外枠＆内枠）
-        g.outline(centerX - 100, centerY - 100, 200, 200, applyAlpha(hudColor, 0.25f));
-        g.outline(centerX - 40, centerY - 40, 80, 80, applyAlpha(hudColor, 0.25f));
+        // 1. 同心円状のSFデジタル・レティクルを描画
+        drawRadialRing(g, centerX, centerY, INNER_RADIUS, OUTER_RADIUS, hudColor);
 
         // 2. ホログラフィックな十字インジケータ（クロスヘア・ノッチ）の描画
         int notchLen = 15;
-        g.fill(RenderPipelines.GUI, centerX - 100, centerY, centerX - 100 + notchLen, centerY + 1, applyAlpha(hudColor, 0.35f));
-        g.fill(RenderPipelines.GUI, centerX + 100 - notchLen, centerY, centerX + 100, centerY + 1, applyAlpha(hudColor, 0.35f));
-        g.fill(RenderPipelines.GUI, centerX, centerY - 100, centerX + 1, centerY - 100 + notchLen, applyAlpha(hudColor, 0.35f));
-        g.fill(RenderPipelines.GUI, centerX, centerY + 100 - notchLen, centerX + 1, centerY + 100, applyAlpha(hudColor, 0.35f));
+        g.fill(RenderPipelines.GUI, centerX - (int)OUTER_RADIUS, centerY, centerX - (int)OUTER_RADIUS + notchLen, centerY + 1, applyAlpha(hudColor, 0.35f));
+        g.fill(RenderPipelines.GUI, centerX + (int)OUTER_RADIUS - notchLen, centerY, centerX + (int)OUTER_RADIUS, centerY + 1, applyAlpha(hudColor, 0.35f));
+        g.fill(RenderPipelines.GUI, centerX, centerY - (int)OUTER_RADIUS, centerX + 1, centerY - (int)OUTER_RADIUS + notchLen, applyAlpha(hudColor, 0.35f));
+        g.fill(RenderPipelines.GUI, centerX, centerY + (int)OUTER_RADIUS - notchLen, centerX + 1, centerY + (int)OUTER_RADIUS, applyAlpha(hudColor, 0.35f));
 
         // 3. レティクルの中心コア・ドット
         g.fill(RenderPipelines.GUI, centerX - 1, centerY - 1, centerX + 2, centerY + 2, applyAlpha(hudColor, 0.5f));
@@ -172,14 +224,26 @@ public class CyberwareMenuScreen extends Screen {
             double itemAngle = i * angleStep - Math.PI / 2;
             int x = centerX + (int) (ITEM_RADIUS * Math.cos(itemAngle));
             int y = centerY + (int) (ITEM_RADIUS * Math.sin(itemAngle));
-            boolean isActive = part.item.isActive(part.stack);
+
+            // 修正：Capability データから最新の ItemStack をその場で取得し、リアルタイムに反映
+            ItemStack currentStack = ItemStack.EMPTY;
+            if (this.minecraft.player != null) {
+                CyberwareUserData data = this.minecraft.player.getData(CyberwareCapabilityProvider.CYBERWARE_DATA.get());
+                ItemStacksResourceHandler handler = data.getInstalledCyberware();
+                if (part.slotId < handler.size()) {
+                    currentStack = handler.getResource(part.slotId).toStack(handler.getAmountAsInt(part.slotId));
+                }
+            }
+            if (currentStack.isEmpty()) continue;
+
+            boolean isActive = part.item.isActive(currentStack);
             boolean isHovered = (mouseX >= x - 12 && mouseX <= x + 12 && mouseY >= y - 12 && mouseY <= y + 12);
             if (isHovered) {
                 Component statusText = isActive ? Component.translatable("cyberware.gui.active") : Component.translatable("cyberware.gui.inactive");
                 g.text(this.font, statusText, x - this.font.width(statusText) / 2, y - 20, 0xFFFFFF00, true);
-                g.setTooltipForNextFrame(this.font, part.stack, mouseX, mouseY);
+                g.setTooltipForNextFrame(this.font, currentStack, mouseX, mouseY);
             }
-            g.item(part.stack, x - 8, y - 8);
+            g.item(currentStack, x - 8, y - 8);
             int outlineColor = isActive ? 0xFF00FF00 : 0xFFFF0000;
             g.outline(x - 10, y - 10, 20, 20, outlineColor);
         }

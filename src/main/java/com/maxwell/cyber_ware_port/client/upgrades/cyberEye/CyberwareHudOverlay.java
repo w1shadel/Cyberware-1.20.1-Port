@@ -10,6 +10,7 @@ import com.maxwell.cyber_ware_port.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,6 +24,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import java.util.HashMap;
@@ -267,21 +269,30 @@ public class CyberwareHudOverlay {
         boolean isToggledOff = cw.canToggle(stack) && !isToggledOn;
 
         g.item(stack, startX + 5, slotY + 2);
-
         if (isEmpOffline) {
-            // EMP中：細い横揺れのジャミング赤線を上に走らせる
             int staticLineColor = ((int) (hudAlpha * 255) << 24) | 0xFF0000;
             for (int line = 0; line < 2; line++) {
                 int lineY = (slotY + 2) + rand.nextInt(16);
                 g.fill(RenderPipelines.GUI, startX + 5, lineY, startX + 21, lineY + 1, staticLineColor);
             }
         } else if (isToggledOff) {
-            // 手動オフ状態：シャープな「水色のストライクスルー（取消線）」を描画
-            int slashColor = ((int) (hudAlpha * 160) << 24) | (hudColor & 0xFFFFFF);
-            g.fill(RenderPipelines.GUI, startX + 5, slotY + 10, startX + 21, slotY + 11, slashColor);
-        }
+            // 修正：1.21.x のアイテム専用アトラス「minecraft:textures/atlas/items.png」を指定します
+            net.minecraft.resources.Identifier atlasLoc = net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "textures/atlas/items.png");
+            net.minecraft.resources.Identifier itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
+            net.minecraft.resources.Identifier spriteLoc = net.minecraft.resources.Identifier.fromNamespaceAndPath(itemId.getNamespace(), "item/" + itemId.getPath());
 
-        // 3D用の座標調整（Z座標の移動）や不要な pose stack の push/pop を削除し、直接 2D 描画を行います。
+            net.minecraft.client.resources.model.sprite.SpriteId spriteId = new net.minecraft.client.resources.model.sprite.SpriteId(atlasLoc, spriteLoc);
+            net.minecraft.client.renderer.texture.TextureAtlasSprite sprite = g.getSprite(spriteId);
+
+            if (sprite != null) {
+                // アイテムの形状（スプライト）に沿って、乗算（Multiply）で暗いグレーを上から重ねます
+                int darkenAlpha = (int) (140 * hudAlpha); // アルファ値（約55%）
+                int darkenColor = (darkenAlpha << 24) | 0x202020; // 乗算する暗いグレー
+
+                // スプライトを直接 blit し、背景の透明部分はそのままにアイテムの形状だけを綺麗に暗くします
+                g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, startX + 5, slotY + 2, 16, 16, darkenColor);
+            }
+        }
         if (isNoPower) {
             boolean blink = (System.currentTimeMillis() % 1600) < 800;
             if (blink) {
@@ -398,7 +409,17 @@ public class CyberwareHudOverlay {
         return new String(chars);
     }
 
-    private static boolean isHudActive(CyberwareUserData data) {
-        return data != null;
+    public static boolean isHudActive(CyberwareUserData data) {
+        if (data == null) return false;
+        ItemStacksResourceHandler handler = data.getInstalledCyberware();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getResource(i).toStack(handler.getAmountAsInt(i));
+            if (stack.is(ModItems.HUDJACK.get())) {
+                ICyberware cw = CyberwareAPI.getCyberware(stack);
+                if (cw != null && !cw.isActive(stack)) return false;
+                return data.getEnergyStored() > 0 && data.getEmpTicks() <= 0;
+            }
+        }
+        return false;
     }
 }
