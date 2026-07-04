@@ -8,12 +8,14 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.slf4j.Logger;
+import com.mojang.logging.LogUtils;
 
 @SuppressWarnings("removal")
 @Mod(CyberWare.MODID)
 public class CyberWare {
     public static final String MODID = "cyber_ware_port";
-
+    public static final Logger LOGGER = LogUtils.getLogger();
     public CyberWare(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
         ModItems.register(modEventBus);

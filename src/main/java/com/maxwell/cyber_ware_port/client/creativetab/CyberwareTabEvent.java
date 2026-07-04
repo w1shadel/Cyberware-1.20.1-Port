@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@SuppressWarnings("removal")
 @Mod.EventBusSubscriber(modid = CyberWare.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class CyberwareTabEvent {
 
@@ -30,12 +30,10 @@ public class CyberwareTabEvent {
     private static boolean isReloading = false;
     private static Field cachedSelectedTabField = null;
 
-    @SubscribeEvent
-    public static void onScreenInitPre(ScreenEvent.Init.Pre event) {
-        if (event.getScreen() instanceof CreativeModeInventoryScreen) {
-            refreshTabContents();
-        }
-    }
+    // キャッシュ用フィールド
+    private static Field selectedTabField = null;
+    private static Field globalParamsField = null;
+    private static Field instanceParamsField = null;
 
     @SubscribeEvent
     public static void onScreenInit(ScreenEvent.Init.Post event) {
@@ -67,6 +65,7 @@ public class CyberwareTabEvent {
                     }
             );
             event.addListener(btn2);
+            customTabs.add(btn1);
             customTabs.add(btn2);
 
             updateVisibility(screen);
