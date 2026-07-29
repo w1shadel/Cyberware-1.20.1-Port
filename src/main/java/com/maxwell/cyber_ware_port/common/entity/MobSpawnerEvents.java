@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -82,16 +83,12 @@ public class MobSpawnerEvents {
         }
         return Math.abs(currentTime - lastActive) < ACTIVE_TIMEOUT;
     }
-
     private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType, double chance) {
         if (level.getRandom().nextFloat() < chance) {
-            Entity spawned = newType.create(level);
-            if (spawned instanceof Mob customMob) {
-                customMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(), original.getXRot());
-                customMob.yBodyRot = original.yBodyRot;
-                customMob.yHeadRot = original.yHeadRot;
+            @SuppressWarnings("unchecked")
+            Mob customMob = original.convertTo((EntityType<? extends Mob>) newType, true);
+            if (customMob != null) {
                 customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), MobSpawnType.CONVERSION, null);
-                level.addFreshEntity(customMob);
                 event.setCanceled(true);
             }
         }
