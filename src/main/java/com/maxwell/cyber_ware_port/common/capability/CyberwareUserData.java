@@ -378,7 +378,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         if (player == null) return;
         CompoundTag tag = this.serializeNBT(player.registryAccess());
         tag.putInt("MaxTolerance", getMaxTolerance(player));
-        PacketDistributor.sendToPlayer(player, new SyncCyberwareDataPacket(tag, player.getId()));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new SyncCyberwareDataPacket(tag, player.getId()));
     }
 
     public void ensureEssentialPartsAfterDeath() {
