@@ -221,14 +221,22 @@ public class ForgeClientEvents {
         player.getCapability(CyberwareCapabilityProvider.CYBERWARE_CAPABILITY).ifPresent(data -> {
             if (hasSkinUpgrade(data))
                 return;
-            if (data.hasCyberLeftArm())
-                model.leftArm.visible = model.leftSleeve.visible = false;
-            if (data.hasCyberRightArm())
-                model.rightArm.visible = model.rightSleeve.visible = false;
-            if (data.hasCyberLeftLeg())
-                model.leftLeg.visible = model.leftPants.visible = false;
-            if (data.hasCyberRightLeg())
-                model.rightLeg.visible = model.rightPants.visible = false;
+            if (!data.isCyberwareInstalled(ModItems.HUMAN_LEFT_ARM.get())) {
+                model.leftArm.visible = false;
+                model.leftSleeve.visible = false;
+            }
+            if (!data.isCyberwareInstalled(ModItems.HUMAN_RIGHT_ARM.get())) {
+                model.rightArm.visible = false;
+                model.rightSleeve.visible = false;
+            }
+            if (!data.isCyberwareInstalled(ModItems.HUMAN_LEFT_LEG.get())) {
+                model.leftLeg.visible = false;
+                model.leftPants.visible = false;
+            }
+            if (!data.isCyberwareInstalled(ModItems.HUMAN_RIGHT_LEG.get())) {
+                model.rightLeg.visible = false;
+                model.rightPants.visible = false;
+            }
         });
     }
 

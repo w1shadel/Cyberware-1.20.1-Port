@@ -81,19 +81,12 @@ public class MobSpawnerEvents {
             return false;
         return Math.abs(currentTime - lastActive) < ACTIVE_TIMEOUT;
     }
-
-    private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original,
-                                      EntityType<?> newType, double chance) {
+    private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType, double chance) {
         if (level.getRandom().nextFloat() < chance) {
-            Mob customMob = (Mob) newType.create(level);
+            @SuppressWarnings("unchecked")
+            Mob customMob = original.convertTo((EntityType<? extends Mob>) newType, true);
             if (customMob != null) {
-                customMob.moveTo(original.getX(), original.getY(), original.getZ(), original.getYRot(),
-                        original.getXRot());
-                customMob.yBodyRot = original.yBodyRot;
-                customMob.yHeadRot = original.yHeadRot;
-                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()),
-                        MobSpawnType.CONVERSION, null, null);
-                level.addFreshEntity(customMob);
+                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), MobSpawnType.CONVERSION, null, null);
                 event.setCanceled(true);
             }
         }

@@ -406,7 +406,7 @@ public class CyberwareUserData implements INBTSerializable<CompoundTag>, IEnergy
         CompoundTag tag = this.serializeNBT();
         tag.putInt("MaxTolerance", getMaxTolerance(player));
         A_PacketHandler.INSTANCE.send(
-                net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player),
+                net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
                 new SyncCyberwareDataPacket(tag));
     }
 
