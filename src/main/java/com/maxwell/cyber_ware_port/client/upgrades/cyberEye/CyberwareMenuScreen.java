@@ -146,17 +146,6 @@ public class CyberwareMenuScreen extends Screen {
         }
     }
 
-    private void drawDottedCircle(GuiGraphicsExtractor g, int centerX, int centerY, float radius, int color, int step) {
-        int points = (int) (2 * Math.PI * radius);
-        if (points <= 0) return;
-        for (int i = 0; i < points; i += step) {
-            double angle = (i * 2 * Math.PI) / points;
-            int x = centerX + (int) (radius * Math.cos(angle));
-            int y = centerY + (int) (radius * Math.sin(angle));
-            g.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, color);
-        }
-    }
-
     private void drawRadialNotches(GuiGraphicsExtractor g, int centerX, int centerY, float innerRadius, float outerRadius, int color) {
         int notchCount = 24;
         float notchLength = 5.0f;
@@ -183,17 +172,69 @@ public class CyberwareMenuScreen extends Screen {
 
     private void drawRadialRing(GuiGraphicsExtractor g, int centerX, int centerY, float innerRadius, float outerRadius, int color) {
 
-        drawDottedCircle(g, centerX, centerY, innerRadius, color, 2);
-        drawDottedCircle(g, centerX, centerY, outerRadius, color, 2);
+        int bgColor = applyAlpha(color, 0.15f);
+        drawSolidDonut(g, centerX, centerY, innerRadius, outerRadius, bgColor);
 
-        int bgColor = applyAlpha(color, 0.05f);
-        for (float r = innerRadius + 8; r < outerRadius; r += 8.0f) {
-            drawDottedCircle(g, centerX, centerY, r, bgColor, 8);
-        }
+        int borderColor = applyAlpha(color, 0.8f);
+        drawSmoothCircleOutline(g, centerX, centerY, innerRadius, borderColor);
+        drawSmoothCircleOutline(g, centerX, centerY, outerRadius, borderColor);
 
         drawRadialNotches(g, centerX, centerY, innerRadius, outerRadius, color);
     }
+    
+    private void drawSolidDonut(GuiGraphicsExtractor g, int centerX, int centerY, float innerRadius, float outerRadius, int color) {
+        int rOut = (int) Math.ceil(outerRadius);
+        int rIn = (int) Math.floor(innerRadius);
+        float rOutSq = outerRadius * outerRadius;
+        float rInSq = innerRadius * innerRadius;
 
+        for (int y = -rOut; y <= rOut; y++) {
+            float ySq = y * y;
+            if (ySq > rOutSq) continue;
+
+            double xOut = Math.sqrt(rOutSq - ySq);
+            int xOutInt = (int) Math.round(xOut);
+            int drawY = centerY + y;
+
+            if (ySq < rInSq) {
+
+                double xIn = Math.sqrt(rInSq - ySq);
+                int xInInt = (int) Math.round(xIn);
+
+                int leftX0 = centerX - xOutInt;
+                int leftX1 = centerX - xInInt;
+                if (leftX1 > leftX0) {
+                    g.fill(RenderPipelines.GUI, leftX0, drawY, leftX1, drawY + 1, color);
+                }
+
+                int rightX0 = centerX + xInInt;
+                int rightX1 = centerX + xOutInt;
+                if (rightX1 > rightX0) {
+                    g.fill(RenderPipelines.GUI, rightX0, drawY, rightX1, drawY + 1, color);
+                }
+            } else {
+
+                int x0 = centerX - xOutInt;
+                int x1 = centerX + xOutInt;
+                if (x1 > x0) {
+                    g.fill(RenderPipelines.GUI, x0, drawY, x1, drawY + 1, color);
+                }
+            }
+        }
+    }
+
+    
+    private void drawSmoothCircleOutline(GuiGraphicsExtractor g, int centerX, int centerY, float radius, int color) {
+
+        int points = (int) (2 * Math.PI * radius * 2);
+        if (points <= 0) return;
+        for (int i = 0; i < points; i++) {
+            double angle = (i * 2 * Math.PI) / points;
+            int x = centerX + (int) Math.round(radius * Math.cos(angle));
+            int y = centerY + (int) Math.round(radius * Math.sin(angle));
+            g.fill(RenderPipelines.GUI, x, y, x + 1, y + 1, color);
+        }
+    }
     private void renderRadialMenu(GuiGraphicsExtractor g, int centerX, int centerY, int mouseX, int mouseY) {
         int hudColor = ClientCyberwareSettings.hudColor;
 

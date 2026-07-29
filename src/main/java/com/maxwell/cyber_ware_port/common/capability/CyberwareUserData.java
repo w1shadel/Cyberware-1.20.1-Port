@@ -367,7 +367,7 @@ public class CyberwareUserData extends SnapshotJournal<Integer> implements Energ
         CompoundTag tag = output.buildResult();
         int effectiveMax = getTolerance(player) + (maxTolerance - getTolerance(player));
         tag.putInt("MaxTolerance", effectiveMax);
-        PacketDistributor.sendToPlayer(player, new SyncCyberwareDataPacket(tag, player.getId()));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new SyncCyberwareDataPacket(tag, player.getId()));
     }
 
     private void killPlayer(ServerPlayer player, String suffix) {

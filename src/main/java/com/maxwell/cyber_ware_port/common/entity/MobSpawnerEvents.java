@@ -54,13 +54,17 @@ public class MobSpawnerEvents {
 
     private static void tryReplaceMob(EntityJoinLevelEvent event, ServerLevel level, Mob original, EntityType<?> newType) {
         try {
-            Entity spawned = newType.create(level, EntitySpawnReason.CONVERSION);
-            if (spawned instanceof Mob customMob) {
-                customMob.setPos(original.getX(), original.getY(), original.getZ());
-                customMob.yBodyRot = original.yBodyRot;
-                customMob.yHeadRot = original.yHeadRot;
-                customMob.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), EntitySpawnReason.CONVERSION, null);
-                level.addFreshEntity(customMob);
+            @SuppressWarnings("unchecked")
+            Mob customMob = original.convertTo(
+                    (EntityType<? extends Mob>) newType,
+                    net.minecraft.world.entity.ConversionParams.single(original, true, false), 
+                    net.minecraft.world.entity.EntitySpawnReason.CONVERSION,
+                    converted -> {
+                        converted.finalizeSpawn(level, level.getCurrentDifficultyAt(original.blockPosition()), net.minecraft.world.entity.EntitySpawnReason.CONVERSION, null);
+                    }
+            );
+
+            if (customMob != null) {
                 event.setCanceled(true);
             }
         } catch (Exception e) {
